@@ -1,0 +1,21 @@
+#!/bin/bash
+# Se algum .pages entrou no commit, regenera o .md derivado e o inclui no mesmo
+# commit — assim o texto versionado nunca fica defasado em relação ao documento.
+# Escape para quando isso atrapalhar: SKIP_PAGES=1 git commit
+[ -n "${SKIP_PAGES:-}" ] && exit 0
+raiz="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+
+# O bash do macOS é o 3.2 — sem mapfile. Lê a lista linha a linha.
+alterados="$(git diff --cached --name-only --diff-filter=ACM | grep '\.pages$' || true)"
+[ -z "$alterados" ] && exit 0
+
+echo "Atualizando Markdown derivado dos .pages…"
+printf '%s\n' "$alterados" | while IFS= read -r p; do
+  [ -n "$p" ] || continue
+  "$raiz/scripts/pages-export.sh" "$raiz/$p" >/dev/null 2>&1 || true
+  md="$raiz/${p%.pages}.md"
+  [ -f "$md" ] && git add "$md"
+  prev="$raiz/${p%.pages} (prévia).jpg"
+  [ -f "$prev" ] && git add "$prev"
+done
+exit 0
