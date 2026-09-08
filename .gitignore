@@ -18,4 +18,8 @@
 # Artefatos intermediários do pipeline .pages
 scripts/.cache/
 
+# Binários locais gerados
+scripts/auth-touchid
+
 .DS_Store
+

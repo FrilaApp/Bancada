@@ -31,6 +31,15 @@ Depois:
 | Obsidian 1.13+ | Ler e escrever o vault | Obrigatório |
 | Claude Code | Os comandos `/diario`, `/tarefa`, `/iteracao` | Obrigatório |
 | Pages (Apple) | Converter os `.pages` em Markdown | Degrada com aviso — outra pessoa converte |
+| Command Line Tools do Xcode | Compilar o módulo que confirma sua identidade no `push` | **O `push` fica bloqueado** — instale com `xcode-select --install` |
+
+### Publicar exige confirmação de identidade
+
+Antes de cada `git push`, o repositório pede Touch ID (ou Apple Watch, ou a senha do macOS). É um freio deliberado: com cinco pessoas e agentes de IA conduzindo parte do trabalho, nada sai daqui sem alguém presente no momento.
+
+Se o módulo não estiver compilado na sua máquina, o `push` é **bloqueado** em vez de liberado — um gate que passa em silêncio cria confiança falsa. Rode `./scripts/bootstrap.sh` para resolver.
+
+Existe uma saída de emergência, `SKIP_BIOMETRICS=1 git push`, e ela é para emergência mesmo.
 
 ## Como se trabalha aqui
 

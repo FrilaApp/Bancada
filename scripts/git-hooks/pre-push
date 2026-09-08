@@ -1,0 +1,49 @@
+#!/bin/bash
+# Bloqueia git push até que a identidade do autor seja confirmada biometricamente.
+# Existe para que nada saia desta máquina sem uma pessoa presente — inclusive
+# quando um agente estiver conduzindo o trabalho.
+#
+# Escape emergencial / CI: SKIP_BIOMETRICS=1 git push
+set -euo pipefail
+
+[ -n "${SKIP_BIOMETRICS:-}" ] && exit 0
+
+raiz="$(git rev-parse --show-toplevel 2>/dev/null)" || {
+  echo "❌ Push abortado: não consegui localizar a raiz do repositório." >&2
+  exit 1
+}
+
+# Compila sob demanda caso o binário ainda não exista nesta máquina.
+if [ ! -x "$raiz/scripts/auth-touchid" ]; then
+  if command -v swiftc >/dev/null 2>&1 && [ -f "$raiz/scripts/auth-touchid.swift" ]; then
+    swiftc "$raiz/scripts/auth-touchid.swift" -o "$raiz/scripts/auth-touchid" 2>/dev/null || true
+    chmod +x "$raiz/scripts/auth-touchid" 2>/dev/null || true
+  fi
+fi
+
+# Falha fechado: sem o módulo, o push não sai. Um gate que passa em silêncio
+# é pior que gate nenhum, porque cria confiança falsa.
+if [ ! -x "$raiz/scripts/auth-touchid" ]; then
+  cat >&2 <<'MSG'
+❌ Push abortado: o módulo de autenticação não está disponível nesta máquina.
+
+Este repositório exige confirmação de identidade antes de publicar.
+Para habilitar aqui:
+
+  xcode-select --install     # instala o swiftc, se estiver faltando
+  ./scripts/bootstrap.sh     # compila o módulo
+
+Se você precisa publicar agora e sabe o que está fazendo:
+
+  SKIP_BIOMETRICS=1 git push
+MSG
+  exit 1
+fi
+
+echo "🔐 Solicitando autenticação (Touch ID, Apple Watch ou senha do macOS)…"
+if ! "$raiz/scripts/auth-touchid"; then
+  echo "❌ Autenticação cancelada ou não autorizada. O push foi abortado." >&2
+  exit 1
+fi
+echo "  ✓ Identidade confirmada."
+exit 0

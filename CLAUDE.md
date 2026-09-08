@@ -91,6 +91,7 @@ Sempre **`/entrar` antes de começar**: 5 pessoas escrevem no mesmo repo, e reso
 - Se a mudança atende uma tarefa, referencie o id: `… (T-0007)`
 - Cada commit gera automaticamente uma linha em `05 - Registros/` — não registre manualmente.
 - Nunca use `--no-verify`. O `pre-commit` é o que mantém os `.md` derivados em dia com os `.pages`.
+- **O `push` exige Touch ID.** É um humano confirmando que a publicação é intencional — por isso você nunca deve usar `SKIP_BIOMETRICS=1` por conta própria, nem sugerir isso para contornar o prompt. Se o push falhar por falta do módulo, oriente a rodar `./scripts/bootstrap.sh`.
 
 ---
 

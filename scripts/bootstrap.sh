@@ -17,6 +17,15 @@ git config core.hooksPath scripts/git-hooks
 chmod +x scripts/*.sh scripts/git-hooks/* 2>/dev/null || true
 echo "$ok hooks apontando para scripts/git-hooks"
 
+echo "▸ Autenticação Biométrica"
+if command -v swiftc >/dev/null 2>&1; then
+  swiftc "$raiz/scripts/auth-touchid.swift" -o "$raiz/scripts/auth-touchid" 2>/dev/null && chmod +x "$raiz/scripts/auth-touchid"
+  echo "$ok módulo auth-touchid compilado com sucesso"
+else
+  echo "$aviso swiftc ausente — o push ficará BLOQUEADO nesta máquina"
+  echo "     instale com: xcode-select --install"
+fi
+
 echo "▸ Identidade"
 nome="$(git config user.name 2>/dev/null || true)"
 if [ -n "$nome" ]; then
