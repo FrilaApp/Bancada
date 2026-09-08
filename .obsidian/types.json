@@ -1,0 +1,19 @@
+{
+  "types": {
+    "tipo": "text",
+    "status": "text",
+    "responsavel": "text",
+    "desafio": "text",
+    "id": "text",
+    "data": "date",
+    "data_inicio": "date",
+    "data_fim": "date",
+    "data_criacao": "date",
+    "origem": "text",
+    "hash_origem": "text",
+    "exportado_em": "datetime",
+    "exportado_por": "text",
+    "conversao": "text",
+    "tags": "tags"
+  }
+}

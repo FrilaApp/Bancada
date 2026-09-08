@@ -1,0 +1,21 @@
+# CRÍTICO — segurança
+# O plugin MCP Connector guarda um bearer token em texto plano em
+# .obsidian/plugins/mcp-tools-istefox/data.json. O token é pessoal e por máquina.
+# Cada colaborador instala o plugin e gera o seu.
+.obsidian/plugins/
+
+# Layout e preferências pessoais do Obsidian
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/hotkeys.json
+.obsidian/graph.json
+.obsidian/cache
+.trash/
+
+# Configuração pessoal do Claude Code (a compartilhada é .claude/settings.json)
+.claude/settings.local.json
+
+# Artefatos intermediários do pipeline .pages
+scripts/.cache/
+
+.DS_Store

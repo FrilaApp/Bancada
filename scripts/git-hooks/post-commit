@@ -1,0 +1,5 @@
+#!/bin/bash
+# Registra o commit recém-criado no log de fatos do dia.
+# Nunca pode falhar o commit — o commit já aconteceu neste ponto.
+raiz="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+"$raiz/scripts/registrar-fato.sh" commit >/dev/null 2>&1 || true
