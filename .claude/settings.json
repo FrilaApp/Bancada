@@ -21,6 +21,28 @@
           }
         ]
       }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR/scripts/guarda.sh\" arquivo",
+            "statusMessage": "Verificando o destino da escrita…"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR/scripts/guarda.sh\" bash",
+            "statusMessage": "Verificando o comando…"
+          }
+        ]
+      }
     ]
   }
 }

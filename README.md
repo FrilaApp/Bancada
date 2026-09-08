@@ -65,6 +65,17 @@ As regras completas de escrita estão em [`CLAUDE.md`](CLAUDE.md) — é o contr
 scripts/             Automação
 ```
 
+## O que o repositório protege sozinho
+
+Duas regras deste projeto não dependem de ninguém lembrar delas — `scripts/guarda.sh` roda antes de cada ferramenta do Claude Code e bloqueia:
+
+- escrever em `05 - Registros/`, o log de fatos, por qualquer via que não seja `scripts/registrar-fato.sh`;
+- editar um `.md` derivado de `.pages`, que seria sobrescrito na próxima conversão.
+
+E comandos destrutivos — `rm -r`, `git reset --hard`, `git clean -f`, `git push --force`, `git branch -D` — passam a pedir sua confirmação mesmo que seu Claude esteja em modo de permissão automático. O mesmo vale para `--no-verify`, `SKIP_PAGES` e `SKIP_BIOMETRICS`, que são justamente as saídas de emergência dos outros gates.
+
+A ideia é simples: uma regra escrita em prosa é seguida quase sempre, e "quase" não serve para um registro cuja utilidade inteira vem de ser confiável.
+
 ## Duas coisas para não fazer
 
 - **Não edite `05 - Registros/`.** É append-only e escrito pelos hooks.

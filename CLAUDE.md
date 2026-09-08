@@ -97,10 +97,14 @@ Sempre **`/entrar` antes de começar**: 5 pessoas escrevem no mesmo repo, e reso
 
 ## Proibido
 
-- **Editar um `.md` derivado de `.pages`** (`tipo: documento-derivado`). É regenerado e sua edição será perdida — mexa no `.pages` original.
+Os dois primeiros itens não dependem da sua boa vontade: `scripts/guarda.sh` bloqueia mecanicamente pelo hook `PreToolUse`. Estão aqui para você entender o porquê, não para você lembrar de obedecer.
+
+- **Editar um `.md` derivado de `.pages`** (`tipo: documento-derivado`). É regenerado e sua edição será perdida — mexa no `.pages` original. *(bloqueado)*
+- **Escrever no log de fatos** por qualquer caminho que não seja `scripts/registrar-fato.sh` — inclusive por redirecionamento em Bash. *(bloqueado)*
 - **Versionar `.obsidian/plugins/`.** Contém o bearer token pessoal do MCP Connector. Já está no `.gitignore`; não force.
 - **Depender do MCP do Obsidian em scripts ou hooks.** O servidor só responde com o Obsidian aberto — automação escreve direto no arquivo `.md`. O MCP serve para você navegar e buscar durante a conversa, não para automatizar.
-- **Escrever no log de fatos** por qualquer caminho que não seja `scripts/registrar-fato.sh`.
+
+Além disso, comandos destrutivos (`rm -r`, `git reset --hard`, `git clean -f`, `git push --force`, `git branch -D`) e contornos de gate (`--no-verify`, `SKIP_PAGES`, `SKIP_BIOMETRICS`) devolvem a decisão para a pessoa, mesmo em modo de permissão automático. Não tente contornar isso reformulando o comando.
 
 ---
 
