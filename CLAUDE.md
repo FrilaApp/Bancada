@@ -33,6 +33,9 @@ Consequências práticas:
 03 - Roadmap/       Sumário de iterações, cronológico invertido (mais recente no topo).
 04 - Tarefas/       Uma nota por tarefa. Quadro.base é a visualização.
 05 - Registros/     Log de fatos. Leitura apenas.
+06 - Design/        O sistema de design que governa a Bancada e o site. Escrito
+                    à mão, mas não é narrativa de um dia: é regra que o código
+                    segue. Os valores vivem em Bancada/tokens.json.
 scripts/            Automação. Ver README.md.
 ```
 
@@ -43,7 +46,7 @@ Nunca crie nota fora dessa estrutura. Se algo não couber em nenhuma pasta, perg
 ## Convenções de escrita
 
 **Frontmatter YAML é obrigatório** em toda nota. Chaves sem acento, minúsculas. Valores válidos de `tipo`:
-`home` · `indice` · `cbl-desafio` · `atualizacao-diaria` · `roadmap` · `tarefa` · `registro` · `documento-derivado`
+`home` · `indice` · `cbl-desafio` · `atualizacao-diaria` · `roadmap` · `tarefa` · `registro` · `documento-derivado` · `design`
 
 Valores válidos de `status` em tarefas: `a-fazer` · `em-andamento` · `revisao` · `concluida`
 Em desafios CBL: `ativo` · `concluido` · `pausado`
