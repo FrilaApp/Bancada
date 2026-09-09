@@ -523,7 +523,7 @@ class Site {
 
     return `<title>Diário de Bordo C18</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 ${this.cssPaginaUnica()}
 </style>
@@ -745,7 +745,10 @@ ${this.cssPaginaUnica()}
 
     return `:root {
 ${tokensDe('claro')}
-  --serif: "Fraunces", ui-serif, Georgia, serif;
+  /* Uma superfamília, três vozes: a Plex foi desenhada para documentação
+     técnica, e usar serif/sans/mono da mesma família faz a distinção entre
+     narrativa e fato ler como mudança de registro, não de tipografia. */
+  --serif: "IBM Plex Serif", ui-serif, Georgia, serif;
   --sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   color-scheme: light;
@@ -1033,14 +1036,17 @@ a { color: var(--acento); }
 blockquote { margin: var(--espaco-md) 0; padding: var(--espaco-sm) var(--espaco-md);
   border-left: 3px solid var(--borda); color: var(--textoSutil); }
 
-/* Callouts do Obsidian (> [!info] …) */
+/* Callouts do Obsidian (> [!info] …).
+   O tipo do callout é dito pelo rótulo, não por uma barra colorida na
+   lateral — mesmo tratamento da página única, para as duas superfícies não
+   divergirem no visual. */
 .callout { margin: var(--espaco-md) 0; padding: var(--espaco-md);
-  border-left: 3px solid var(--acento); border-radius: 0 var(--raio) var(--raio) 0;
-  background: var(--superficieSutil); font-size: 0.94em; }
-.callout > b { display: block; margin-bottom: 4px; color: var(--acento); }
+  border-radius: var(--raio); background: var(--superficieSutil); font-size: 0.94em; }
+.callout > b { display: block; margin-bottom: 5px; color: var(--acento);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.8em;
+  text-transform: uppercase; letter-spacing: 0.07em; }
 .callout > p:first-of-type { margin-top: 0; }
 .callout > p:last-child { margin-bottom: 0; }
-.callout-warning, .callout-aviso { border-left-color: var(--status-revisao); }
 .callout-warning > b, .callout-aviso > b { color: var(--status-revisao); }
 
 /* Item de lista ainda não preenchido no vault: ocupa a linha sem fingir
