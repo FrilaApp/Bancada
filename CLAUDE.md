@@ -111,3 +111,15 @@ Além disso, comandos destrutivos (`rm -r`, `git reset --hard`, `git clean -f`, 
 ## Contexto do ciclo
 
 Os ciclos são nomeados `C13`, `C14`, `C16`, `C17`… O atual é **C18**. Os entregáveis chegam como `.pages` (template CBL, plano de pesquisa, documento de reflexão) e cada um vira um `.md` versionado ao lado do original, para que o Git mostre o que mudou no texto — e não apenas que o arquivo mudou.
+
+---
+
+## Contatos da equipe (org BlendOps, C18)
+
+| Membro | E-mail |
+|---|---|
+| 708 Cauê Carneiro | cauecarneiroc@gmail.com |
+| 714 Fabrício Tosta | fbtostadev@gmail.com |
+| 721 João Paulo | joaopauloalbuquerque606@gmail.com |
+| 724 Júlia Clovandi | julia.clovandi@a.ucb.br |
+| 737 Matheus Silva | blackgg100500@gmail.com |
