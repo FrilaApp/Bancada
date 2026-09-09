@@ -8,6 +8,8 @@ public enum Theme {
     public static let punchPulse   = Animation.spring(response: 0.18, dampingFraction: 0.55)
     public static let shakeDamped  = Animation.spring(response: 0.12, dampingFraction: 0.30)
     public static let contentSpring = Animation.spring(response: 0.28, dampingFraction: 0.78)
+    public static let hoverSpring   = Animation.spring(response: 0.22, dampingFraction: 0.82)
+    public static let badgePressSpring = Animation.spring(response: 0.16, dampingFraction: 0.70)
 
     // Cores e iluminação direcional
     public static let bezelBlack   = Color.black

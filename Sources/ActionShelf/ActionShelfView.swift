@@ -9,6 +9,9 @@ public struct ActionShelfView: View {
     @State private var isExpanded: Bool = false
     @State private var shakeOffset: CGFloat = 0
     @State private var iconScale: CGFloat = 1.0
+    @State private var isHovered: Bool = false
+    @State private var isBadgeHovered: Bool = false
+    @State private var isBadgePressed: Bool = false
 
     @Namespace private var shelfNamespace
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -98,10 +101,11 @@ public struct ActionShelfView: View {
                         // Badge Biométrico em Vidro Interativo
                         biometricGlassBadge
 
-                        // Informações da ação
+                        // Informações da ação com tipografia refinada e transição numérica
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Challenge 18 · Action Shelf")
-                                .font(.system(size: 10, weight: .bold))
+                                .font(.system(size: 10, weight: .bold, design: .rounded))
+                                .tracking(0.6)
                                 .foregroundStyle(.secondary)
                                 .textCase(.uppercase)
 
@@ -109,6 +113,7 @@ public struct ActionShelfView: View {
                                 .font(.system(size: 13, weight: .medium))
                                 .foregroundStyle(.white)
                                 .lineLimit(1)
+                                .contentTransition(.numericText(countsDown: false))
                         }
 
                         Spacer()
@@ -132,9 +137,9 @@ public struct ActionShelfView: View {
         )
         .offset(x: shakeOffset)
         .overlay(
-            // Borda com iluminação direcional apenas abaixo da linha do Notch Físico
+            // Borda com iluminação direcional hairline apenas abaixo da linha do Notch Físico
             shelfShape
-                .strokeBorder(currentBorderGradient, lineWidth: 1.2)
+                .strokeBorder(currentBorderGradient, lineWidth: 1.0)
                 .mask {
                     LinearGradient(
                         stops: [
@@ -147,7 +152,14 @@ public struct ActionShelfView: View {
                     )
                 }
         )
-        .shadow(color: currentShadowColor, radius: 14, x: 0, y: 6)
+        // Sombras em duas camadas (profundidade volumétrica):
+        // 1. Sombra de contato nítida definindo o corte contra qualquer fundo
+        .shadow(color: Color.black.opacity(0.35), radius: 6, x: 0, y: 2)
+        // 2. Sombra difusa atmosférica colorida pelo estado da biometria
+        .shadow(color: currentShadowColor, radius: isHovered ? 26 : 18, x: 0, y: isHovered ? 8 : 6)
+        .scaleEffect(isHovered && !reduceMotion ? 1.008 : 1.0)
+        .animation(Theme.hoverSpring, value: isHovered)
+        .onHover { isHovered = $0 }
         .modifier(
             ShelfGlassModifier(
                 shape: shelfShape,
@@ -160,7 +172,7 @@ public struct ActionShelfView: View {
         .animation(Theme.contentSpring, value: biometrics.state)
     }
 
-    // MARK: - Selo Biométrico em Liquid Glass Interativo
+    // MARK: - Selo Biométrico em Liquid Glass Interativo com Alinhamento Óptico & Hit Area 44pt
 
     @ViewBuilder
     private var biometricGlassBadge: some View {
@@ -183,12 +195,26 @@ public struct ActionShelfView: View {
                     )
             }
 
+            // Ícone SF Symbol com transição de substituição fluida e ajuste óptico de centro
             Image(systemName: iconName)
                 .font(.system(size: 17, weight: .semibold))
                 .foregroundStyle(iconForegroundColor)
+                .contentTransition(.symbolEffect(.replace))
+                .offset(y: iconName == "touchid" ? -0.5 : 0)
                 .symbolEffect(.pulse, isActive: biometrics.state == .authenticating)
-                .scaleEffect(iconScale)
+                .scaleEffect(iconScale * (isBadgePressed ? 0.92 : 1.0))
         }
+        .frame(width: 44, height: 44) // Área de toque mínima acessível (44x44pt)
+        .contentShape(Circle())
+        .scaleEffect(isBadgeHovered && !reduceMotion ? 1.05 : 1.0)
+        .animation(Theme.hoverSpring, value: isBadgeHovered)
+        .animation(Theme.badgePressSpring, value: isBadgePressed)
+        .onHover { isBadgeHovered = $0 }
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in isBadgePressed = true }
+                .onEnded { _ in isBadgePressed = false }
+        )
     }
 
     private var shelfShape: UnevenRoundedRectangle {
@@ -227,6 +253,9 @@ public struct ActionShelfView: View {
     @MainActor
     private func finalizarComFeedback(aprovado: Bool) async {
         if aprovado {
+            // Haptic físico no trackpad (confirmação tátil instantânea)
+            triggerHaptic(.levelChange)
+
             // Micro-impacto elástico de confirmação no badge
             if !reduceMotion {
                 withAnimation(Theme.punchPulse) {
@@ -239,11 +268,15 @@ public struct ActionShelfView: View {
             }
             try? await Task.sleep(nanoseconds: 600_000_000)
         } else {
-            // Shake oscilatório de recusa com amortecimento progressivo
+            // Haptic de aviso no trackpad
+            triggerHaptic(.alignment)
+
+            // Shake oscilatório de recusa com amortecimento progressivo e micro-pulsos hápticos
             if !reduceMotion {
                 withAnimation(Theme.shakeDamped) {
                     shakeOffset = -8
                 }
+                triggerHaptic(.alignment)
                 try? await Task.sleep(nanoseconds: 100_000_000)
                 withAnimation(Theme.shakeDamped) {
                     shakeOffset = 8
@@ -267,6 +300,10 @@ public struct ActionShelfView: View {
 
         try? await Task.sleep(nanoseconds: 300_000_000)
         onComplete(aprovado)
+    }
+
+    private func triggerHaptic(_ pattern: NSHapticFeedbackManager.FeedbackPattern) {
+        NSHapticFeedbackManager.defaultPerformer.perform(pattern, performanceTime: .default)
     }
 
     // MARK: - Propriedades Dinâmicas de Estilo
