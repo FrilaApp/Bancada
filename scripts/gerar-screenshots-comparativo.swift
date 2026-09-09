@@ -257,7 +257,7 @@ struct ViewShelfV3: View {
     }
 }
 
-// MARK: - Versão 4: Polimento Completo de Interação (Commit e501854)
+// MARK: - Versão 4: +30% de Escala & Alinhamento Óptico Completo (Commit 5a39cc4)
 struct ViewShelfV4: View {
     var body: some View {
         ZStack(alignment: .top) {
@@ -266,21 +266,21 @@ struct ViewShelfV4: View {
             NotchHardwareBar()
                 .zIndex(10)
             
-            let notchTangency: CGFloat = 32.0 / 84.0
+            let notchTangency: CGFloat = 32.0 / 100.0
             
             ZStack(alignment: .top) {
-                // Sombra atmosférica difusa
-                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                // Sombra atmosférica difusa expandida
+                RoundedRectangle(cornerRadius: 32, style: .continuous)
                     .fill(Color.clear)
-                    .shadow(color: Color.black.opacity(0.60), radius: 22, x: 0, y: 8)
+                    .shadow(color: Color.black.opacity(0.65), radius: 26, x: 0, y: 10)
                 
                 // Sombra de contato nítida
-                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                RoundedRectangle(cornerRadius: 32, style: .continuous)
                     .fill(Color.clear)
-                    .shadow(color: Color.black.opacity(0.45), radius: 6, x: 0, y: 2)
+                    .shadow(color: Color.black.opacity(0.48), radius: 8, x: 0, y: 3)
                 
-                // Base com Liquid Glass e Fade Easing de 8 stops
-                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                // Base com Liquid Glass (+30% escala: 520x100pt, raio 32pt)
+                RoundedRectangle(cornerRadius: 32, style: .continuous)
                     .fill(Color(red: 0.15, green: 0.17, blue: 0.25).opacity(0.78))
                     .overlay(
                         LinearGradient(
@@ -297,11 +297,11 @@ struct ViewShelfV4: View {
                             startPoint: .bottom,
                             endPoint: .top
                         )
-                        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                        .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
                     )
                     // Specular hairline mascarado (1.0pt delineando a base)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        RoundedRectangle(cornerRadius: 32, style: .continuous)
                             .stroke(
                                 LinearGradient(
                                     stops: [
@@ -316,41 +316,41 @@ struct ViewShelfV4: View {
                             )
                     )
                 
-                // Conteúdo refinado (alinhamento óptico, hit area 44pt, tracking)
-                HStack(spacing: 14) {
+                // Conteúdo refinado (+30% e alinhamento óptico)
+                HStack(spacing: 16) {
                     ZStack {
                         Circle()
                             .fill(Color.white.opacity(0.16))
-                            .frame(width: 44, height: 44)
+                            .frame(width: 48, height: 48)
                             .overlay(
                                 Circle()
                                     .stroke(Color.white.opacity(0.30), lineWidth: 1)
                             )
                         
                         Image(systemName: "touchid")
-                            .font(.system(size: 21, weight: .regular))
+                            .font(.system(size: 22, weight: .semibold))
                             .foregroundColor(.white)
-                            .offset(y: -0.5) // Alinhamento óptico
+                            .offset(y: -1.0) // Compensação óptica do centróide da espiral digital
                     }
-                    .frame(width: 44, height: 44)
+                    .frame(width: 56, height: 56)
                     
-                    VStack(alignment: .leading, spacing: 2) {
+                    VStack(alignment: .leading, spacing: 3) {
                         Text("AUTORIZAÇÃO")
-                            .font(.system(size: 9, weight: .bold))
+                            .font(.system(size: 11, weight: .bold, design: .rounded))
                             .tracking(0.8)
                             .foregroundColor(.white.opacity(0.65))
                         Text("Autorizar git push no Challenge 18")
-                            .font(.system(size: 13, weight: .medium))
+                            .font(.system(size: 15, weight: .medium))
                             .foregroundColor(.white)
                     }
                     
                     Spacer()
                     
-                    HStack(spacing: 5) {
+                    HStack(spacing: 6) {
                         Image(systemName: "touchid")
                             .font(.system(size: 11, weight: .semibold))
                         Text("Touch ID")
-                            .font(.system(size: 11, weight: .semibold))
+                            .font(.system(size: 12, weight: .semibold))
                     }
                     .foregroundColor(.white)
                     .padding(.horizontal, 14)
@@ -364,10 +364,10 @@ struct ViewShelfV4: View {
                             )
                     )
                 }
-                .padding(.horizontal, 18)
-                .offset(y: 33)
+                .padding(.horizontal, 24)
+                .offset(y: 35) // Alinhamento óptico: elevação sutil em relação à base de 100pt
             }
-            .frame(width: 440, height: 84)
+            .frame(width: 500, height: 100) // Escala expandida +30%
             .offset(y: 0)
         }
         .frame(width: 520, height: 180)
@@ -451,16 +451,16 @@ struct ComparativeBannerView: View {
                 )
                 
                 coluna(
-                    versao: "v4 · Polimento Final",
-                    commit: "e501854",
-                    data: "2026-09-09 05:22",
+                    versao: "v4 · +30% & Alinhamento",
+                    commit: "5a39cc4",
+                    data: "2026-09-09 06:21",
                     corAcento: Color.green,
                     view: AnyView(ViewShelfV4()),
                     deltas: [
-                        "Hairline specular mascarado",
-                        "Sombras duplas (contato + difusa)",
-                        "Target 44x44pt e offset -0.5pt",
-                        "Haptics e SF Symbol morphing"
+                        "Dimensões +30% (520x68pt, raio 32pt)",
+                        "Badge 48pt / Hit target 56x56pt",
+                        "Elevação óptica de -1.5pt no centro",
+                        "Offset -1.0pt no glifo Touch ID"
                     ]
                 )
             }
