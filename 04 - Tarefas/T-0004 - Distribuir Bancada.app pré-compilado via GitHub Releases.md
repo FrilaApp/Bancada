@@ -1,7 +1,7 @@
 ---
 tipo: tarefa
 id: T-0004
-status: em-andamento
+status: concluida
 responsavel: [fbtostadev, cauecarneiroc]
 desafio: C18
 data_criacao: 2026-09-09
@@ -20,7 +20,7 @@ Trade-off já identificado na conversa: isso troca "5 min de build local" por ma
 ## Feito quando
 - [x] Decidido o gatilho da release: **tag `v*`**, com `workflow_dispatch` junto para disparar sem criar tag à mão. Release é decisão deliberada, e runner macOS em repositório privado conta minutos a 10x — push em `main` gastaria isso a cada commit.
 - [x] Workflow criado em `.github/workflows/release.yml`: `swift test`, `swift build -c release --arch arm64 --arch x86_64`, `scripts/empacotar-app.sh` e `ditto -c -k --keepParent` para o `.zip` do bundle. Não chama `build.sh` — o build local segue arm64 e intocado; o empacotador ganhou `BANCADA_BINARIO` e `BANCADA_VERSAO` opcionais, com os padrões de antes.
-- [ ] Release de teste publicada e validada. **Publicada**: `v0.1.0`, run verde em 1m27s. **Validado aqui**: asset universal (`lipo` → `x86_64 arm64`), versão `0.1.0` no `Info.plist`, assinatura ad-hoc íntegra (`codesign --verify --deep --strict`), e o binário do bundle baixado lê o vault (`--verificar` sai 0). Com quarentena simulada, `spctl` responde `rejected` — o bloqueio que o README manda contornar. **Falta**: abrir numa máquina que não seja a de quem compilou, que é a parte do Cauê.
+- [x] Release de teste publicada e validada. **Publicada**: `v0.1.0`, run verde em 1m27s. **Validado por Fabrício**: asset universal (`lipo` → `x86_64 arm64`), versão `0.1.0` no `Info.plist`, assinatura ad-hoc íntegra (`codesign --verify --deep --strict`), e o binário do bundle baixado lê o vault (`--verificar` sai 0). Com quarentena simulada, `spctl` responde `rejected` — o bloqueio que o README manda contornar. **Validado por Cauê, em máquina diferente da que compilou**: baixado com `gh release download` numa pasta isolada, quarentena simulada com `xattr -w com.apple.quarantine`, mesmos cinco resultados reproduzidos (`lipo`, versão, `codesign`, `spctl rejected`, `--verificar` consistente contra o vault em `Repositórios/doc-harness`) — fecha o item.
 - [x] `README.md` reescrito: "Começando" abre pelo download da Release, o build local virou o caminho de quem contribui, e entrou uma seção de como publicar versão nova.
 - [x] Decisão registrada, no README e na mensagem do commit: **fica sem assinatura de Developer ID por ora**. O app circula entre cinco pessoas, e certificado + senha de app no CI custaria mais do que os dois cliques que pouparia uma vez por pessoa. Revê-se se a Bancada sair da equipe.
 
