@@ -4,9 +4,11 @@ import AppKit
 /// Ponto de entrada.
 ///
 /// Segue o padrão de `ActionShelf/Sources/ActionShelf/main.swift`: um
-/// executável SwiftPM sem `.app` bundle, montando a janela pelo AppKit. É o
-/// que permite `swift build` e pronto — sem `.xcodeproj` versionado, que com
-/// cinco pessoas commitando é fábrica de conflito.
+/// executável SwiftPM montando a janela pelo AppKit, sem `.xcodeproj`
+/// versionado — que com cinco pessoas commitando é fábrica de conflito.
+/// `scripts/empacotar-app.sh` empacota esse mesmo binário num `Bancada.app`
+/// depois do build, para abrir pelo Finder/Spotlight e fixar na Dock; o
+/// bundle em si não é versionado, só o script que o gera.
 ///
 /// Diferente do ActionShelf, aqui a política é `.regular`: a Bancada é uma
 /// janela de trabalho, com Dock e menu, não um painel ancorado na notch.
@@ -31,8 +33,8 @@ final class DelegadoDoApp: NSObject, NSApplicationDelegate {
         NSApp.activate(ignoringOtherApps: true)
     }
 
-    /// Fechar a janela encerra o app: sem bundle, não há Dock persistente
-    /// que justifique manter o processo vivo.
+    /// Fechar a janela encerra o app — a Bancada é uma janela única, sem
+    /// tarefa em segundo plano que justifique ficar viva sem ela.
     func applicationShouldTerminateAfterLastWindowClosed(_ app: NSApplication) -> Bool { true }
 }
 

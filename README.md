@@ -7,11 +7,27 @@ A Bancada **não substitui o Obsidian**: as duas ferramentas leem os mesmos arqu
 ## Rodar
 
 ```bash
-./build.sh     # roda os testes e compila
-./Bancada      # abre a janela
+./build.sh     # roda os testes, compila e empacota Bancada.app
+./Bancada      # abre a janela direto pelo binário
+open ./Bancada.app   # ou pelo bundle, como qualquer app do Finder
 ```
 
 Ao abrir pela primeira vez, ela procura a pasta `doc-harness` ao lado. Para apontar outra, use o botão de pasta na barra de ferramentas.
+
+### Deixar na Dock
+
+`./build.sh` sempre gera `Bancada.app` na raiz do projeto (não versionado — é
+artefato de build, como o binário `./Bancada`). Para fixar na Dock:
+
+1. Rode `./build.sh` (ou só `./scripts/empacotar-app.sh` se o binário já
+   estiver compilado).
+2. Abra `Bancada.app` pelo Finder (duplo clique) ou `open ./Bancada.app`.
+3. Com o app rodando, clique e segure o ícone na Dock → **Opções** →
+   **Manter na Dock**.
+
+Como o app não é assinado por uma conta de desenvolvedor Apple, o Gatekeeper
+pode barrar a primeira abertura — clique com o botão direito no ícone e
+escolha **Abrir** para confirmar uma vez.
 
 ### Verificar sem abrir janela
 

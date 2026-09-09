@@ -17,6 +17,9 @@ chmod +x ./Bancada
 codesign -s - -f ./Bancada >/dev/null 2>&1 || true
 echo "✓ Bancada compilada. Rode com ./Bancada"
 
+echo "▸ Empacotando Bancada.app..."
+./scripts/empacotar-app.sh
+
 # O site é gerado a partir do binário recém-compilado, então ele entra aqui e
 # não num script separado: assim as duas superfícies nunca ficam uma versão
 # atrás da outra.
