@@ -50,6 +50,7 @@ public enum DS {
             case "pages":  return .hex("8A6D1F")
             case "sessao": return .hex("6E6A5F")
             case "teste":  return .hex("7A5B8F")
+            case "ui":     return .hex("2E7D52")
             default:       return .hex("8A8578")
             }
         }

@@ -41,6 +41,10 @@ struct Thumbnail: View {
     }
 
     private func gerar() async {
+        if let direta = NSImage(contentsOf: url) {
+            imagem = direta
+            return
+        }
         let escala = NSScreen.main?.backingScaleFactor ?? 2
         let pedido = QLThumbnailGenerator.Request(
             fileAt: url,

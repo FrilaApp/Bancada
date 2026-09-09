@@ -14,6 +14,7 @@ swift build -c release
 
 cp .build/release/Bancada ./Bancada
 chmod +x ./Bancada
+codesign -s - -f ./Bancada >/dev/null 2>&1 || true
 echo "✓ Bancada compilada. Rode com ./Bancada"
 
 # O site é gerado a partir do binário recém-compilado, então ele entra aqui e

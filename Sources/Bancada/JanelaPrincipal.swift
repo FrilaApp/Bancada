@@ -84,7 +84,8 @@ struct JanelaPrincipal: View {
             case .registros:
                 TelaRegistros(
                     arvore: estado.arvoreDeRegistros,
-                    naoReconhecidas: estado.vault?.fatosNaoReconhecidos ?? []
+                    naoReconhecidas: estado.vault?.fatosNaoReconhecidos ?? [],
+                    midias: estado.vault?.midias ?? []
                 )
             case .tarefas:
                 TelaTarefas(tarefas: estado.tarefas) { nota in
