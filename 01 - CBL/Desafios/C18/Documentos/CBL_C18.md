@@ -1,9 +1,9 @@
 ---
 tipo: documento-derivado
 origem: "01 - CBL/Desafios/C18/Documentos/CBL_C18.pages"
-hash_origem: 94612e68767af6a31d3866a9ce74e79c75c889fe952a99e0c7cbc8f2be68ddc7
-exportado_em: 2026-09-08T21:00
-exportado_por: fbtostadev
+hash_origem: 3f1901195524de72f143fb01e3340d4e91eb03bdbce51e2bfa11a877d7ff0c4f
+exportado_em: 2026-09-08T22:01
+exportado_por: Cauê Carneiro
 conversao: ok
 tags: [documento]
 ---
@@ -32,9 +32,9 @@ Grupo:
 
 Mentor:
 
-<Nome do mentor>
+Felipe Carvalho
 
-<Nome do mentor>
+Victor Zerefos
 
 Data:
 
@@ -54,7 +54,7 @@ Big Idea:
 
 Milestone - Big Idea:
 
-<Insira aqui a big idea escolhida>
+<Insira aqui a big idea escolhida “Isso aqui é um teste de versionamento, isso aqui deve ser excluido em breve” By Cauê Crillanovick>
 
 Essential Questioning
 
