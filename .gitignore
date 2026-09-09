@@ -1,0 +1,6 @@
+.cache/
+# Barra inicial: só o executável na raiz. Sem ela, a regra também casaria
+# com Sources/ActionShelf/ e o código todo ficaria de fora.
+/ActionShelf
+.build/
+.DS_Store
