@@ -1,0 +1,83 @@
+# Publica o Bancada.app já compilado como asset de uma Release, para quem só
+# quer usar a Bancada não precisar clonar o repositório e rodar ./build.sh.
+#
+# O gatilho é a tag, não o push em main: release é decisão, não consequência
+# de todo commit — e runner macOS em repositório privado conta minutos a 10x.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      versao:
+        description: 'Versão a publicar (ex.: 1.0.0). Cria a tag v<versão>.'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  publicar:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Descobrir a versão
+        id: versao
+        run: |
+          if [ -n "${{ github.event.inputs.versao }}" ]; then
+            versao="${{ github.event.inputs.versao }}"
+          else
+            versao="${GITHUB_REF_NAME#v}"
+          fi
+          echo "numero=$versao" >> "$GITHUB_OUTPUT"
+          echo "tag=v$versao" >> "$GITHUB_OUTPUT"
+
+      # Os mesmos testes do build local. Uma release que não passa neles não
+      # deveria existir: é o app que vai chegar pronto na mão dos outros.
+      - name: Rodar os testes do VaultKit
+        run: swift test
+
+      # Universal: a equipe tem máquinas Apple Silicon, mas um .app baixado
+      # não avisa que não roda — ele simplesmente não abre no Intel.
+      - name: Compilar universal (arm64 + x86_64)
+        run: swift build -c release --arch arm64 --arch x86_64
+
+      - name: Empacotar Bancada.app
+        env:
+          BANCADA_BINARIO: .build/apple/Products/Release/Bancada
+          BANCADA_VERSAO: ${{ steps.versao.outputs.numero }}
+        run: ./scripts/empacotar-app.sh
+
+      # `ditto` e não `zip`: um .app é um bundle, e só o ditto preserva os
+      # links simbólicos e os metadados que mantêm a assinatura válida.
+      - name: Compactar o bundle
+        run: ditto -c -k --keepParent --sequesterRsrc Bancada.app "Bancada-${{ steps.versao.outputs.numero }}.zip"
+
+      - name: Escrever as notas da Release
+        env:
+          VERSAO: ${{ steps.versao.outputs.numero }}
+        run: |
+          cat > NOTAS.md <<NOTAS
+          Baixe \`Bancada-$VERSAO.zip\`, descompacte e arraste o \`Bancada.app\` para onde preferir.
+
+          O app **não é assinado** por uma conta de desenvolvedor Apple, então o macOS bloqueia a primeira abertura. Para liberar, uma vez só:
+
+          1. Dê um duplo clique no \`Bancada.app\` e confirme o aviso.
+          2. Vá em **Ajustes do Sistema → Privacidade e Segurança**, role até o fim e clique em **Abrir Mesmo Assim**.
+
+          Na primeira abertura, use o botão de pasta na barra de ferramentas para apontar o \`doc-harness\`. A escolha fica salva.
+          NOTAS
+
+      - name: Publicar a Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSAO: ${{ steps.versao.outputs.numero }}
+          TAG: ${{ steps.versao.outputs.tag }}
+        run: |
+          gh release create "$TAG" \
+            --title "Bancada $VERSAO" \
+            --notes-file NOTAS.md \
+            --generate-notes \
+            "Bancada-$VERSAO.zip"

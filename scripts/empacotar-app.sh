@@ -9,8 +9,11 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-BINARIO="./Bancada"
+# Os dois padrões são o build local; o workflow de Release sobrescreve para
+# empacotar o binário universal e carimbar a versão da tag no Info.plist.
+BINARIO="${BANCADA_BINARIO:-./Bancada}"
 APP="./Bancada.app"
+VERSAO="${BANCADA_VERSAO:-}"
 
 if [ ! -x "$BINARIO" ]; then
   echo "✗ $BINARIO não existe. Rode ./build.sh primeiro." >&2
@@ -22,6 +25,16 @@ mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 
 cp "$BINARIO" "$APP/Contents/MacOS/Bancada"
 cp scripts/Info.plist "$APP/Contents/Info.plist"
+
+# Sem versão explícita, vale o 1.0/1 do Info.plist versionado — o build local
+# não precisa inventar número.
+if [ -n "$VERSAO" ]; then
+  # CFBundleVersion só aceita dígitos e pontos — um "1.0.0-rc1" faz o macOS
+  # tratar o bundle como malformado. A versão legível fica na outra chave.
+  BUILD=$(printf '%s' "${VERSAO%%-*}" | tr -cd '0-9.')
+  /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSAO" "$APP/Contents/Info.plist"
+  /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${BUILD:-1}" "$APP/Contents/Info.plist"
+fi
 printf 'APPL????' > "$APP/Contents/PkgInfo"
 
 if [ -f scripts/AppIcon.icns ]; then

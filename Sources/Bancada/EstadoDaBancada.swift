@@ -67,13 +67,34 @@ final class EstadoDaBancada {
         if let vizinho = Self.vaultVizinho() { raiz = vizinho }
     }
 
+    /// Procura um `doc-harness` ao lado do app, subindo alguns níveis.
+    ///
+    /// O ponto de partida é onde o app está, não o diretório de trabalho: um
+    /// app aberto pelo Finder herda `/` como cwd, então buscar a partir dele
+    /// só funcionava quando a Bancada era lançada pelo terminal. O cwd entra
+    /// depois, como último candidato, porque continua sendo o certo para o
+    /// binário solto rodado de dentro do repositório.
+    ///
+    /// Baixado da Release para `~/Downloads` ou `/Applications`, nada disso
+    /// casa — e é o esperado: cai no seletor de pasta, uma vez só, e o
+    /// caminho fica salvo em `UserDefaults`.
     private static func vaultVizinho() -> URL? {
-        let cwd = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
-        for candidato in [
-            cwd.appendingPathComponent("doc-harness"),
-            cwd.deletingLastPathComponent().appendingPathComponent("doc-harness")
-        ] where LeitorDeVault.ehVault(candidato) {
-            return candidato
+        // Para um `.app`, `bundleURL` é o próprio bundle; para o executável
+        // solto do SwiftPM, é a pasta que o contém.
+        let local = Bundle.main.bundleURL
+        let origem = local.pathExtension == "app" ? local.deletingLastPathComponent() : local
+
+        var bases: [URL] = []
+        var subindo = origem
+        for _ in 0...2 {
+            bases.append(subindo)
+            subindo = subindo.deletingLastPathComponent()
+        }
+        bases.append(URL(fileURLWithPath: FileManager.default.currentDirectoryPath))
+
+        for base in bases {
+            let candidato = base.appendingPathComponent("doc-harness")
+            if LeitorDeVault.ehVault(candidato) { return candidato }
         }
         return nil
     }

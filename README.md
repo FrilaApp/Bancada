@@ -4,7 +4,34 @@ Leitor nativo do vault do **doc-harness** — tabela de tarefas, galeria com min
 
 A Bancada **não substitui o Obsidian**: as duas ferramentas leem os mesmos arquivos `.md` e podem ficar abertas ao mesmo tempo. Nada é migrado, nada é importado, e nenhum hook do doc-harness muda. Se a Bancada não vingar, é só parar de abri-la.
 
-## Rodar
+## Começando
+
+### Baixar o app pronto
+
+Em [Releases](https://github.com/BlendOps/Bancada/releases), baixe o `Bancada-<versão>.zip` da última versão, descompacte e arraste o `Bancada.app` para onde preferir — `/Applications`, a Dock, a mesa.
+
+```bash
+gh release download -R BlendOps/Bancada --pattern '*.zip'   # se preferir o terminal
+```
+
+O binário é universal (Apple Silicon e Intel). O repositório é privado, então o download pede estar autenticado no GitHub com acesso à organização BlendOps — quem está fora da equipe não precisa do app: para mentores e avaliadores existe [o site](#o-site-para-quem-está-fora).
+
+#### A primeira abertura
+
+Como o app **não é assinado** por uma conta de desenvolvedor Apple, o macOS bloqueia a primeira abertura de um arquivo que veio da internet. Uma vez só:
+
+1. Dê um duplo clique no `Bancada.app` e confirme o aviso.
+2. Vá em **Ajustes do Sistema → Privacidade e Segurança**, role até o fim e clique em **Abrir Mesmo Assim**.
+
+O atalho antigo — botão direito → **Abrir** — deixou de funcionar no macOS 15 para apps não assinados. Assinar com Developer ID e notarizar resolveria o atrito de vez, e **ficou decidido não fazer isso por ora**: o app circula dentro de uma equipe de cinco pessoas, e a conta de desenvolvedor traria gestão de certificado e senha no CI para poupar dois cliques uma vez por pessoa. Se a Bancada sair da equipe, a decisão se revê.
+
+#### Apontar o vault
+
+A Bancada procura uma pasta `doc-harness` ao lado do app, subindo alguns níveis — que é o arranjo de quem clonou o repositório dentro de `Challenge18/`. Um app baixado para `/Applications` não tem esse vizinho: use o botão de pasta na barra de ferramentas para escolher a mesma pasta que você abre no Obsidian. A escolha fica salva.
+
+### Compilar localmente
+
+Para contribuir, ou para ter o app sem esperar por uma release:
 
 ```bash
 ./build.sh     # roda os testes, compila e empacota Bancada.app
@@ -12,22 +39,21 @@ A Bancada **não substitui o Obsidian**: as duas ferramentas leem os mesmos arqu
 open ./Bancada.app   # ou pelo bundle, como qualquer app do Finder
 ```
 
-Ao abrir pela primeira vez, ela procura a pasta `doc-harness` ao lado. Para apontar outra, use o botão de pasta na barra de ferramentas.
+`./build.sh` sempre gera `Bancada.app` na raiz do projeto (não versionado — é artefato de build, como o binário `./Bancada`). O build local é arm64 apenas; o universal sai do workflow de release.
 
 ### Deixar na Dock
 
-`./build.sh` sempre gera `Bancada.app` na raiz do projeto (não versionado — é
-artefato de build, como o binário `./Bancada`). Para fixar na Dock:
+Com o app rodando, clique e segure o ícone na Dock → **Opções** → **Manter na Dock**.
 
-1. Rode `./build.sh` (ou só `./scripts/empacotar-app.sh` se o binário já
-   estiver compilado).
-2. Abra `Bancada.app` pelo Finder (duplo clique) ou `open ./Bancada.app`.
-3. Com o app rodando, clique e segure o ícone na Dock → **Opções** →
-   **Manter na Dock**.
+### Publicar uma nova versão
 
-Como o app não é assinado por uma conta de desenvolvedor Apple, o Gatekeeper
-pode barrar a primeira abertura — clique com o botão direito no ícone e
-escolha **Abrir** para confirmar uma vez.
+O workflow `.github/workflows/release.yml` roda os testes, compila o universal, empacota o `.app` e publica a Release. O gatilho é a tag:
+
+```bash
+git tag v1.1.0 && git push origin v1.1.0
+```
+
+Também dá para disparar pela aba **Actions → Release → Run workflow**, informando a versão — a tag é criada junto. A versão informada vai para o `Info.plist` do bundle, então ela é a que aparece em "Sobre a Bancada".
 
 ### Verificar sem abrir janela
 
