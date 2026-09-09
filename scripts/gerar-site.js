@@ -18,12 +18,27 @@ const { renderizar, escapar } = require('./markdown');
 const RAIZ_PROJETO = path.resolve(__dirname, '..');
 
 function main() {
-  const vault = path.resolve(process.argv[2] || path.join(RAIZ_PROJETO, '..', 'doc-harness'));
-  const destino = path.resolve(process.argv[3] || path.join(RAIZ_PROJETO, 'site'));
+  const args = process.argv.slice(2);
+  const paginaUnica = args.includes('--pagina-unica');
+  const posicionais = args.filter((a) => !a.startsWith('--'));
 
+  const vault = path.resolve(posicionais[0] || path.join(RAIZ_PROJETO, '..', 'doc-harness'));
   const indice = lerIndice(vault);
   const tokens = JSON.parse(fs.readFileSync(path.join(RAIZ_PROJETO, 'tokens.json'), 'utf8'));
 
+  // Modo página única: um HTML só, para publicar onde só cabe um arquivo —
+  // um Artifact, um anexo de e-mail para o mentor.
+  if (paginaUnica) {
+    const destino = path.resolve(posicionais[1] || path.join(RAIZ_PROJETO, 'site', 'bordo.html'));
+    const site = new Site(indice, tokens, vault, path.dirname(destino), true);
+    fs.mkdirSync(path.dirname(destino), { recursive: true });
+    fs.writeFileSync(destino, site.htmlPaginaUnica(), 'utf8');
+    const kb = (fs.statSync(destino).size / 1024).toFixed(0);
+    console.log(`✓ Página única gerada: ${destino} (${kb} KB)`);
+    return;
+  }
+
+  const destino = path.resolve(posicionais[1] || path.join(RAIZ_PROJETO, 'site'));
   fs.rmSync(destino, { recursive: true, force: true });
   fs.mkdirSync(destino, { recursive: true });
 
@@ -61,11 +76,12 @@ const SECOES = [
 ];
 
 class Site {
-  constructor(indice, tokens, vault, destino) {
+  constructor(indice, tokens, vault, destino, paginaUnica = false) {
     this.indice = indice;
     this.tokens = tokens;
     this.vault = vault;
     this.destino = destino;
+    this.paginaUnica = paginaUnica;
     this.paginasEscritas = 0;
     this.midiasCopiadas = 0;
 
@@ -133,11 +149,16 @@ class Site {
     const candidatos = [alvo, `${alvo}.md`];
     for (const c of candidatos) {
       if (this.porCaminho.has(c)) {
+        if (this.paginaUnica) return `#${this.ancora(c)}`;
         const href = this.arquivoDaNota(c);
         return daPasta === 'notas' ? path.basename(href) : href;
       }
     }
     return null;
+  }
+
+  ancora(caminho) {
+    return this.arquivoDaNota(caminho).replace(/^notas\//, 'nota-').replace(/\.html$/, '');
   }
 
   md(texto, daPasta) {
@@ -436,7 +457,476 @@ class Site {
     }
   }
 
+  // MARK: - Página única
+
+  /**
+   * Emite o registro inteiro num único HTML, sem `<!doctype>`, `<html>`,
+   * `<head>` nem `<body>` — a forma que um Artifact do claude.ai espera.
+   *
+   * O desenho parte da regra de ouro do vault: fato e narrativa são camadas
+   * diferentes e não se misturam. Aqui isso vira tipografia — a narrativa é
+   * composta em serifada, e todo fato (hora, autor, tipo, hash) é
+   * monoespaçado, do jeito que saiu do hook. O leitor distingue as duas
+   * camadas antes de ler uma palavra.
+   */
+  htmlPaginaUnica() {
+    const secoes = [];
+    const menu = [];
+
+    const registrar = (id, rotulo, grupo, html, aberta = false) => {
+      secoes.push(`<section id="${id}" class="tela"${aberta ? '' : ' hidden'}>${html}</section>`);
+      menu.push({ id, rotulo, grupo });
+    };
+
+    registrar('visao-geral', 'Visão geral', 'Início', this.telaVisaoGeral(), true);
+
+    for (const s of SECOES) {
+      for (const nota of this.notasDe(s.tipo)) {
+        const rotulo = s.tipo === 'atualizacao-diaria'
+          ? (nota.campos.data || nota.titulo)
+          : nota.titulo;
+        registrar(this.ancora(nota.caminho), rotulo, s.titulo, this.telaDeNota(nota));
+      }
+    }
+
+    const tarefas = this.indice.notas.filter((n) => n.tipo === 'tarefa');
+    if (tarefas.length) registrar('tarefas', 'Tarefas', 'Trabalho', this.telaTarefas(tarefas));
+    registrar('registros', 'Registros', 'Trabalho', this.telaRegistros());
+    if (this.indice.midias.length) {
+      registrar('galeria', 'Galeria', 'Trabalho', this.telaGaleria());
+    }
+
+    const grupos = [];
+    for (const item of menu) {
+      let g = grupos.find((x) => x.nome === item.grupo);
+      if (!g) { g = { nome: item.grupo, itens: [] }; grupos.push(g); }
+      g.itens.push(item);
+    }
+
+    const navegacao = grupos
+      .map(
+        (g) => `<div class="grupo-nav">
+          <h2>${escapar(g.nome)}</h2>
+          <ul>${g.itens
+            .map(
+              (i) =>
+                `<li><button type="button" data-alvo="${i.id}"${i.id === 'visao-geral' ? ' class="ativo" aria-current="true"' : ''}>${escapar(i.rotulo)}</button></li>`
+            )
+            .join('')}</ul>
+        </div>`
+      )
+      .join('');
+
+    const geradoEm = new Date(this.indice.geradoEm).toLocaleDateString('pt-BR', {
+      day: 'numeric', month: 'long', year: 'numeric',
+    });
+
+    return `<title>Diário de Bordo C18</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+${this.cssPaginaUnica()}
+</style>
+
+<div class="folha">
+  <aside class="lateral">
+    <div class="cabeca">
+      <p class="carimbo">Apple Developer Academy · turma 714</p>
+      <h1>Diário de Bordo<span>Challenge 18</span></h1>
+      <p class="equipe">BlendOps · 5 pessoas</p>
+    </div>
+    <nav>${navegacao}</nav>
+  </aside>
+
+  <main>
+    ${secoes.join('\n')}
+    <footer>
+      Gerado a partir do vault <code>doc-harness</code> em ${escapar(geradoEm)}.
+      Cada linha do log é escrita por um hook do Git no momento em que o fato acontece;
+      a narrativa é escrita depois, a partir dessas linhas.
+    </footer>
+  </main>
+</div>
+
+<script>
+(function () {
+  var telas = document.querySelectorAll('.tela');
+  var botoes = document.querySelectorAll('nav button');
+
+  function mostrar(id) {
+    telas.forEach(function (t) { t.hidden = (t.id !== id); });
+    botoes.forEach(function (b) {
+      var ativo = b.dataset.alvo === id;
+      b.classList.toggle('ativo', ativo);
+      if (ativo) { b.setAttribute('aria-current', 'true'); }
+      else { b.removeAttribute('aria-current'); }
+    });
+    document.querySelector('main').scrollTo({ top: 0 });
+  }
+
+  botoes.forEach(function (b) {
+    b.addEventListener('click', function () { mostrar(b.dataset.alvo); });
+  });
+
+  // Wikilinks entre notas viram âncoras: interceptar mantém a navegação
+  // dentro da página em vez de saltar para um id escondido.
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[href^="#"]');
+    if (!a) return;
+    var id = a.getAttribute('href').slice(1);
+    if (document.getElementById(id)) { e.preventDefault(); mostrar(id); }
+  });
+})();
+</script>`;
+  }
+
+  telaVisaoGeral() {
+    const desafios = this.notasDe('cbl-desafio');
+    const ativo = desafios.find((d) => d.campos.status === 'ativo') || desafios[0];
+    const diarios = this.notasDe('atualizacao-diaria');
+    const tarefas = this.indice.notas.filter((n) => n.tipo === 'tarefa');
+    const autores = [...new Set(this.indice.fatos.map((f) => f.autor))];
+
+    const numeros = [
+      ['fatos registrados', this.indice.fatos.length],
+      ['dias com registro', new Set(this.indice.fatos.map((f) => f.data)).size],
+      ['tarefas abertas', tarefas.filter((t) => t.campos.status !== 'concluida').length],
+      ['pessoas registrando', autores.length],
+    ]
+      .map(([r, v]) => `<div class="medida"><b>${v}</b><span>${r}</span></div>`)
+      .join('');
+
+    const ultimos = diarios
+      .slice(0, 6)
+      .map((n) => {
+        const q = this.indice.fatos.filter((f) => f.data === n.campos.data).length;
+        return `<li>
+          <button type="button" data-alvo="${this.ancora(n.caminho)}" class="dia">
+            <span class="data">${escapar(n.campos.data || n.titulo)}</span>
+            <span class="quanto">${q} fato${q === 1 ? '' : 's'}</span>
+          </button>
+        </li>`;
+      })
+      .join('');
+
+    let html = `<p class="entrada">
+      Este é o registro de bordo do nosso ciclo CBL. Ele se escreve em duas camadas:
+      os <b>fatos</b> entram sozinhos — cada commit, cada documento convertido, cada sessão
+      de trabalho vira uma linha carimbada no mesmo instante em que acontece —
+      e a <b>narrativa</b> é escrita depois, sempre a partir dessas linhas.
+      Nenhuma frase daqui existe sem um fato que a sustente.
+    </p>
+    <div class="medidas">${numeros}</div>`;
+
+    if (ativo) {
+      const corpo = this.md(ativo.corpo.replace(/^#\s+.*\n?/, ''), '');
+      html += `<article class="narrativa"><h2>${escapar(ativo.titulo)}</h2>${corpo}</article>`;
+    }
+
+    if (ultimos) {
+      html += `<h2 class="titulo-secao">Últimos dias</h2><ul class="dias">${ultimos}</ul>`;
+    }
+
+    return html;
+  }
+
+  telaDeNota(nota) {
+    let html = `<h2 class="titulo-tela">${escapar(nota.titulo)}</h2>`;
+
+    if (nota.somenteLeitura) {
+      html += `<p class="nota-lateral">Texto derivado de um documento <code>.pages</code> do grupo — regenerado a cada conversão, nunca editado à mão.</p>`;
+    }
+
+    const campos = Object.entries(nota.campos)
+      .filter(([k]) => k !== 'tipo')
+      .map(([k, v]) => `<span><i>${escapar(k.replace(/_/g, ' '))}</i>${escapar(v)}</span>`)
+      .join('');
+    if (campos) html += `<div class="ficha">${campos}</div>`;
+
+    html += `<article class="narrativa">${this.md(nota.corpo.replace(/^#\s+.*\n?/, ''), '')}</article>`;
+    return html;
+  }
+
+  telaTarefas(tarefas) {
+    const ordem = ['a-fazer', 'em-andamento', 'revisao', 'concluida'];
+    const rotulos = {
+      'a-fazer': 'A fazer', 'em-andamento': 'Em andamento',
+      revisao: 'Revisão', concluida: 'Concluída',
+    };
+    const linhas = tarefas
+      .slice()
+      .sort((a, b) => ordem.indexOf(a.campos.status) - ordem.indexOf(b.campos.status))
+      .map((t) => {
+        const s = t.campos.status || '';
+        return `<tr>
+          <td class="mono">${escapar(t.campos.id || '—')}</td>
+          <td>${escapar(t.titulo)}</td>
+          <td><span class="pilula status-${escapar(s)}">${escapar(rotulos[s] || '—')}</span></td>
+          <td>${escapar(t.campos.responsavel || '—')}</td>
+          <td class="mono">${escapar(t.campos.data_criacao || '—')}</td>
+        </tr>`;
+      })
+      .join('');
+
+    return `<h2 class="titulo-tela">Tarefas</h2>
+      <div class="rolagem"><table>
+        <thead><tr><th>ID</th><th>Tarefa</th><th>Status</th><th>Responsável</th><th>Criada</th></tr></thead>
+        <tbody>${linhas}</tbody>
+      </table></div>`;
+  }
+
+  telaRegistros() {
+    const no = (n, nivel) => {
+      if (!n.filhos) {
+        return `<li class="linha-fato">
+          <span class="dito">${escapar(n.rotulo)}</span>
+          <span class="carimbo-fato">${escapar(n.detalhe)}</span>
+        </li>`;
+      }
+      const filhos = n.filhos.map((f) => no(f, nivel + 1)).join('');
+      const aberto = nivel === 0 ? ' open' : '';
+      const repetido = n.ocorrencias > 1 && nivel === 2 ? ' class="repetido"' : '';
+      const classeNivel = nivel === 1 ? ` data-tipo="${escapar(n.rotulo)}"` : '';
+      return `<li><details${aberto}${repetido}${classeNivel}>
+        <summary><span class="dito">${escapar(n.rotulo)}</span>
+        <span class="carimbo-fato">${escapar(n.detalhe)}</span></summary>
+        <ul>${filhos}</ul>
+      </details></li>`;
+    };
+
+    return `<h2 class="titulo-tela">Registros</h2>
+      <p class="nota-lateral">Escrito pelos hooks do Git, não por pessoas. É append-only: nada aqui é editado depois. Quando o mesmo evento se repete, as ocorrências aparecem reunidas — abra o grupo para ver cada uma com sua hora.</p>
+      <ul class="arvore">${this.indice.arvoreDeRegistros.map((n) => no(n, 0)).join('')}</ul>`;
+  }
+
+  telaGaleria() {
+    const cartoes = this.indice.midias
+      .map((m) => {
+        const derivado = m.caminhoDerivado && this.porCaminho.has(m.caminhoDerivado)
+          ? `<button type="button" class="acao" data-alvo="${this.ancora(m.caminhoDerivado)}">Ler o texto →</button>`
+          : '';
+        return `<figure class="peca">
+          <div class="rotulo-especie">${escapar(m.rotuloDaEspecie)}</div>
+          <figcaption>
+            <b>${escapar(m.nome)}</b>
+            <span class="caminho">${escapar(path.dirname(m.caminho))}</span>
+            ${derivado}
+          </figcaption>
+        </figure>`;
+      })
+      .join('');
+
+    return `<h2 class="titulo-tela">Galeria</h2>
+      <p class="nota-lateral">Documentos e mídia versionados junto às notas. Os arquivos <code>.pages</code> do grupo não são exibíveis num navegador — o texto deles vive no Markdown derivado.</p>
+      <div class="pecas">${cartoes}</div>`;
+  }
+
   // MARK: - Estilo
+
+  /**
+   * Estilo da página única.
+   *
+   * As cores vêm de `tokens.json`, o mesmo arquivo que alimenta o app nativo
+   * — quem abrir as duas superfícies reconhece a mesma coisa. A tipografia é
+   * própria desta página: serifada para narrativa, monoespaçada para tudo
+   * que saiu de um hook. É a regra de ouro do vault virada forma.
+   */
+  cssPaginaUnica() {
+    const t = this.tokens;
+    const c = t.cor;
+    const tokensDe = (modo) =>
+      Object.entries(c).map(([n, p]) => `  --${n}: ${p[modo]};`).join('\n') + '\n' +
+      Object.entries(t.statusTarefa).map(([n, p]) => `  --status-${n}: ${p[modo]};`).join('\n');
+
+    const pilulas = Object.keys(t.statusTarefa)
+      .map((s) => `.status-${s} { color: var(--status-${s});
+  background: color-mix(in srgb, var(--status-${s}) 14%, transparent); }`)
+      .join('\n');
+
+    return `:root {
+${tokensDe('claro')}
+  --serif: "Fraunces", ui-serif, Georgia, serif;
+  --sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+${tokensDe('escuro')}
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+${tokensDe('escuro')}
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--fundo); color: var(--texto);
+  font-family: var(--sans); font-size: 15px; line-height: 1.6;
+  -webkit-font-smoothing: antialiased; }
+code, .mono { font-family: var(--mono); font-size: 0.88em; }
+:focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; border-radius: 3px; }
+
+.folha { display: grid; grid-template-columns: 264px minmax(0, 1fr);
+  min-height: 100vh; }
+
+/* Lateral ------------------------------------------------------------ */
+.lateral { background: var(--superficieSutil); border-right: 1px solid var(--borda);
+  padding: 28px 20px; position: sticky; top: 0; align-self: start;
+  max-height: 100vh; overflow-y: auto; }
+.cabeca { padding-bottom: 20px; margin-bottom: 20px;
+  border-bottom: 1px solid var(--borda); }
+.carimbo { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--textoSutil); margin: 0 0 10px; }
+.cabeca h1 { font-family: var(--serif); font-weight: 600; font-size: 25px;
+  line-height: 1.1; margin: 0; letter-spacing: -0.015em; text-wrap: balance; }
+.cabeca h1 span { display: block; font-family: var(--mono); font-weight: 400;
+  font-size: 12px; letter-spacing: 0.04em; color: var(--acento); margin-top: 7px; }
+.equipe { font-size: 12px; color: var(--textoSutil); margin: 12px 0 0; }
+
+.grupo-nav { margin-bottom: 20px; }
+.grupo-nav h2 { font-family: var(--mono); font-size: 10px; text-transform: uppercase;
+  letter-spacing: 0.09em; color: var(--textoSutil); margin: 0 0 7px; font-weight: 500; }
+.grupo-nav ul { list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: 1px; }
+nav button { width: 100%; text-align: left; background: none; border: 0;
+  font: inherit; font-size: 13.5px; color: var(--texto); cursor: pointer;
+  padding: 5px 9px; border-radius: 6px; }
+nav button:hover { background: color-mix(in srgb, var(--acento) 9%, transparent); }
+nav button.ativo { background: color-mix(in srgb, var(--acento) 14%, transparent);
+  color: var(--acento); font-weight: 500; }
+
+/* Conteúdo ----------------------------------------------------------- */
+main { padding: 40px 44px 60px; max-width: 820px; }
+[hidden] { display: none !important; }
+
+.titulo-tela, .titulo-secao { font-family: var(--serif); font-weight: 600;
+  letter-spacing: -0.015em; text-wrap: balance; }
+.titulo-tela { font-size: 32px; line-height: 1.15; margin: 0 0 22px; }
+.titulo-secao { font-size: 20px; margin: 40px 0 14px; }
+
+.entrada { font-family: var(--serif); font-size: 18px; line-height: 1.62;
+  max-width: 62ch; margin: 0 0 30px; color: var(--texto); }
+.entrada b { font-weight: 600; color: var(--acento); }
+
+/* A narrativa é sempre serifada: é a camada escrita por gente. */
+.narrativa { max-width: 66ch; }
+.narrativa h2 { font-family: var(--serif); font-size: 21px; font-weight: 600;
+  margin: 32px 0 10px; letter-spacing: -0.01em; }
+.narrativa h3 { font-family: var(--serif); font-size: 17px; font-weight: 600;
+  margin: 26px 0 8px; }
+.narrativa p { margin: 0 0 14px; }
+.narrativa ul, .narrativa ol { margin: 0 0 14px; padding-left: 20px; }
+.narrativa li { margin: 3px 0; }
+.narrativa a { color: var(--acento); text-underline-offset: 2px; }
+.narrativa hr { border: 0; border-top: 1px solid var(--borda); margin: 28px 0; }
+
+.medidas { display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  gap: 1px; background: var(--borda); border: 1px solid var(--borda);
+  border-radius: 10px; overflow: hidden; margin-bottom: 34px; }
+.medida { background: var(--superficie); padding: 15px 16px; }
+.medida b { display: block; font-family: var(--mono); font-size: 27px;
+  font-weight: 500; line-height: 1; font-variant-numeric: tabular-nums; }
+.medida span { display: block; font-size: 11.5px; color: var(--textoSutil); margin-top: 6px; }
+
+.dias { list-style: none; padding: 0; margin: 0; display: flex;
+  flex-direction: column; gap: 1px; }
+.dia { width: 100%; display: flex; justify-content: space-between; align-items: baseline;
+  background: none; border: 0; border-bottom: 1px solid var(--borda);
+  font: inherit; color: var(--texto); cursor: pointer; padding: 11px 4px; }
+.dia:hover { background: var(--superficieSutil); }
+.dia .data { font-family: var(--mono); font-size: 14px; }
+.dia .quanto { font-size: 12px; color: var(--textoSutil); }
+
+.ficha { display: flex; flex-wrap: wrap; gap: 18px; font-size: 12px;
+  color: var(--textoSutil); padding-bottom: 16px; margin-bottom: 24px;
+  border-bottom: 1px solid var(--borda); }
+.ficha i { display: block; font-style: normal; font-family: var(--mono);
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 2px; }
+
+.nota-lateral { font-size: 13px; color: var(--textoSutil); max-width: 66ch;
+  border-left: 2px solid var(--borda); padding-left: 14px; margin: 0 0 26px; }
+
+.callout { margin: 18px 0; padding: 14px 16px; border-radius: 8px;
+  background: var(--superficieSutil); font-size: 14px; max-width: 66ch; }
+.callout > b { display: block; font-family: var(--mono); font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.07em; color: var(--acento);
+  margin-bottom: 6px; }
+.callout > p:last-child { margin-bottom: 0; }
+blockquote { margin: 18px 0; padding-left: 16px; border-left: 2px solid var(--borda);
+  color: var(--textoSutil); }
+
+pre { background: var(--superficieSutil); padding: 14px; border-radius: 8px;
+  overflow-x: auto; }
+:not(pre) > code { background: var(--superficieSutil); padding: 1px 5px; border-radius: 4px; }
+
+.vazio-item { list-style: none; }
+.vazio-item::before { content: "—"; color: var(--borda); }
+
+/* Tabela ------------------------------------------------------------- */
+.rolagem { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { text-align: left; padding: 9px 14px 9px 0; border-bottom: 1px solid var(--borda); }
+th { font-family: var(--mono); font-size: 10px; text-transform: uppercase;
+  letter-spacing: 0.07em; color: var(--textoSutil); font-weight: 500; }
+td.mono { font-family: var(--mono); font-variant-numeric: tabular-nums;
+  color: var(--textoSutil); }
+.pilula { display: inline-block; padding: 2px 10px; border-radius: 999px;
+  font-size: 11.5px; font-weight: 500; white-space: nowrap; }
+${pilulas}
+
+/* Registros: tudo que veio de hook é monoespaçado. ------------------- */
+.arvore, .arvore ul { list-style: none; padding: 0; margin: 0; }
+.arvore > li { margin-bottom: 22px; }
+.arvore ul { padding-left: 17px; margin-left: 5px; border-left: 1px solid var(--borda); }
+.arvore li { margin: 1px 0; }
+.arvore summary { cursor: pointer; display: flex; gap: 16px; align-items: baseline;
+  justify-content: space-between; padding: 4px 0; }
+.arvore summary::marker { color: var(--textoSutil); font-size: 11px; }
+.arvore summary:hover .dito { color: var(--acento); }
+.linha-fato { display: flex; gap: 16px; align-items: baseline;
+  justify-content: space-between; padding: 4px 0; }
+.dito { font-family: var(--mono); font-size: 12.5px; line-height: 1.5;
+  min-width: 0; word-break: break-word; }
+.carimbo-fato { font-family: var(--mono); font-size: 11px; color: var(--textoSutil);
+  white-space: nowrap; font-variant-numeric: tabular-nums; }
+.arvore > li > details > summary .dito { font-family: var(--serif); font-size: 19px;
+  font-weight: 600; letter-spacing: -0.01em; }
+details[data-tipo] > summary .dito { color: var(--acento); font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px; }
+.repetido > summary .dito { font-weight: 500; }
+
+/* Galeria ------------------------------------------------------------ */
+.pecas { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 14px; }
+.peca { margin: 0; border: 1px solid var(--borda); border-radius: 10px;
+  overflow: hidden; background: var(--superficie); }
+.rotulo-especie { background: var(--superficieSutil); padding: 26px 14px;
+  font-family: var(--mono); font-size: 10.5px; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--textoSutil); text-align: center; }
+.peca figcaption { padding: 13px 14px; display: flex; flex-direction: column; gap: 4px; }
+.peca b { font-size: 13.5px; word-break: break-word; }
+.peca .caminho { font-family: var(--mono); font-size: 10.5px; color: var(--textoSutil);
+  word-break: break-all; }
+.acao { align-self: start; background: none; border: 0; padding: 4px 0 0;
+  font: inherit; font-size: 12.5px; color: var(--acento); cursor: pointer; }
+
+footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--borda);
+  font-size: 11.5px; color: var(--textoSutil); max-width: 66ch; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+@media (max-width: 860px) {
+  .folha { grid-template-columns: 1fr; }
+  .lateral { position: static; max-height: none; }
+  main { padding: 28px 20px 48px; }
+  .titulo-tela { font-size: 26px; }
+}
+`;
+  }
 
   css() {
     const t = this.tokens;
