@@ -15,3 +15,11 @@ swift build -c release
 cp .build/release/Bancada ./Bancada
 chmod +x ./Bancada
 echo "✓ Bancada compilada. Rode com ./Bancada"
+
+# O site é gerado a partir do binário recém-compilado, então ele entra aqui e
+# não num script separado: assim as duas superfícies nunca ficam uma versão
+# atrás da outra.
+if [ "${1:-}" = "--com-site" ]; then
+  echo "▸ Gerando o site de leitura..."
+  node scripts/gerar-site.js "${2:-../doc-harness}"
+fi

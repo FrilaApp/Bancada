@@ -36,10 +36,14 @@ final class DelegadoDoApp: NSObject, NSApplicationDelegate {
     func applicationShouldTerminateAfterLastWindowClosed(_ app: NSApplication) -> Bool { true }
 }
 
-// Modo de verificação: lê o vault, relata e sai — sem abrir janela.
+// Modos de linha de comando: leem o vault e saem, sem abrir janela.
+let caminhoPedido = CommandLine.arguments.dropFirst().first { !$0.hasPrefix("--") }
+
 if CommandLine.arguments.contains("--verificar") {
-    let argumentos = CommandLine.arguments.dropFirst().filter { !$0.hasPrefix("--") }
-    exit(Verificacao.executar(caminho: argumentos.first))
+    exit(Verificacao.executar(caminho: caminhoPedido))
+}
+if CommandLine.arguments.contains("--indice") {
+    exit(Indice.executar(caminho: caminhoPedido))
 }
 
 let app = NSApplication.shared

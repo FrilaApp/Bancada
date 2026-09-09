@@ -21,6 +21,27 @@ Ao abrir pela primeira vez, ela procura a pasta `doc-harness` ao lado. Para apon
 
 Imprime as contagens do vault e a árvore de registros agrupada. Sai com `0` se o vault está consistente e `2` se há nota fora da convenção ou linha de registro fora do formato dos hooks — serve para CI.
 
+## O site para quem está fora
+
+Mentores e avaliadores não vão instalar app nenhum, então o mesmo vault também vira um site estático:
+
+```bash
+./build.sh --com-site          # compila e gera em site/
+node scripts/gerar-site.js ../doc-harness [destino]
+```
+
+Sai HTML puro, sem JavaScript e sem dependência de npm — o colapso dos grupos de registro usa `<details>`. Tema claro e escuro acompanham o sistema do leitor.
+
+**O gerador não parseia nada.** Ele chama `./Bancada --indice`, que emite o vault inteiro como JSON já parseado e agrupado, e só renderiza. Isso é o ponto: duas implementações da mesma regra divergem com o tempo, e um registro que conta histórias diferentes conforme quem olha perde a serventia inteira.
+
+O que fica de fora do site, de propósito:
+
+- **Índices** (`00 - Índice *.md`) — listas de wikilinks que só fazem sentido dentro do Obsidian; a barra lateral do site cumpre esse papel.
+- **Templates** — andaimes cheios de `{{marcadores}}`, que fariam o registro parecer preenchido pela metade justo para quem vai avaliá-lo.
+- **O rodapé de navegação** de cada nota, que aponta para os índices não publicados.
+
+As páginas levam `noindex, nofollow`. Isso pede a buscadores que não indexem, mas **não é controle de acesso**: quem tiver a URL vê o conteúdo. Se o site for hospedado, a proteção precisa vir de onde ele estiver.
+
 ## O que ela mostra
 
 | Seção | O que resolve |
