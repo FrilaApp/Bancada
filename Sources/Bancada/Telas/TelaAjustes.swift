@@ -1,6 +1,7 @@
 import SwiftUI
 import AppKit
 import VaultKit
+import DesignSystem
 
 /// Onde o app é configurado e onde o vault é diagnosticado.
 ///
@@ -23,25 +24,20 @@ struct TelaAjustes: View {
         ScrollView {
             VStack(alignment: .leading, spacing: DS.Espaco.lg) {
                 blocoDoVault
+                blocoDeAparencia
 
                 if let vault {
                     resumo(vault)
 
                     if vault.invalidas.isEmpty && vault.fatosNaoReconhecidos.isEmpty {
-                        Cartao {
-                            HStack(spacing: DS.Espaco.sm) {
-                                Image(systemName: "checkmark.seal")
-                                    .foregroundStyle(cores.status(.concluida))
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text("Vault consistente").font(DS.Tipografia.secao)
-                                    Text("Toda nota tem frontmatter com um `tipo` válido, e o log de fatos está no formato dos hooks.")
-                                        .font(DS.Tipografia.detalhe)
-                                        .foregroundStyle(cores.textoSutil)
-                                }
-                                Spacer()
-                            }
-                            .padding(DS.Espaco.md)
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Bloco(
+                            "Vault consistente",
+                            simbolo: "checkmark.seal",
+                            corDoSimbolo: cores.status(.concluida)
+                        ) {
+                            Text("Toda nota tem frontmatter com um `tipo` válido, e o log de fatos está no formato dos hooks.")
+                                .font(DS.Tipografia.detalhe)
+                                .foregroundStyle(cores.textoSutil)
                         }
                     }
 
@@ -85,13 +81,47 @@ struct TelaAjustes: View {
         }
     }
 
+    // MARK: - Aparência
+
+    /// O seletor de esquema.
+    ///
+    /// Três estados, com `Sistema` primeiro e como padrão: a regra da Bancada
+    /// continua sendo acompanhar o macOS, e isto é o override. Controle nativo
+    /// e não `Pilula` porque aqui a escolha é exclusiva e obrigatória — uma
+    /// barra de pílulas comunica filtro, que pode não ter nenhum selecionado —,
+    /// e porque é o controle que o macOS usa para esta mesma decisão nas
+    /// próprias Ajustes do sistema.
+    private var blocoDeAparencia: some View {
+        Bloco("Aparência") {
+            VStack(alignment: .leading, spacing: DS.Espaco.sm) {
+                Picker(
+                    "Aparência",
+                    selection: Binding(
+                        get: { estado.aparencia },
+                        set: { estado.aparencia = $0 }
+                    )
+                ) {
+                    ForEach(Aparencia.allCases) { opcao in
+                        Label(opcao.rotulo, systemImage: opcao.simbolo).tag(opcao)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+
+                // "Sistema" não é autoexplicativo para quem nunca trocou.
+                Text(estado.aparencia.nota)
+                    .font(DS.Tipografia.detalhe)
+                    .foregroundStyle(cores.textoSutil)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+    }
+
     // MARK: - Vault
 
     private var blocoDoVault: some View {
-        Cartao {
+        Bloco("Vault") {
             VStack(alignment: .leading, spacing: DS.Espaco.sm) {
-                Text("Vault").font(DS.Tipografia.secao)
-
                 if let raiz = estado.raiz {
                     Text(raiz.path)
                         .font(DS.Tipografia.mono)
@@ -104,9 +134,11 @@ struct TelaAjustes: View {
                 }
 
                 if let erro = estado.erro {
+                    // Falha de leitura é erro, não etapa de um fluxo: fala na
+                    // voz de perigo, que é a única cor reservada a isso.
                     Text(erro)
                         .font(DS.Tipografia.detalhe)
-                        .foregroundStyle(cores.status(.emAndamento))
+                        .foregroundStyle(cores.perigo)
                 }
 
                 if let ultima = estado.ultimaLeitura {
@@ -129,48 +161,29 @@ struct TelaAjustes: View {
                 }
                 .controlSize(.small)
             }
-            .padding(DS.Espaco.md)
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 
     private func resumo(_ vault: Vault) -> some View {
         let porTipo = Dictionary(grouping: vault.notas, by: \.tipo)
-        return Cartao {
+        return Bloco("Conteúdo do vault") {
             VStack(alignment: .leading, spacing: DS.Espaco.sm) {
-                Text("Conteúdo do vault").font(DS.Tipografia.secao)
                 ForEach(TipoNota.allCases, id: \.self) { tipo in
                     let n = porTipo[tipo]?.count ?? 0
                     if n > 0 {
-                        HStack {
-                            Text(tipo.rotulo).font(DS.Tipografia.corpo)
+                        LinhaDeValor(tipo.rotulo, valor: "\(n)") {
                             if tipo.somenteLeitura {
                                 Image(systemName: "lock.fill")
                                     .font(.system(size: 9))
                                     .foregroundStyle(cores.textoSutil)
                             }
-                            Spacer()
-                            Text("\(n)").font(DS.Tipografia.mono).foregroundStyle(cores.textoSutil)
                         }
                     }
                 }
-                Divider()
-                HStack {
-                    Text("Mídia").font(DS.Tipografia.corpo)
-                    Spacer()
-                    Text("\(vault.midias.count)")
-                        .font(DS.Tipografia.mono)
-                        .foregroundStyle(cores.textoSutil)
-                }
-                HStack {
-                    Text("Fatos registrados").font(DS.Tipografia.corpo)
-                    Spacer()
-                    Text("\(vault.fatos.count)")
-                        .font(DS.Tipografia.mono)
-                        .foregroundStyle(cores.textoSutil)
-                }
+                Divisor()
+                LinhaDeValor("Mídia", valor: "\(vault.midias.count)")
+                LinhaDeValor("Fatos registrados", valor: "\(vault.fatos.count)")
             }
-            .padding(DS.Espaco.md)
         }
     }
 
@@ -179,17 +192,14 @@ struct TelaAjustes: View {
         _ contagem: Int,
         @ViewBuilder conteudo: () -> C
     ) -> some View {
-        Cartao {
+        Bloco(
+            "\(titulo) — \(contagem)",
+            simbolo: "exclamationmark.triangle.fill",
+            corDoSimbolo: cores.status(.revisao)
+        ) {
             VStack(alignment: .leading, spacing: DS.Espaco.sm) {
-                HStack {
-                    Image(systemName: "exclamationmark.triangle.fill")
-                        .foregroundStyle(cores.status(.revisao))
-                    Text("\(titulo) — \(contagem)").font(DS.Tipografia.secao)
-                }
                 conteudo()
             }
-            .padding(DS.Espaco.md)
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }

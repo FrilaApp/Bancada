@@ -1,6 +1,7 @@
 import SwiftUI
 import AppKit
 import VaultKit
+import DesignSystem
 
 /// O log de fatos com indentação, em vez da lista plana do Obsidian.
 ///
@@ -201,7 +202,7 @@ private struct CartaoComparativoUI: View {
                         .foregroundStyle(cores.texto)
 
                     Etiqueta(texto: "ActionShelf", cor: cores.acento)
-                    Etiqueta(texto: "4 versões iteradas", cor: DS.Cor.tipoDeFato("ui"))
+                    Etiqueta(texto: "4 versões iteradas", cor: cores.tipoDeFato("ui"))
 
                     Spacer()
 

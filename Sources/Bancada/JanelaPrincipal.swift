@@ -1,6 +1,7 @@
 import SwiftUI
 import AppKit
 import VaultKit
+import DesignSystem
 
 struct JanelaPrincipal: View {
     @Environment(\.cores) private var cores
@@ -65,16 +66,7 @@ struct JanelaPrincipal: View {
                     Spacer()
                     // Desvio invisível é o que corrói a confiança no registro:
                     // este é o único distintivo que se quer sempre em zero.
-                    let desvios = distintivo(.ajustes)
-                    if desvios > 0 {
-                        Text("\(desvios)")
-                            .font(DS.Tipografia.detalhe)
-                            .monospacedDigit()
-                            .padding(.horizontal, DS.Espaco.sm)
-                            .padding(.vertical, 1)
-                            .background(cores.status(.revisao).opacity(0.18), in: Capsule())
-                            .foregroundStyle(cores.status(.revisao))
-                    }
+                    Distintivo(distintivo(.ajustes), cor: cores.status(.revisao))
                 }
                 .foregroundStyle(estado.secao == .ajustes ? cores.acento : cores.texto)
                 .padding(.horizontal, DS.Espaco.md)
@@ -83,7 +75,7 @@ struct JanelaPrincipal: View {
                 .contentShape(Rectangle())
                 .background(
                     RoundedRectangle(cornerRadius: DS.Raio.sm)
-                        .fill(cores.acento.opacity(estado.secao == .ajustes ? 0.14 : 0))
+                        .fill(cores.acento.opacity(estado.secao == .ajustes ? DS.Veu.medio : 0))
                         .padding(.horizontal, DS.Espaco.sm)
                 )
             }

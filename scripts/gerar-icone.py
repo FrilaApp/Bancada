@@ -19,14 +19,30 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFilter
 
 RAIZ = Path(__file__).resolve().parent.parent
-TOKENS = json.loads((RAIZ / "tokens.json").read_text())["cor"]
+_TOKENS = json.loads((RAIZ / "tokens.json").read_text())
+
+
+def papel(nome: str, esquema: str = "escuro") -> str:
+    """Resolve um papel até o hex do primitivo que ele referencia.
+
+    `papel` aponta para `primitivo` — "neutro.13", "azul.luz" — e nunca
+    carrega hex. É a mesma resolução que `gerar-site.js` faz, pelo mesmo
+    motivo: trocar um passo da rampa tem de chegar ao ícone sem ninguém
+    lembrar de vir aqui.
+    """
+    grupo, chave = _TOKENS["papel"][nome][esquema].split(".")
+    valor = _TOKENS["primitivo"][grupo]
+    return valor[int(chave)] if isinstance(valor, list) else valor[chave]
+
 
 # Paleta "escura" da Bancada — o mesmo tema que a janela usa por padrão.
-FUNDO_TOPO = "#242119"
-FUNDO_BASE = TOKENS["fundo"]["escuro"]        # #141310
-PAGINA = TOKENS["texto"]["escuro"]            # #F2F0EA
-LINHA_TEXTO = TOKENS["textoSutil"]["escuro"]  # #9C978A
-ACENTO = TOKENS["acento"]["escuro"]           # #E08A5C
+# O topo do degradê é um passo acima do fundo na própria rampa, e não um hex
+# escolhido a olho: o ícone é o primeiro contato com o sistema de cor do app.
+FUNDO_TOPO = "#" + _TOKENS["primitivo"]["neutro"][11].lstrip("#")
+FUNDO_BASE = papel("fundo")
+PAGINA = papel("texto")
+LINHA_TEXTO = papel("textoSutil")
+ACENTO = papel("acento")
 
 TAMANHO = 1024
 SS = 4  # supersample: desenha em 4x e reduz no final, pelas bordas lisas

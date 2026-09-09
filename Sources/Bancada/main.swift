@@ -1,5 +1,6 @@
 import SwiftUI
 import AppKit
+import DesignSystem
 
 /// Ponto de entrada.
 ///
@@ -16,6 +17,10 @@ final class DelegadoDoApp: NSObject, NSApplicationDelegate {
     private var janela: NSWindow?
 
     func applicationDidFinishLaunching(_ notificacao: Notification) {
+        // Antes da janela existir: aplicar depois faria a janela abrir com a
+        // aparência do sistema e trocar à vista, o que parece defeito.
+        Aparencia.preferida.aplicar()
+
         let janela = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 1080, height: 720),
             styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],

@@ -1,5 +1,6 @@
 import SwiftUI
 import VaultKit
+import DesignSystem
 
 /// A narrativa diária ao lado dos fatos que a sustentam.
 ///
@@ -44,20 +45,30 @@ struct TelaDiario: View {
                 .frame(minWidth: 160, idealWidth: 190)
 
                 if let atual {
-                    ScrollView {
+                    // O diário é a única coisa nesta janela escrita por gente
+                    // para ser lida por gente. Voz serifada, entrelinha larga e
+                    // folha própria: a densidade compacta é do chrome, não do
+                    // texto. É a mesma distinção que o site faz entre serif e
+                    // mono, aqui virada superfície.
+                    Folha {
                         Text(atual.corpo)
-                            .font(DS.Tipografia.corpo)
+                            .font(DS.Tipografia.leitura)
+                            .lineSpacing(DS.Tipografia.entrelinhaDeLeitura)
+                            .foregroundStyle(cores.texto)
                             .textSelection(.enabled)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(DS.Espaco.lg)
                     }
                     .frame(minWidth: 320)
                 }
 
                 VStack(alignment: .leading, spacing: 0) {
-                    Text("Fatos do dia")
-                        .font(DS.Tipografia.secao)
-                        .padding(DS.Espaco.md)
+                    BarraDePainel {
+                        Text("Fatos do dia").font(DS.Tipografia.secao)
+                        Spacer()
+                        Text("\(fatosDoDia.count)")
+                            .font(DS.Tipografia.mono)
+                            .monospacedDigit()
+                            .foregroundStyle(cores.textoSutil)
+                    }
 
                     if fatosDoDia.isEmpty {
                         Vazio(
@@ -83,7 +94,7 @@ struct TelaDiario: View {
                     }
                 }
                 .frame(minWidth: 260, idealWidth: 300)
-                .background(cores.superficieSutil)
+                .background(cores.cromo)
             }
         }
     }

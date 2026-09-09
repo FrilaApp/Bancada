@@ -1,6 +1,7 @@
 import SwiftUI
 import Observation
 import VaultKit
+import DesignSystem
 
 /// As seções da barra lateral.
 ///
@@ -47,6 +48,12 @@ final class EstadoDaBancada {
 
     var secao: Secao = .trabalho
     var notaSelecionada: String?
+
+    /// Escrever em `Aparencia.preferida` já persiste e aplica — não existe
+    /// preferência salva que não esteja em vigor.
+    var aparencia: Aparencia = .preferida {
+        didSet { Aparencia.preferida = aparencia }
+    }
 
     private var observador: ObservadorDeVault?
 

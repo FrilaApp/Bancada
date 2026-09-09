@@ -1,6 +1,7 @@
 import SwiftUI
 import AppKit
 import VaultKit
+import DesignSystem
 
 /// Tudo que o vault versiona e não é nota: imagens, vídeos, PDFs e os `.pages`
 /// dos entregáveis CBL — com miniatura real e um painel de detalhe.
@@ -65,22 +66,17 @@ struct TelaAcervo: View {
     }
 
     private var barraDeEspecie: some View {
-        HStack(spacing: DS.Espaco.sm) {
-            filtro(rotulo: "Tudo (\(midias.count))", ativo: especie == nil) { trocar(para: nil) }
+        BarraDePainel {
+            Pilula("Tudo (\(midias.count))", ativo: especie == nil) { trocar(para: nil) }
             ForEach(Midia.Especie.allCases, id: \.self) { e in
                 let n = midias.filter { $0.especie == e }.count
                 if n > 0 {
-                    filtro(rotulo: "\(e.rotulo) (\(n))", ativo: especie == e) {
+                    Pilula("\(e.rotulo) (\(n))", ativo: especie == e) {
                         trocar(para: especie == e ? nil : e)
                     }
                 }
             }
             Spacer()
-        }
-        .padding(DS.Espaco.md)
-        .background(cores.superficieSutil)
-        .overlay(alignment: .bottom) {
-            Rectangle().fill(cores.borda).frame(height: 1)
         }
     }
 
@@ -91,18 +87,6 @@ struct TelaAcervo: View {
         if let selecionada, !visiveis.contains(where: { $0.id == selecionada }) {
             self.selecionada = nil
         }
-    }
-
-    private func filtro(rotulo: String, ativo: Bool, acao: @escaping () -> Void) -> some View {
-        Button(action: acao) {
-            Text(rotulo)
-                .font(DS.Tipografia.detalhe)
-                .padding(.horizontal, DS.Espaco.md)
-                .padding(.vertical, DS.Espaco.xs + 1)
-                .background(cores.acento.opacity(ativo ? 0.22 : 0.08), in: Capsule())
-                .foregroundStyle(ativo ? cores.acento : cores.textoSutil)
-        }
-        .buttonStyle(.plain)
     }
 }
 
@@ -136,7 +120,7 @@ private struct CartaoDeMidia: View {
         }
         .overlay(
             RoundedRectangle(cornerRadius: DS.Raio.md)
-                .strokeBorder(selecionada ? cores.acento : .clear, lineWidth: 2)
+                .strokeBorder(selecionada ? cores.acento : .clear, lineWidth: DS.Traco.selecao)
         )
         // Abre no app padrão do macOS — para um `.pages`, o próprio Pages.
         .onTapGesture(count: 2) { NSWorkspace.shared.open(midia.url) }
@@ -219,10 +203,12 @@ private struct PainelDeMidia: View {
     private var markdownDerivado: some View {
         if let derivado {
             VStack(alignment: .leading, spacing: DS.Espaco.sm) {
-                Text("Markdown derivado").font(DS.Tipografia.secao)
+                RotuloDeSecao("Markdown derivado")
                 SeloSomenteLeitura(tipo: .documentoDerivado)
                 Text(derivado.corpo)
-                    .font(DS.Tipografia.corpo)
+                    .font(DS.Tipografia.leitura)
+                    .lineSpacing(DS.Tipografia.entrelinhaDeLeitura)
+                    .foregroundStyle(cores.texto)
                     .textSelection(.enabled)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }

@@ -1,5 +1,6 @@
 import Foundation
 import VaultKit
+import DesignSystem
 
 /// `./Bancada --verificar [caminho]` — lê o vault e imprime o que encontrou,
 /// sem abrir janela.

@@ -1,6 +1,7 @@
 import SwiftUI
 import AppKit
 import VaultKit
+import DesignSystem
 
 /// Tarefas e registros na mesma tela, ligados pelo ID.
 ///
@@ -55,7 +56,7 @@ struct TelaTrabalho: View {
     }
 
     private var cabecalho: some View {
-        HStack(spacing: DS.Espaco.sm) {
+        BarraDePainel {
             if let tarefa, let id = tarefa.identificador {
                 Text(id).font(DS.Tipografia.mono).foregroundStyle(cores.acento)
                 Text(tarefa.titulo)
@@ -77,11 +78,6 @@ struct TelaTrabalho: View {
                     .foregroundStyle(cores.textoSutil)
             }
         }
-        .padding(DS.Espaco.md)
-        .background(cores.superficieSutil)
-        .overlay(alignment: .bottom) {
-            Rectangle().fill(cores.borda).frame(height: 1)
-        }
     }
 
     @ViewBuilder
@@ -98,22 +94,12 @@ struct TelaTrabalho: View {
             List {
                 Section {
                     ForEach(fatos) { fato in
-                        HStack(alignment: .firstTextBaseline, spacing: DS.Espaco.md) {
-                            Text("\(fato.data) \(fato.hora)")
-                                .font(DS.Tipografia.mono)
-                                .foregroundStyle(cores.textoSutil)
-                                .monospacedDigit()
-                            MarcadorDeTipo(tipo: fato.tipo)
-                            Text(fato.descricao)
-                                .font(DS.Tipografia.corpo)
-                                .foregroundStyle(cores.texto)
-                                .lineLimit(3)
-                            Spacer(minLength: DS.Espaco.md)
-                            Text(fato.autor)
-                                .font(DS.Tipografia.detalhe)
-                                .foregroundStyle(cores.textoSutil)
-                        }
-                        .padding(.vertical, 1)
+                        LinhaDeFato(
+                            carimbo: "\(fato.data) \(fato.hora)",
+                            tipo: fato.tipo,
+                            descricao: fato.descricao,
+                            autor: fato.autor
+                        )
                     }
                 } footer: {
                     // O total do log fica visível para que a lista filtrada

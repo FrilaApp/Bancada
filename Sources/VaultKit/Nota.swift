@@ -12,6 +12,11 @@ public enum TipoNota: String, CaseIterable, Codable, Sendable {
     case tarefa
     case registro
     case documentoDerivado = "documento-derivado"
+    /// Especificação do sistema de design. Escrita à mão, como a narrativa,
+    /// mas não é narrativa de um dia: é a regra que app e site seguem. Ganhou
+    /// tipo próprio para não entrar no vault como nota fora da convenção — um
+    /// alerta permanente na tela de Ajustes treina a equipe a ignorá-la.
+    case design
 
     public var rotulo: String {
         switch self {
@@ -23,6 +28,7 @@ public enum TipoNota: String, CaseIterable, Codable, Sendable {
         case .tarefa: return "Tarefa"
         case .registro: return "Registro"
         case .documentoDerivado: return "Documento derivado"
+        case .design: return "Design"
         }
     }
 

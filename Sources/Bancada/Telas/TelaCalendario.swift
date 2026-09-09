@@ -1,6 +1,7 @@
 import SwiftUI
 import AppKit
 import VaultKit
+import DesignSystem
 
 /// O calendário do vault — **andaime**.
 ///
@@ -72,17 +73,12 @@ struct TelaCalendario: View {
 
     private func listaDoDia(_ dia: DiaDoCalendario) -> some View {
         VStack(spacing: 0) {
-            HStack {
+            BarraDePainel {
                 Text(dia.data).font(DS.Tipografia.secao).monospacedDigit()
                 Spacer()
                 Text("\(dia.eventos.count) evento(s)")
                     .font(DS.Tipografia.detalhe)
                     .foregroundStyle(cores.textoSutil)
-            }
-            .padding(DS.Espaco.md)
-            .background(cores.superficieSutil)
-            .overlay(alignment: .bottom) {
-                Rectangle().fill(cores.borda).frame(height: 1)
             }
 
             List(dia.eventos) { evento in
@@ -91,7 +87,7 @@ struct TelaCalendario: View {
                         .font(DS.Tipografia.mono)
                         .foregroundStyle(cores.textoSutil)
                         .monospacedDigit()
-                        .frame(width: 44, alignment: .leading)
+                        .frame(width: DS.Marcador.larguraDaHora, alignment: .leading)
 
                     Image(systemName: evento.especie.simbolo)
                         .font(.system(size: 9))

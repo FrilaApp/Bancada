@@ -1,5 +1,6 @@
 import SwiftUI
 import VaultKit
+import DesignSystem
 
 /// Tabela de tarefas com `Table` nativa — o que o `Quadro.base` do Obsidian
 /// faz genericamente, aqui com colunas ordenáveis e filtro por status.

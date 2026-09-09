@@ -73,6 +73,7 @@ const SECOES = [
   { tipo: 'roadmap',           titulo: 'Roadmap' },
   { tipo: 'atualizacao-diaria', titulo: 'Diário' },
   { tipo: 'documento-derivado', titulo: 'Documentos' },
+  { tipo: 'design',            titulo: 'Design' },
 ];
 
 class Site {
@@ -219,6 +220,8 @@ class Site {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>${escapar(titulo)} · Challenge 18</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="${base}estilo.css">
 </head>
 <body>
@@ -380,7 +383,11 @@ class Site {
       const filhos = n.filhos.map((f) => no(f, nivel + 1)).join('');
       const aberto = nivel === 0 ? ' open' : '';
       const classe = n.ocorrencias > 1 && nivel === 2 ? ' class="grupo-repetido"' : '';
-      return `<li><details${aberto}${classe}>
+      // O nível 1 da árvore é o tipo do fato. Marcá-lo é o que deixa o site
+      // colorir a categoria como o app faz em `MarcadorDeTipo` — antes o site
+      // pintava todo tipo com o acento, jogando fora o próprio código de cor.
+      const marcaDeTipo = nivel === 1 ? ` data-tipo="${escapar(n.rotulo)}"` : '';
+      return `<li><details${aberto}${classe}${marcaDeTipo}>
         <summary><span class="rotulo">${escapar(n.rotulo)}</span>
         <span class="apoio">${escapar(n.detalhe)}</span></summary>
         <ul>${filhos}</ul>
@@ -724,407 +731,130 @@ ${this.cssPaginaUnica()}
   // MARK: - Estilo
 
   /**
-   * Estilo da página única.
+   * As variáveis CSS, resolvidas a partir de `tokens.json`.
    *
-   * As cores vêm de `tokens.json`, o mesmo arquivo que alimenta o app nativo
-   * — quem abrir as duas superfícies reconhece a mesma coisa. A tipografia é
-   * própria desta página: serifada para narrativa, monoespaçada para tudo
-   * que saiu de um hook. É a regra de ouro do vault virada forma.
+   * `papel` referencia `primitivo` — "neutro.3", "azul.profundo" — e nunca
+   * carrega hex. Resolver aqui é o que faz trocar um passo da rampa propagar
+   * para as duas saídas do site e, via `Tokens.swift`, para o app.
+   *
+   * Emissão única de propósito: os dois modos tinham cada um a sua, e por isso
+   * `tipoFato` só existia no bloco claro — as cores de fato não adaptavam ao
+   * modo escuro em metade do site.
    */
-  cssPaginaUnica() {
+  variaveis() {
     const t = this.tokens;
-    const c = t.cor;
-    const tokensDe = (modo) =>
-      Object.entries(c).map(([n, p]) => `  --${n}: ${p[modo]};`).join('\n') + '\n' +
-      Object.entries(t.statusTarefa).map(([n, p]) => `  --status-${n}: ${p[modo]};`).join('\n');
 
+    const resolver = (referencia) => {
+      const [grupo, chave] = referencia.split('.');
+      const primitivo = t.primitivo[grupo];
+      if (primitivo === undefined) {
+        throw new Error(`tokens.json: primitivo.${grupo} não existe (visto em "${referencia}")`);
+      }
+      const valor = Array.isArray(primitivo) ? primitivo[Number(chave)] : primitivo[chave];
+      if (valor === undefined) {
+        throw new Error(`tokens.json: primitivo.${referencia} não existe`);
+      }
+      return valor;
+    };
+
+    const cores = (modo) => {
+      const linhas = [];
+      for (const [nome, par] of Object.entries(t.papel)) {
+        if (nome.startsWith('_')) continue;
+        linhas.push(`  --${nome}: ${resolver(par[modo])};`);
+      }
+      for (const [nome, par] of Object.entries(t.statusTarefa)) {
+        linhas.push(`  --status-${nome}: ${resolver(par[modo])};`);
+      }
+      for (const [nome, par] of Object.entries(t.tipoFato)) {
+        linhas.push(`  --fato-${nome}: ${resolver(par[modo])};`);
+      }
+      return linhas.join('\n');
+    };
+
+    // Métrica e tipografia não mudam com o esquema, então saem uma vez só.
+    const invariantes = [
+      ...Object.entries(t.espaco).map(([n, v]) => `  --espaco-${n}: ${v}px;`),
+      ...Object.entries(t.raio).map(([n, v]) => `  --raio-${n}: ${v}px;`),
+      `  --raio: ${t.raio.md}px;`,
+      ...Object.entries(t.traco).map(([n, v]) => `  --traco-${n}: ${v}px;`),
+      ...Object.entries(t.veu).map(([n, v]) => `  --veu-${n}: ${v};`),
+      `  --tipo-titulo: ${t.tipografia.interface.titulo.tamanho}px;`,
+      `  --galeria-card: ${t.metrica.galeria.larguraMinimaCard}px;`,
+      `  --galeria-thumb: ${t.metrica.galeria.alturaThumbnail}px;`,
+      // Uma superfamília, três vozes. O token é o papel, não o arquivo de
+      // fonte: o app nativo usa SF / New York / SF Mono pela mesma regra.
+      '  --sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;',
+      '  --serif: "IBM Plex Serif", ui-serif, Georgia, serif;',
+      '  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;'
+    ].join('\n');
+
+    // A pílula de status usa o véu do sistema, não um percentual solto.
     const pilulas = Object.keys(t.statusTarefa)
-      .map((s) => `.status-${s} { color: var(--status-${s});
-  background: color-mix(in srgb, var(--status-${s}) 14%, transparent); }`)
+      .map(
+        (s) =>
+          `.status-${s} { color: var(--status-${s});\n` +
+          `  background: color-mix(in srgb, var(--status-${s}) calc(var(--veu-medio) * 100%), transparent); }`
+      )
+      .join('\n');
+
+    // Cor por tipo de fato, como no app. Geradas a partir de tokens.json para
+    // que um tipo novo — `registrar-fato.sh` aceita tipo arbitrário — ganhe
+    // regra sem ninguém vir editar CSS.
+    const tipos = Object.keys(t.tipoFato)
+      .map(
+        (tipo) =>
+          `details[data-tipo="${tipo}"] > summary .dito,\n` +
+          `details[data-tipo="${tipo}"] > summary .rotulo { color: var(--fato-${tipo}); }`
+      )
       .join('\n');
 
     return `:root {
-${tokensDe('claro')}
-  /* Uma superfamília, três vozes: a Plex foi desenhada para documentação
-     técnica, e usar serif/sans/mono da mesma família faz a distinção entre
-     narrativa e fato ler como mudança de registro, não de tipografia. */
-  --serif: "IBM Plex Serif", ui-serif, Georgia, serif;
-  --sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
-  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+${cores('claro')}
+${invariantes}
   color-scheme: light;
 }
+
+/* O site acompanha a aparência do sistema, igual ao app. O atributo
+   data-theme só existe para o botão da página única sobrepor essa escolha. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-${tokensDe('escuro')}
+${cores('escuro')}
     color-scheme: dark;
   }
 }
+
 :root[data-theme="dark"] {
-${tokensDe('escuro')}
+${cores('escuro')}
   color-scheme: dark;
 }
 
-* { box-sizing: border-box; }
-body { margin: 0; background: var(--fundo); color: var(--texto);
-  font-family: var(--sans); font-size: 15px; line-height: 1.6;
-  -webkit-font-smoothing: antialiased; }
-code, .mono { font-family: var(--mono); font-size: 0.88em; }
-:focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; border-radius: 3px; }
-
-.folha { display: grid; grid-template-columns: 264px minmax(0, 1fr);
-  min-height: 100vh; }
-
-/* Lateral ------------------------------------------------------------ */
-.lateral { background: var(--superficieSutil); border-right: 1px solid var(--borda);
-  padding: 28px 20px; position: sticky; top: 0; align-self: start;
-  max-height: 100vh; overflow-y: auto; }
-.cabeca { padding-bottom: 20px; margin-bottom: 20px;
-  border-bottom: 1px solid var(--borda); }
-.carimbo { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
-  text-transform: uppercase; color: var(--textoSutil); margin: 0 0 10px; }
-.cabeca h1 { font-family: var(--serif); font-weight: 600; font-size: 25px;
-  line-height: 1.1; margin: 0; letter-spacing: -0.015em; text-wrap: balance; }
-.cabeca h1 span { display: block; font-family: var(--mono); font-weight: 400;
-  font-size: 12px; letter-spacing: 0.04em; color: var(--acento); margin-top: 7px; }
-.equipe { font-size: 12px; color: var(--textoSutil); margin: 12px 0 0; }
-
-.grupo-nav { margin-bottom: 20px; }
-.grupo-nav h2 { font-family: var(--mono); font-size: 10px; text-transform: uppercase;
-  letter-spacing: 0.09em; color: var(--textoSutil); margin: 0 0 7px; font-weight: 500; }
-.grupo-nav ul { list-style: none; margin: 0; padding: 0;
-  display: flex; flex-direction: column; gap: 1px; }
-nav button { width: 100%; text-align: left; background: none; border: 0;
-  font: inherit; font-size: 13.5px; color: var(--texto); cursor: pointer;
-  padding: 5px 9px; border-radius: 6px; }
-nav button:hover { background: color-mix(in srgb, var(--acento) 9%, transparent); }
-nav button.ativo { background: color-mix(in srgb, var(--acento) 14%, transparent);
-  color: var(--acento); font-weight: 500; }
-
-/* Conteúdo ----------------------------------------------------------- */
-main { padding: 40px 44px 60px; max-width: 820px; }
-[hidden] { display: none !important; }
-
-.titulo-tela, .titulo-secao { font-family: var(--serif); font-weight: 600;
-  letter-spacing: -0.015em; text-wrap: balance; }
-.titulo-tela { font-size: 32px; line-height: 1.15; margin: 0 0 22px; }
-.titulo-secao { font-size: 20px; margin: 40px 0 14px; }
-
-.entrada { font-family: var(--serif); font-size: 18px; line-height: 1.62;
-  max-width: 62ch; margin: 0 0 30px; color: var(--texto); }
-.entrada b { font-weight: 600; color: var(--acento); }
-
-/* A narrativa é sempre serifada: é a camada escrita por gente. */
-.narrativa { max-width: 66ch; }
-.narrativa h2 { font-family: var(--serif); font-size: 21px; font-weight: 600;
-  margin: 32px 0 10px; letter-spacing: -0.01em; }
-.narrativa h3 { font-family: var(--serif); font-size: 17px; font-weight: 600;
-  margin: 26px 0 8px; }
-.narrativa p { margin: 0 0 14px; }
-.narrativa ul, .narrativa ol { margin: 0 0 14px; padding-left: 20px; }
-.narrativa li { margin: 3px 0; }
-.narrativa a { color: var(--acento); text-underline-offset: 2px; }
-.narrativa hr { border: 0; border-top: 1px solid var(--borda); margin: 28px 0; }
-
-.medidas { display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
-  gap: 1px; background: var(--borda); border: 1px solid var(--borda);
-  border-radius: 10px; overflow: hidden; margin-bottom: 34px; }
-.medida { background: var(--superficie); padding: 15px 16px; }
-.medida b { display: block; font-family: var(--mono); font-size: 27px;
-  font-weight: 500; line-height: 1; font-variant-numeric: tabular-nums; }
-.medida span { display: block; font-size: 11.5px; color: var(--textoSutil); margin-top: 6px; }
-
-.dias { list-style: none; padding: 0; margin: 0; display: flex;
-  flex-direction: column; gap: 1px; }
-.dia { width: 100%; display: flex; justify-content: space-between; align-items: baseline;
-  background: none; border: 0; border-bottom: 1px solid var(--borda);
-  font: inherit; color: var(--texto); cursor: pointer; padding: 11px 4px; }
-.dia:hover { background: var(--superficieSutil); }
-.dia .data { font-family: var(--mono); font-size: 14px; }
-.dia .quanto { font-size: 12px; color: var(--textoSutil); }
-
-.ficha { display: flex; flex-wrap: wrap; gap: 18px; font-size: 12px;
-  color: var(--textoSutil); padding-bottom: 16px; margin-bottom: 24px;
-  border-bottom: 1px solid var(--borda); }
-.ficha i { display: block; font-style: normal; font-family: var(--mono);
-  font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 2px; }
-
-.nota-lateral { font-size: 13px; color: var(--textoSutil); max-width: 66ch;
-  border-left: 2px solid var(--borda); padding-left: 14px; margin: 0 0 26px; }
-
-.callout { margin: 18px 0; padding: 14px 16px; border-radius: 8px;
-  background: var(--superficieSutil); font-size: 14px; max-width: 66ch; }
-.callout > b { display: block; font-family: var(--mono); font-size: 11px;
-  text-transform: uppercase; letter-spacing: 0.07em; color: var(--acento);
-  margin-bottom: 6px; }
-.callout > p:last-child { margin-bottom: 0; }
-blockquote { margin: 18px 0; padding-left: 16px; border-left: 2px solid var(--borda);
-  color: var(--textoSutil); }
-
-pre { background: var(--superficieSutil); padding: 14px; border-radius: 8px;
-  overflow-x: auto; }
-:not(pre) > code { background: var(--superficieSutil); padding: 1px 5px; border-radius: 4px; }
-
-.vazio-item { list-style: none; }
-.vazio-item::before { content: "—"; color: var(--borda); }
-
-/* Tabela ------------------------------------------------------------- */
-.rolagem { overflow-x: auto; }
-table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
-th, td { text-align: left; padding: 9px 14px 9px 0; border-bottom: 1px solid var(--borda); }
-th { font-family: var(--mono); font-size: 10px; text-transform: uppercase;
-  letter-spacing: 0.07em; color: var(--textoSutil); font-weight: 500; }
-td.mono { font-family: var(--mono); font-variant-numeric: tabular-nums;
-  color: var(--textoSutil); }
-.pilula { display: inline-block; padding: 2px 10px; border-radius: 999px;
-  font-size: 11.5px; font-weight: 500; white-space: nowrap; }
 ${pilulas}
 
-/* Registros: tudo que veio de hook é monoespaçado. ------------------- */
-.arvore, .arvore ul { list-style: none; padding: 0; margin: 0; }
-.arvore > li { margin-bottom: 22px; }
-.arvore ul { padding-left: 17px; margin-left: 5px; border-left: 1px solid var(--borda); }
-.arvore li { margin: 1px 0; }
-.arvore summary { cursor: pointer; display: flex; gap: 16px; align-items: baseline;
-  justify-content: space-between; padding: 4px 0; }
-.arvore summary::marker { color: var(--textoSutil); font-size: 11px; }
-.arvore summary:hover .dito { color: var(--acento); }
-.linha-fato { display: flex; gap: 16px; align-items: baseline;
-  justify-content: space-between; padding: 4px 0; }
-.dito { font-family: var(--mono); font-size: 12.5px; line-height: 1.5;
-  min-width: 0; word-break: break-word; }
-.carimbo-fato { font-family: var(--mono); font-size: 11px; color: var(--textoSutil);
-  white-space: nowrap; font-variant-numeric: tabular-nums; }
-.arvore > li > details > summary .dito { font-family: var(--serif); font-size: 19px;
-  font-weight: 600; letter-spacing: -0.01em; }
-details[data-tipo] > summary .dito { color: var(--acento); font-weight: 500;
-  text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px; }
-.repetido > summary .dito { font-weight: 500; }
-
-/* Galeria ------------------------------------------------------------ */
-.pecas { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 14px; }
-.peca { margin: 0; border: 1px solid var(--borda); border-radius: 10px;
-  overflow: hidden; background: var(--superficie); }
-.rotulo-especie { background: var(--superficieSutil); padding: 26px 14px;
-  font-family: var(--mono); font-size: 10.5px; text-transform: uppercase;
-  letter-spacing: 0.08em; color: var(--textoSutil); text-align: center; }
-.peca figcaption { padding: 13px 14px; display: flex; flex-direction: column; gap: 4px; }
-.peca b { font-size: 13.5px; word-break: break-word; }
-.peca .caminho { font-family: var(--mono); font-size: 10.5px; color: var(--textoSutil);
-  word-break: break-all; }
-.acao { align-self: start; background: none; border: 0; padding: 4px 0 0;
-  font: inherit; font-size: 12.5px; color: var(--acento); cursor: pointer; }
-
-footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--borda);
-  font-size: 11.5px; color: var(--textoSutil); max-width: 66ch; }
-
-@media (prefers-reduced-motion: reduce) {
-  * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
-}
-
-@media (max-width: 860px) {
-  .folha { grid-template-columns: 1fr; }
-  .lateral { position: static; max-height: none; }
-  main { padding: 28px 20px 48px; }
-  .titulo-tela { font-size: 26px; }
-}
+${tipos}
 `;
+  }
+
+  /** Lê um arquivo de `scripts/estilo/`. */
+  folhaDeEstilo(nome) {
+    return fs.readFileSync(path.join(__dirname, 'estilo', `${nome}.css`), 'utf8');
+  }
+
+  cssPaginaUnica() {
+    return `${this.variaveis()}
+${this.folhaDeEstilo('base')}
+${this.folhaDeEstilo('pagina-unica')}`;
   }
 
   css() {
-    const t = this.tokens;
-    const c = t.cor;
-    const vars = (modo) =>
-      Object.entries(c)
-        .map(([nome, par]) => `  --${nome}: ${par[modo]};`)
-        .join('\n') +
-      '\n' +
-      Object.entries(t.statusTarefa)
-        .map(([nome, par]) => `  --status-${nome}: ${par[modo]};`)
-        .join('\n');
-
-    const tiposDeFato = Object.entries(t.tipoFato)
-      .map(([nome, cor]) => `  --fato-${nome}: ${cor};`)
-      .join('\n');
-
     return `/* Gerado por scripts/gerar-site.js a partir de tokens.json — não editar à mão.
-   Os mesmos valores alimentam o app nativo (Sources/Bancada/DS/Tokens.swift). */
+   Os mesmos valores alimentam o app nativo (Sources/DesignSystem/Tokens.swift)
+   e o ícone (scripts/gerar-icone.py). O corpo do CSS vive em
+   scripts/estilo/*.css; aqui só entram as variáveis resolvidas. */
 
-:root {
-${vars('claro')}
-${tiposDeFato}
-  --espaco-sm: ${t.espaco.sm}px;
-  --espaco-md: ${t.espaco.md}px;
-  --espaco-lg: ${t.espaco.lg}px;
-  --raio: ${t.raio.md}px;
-  color-scheme: light;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-${vars('escuro')}
-    color-scheme: dark;
-  }
-}
-
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  background: var(--fundo);
-  color: var(--texto);
-  font: ${t.tipografia.corpo.tamanho + 2}px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
-
-code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; }
-
-header {
-  position: sticky; top: 0; z-index: 10;
-  display: flex; align-items: center; gap: var(--espaco-lg);
-  padding: var(--espaco-md) var(--espaco-lg);
-  background: var(--superficie);
-  border-bottom: 1px solid var(--borda);
-}
-.marca { font-weight: 650; color: var(--texto); text-decoration: none; }
-header nav { display: flex; gap: var(--espaco-md); flex-wrap: wrap; }
-header nav a { color: var(--texto-sutil, var(--textoSutil)); text-decoration: none; font-size: 0.92em; }
-header nav a.ativo, header nav a:hover { color: var(--acento); }
-
-.colunas { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: var(--espaco-lg);
-  max-width: 1180px; margin: 0 auto; padding: var(--espaco-lg); align-items: start; }
-
-aside { position: sticky; top: 68px; font-size: 0.9em; }
-aside .grupo { margin-bottom: var(--espaco-lg); }
-aside h3 { margin: 0 0 var(--espaco-sm); font-size: 0.78em; text-transform: uppercase;
-  letter-spacing: 0.06em; color: var(--textoSutil); }
-aside ul { list-style: none; margin: 0; padding: 0; }
-aside li { margin: 2px 0; }
-aside a { color: var(--texto); text-decoration: none; display: block; padding: 3px 8px;
-  border-radius: 6px; }
-aside a:hover { background: var(--superficieSutil); }
-aside a.ativo { background: var(--superficieSutil); color: var(--acento); font-weight: 600; }
-
-main { min-width: 0; }
-main h1 { font-size: ${t.tipografia.titulo.tamanho}px; margin: 0 0 var(--espaco-sm); letter-spacing: -0.01em; }
-main h2 { font-size: 1.15em; margin: var(--espaco-lg) 0 var(--espaco-sm); }
-main h3 { font-size: 1em; margin: var(--espaco-lg) 0 var(--espaco-sm); }
-.subtitulo { color: var(--textoSutil); margin: 0 0 var(--espaco-lg); }
-
-a { color: var(--acento); }
-.link-ausente { color: var(--textoSutil); border-bottom: 1px dotted var(--borda); }
-
-.numeros { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: var(--espaco-md); margin-bottom: var(--espaco-lg); }
-.numero { background: var(--superficie); border: 1px solid var(--borda);
-  border-radius: var(--raio); padding: var(--espaco-md); }
-.numero strong { display: block; font-size: 1.7em; line-height: 1.2; }
-.numero span { color: var(--textoSutil); font-size: 0.82em; }
-
-.destaque { background: var(--superficie); border: 1px solid var(--borda);
-  border-radius: var(--raio); padding: var(--espaco-lg); margin-bottom: var(--espaco-lg); }
-.destaque h2 { margin-top: 0; }
-
-.campos { display: flex; flex-wrap: wrap; gap: var(--espaco-md); font-size: 0.85em;
-  color: var(--textoSutil); margin-bottom: var(--espaco-lg);
-  padding-bottom: var(--espaco-md); border-bottom: 1px solid var(--borda); }
-.campos b { color: var(--texto); font-weight: 600; }
-
-.aviso { background: var(--superficieSutil); border-radius: var(--raio);
-  padding: var(--espaco-md); font-size: 0.88em; color: var(--textoSutil); }
-
-blockquote { margin: var(--espaco-md) 0; padding: var(--espaco-sm) var(--espaco-md);
-  border-left: 3px solid var(--borda); color: var(--textoSutil); }
-
-/* Callouts do Obsidian (> [!info] …).
-   O tipo do callout é dito pelo rótulo, não por uma barra colorida na
-   lateral — mesmo tratamento da página única, para as duas superfícies não
-   divergirem no visual. */
-.callout { margin: var(--espaco-md) 0; padding: var(--espaco-md);
-  border-radius: var(--raio); background: var(--superficieSutil); font-size: 0.94em; }
-.callout > b { display: block; margin-bottom: 5px; color: var(--acento);
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.8em;
-  text-transform: uppercase; letter-spacing: 0.07em; }
-.callout > p:first-of-type { margin-top: 0; }
-.callout > p:last-child { margin-bottom: 0; }
-.callout-warning > b, .callout-aviso > b { color: var(--status-revisao); }
-
-/* Item de lista ainda não preenchido no vault: ocupa a linha sem fingir
-   conteúdo que não existe. */
-.vazio-item { list-style: none; min-height: 1.2em; }
-.vazio-item::before { content: "—"; color: var(--borda); }
-
-pre { background: var(--superficieSutil); padding: var(--espaco-md);
-  border-radius: var(--raio); overflow-x: auto; }
-pre code { font-size: 0.86em; }
-:not(pre) > code { background: var(--superficieSutil); padding: 1px 5px; border-radius: 4px; }
-
-hr { border: 0; border-top: 1px solid var(--borda); margin: var(--espaco-lg) 0; }
-
-.rolagem { overflow-x: auto; margin: var(--espaco-md) 0; }
-table { border-collapse: collapse; width: 100%; font-size: 0.92em; }
-th, td { text-align: left; padding: var(--espaco-sm) var(--espaco-md);
-  border-bottom: 1px solid var(--borda); }
-th { font-size: 0.78em; text-transform: uppercase; letter-spacing: 0.05em;
-  color: var(--textoSutil); font-weight: 600; }
-
-.etiqueta { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.82em; }
-${Object.keys(t.statusTarefa)
-  .map(
-    (s) =>
-      `.status-${s} { color: var(--status-${s}); background: color-mix(in srgb, var(--status-${s}) 15%, transparent); }`
-  )
-  .join('\n')}
-
-.lista-tarefas { list-style: none; padding-left: 0; }
-.lista-tarefas .caixa { display: inline-flex; align-items: center; justify-content: center;
-  width: 15px; height: 15px; margin-right: 8px; border: 1px solid var(--borda);
-  border-radius: 4px; font-size: 10px; vertical-align: -2px; }
-.lista-tarefas .caixa.feita { background: var(--status-concluida); border-color: var(--status-concluida); color: #fff; }
-
-.arvore, .arvore ul { list-style: none; padding-left: 0; margin: 0; }
-.arvore ul { padding-left: var(--espaco-lg); border-left: 1px solid var(--borda);
-  margin-left: 6px; }
-.arvore li { margin: 3px 0; }
-.arvore summary { cursor: pointer; padding: 3px 0; display: flex; gap: var(--espaco-md);
-  justify-content: space-between; align-items: baseline; }
-.arvore summary::marker { color: var(--textoSutil); }
-.arvore .rotulo { min-width: 0; }
-.arvore .apoio { color: var(--textoSutil); font-size: 0.82em; white-space: nowrap;
-  font-variant-numeric: tabular-nums; }
-.arvore .fato { display: flex; gap: var(--espaco-md); justify-content: space-between;
-  align-items: baseline; padding: 3px 0; }
-.grupo-repetido > summary .rotulo { font-weight: 600; }
-
-.lista-dias { list-style: none; padding: 0; }
-.lista-dias li { display: flex; justify-content: space-between; padding: var(--espaco-sm) 0;
-  border-bottom: 1px solid var(--borda); }
-
-.grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(${t.galeria.larguraMinimaCard}px, 1fr));
-  gap: var(--espaco-md); }
-.cartao { margin: 0; background: var(--superficie); border: 1px solid var(--borda);
-  border-radius: var(--raio); overflow: hidden; }
-.cartao img, .cartao video { width: 100%; height: ${t.galeria.alturaThumbnail}px;
-  object-fit: cover; display: block; background: var(--superficieSutil); }
-.sem-previa { height: ${t.galeria.alturaThumbnail}px; display: flex; align-items: center;
-  justify-content: center; background: var(--superficieSutil); color: var(--textoSutil);
-  font-size: 0.82em; }
-.cartao figcaption { padding: var(--espaco-md); display: flex; flex-direction: column; gap: 3px; }
-.cartao .apoio { color: var(--textoSutil); font-size: 0.78em; word-break: break-all; }
-.cartao .acao { font-size: 0.85em; margin-top: 4px; }
-
-.vazio { color: var(--textoSutil); }
-
-footer { max-width: 1180px; margin: 0 auto; padding: var(--espaco-lg);
-  border-top: 1px solid var(--borda); color: var(--textoSutil); font-size: 0.82em; }
-
-img { max-width: 100%; }
-
-@media (max-width: 800px) {
-  .colunas { grid-template-columns: 1fr; }
-  aside { position: static; }
-}
-`;
+${this.variaveis()}
+${this.folhaDeEstilo('base')}
+${this.folhaDeEstilo('multipagina')}`;
   }
 }
 

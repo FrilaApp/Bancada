@@ -1,5 +1,6 @@
 import Foundation
 import VaultKit
+import DesignSystem
 
 /// `./Bancada --indice [caminho]` — emite o vault inteiro como JSON na saída
 /// padrão.
