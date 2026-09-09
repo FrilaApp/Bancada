@@ -40,6 +40,27 @@ MSG
   exit 1
 fi
 
+# Camada opcional: quem tiver o ActionShelf (app pessoal do fbtostadev, fora
+# deste repositório) usa a interface dele em vez do prompt padrão do sistema.
+# Para os outros colaboradores, "$actionshelf_bin" nunca existe, o bloco abaixo
+# não roda, e o fluxo cai direto no Touch ID padrão logo em seguida — ninguém
+# mais precisa deste projeto para publicar.
+# Prioridade 1: Action Shelf na Notch (Mini-App com física de molas)
+actionshelf_bin="$raiz/../ActionShelf/ActionShelf"
+if [ ! -x "$actionshelf_bin" ] && [ -f "$raiz/../ActionShelf/build.sh" ]; then
+  "$raiz/../ActionShelf/build.sh" >/dev/null 2>&1 || true
+fi
+
+if [ -x "$actionshelf_bin" ]; then
+  echo "🔐 Exibindo Action Shelf na Notch (Touch ID / macOS)…"
+  if ! "$actionshelf_bin" --reason "Autorizar o envio de alterações (git push) no Challenge 18"; then
+    echo "❌ Autenticação cancelada ou não autorizada. O push foi abortado." >&2
+    exit 1
+  fi
+  echo "  ✓ Identidade confirmada pela Action Shelf."
+  exit 0
+fi
+
 echo "🔐 Solicitando autenticação (Touch ID, Apple Watch ou senha do macOS)…"
 if ! "$raiz/scripts/auth-touchid"; then
   echo "❌ Autenticação cancelada ou não autorizada. O push foi abortado." >&2

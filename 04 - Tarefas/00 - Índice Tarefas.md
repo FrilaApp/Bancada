@@ -22,5 +22,10 @@ Mover uma tarefa de coluna = mudar a propriedade `status` da nota.
 
 Para criar uma tarefa, use `/tarefa` no Claude Code — ele cuida do id sequencial e do frontmatter.
 
+## Lista de tarefas
+
+- [[04 - Tarefas/T-0001 - Refinamento de UI e interação da ActionShelf|T-0001 — Refinamento de UI e interação da ActionShelf]] · `concluida`
+- [[04 - Tarefas/T-0002 - Refatorar UI da Bancada + WebView|T-0002 — Refatorar UI da Bancada + WebView]] · `a-fazer`
+
 ---
 ← [[🏠 Início]]

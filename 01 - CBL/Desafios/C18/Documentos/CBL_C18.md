@@ -1,9 +1,9 @@
 ---
 tipo: documento-derivado
 origem: "01 - CBL/Desafios/C18/Documentos/CBL_C18.pages"
-hash_origem: 3f1901195524de72f143fb01e3340d4e91eb03bdbce51e2bfa11a877d7ff0c4f
-exportado_em: 2026-09-08T22:01
-exportado_por: Cauê Carneiro
+hash_origem: 66c42784a2a7a8771be000281aee4efe249465990b5689f507e1557b7032189c
+exportado_em: 2026-09-08T22:15
+exportado_por: fbtostadev
 conversao: ok
 tags: [documento]
 ---
@@ -54,7 +54,7 @@ Big Idea:
 
 Milestone - Big Idea:
 
-<Insira aqui a big idea escolhida “Isso aqui é um teste de versionamento, isso aqui deve ser excluido em breve” By Cauê Crillanovick>
+<Insira aqui a big idea escolhida>
 
 Essential Questioning
 
