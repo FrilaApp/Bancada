@@ -29,7 +29,7 @@ public struct ActionShelfView: View {
             shelfContainer
             Spacer()
         }
-        .frame(width: 440, height: 120, alignment: .top)
+        .frame(width: 580, height: 160, alignment: .top)
         .onAppear {
             iniciarCicloDeApresentacao()
         }
@@ -48,7 +48,8 @@ public struct ActionShelfView: View {
         }
     }
 
-    private let shelfBodyHeight: CGFloat = 52
+    // Altura do corpo visível da Shelf (+30%: 52 * 1.30 = 68pt)
+    private let shelfBodyHeight: CGFloat = 68
 
     private var currentHeight: CGFloat {
         isExpanded ? (notch.notchHeight + shelfBodyHeight) : notch.notchHeight
@@ -89,7 +90,7 @@ public struct ActionShelfView: View {
             bezelBlendGradient
                 .clipShape(shelfShape)
 
-            // Conteúdo interno da Shelf
+            // Conteúdo interno da Shelf com alinhamento óptico
             VStack(spacing: 0) {
                 // Espaço reservado para a altura do Notch físico (oculto pela mescla com o bezel)
                 Color.clear
@@ -97,29 +98,33 @@ public struct ActionShelfView: View {
 
                 // Corpo visível da Shelf posicionado no Liquid Glass
                 if isExpanded {
-                    HStack(spacing: 14) {
-                        // Badge Biométrico em Vidro Interativo
+                    HStack(spacing: 16) {
+                        // Badge Biométrico em Vidro Interativo (+30% escala e compensação óptica)
                         biometricGlassBadge
 
-                        // Informações da ação com tipografia refinada e transição numérica
-                        VStack(alignment: .leading, spacing: 2) {
+                        // Informações da ação com tipografia calibrada e alinhamento de baseline
+                        VStack(alignment: .leading, spacing: 3) {
                             Text("Challenge 18 · Action Shelf")
-                                .font(.system(size: 10, weight: .bold, design: .rounded))
-                                .tracking(0.6)
+                                .font(.system(size: 11, weight: .bold, design: .rounded))
+                                .tracking(0.8)
                                 .foregroundStyle(.secondary)
                                 .textCase(.uppercase)
 
                             Text(statusMessage)
-                                .font(.system(size: 13, weight: .medium))
+                                .font(.system(size: 15, weight: .medium))
                                 .foregroundStyle(.white)
                                 .lineLimit(1)
                                 .contentTransition(.numericText(countsDown: false))
                         }
 
                         Spacer()
+
+                        // Cápsula de ação/status à direita para fechar o equilíbrio óptico
+                        actionStatusPill
                     }
-                    .padding(.horizontal, 20)
+                    .padding(.horizontal, 24)
                     .frame(height: shelfBodyHeight)
+                    .offset(y: -1.5) // Elevação óptica para contrabalançar os cantos inferiores arredondados
                     .transition(
                         reduceMotion
                             ? .opacity
@@ -132,7 +137,7 @@ public struct ActionShelfView: View {
             }
         }
         .frame(
-            width: isExpanded ? 400 : notch.notchWidth,
+            width: isExpanded ? 520 : notch.notchWidth, // +30% largura expandida: 400 * 1.3 = 520pt
             height: currentHeight
         )
         .offset(x: shakeOffset)
@@ -172,14 +177,14 @@ public struct ActionShelfView: View {
         .animation(Theme.contentSpring, value: biometrics.state)
     }
 
-    // MARK: - Selo Biométrico em Liquid Glass Interativo com Alinhamento Óptico & Hit Area 44pt
+    // MARK: - Selo Biométrico em Liquid Glass Interativo com Alinhamento Óptico & Hit Area 56pt (+30%)
 
     @ViewBuilder
     private var biometricGlassBadge: some View {
         ZStack {
             if #available(macOS 26, iOS 26, *) {
                 Circle()
-                    .frame(width: 38, height: 38)
+                    .frame(width: 48, height: 48)
                     .glassEffect(.regular.tint(iconGlassTint).interactive(), in: Circle())
                     .overlay(
                         Circle()
@@ -188,7 +193,7 @@ public struct ActionShelfView: View {
             } else {
                 Circle()
                     .fill(iconBackgroundColor)
-                    .frame(width: 38, height: 38)
+                    .frame(width: 48, height: 48)
                     .overlay(
                         Circle()
                             .strokeBorder(iconBorderColor, lineWidth: 1.0)
@@ -197,14 +202,14 @@ public struct ActionShelfView: View {
 
             // Ícone SF Symbol com transição de substituição fluida e ajuste óptico de centro
             Image(systemName: iconName)
-                .font(.system(size: 17, weight: .semibold))
+                .font(.system(size: 22, weight: .semibold))
                 .foregroundStyle(iconForegroundColor)
                 .contentTransition(.symbolEffect(.replace))
-                .offset(y: iconName == "touchid" ? -0.5 : 0)
+                .offset(opticalIconOffset)
                 .symbolEffect(.pulse, isActive: biometrics.state == .authenticating)
                 .scaleEffect(iconScale * (isBadgePressed ? 0.92 : 1.0))
         }
-        .frame(width: 44, height: 44) // Área de toque mínima acessível (44x44pt)
+        .frame(width: 56, height: 56) // Área de toque expandida proporcionalmente
         .contentShape(Circle())
         .scaleEffect(isBadgeHovered && !reduceMotion ? 1.05 : 1.0)
         .animation(Theme.hoverSpring, value: isBadgeHovered)
@@ -217,11 +222,46 @@ public struct ActionShelfView: View {
         )
     }
 
+    private var opticalIconOffset: CGSize {
+        switch iconName {
+        case "touchid":
+            // O centro óptico da espiral digital fica ligeiramente acima do bounding box geométrico
+            return CGSize(width: 0, height: -1.0)
+        case "checkmark":
+            // Checkmark possui maior massa visual à direita e acima
+            return CGSize(width: 0.5, height: -0.5)
+        case "xmark":
+            return .zero
+        default:
+            return .zero
+        }
+    }
+
+    private var actionStatusPill: some View {
+        HStack(spacing: 6) {
+            Image(systemName: iconName)
+                .font(.system(size: 11, weight: .semibold))
+            Text(biometrics.state == .authorized ? "Confirmado" : (biometrics.state == .idle ? "Touch ID" : "Validando"))
+                .font(.system(size: 12, weight: .semibold))
+        }
+        .foregroundStyle(.white.opacity(0.92))
+        .padding(.horizontal, 14)
+        .padding(.vertical, 7)
+        .background(
+            Capsule()
+                .fill(Color.white.opacity(0.12))
+                .overlay(
+                    Capsule()
+                        .strokeBorder(Color.white.opacity(0.25), lineWidth: 0.75)
+                )
+        )
+    }
+
     private var shelfShape: UnevenRoundedRectangle {
         UnevenRoundedRectangle(
             topLeadingRadius: 0,
-            bottomLeadingRadius: 24,
-            bottomTrailingRadius: 24,
+            bottomLeadingRadius: 32, // +30%: 24 * 1.30 = 31.2 -> 32pt
+            bottomTrailingRadius: 32,
             topTrailingRadius: 0,
             style: .continuous
         )

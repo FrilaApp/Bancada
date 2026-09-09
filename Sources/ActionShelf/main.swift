@@ -11,8 +11,8 @@ final class ActionShelfAppDelegate: NSObject, NSApplicationDelegate {
             exit(1)
         }
 
-        let windowWidth: CGFloat = 440
-        let windowHeight: CGFloat = 120
+        let windowWidth: CGFloat = 580
+        let windowHeight: CGFloat = 160
 
         // Ancorado exatamente no topo central da tela principal
         let xPos = screen.frame.midX - (windowWidth / 2)
