@@ -45,15 +45,22 @@ open ./Bancada.app   # ou pelo bundle, como qualquer app do Finder
 
 Com o app rodando, clique e segure o ícone na Dock → **Opções** → **Manter na Dock**.
 
-### Publicar uma nova versão
+### Atualização automática para a equipe
 
-O workflow `.github/workflows/release.yml` roda os testes, compila o universal, empacota o `.app` e publica a Release. O gatilho é a tag:
+Ao rodar `/entrar` no Claude Code (ou executar `./scripts/atualizar-bancada.sh`), o `Bancada.app` é checado contra as releases do GitHub e atualizado automaticamente via swap seguro e remoção de quarentena do Gatekeeper.
+
+### Publicar uma nova versão (com Zona de Segurança)
+
+Para publicar uma nova versão com testes locais, proteção anti-concorrência e gate biométrico:
 
 ```bash
-git tag v1.1.0 && git push origin v1.1.0
+./scripts/publicar-bancada.sh          # calcula a versão automaticamente
+./scripts/publicar-bancada.sh 0.2.0    # ou informa uma versão específica
 ```
 
-Também dá para disparar pela aba **Actions → Release → Run workflow**, informando a versão — a tag é criada junto. A versão informada vai para o `Info.plist` do bundle, então ela é a que aparece em "Sobre a Bancada".
+No Claude Code, você também pode usar `/publicar-bancada`. O script ativa a **Zona de Segurança**: se houver divergência com `origin/main` ou release concorrente em voo no CI, a operação entra em **quarentena** e orienta o fallback no terminal antes de gerar tags remotas.
+
+O workflow `.github/workflows/release.yml` roda os testes, compila o universal, empacota o `.app` e publica a Release.
 
 ### Verificar sem abrir janela
 

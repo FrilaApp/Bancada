@@ -17,6 +17,12 @@ on:
 permissions:
   contents: write
 
+# Garante que releases concorrentes formem fila ordenada em vez de colidirem
+# ou cancelarem um runner macOS no meio da compilação.
+concurrency:
+  group: bancada-release-pipeline
+  cancel-in-progress: false
+
 jobs:
   publicar:
     runs-on: macos-15
