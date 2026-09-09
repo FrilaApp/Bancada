@@ -13,13 +13,35 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib.sh"
 CACHE="$REPO_ROOT/scripts/.cache"
 mkdir -p "$CACHE"
 
+# Um .pages pode ser um zip plano OU um bundle (diretório). O Pages escolhe o
+# formato sozinho, então o script precisa aguentar os dois.
+# No bundle o hash é do conteúdo, com caminhos relativos — caminho absoluto
+# tornaria o hash diferente em cada máquina e causaria reconversão eterna.
+hash_de() {
+  local src="$1"
+  if [ -d "$src" ]; then
+    ( cd "$src" && find . -type f -exec shasum -a 256 {} \; | LC_ALL=C sort ) \
+      | shasum -a 256 | cut -d' ' -f1
+  else
+    shasum -a 256 "$src" | cut -d' ' -f1
+  fi
+}
+
+extrair_previa() { # extrair_previa <src> <destino.jpg>
+  if [ -d "$1" ]; then
+    cp "$1/preview.jpg" "$2" 2>/dev/null || return 1
+  else
+    unzip -p "$1" preview.jpg > "$2" 2>/dev/null || return 1
+  fi
+}
+
 # Converte um arquivo. Devolve 0 se gravou, 1 se pulou (já em dia).
 converter() {
   local src="$1"
   local dest="${src%.pages}.md"
   local nome; nome="$(basename "${src%.pages}")"
   local rel; rel="${src#"$REPO_ROOT"/}"
-  local hash; hash="$(shasum -a 256 "$src" | cut -d' ' -f1)"
+  local hash; hash="$(hash_de "$src")"
 
   if [ -f "$dest" ] && grep -q "^hash_origem: $hash\$" "$dest" 2>/dev/null; then
     return 1
@@ -47,7 +69,7 @@ APPLESCRIPT
     # Sem Pages nesta máquina (ou exportação falhou): guarda o preview embutido
     # no .pages para não bloquear ninguém. Quem tiver o Pages regenera depois.
     local prev="${src%.pages} (prévia).jpg"
-    unzip -p "$src" preview.jpg > "$prev" 2>/dev/null || rm -f "$prev"
+    extrair_previa "$src" "$prev" || rm -f "$prev"
     aviso="pendente"
     corpo="> [!warning] Conversão pendente
 > Este documento não pôde ser convertido nesta máquina — o Pages não está instalado
@@ -87,14 +109,14 @@ if [ $# -gt 0 ]; then
   alvos=("$@")
 else
   while IFS= read -r -d '' f; do alvos+=("$f"); done \
-    < <(find "$REPO_ROOT" -name '*.pages' -not -path '*/.git/*' -print0)
+    < <(find "$REPO_ROOT" -name '*.pages' -not -path '*/.git/*' -prune -print0)
 fi
 
 [ ${#alvos[@]} -eq 0 ] && { echo "Nenhum .pages encontrado."; exit 0; }
 
 convertidos=0
 for f in "${alvos[@]}"; do
-  [ -f "$f" ] || { echo "  ✗ não encontrado: $f" >&2; continue; }
+  [ -e "$f" ] || { echo "  ✗ não encontrado: $f" >&2; continue; }
   if converter "$(cd "$(dirname "$f")" && pwd)/$(basename "$f")"; then
     echo "  ✓ $(basename "$f")"
     convertidos=$((convertidos + 1))

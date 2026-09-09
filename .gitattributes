@@ -18,3 +18,6 @@
 *.base text eol=lf
 *.sh text eol=lf
 *.json text eol=lf
+
+# Bundles .pages são diretórios: o conteúdo interno também é opaco.
+*.pages/** binary

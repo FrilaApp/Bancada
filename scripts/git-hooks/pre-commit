@@ -6,7 +6,11 @@
 raiz="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
 
 # O bash do macOS é o 3.2 — sem mapfile. Lê a lista linha a linha.
-alterados="$(git diff --cached --name-only --diff-filter=ACM | grep '\.pages$' || true)"
+# Um .pages pode ser um bundle (diretório): nesse caso o Git versiona os
+# arquivos internos, e os caminhos são "X.pages/Index.zip". O sed reduz ambos
+# os formatos à raiz do documento.
+alterados="$(git diff --cached --name-only --diff-filter=ACM \
+  | sed -n 's|\(.*\.pages\)\(/.*\)\{0,1\}$|\1|p' | sort -u)"
 [ -z "$alterados" ] && exit 0
 
 echo "Atualizando Markdown derivado dos .pages…"
