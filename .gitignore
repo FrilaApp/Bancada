@@ -1,0 +1,7 @@
+.build/
+.cache/
+# Barra inicial: só o executável na raiz. Sem ela, a regra também casaria
+# com Sources/Bancada/ e o app inteiro ficaria de fora do versionamento.
+/Bancada
+.DS_Store
+site/
