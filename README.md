@@ -88,12 +88,25 @@ As páginas levam `noindex, nofollow`. Isso pede a buscadores que não indexem, 
 
 | Seção | O que resolve |
 |---|---|
-| **Registros** | O log de fatos indentado por dia → tipo → grupo. Repetição colapsa: cinco commits "Registra os fatos da sessão" viram um nó `5× … [20:21–22:05]`, que abre e mostra os cinco |
-| **Tarefas** | Tabela nativa com colunas ordenáveis e filtro por status |
-| **Galeria** | Imagens, vídeos, PDFs e `.pages`, cada um com miniatura de verdade |
-| **Documentos** | O `.pages` e seu `.md` derivado lado a lado |
+| **Calendário** | Os dias do vault com o que aconteceu em cada um: fatos do log, notas diárias e tarefas criadas. *Andaime — a grade de mês ainda não existe; ver abaixo* |
+| **Trabalho** | A tabela de tarefas (colunas ordenáveis, filtro por status) com os fatos logo abaixo. Selecionar uma tarefa mostra só os fatos que citam o ID dela; sem seleção, o log inteiro indentado por dia → tipo → grupo, com a repetição colapsada — cinco commits "Registra os fatos da sessão" viram um nó `5× … [20:21–22:05]`, que abre e mostra os cinco |
 | **Diário** | A narrativa do dia ao lado dos fatos que a sustentam — a regra de ouro do vault, verificável de relance |
-| **Saúde** | Notas sem frontmatter válido e linhas de registro fora do formato dos hooks |
+| **Acervo** | Imagens, vídeos, PDFs e `.pages`, cada um com miniatura de verdade. Selecionar um `.pages` traz o `.md` derivado no painel ao lado |
+| **Ajustes** | No pé da barra lateral, fora da lista de seções: qual pasta está aberta e quando foi lida; o resumo do conteúdo do vault; notas sem frontmatter válido e linhas de registro fora do formato dos hooks |
+
+A pasta aberta e a hora da última leitura ficam no centro do cabeçalho da janela, visíveis em qualquer seção — clicar abre a pasta no Finder. O relógio andando sozinho é o que prova que a janela não está mostrando um estado velho: o conteúdo vem do disco a cada leitura, nunca de cache, e os hooks escrevem no vault por fora do app.
+
+Eram seis seções até a refatoração de 09/09: três pares contavam a mesma história por ângulos diferentes. **Tarefas e Registros** viraram *Trabalho* porque o log já cita o ID da tarefa (`… conclui a T-0004`) — a ligação existia no dado e não na interface. **Galeria e Documentos** viraram *Acervo* porque a segunda era a primeira com um painel a mais. E **Saúde** virou *Ajustes*: é diagnóstico do vault, não conteúdo dele.
+
+Nada ficou inalcançável na fusão. A árvore inteira de registros continua a um clique — é o que o painel mostra quando nenhuma tarefa está selecionada —, e o painel diz quantos fatos não citam tarefa nenhuma, para que o recorte nunca se passe por log inteiro.
+
+### O vínculo entre fato e tarefa
+
+É literal, nunca inferido: `Vinculo` procura `T-0001` na descrição do fato, e só. Adivinhar por semelhança de texto atribuiria trabalho à tarefa errada — num app cuja premissa é que o registro é confiável, isso é pior que não ter vínculo. Para um fato aparecer na tarefa, **cite o ID na mensagem de commit**.
+
+### O calendário
+
+`VaultKit/Calendario.swift` já agrega o vault em `DiaDoCalendario` — fatos, diários e tarefas criadas por data — e `DataISO` converte as datas do frontmatter ancorando ao meio-dia, para que fuso e horário de verão nunca joguem um evento para a véspera. A tela é, de propósito, uma lista e não uma grade pela metade: uma grade incompleta pareceria pronta. Falta a grade mensal, a navegação entre meses e a seleção de dia.
 
 ## Como o agrupamento decide o que juntar
 
@@ -118,6 +131,8 @@ Sources/VaultKit/     Leitura do vault, sem UI — testável e reaproveitável
   Nota.swift            Modelos; tipos e status como enums fechados
   Fato.swift            Parser das linhas de 05 - Registros/
   Agrupador.swift       A regra de colapso descrita acima
+  Vinculo.swift         Que fato pertence a que tarefa — pelo ID, nunca por semelhança
+  Calendario.swift      Eventos por dia (fato, diário, tarefa) e datas ISO
   Vault.swift           Varredura da pasta e catálogo de mídia
   Observador.swift      FSEvents — os hooks escrevem por fora do app
 

@@ -3,14 +3,20 @@ import VaultKit
 
 /// Tabela de tarefas com `Table` nativa — o que o `Quadro.base` do Obsidian
 /// faz genericamente, aqui com colunas ordenáveis e filtro por status.
+///
+/// A seleção é do chamador (`TelaTrabalho`), não desta view: selecionar uma
+/// tarefa passou a alimentar o painel de fatos logo abaixo. Por isso abrir no
+/// Finder saiu do clique simples — antes, cada seleção abria uma janela do
+/// Finder, o que com o painel embaixo seria insuportável — e virou duplo
+/// clique e menu de contexto, como na grade do Acervo.
 struct TelaTarefas: View {
     @Environment(\.cores) private var cores
     let tarefas: [Nota]
+    @Binding var selecao: Nota.ID?
     let aoAbrir: (Nota) -> Void
 
     @State private var ordem = [KeyPathComparator(\Nota.caminhoRelativo)]
     @State private var filtro: StatusTarefa?
-    @State private var selecao: Nota.ID?
 
     private var visiveis: [Nota] {
         let base = filtro.map { f in tarefas.filter { $0.status == f } } ?? tarefas
@@ -71,9 +77,13 @@ struct TelaTarefas: View {
                     }
                     .width(min: 90, ideal: 100, max: 120)
                 }
-                .onChange(of: selecao) { _, novo in
-                    guard let novo, let nota = tarefas.first(where: { $0.id == novo }) else { return }
-                    aoAbrir(nota)
+                .contextMenu(forSelectionType: Nota.ID.self) { ids in
+                    Button("Mostrar no Finder") {
+                        for nota in tarefas.filter({ ids.contains($0.id) }) { aoAbrir(nota) }
+                    }
+                } primaryAction: { ids in
+                    // Duplo clique: o gesto que já abre arquivo no Acervo.
+                    for nota in tarefas.filter({ ids.contains($0.id) }) { aoAbrir(nota) }
                 }
             }
         }
@@ -98,6 +108,13 @@ struct TelaTarefas: View {
         .background(cores.superficieSutil)
         .overlay(alignment: .bottom) {
             Rectangle().fill(cores.borda).frame(height: 1)
+        }
+        // Uma tarefa filtrada para fora da tabela não pode continuar mandando
+        // no painel de fatos: o painel diria respeito a uma linha invisível.
+        .onChange(of: filtro) { _, _ in
+            if let selecao, !visiveis.contains(where: { $0.id == selecao }) {
+                self.selecao = nil
+            }
         }
     }
 

@@ -2,30 +2,38 @@ import SwiftUI
 import Observation
 import VaultKit
 
+/// As seções da barra lateral.
+///
+/// São menos que as telas que existiam antes porque três pares contavam a
+/// mesma história por ângulos diferentes: tarefa e registro (o log já cita o ID
+/// da tarefa), galeria e documento (a mesma grade, com um painel a mais), e a
+/// saúde do vault, que é diagnóstico, não conteúdo. Fundir não tirou nenhuma
+/// capacidade — cada uma virou um recorte dentro da seção que a contém.
 enum Secao: String, CaseIterable, Identifiable {
-    case registros, tarefas, galeria, documentos, diario, saude
+    case calendario, trabalho, diario, acervo, ajustes
 
     var id: String { rawValue }
 
+    /// `Ajustes` fica separada no pé da lista: é sobre o app, não sobre o vault.
+    static var conteudo: [Secao] { allCases.filter { $0 != .ajustes } }
+
     var titulo: String {
         switch self {
-        case .registros:  return "Registros"
-        case .tarefas:    return "Tarefas"
-        case .galeria:    return "Galeria"
-        case .documentos: return "Documentos"
+        case .calendario: return "Calendário"
+        case .trabalho:   return "Trabalho"
         case .diario:     return "Diário"
-        case .saude:      return "Saúde do vault"
+        case .acervo:     return "Acervo"
+        case .ajustes:    return "Ajustes"
         }
     }
 
     var simbolo: String {
         switch self {
-        case .registros:  return "list.bullet.indent"
-        case .tarefas:    return "tablecells"
-        case .galeria:    return "square.grid.2x2"
-        case .documentos: return "doc.richtext"
+        case .calendario: return "calendar"
+        case .trabalho:   return "hammer"
         case .diario:     return "calendar.day.timeline.left"
-        case .saude:      return "stethoscope"
+        case .acervo:     return "square.grid.2x2"
+        case .ajustes:    return "gearshape"
         }
     }
 }
@@ -37,7 +45,7 @@ final class EstadoDaBancada {
     private(set) var carregando = false
     private(set) var ultimaLeitura: Date?
 
-    var secao: Secao = .registros
+    var secao: Secao = .trabalho
     var notaSelecionada: String?
 
     private var observador: ObservadorDeVault?
@@ -150,5 +158,21 @@ final class EstadoDaBancada {
     var diarios: [Nota] {
         (vault?.notas(tipo: .atualizacaoDiaria) ?? [])
             .sorted { ($0.data ?? "") > ($1.data ?? "") }
+    }
+
+    /// Os fatos que citam o ID desta tarefa. Ver `Vinculo`.
+    func fatosDaTarefa(_ id: String) -> [Fato] {
+        Vinculo.fatos(vault?.fatos ?? [], daTarefa: id)
+    }
+
+    /// Quantos fatos não citam tarefa nenhuma — o painel de Trabalho mostra
+    /// esse número para que o recorte por tarefa nunca passe por log inteiro.
+    var fatosSemTarefa: Int {
+        Vinculo.fatosSemTarefa(vault?.fatos ?? []).count
+    }
+
+    var diasDoCalendario: [DiaDoCalendario] {
+        guard let vault else { return [] }
+        return Calendario.porDia(de: vault)
     }
 }

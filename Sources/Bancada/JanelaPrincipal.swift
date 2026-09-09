@@ -23,9 +23,9 @@ struct JanelaPrincipal: View {
     private var barraLateral: some View {
         List(selection: Binding(
             get: { estado.secao },
-            set: { estado.secao = $0 ?? .registros }
+            set: { estado.secao = $0 ?? .trabalho }
         )) {
-            ForEach(Secao.allCases) { secao in
+            ForEach(Secao.conteudo) { secao in
                 Label(secao.titulo, systemImage: secao.simbolo)
                     .badge(distintivo(secao))
                     .tag(secao)
@@ -37,34 +37,59 @@ struct JanelaPrincipal: View {
     private func distintivo(_ secao: Secao) -> Int {
         guard let vault = estado.vault else { return 0 }
         switch secao {
-        case .registros:  return vault.fatos.count
-        case .tarefas:    return vault.tarefas.count
-        case .galeria:    return vault.midias.count
-        case .documentos: return estado.documentos.count
+        case .calendario: return estado.diasDoCalendario.count
+        case .trabalho:   return vault.tarefas.count
         case .diario:     return estado.diarios.count
-        case .saude:      return vault.invalidas.count + vault.fatosNaoReconhecidos.count
+        case .acervo:     return vault.midias.count
+        // Desvio invisível é o que corrói a confiança no registro: este
+        // distintivo é o único que se quer sempre em zero.
+        case .ajustes:    return vault.invalidas.count + vault.fatosNaoReconhecidos.count
         }
     }
 
+    /// Ajustes fica no pé da barra lateral, fora da lista de seções: é sobre o
+    /// app, não sobre o vault, e é onde o macOS ensina a procurar por
+    /// configuração. Continua sendo uma `Secao` — só não disputa espaço com o
+    /// conteúdo.
     private var rodape: some View {
-        VStack(alignment: .leading, spacing: DS.Espaco.xs) {
+        VStack(spacing: 0) {
             Divider()
-            if let raiz = estado.raiz {
-                Text(raiz.lastPathComponent)
-                    .font(DS.Tipografia.detalhe)
-                    .foregroundStyle(cores.texto)
-                    .lineLimit(1)
+            Button {
+                estado.secao = .ajustes
+            } label: {
+                HStack(spacing: DS.Espaco.sm) {
+                    Image(systemName: Secao.ajustes.simbolo)
+                        .frame(width: DS.Espaco.lg, alignment: .center)
+                    Text(Secao.ajustes.titulo)
+                        .font(DS.Tipografia.corpo)
+                    Spacer()
+                    // Desvio invisível é o que corrói a confiança no registro:
+                    // este é o único distintivo que se quer sempre em zero.
+                    let desvios = distintivo(.ajustes)
+                    if desvios > 0 {
+                        Text("\(desvios)")
+                            .font(DS.Tipografia.detalhe)
+                            .monospacedDigit()
+                            .padding(.horizontal, DS.Espaco.sm)
+                            .padding(.vertical, 1)
+                            .background(cores.status(.revisao).opacity(0.18), in: Capsule())
+                            .foregroundStyle(cores.status(.revisao))
+                    }
+                }
+                .foregroundStyle(estado.secao == .ajustes ? cores.acento : cores.texto)
+                .padding(.horizontal, DS.Espaco.md)
+                .padding(.vertical, DS.Espaco.sm)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .contentShape(Rectangle())
+                .background(
+                    RoundedRectangle(cornerRadius: DS.Raio.sm)
+                        .fill(cores.acento.opacity(estado.secao == .ajustes ? 0.14 : 0))
+                        .padding(.horizontal, DS.Espaco.sm)
+                )
             }
-            if let ultima = estado.ultimaLeitura {
-                Text("lido às \(ultima.formatted(date: .omitted, time: .standard))")
-                    .font(DS.Tipografia.detalhe)
-                    .foregroundStyle(cores.textoSutil)
-                    .monospacedDigit()
-            }
+            .buttonStyle(.plain)
+            .padding(.vertical, DS.Espaco.xs)
         }
-        .padding(.horizontal, DS.Espaco.md)
-        .padding(.bottom, DS.Espaco.sm)
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     // MARK: - Conteúdo
@@ -81,24 +106,16 @@ struct JanelaPrincipal: View {
             )
         } else {
             switch estado.secao {
-            case .registros:
-                TelaRegistros(
-                    arvore: estado.arvoreDeRegistros,
-                    naoReconhecidas: estado.vault?.fatosNaoReconhecidos ?? [],
-                    midias: estado.vault?.midias ?? []
-                )
-            case .tarefas:
-                TelaTarefas(tarefas: estado.tarefas) { nota in
-                    NSWorkspace.shared.activateFileViewerSelecting([nota.url])
-                }
-            case .galeria:
-                TelaGaleria(midias: estado.vault?.midias ?? [])
-            case .documentos:
-                TelaDocumentos(documentos: estado.documentos, vault: estado.vault)
+            case .calendario:
+                TelaCalendario(dias: estado.diasDoCalendario)
+            case .trabalho:
+                TelaTrabalho(estado: estado)
             case .diario:
                 TelaDiario(diarios: estado.diarios, fatos: estado.vault?.fatos ?? [])
-            case .saude:
-                TelaSaude(vault: estado.vault)
+            case .acervo:
+                TelaAcervo(midias: estado.vault?.midias ?? [], vault: estado.vault)
+            case .ajustes:
+                TelaAjustes(estado: estado, aoEscolherPasta: escolherPasta)
             }
         }
     }
@@ -108,6 +125,10 @@ struct JanelaPrincipal: View {
         ToolbarItem(placement: .navigation) {
             Text(estado.secao.titulo).font(DS.Tipografia.secao)
         }
+        // A pasta aberta é o contexto de tudo que a janela mostra — no centro
+        // do cabeçalho ela fica visível o tempo todo, sem competir com a
+        // seção à esquerda nem com os botões à direita.
+        ToolbarItem(placement: .principal) { vaultNoCabecalho }
         ToolbarItem {
             Button {
                 escolherPasta()
@@ -124,6 +145,46 @@ struct JanelaPrincipal: View {
             }
             .keyboardShortcut("r")
             .help("Reler o vault do disco")
+        }
+    }
+
+    /// Nome da pasta aberta e a hora da última leitura.
+    ///
+    /// O horário não é enfeite: o conteúdo vem do disco a cada leitura, nunca
+    /// de cache, e os hooks escrevem no vault por fora do app. Ver o relógio
+    /// andar sozinho é o que prova que a janela não está mostrando um estado
+    /// velho. Clicar abre a pasta no Finder.
+    @ViewBuilder
+    private var vaultNoCabecalho: some View {
+        if let raiz = estado.raiz {
+            Button {
+                NSWorkspace.shared.activateFileViewerSelecting([raiz])
+            } label: {
+                VStack(spacing: 0) {
+                    HStack(spacing: DS.Espaco.xs) {
+                        Image(systemName: "folder")
+                            .font(.system(size: 10))
+                            .foregroundStyle(cores.textoSutil)
+                        Text(raiz.lastPathComponent)
+                            .font(DS.Tipografia.corpo)
+                            .foregroundStyle(cores.texto)
+                            .lineLimit(1)
+                    }
+                    if let ultima = estado.ultimaLeitura {
+                        Text("lido às \(ultima.formatted(date: .omitted, time: .standard))")
+                            .font(DS.Tipografia.detalhe)
+                            .foregroundStyle(cores.textoSutil)
+                            .monospacedDigit()
+                    }
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .help(raiz.path)
+        } else {
+            Text("Nenhum vault aberto")
+                .font(DS.Tipografia.corpo)
+                .foregroundStyle(cores.textoSutil)
         }
     }
 

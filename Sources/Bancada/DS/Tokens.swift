@@ -84,6 +84,27 @@ public enum DS {
         static let larguraMinimaCard: CGFloat = 180
         static let alturaThumbnail: CGFloat = 128
     }
+
+    /// Divisão vertical da seção Trabalho: a tabela em cima, os fatos embaixo.
+    enum Trabalho {
+        static let alturaMinimaDaTabela: CGFloat = 180
+        static let alturaMinimaDoPainel: CGFloat = 160
+    }
+
+    /// Painel de detalhe do Acervo, à direita da grade.
+    enum Acervo {
+        static let larguraMinimaDoPainel: CGFloat = 320
+        static let larguraIdealDoPainel: CGFloat = 380
+        static let alturaDaPreviaGrande: CGFloat = 180
+    }
+
+    /// A grade do calendário. Os valores existem para a tela que vem depois;
+    /// medida fixa no meio da view é o que se está evitando aqui.
+    enum Calendario {
+        static let larguraMinimaDaCelula: CGFloat = 96
+        static let alturaMinimaDaCelula: CGFloat = 88
+        static let alturaDoCabecalho: CGFloat = 24
+    }
 }
 
 extension Color {
