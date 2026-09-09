@@ -26,6 +26,7 @@ Para criar uma tarefa, use `/tarefa` no Claude Code — ele cuida do id sequenci
 
 - [[04 - Tarefas/T-0001 - Refinamento de UI e interação da ActionShelf|T-0001 — Refinamento de UI e interação da ActionShelf]] · `concluida`
 - [[04 - Tarefas/T-0002 - Refatorar UI da Bancada + WebView|T-0002 — Refatorar UI da Bancada + WebView]] · `a-fazer`
+- [[04 - Tarefas/T-0003 - Continuar as iterações do Fabricio|T-0003 — Continuar as iterações do Fabricio]] · `a-fazer`
 
 ---
 ← [[🏠 Início]]
