@@ -17,7 +17,10 @@ import DesignSystem
 /// explícito e mudar por decisão, não como efeito colateral de um campo novo
 /// no modelo.
 enum Indice {
-    static let versaoDoFormato = 1
+    /// 2 — os templates saíram de `notas` para um `templates` próprio. Mudança
+    /// deliberada de contrato: até a versão 1, o andaime `Template - Tarefa.md`
+    /// chegava ao site como tarefa `T-0000 — {{título da tarefa}}`.
+    static let versaoDoFormato = 2
 
     static func executar(caminho: String?) -> Int32 {
         let base = URL(fileURLWithPath: caminho ?? FileManager.default.currentDirectoryPath)
@@ -59,6 +62,9 @@ struct IndiceDoVault: Encodable {
     let raiz: String
     let geradoEm: Date
     let notas: [NotaJSON]
+    /// Fora de `notas` desde a versão 2 do formato: andaime não é conteúdo, e
+    /// quem publica não precisa filtrar de novo o que o parser já separou.
+    let templates: [NotaJSON]
     let fatos: [FatoJSON]
     let arvoreDeRegistros: [NoJSON]
     let midias: [MidiaJSON]
@@ -70,6 +76,7 @@ struct IndiceDoVault: Encodable {
         raiz = vault.raiz.path
         geradoEm = .now
         notas = vault.notas.map(NotaJSON.init)
+        templates = vault.templates.map(NotaJSON.init)
         fatos = vault.fatos.map(FatoJSON.init)
         arvoreDeRegistros = Agrupador.arvore(de: vault.fatos).map(NoJSON.init)
         midias = vault.midias.map(MidiaJSON.init)

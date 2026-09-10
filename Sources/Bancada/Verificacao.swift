@@ -49,6 +49,12 @@ enum Verificacao {
             print("  \(tipo.rotulo.padded(20)) \(n)\(cadeado)")
         }
 
+        // Andaimes não entram na contagem por tipo, mas também não somem: um
+        // template a menos no vault é problema, e só se percebe se ele aparece.
+        if !vault.templates.isEmpty {
+            print("  \("Templates".padded(20)) \(vault.templates.count) (fora da contagem)")
+        }
+
         print("\nMídia por espécie")
         for especie in Midia.Especie.allCases {
             let n = vault.midias.filter { $0.especie == especie }.count

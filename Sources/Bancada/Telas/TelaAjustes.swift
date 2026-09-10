@@ -183,6 +183,12 @@ struct TelaAjustes: View {
                 Divisor()
                 LinhaDeValor("Mídia", valor: "\(vault.midias.count)")
                 LinhaDeValor("Fatos registrados", valor: "\(vault.fatos.count)")
+                // Andaime não é conteúdo e por isso não entra na contagem por
+                // tipo — mas fica listado, porque template que some é problema.
+                if !vault.templates.isEmpty {
+                    LinhaDeValor("Templates", valor: "\(vault.templates.count)")
+                        .help("Andaimes de nota nova. Não contam como conteúdo do vault.")
+                }
             }
         }
     }

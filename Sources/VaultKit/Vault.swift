@@ -56,6 +56,26 @@ public struct Vault {
     /// Linhas de `05 - Registros/` que não casaram com o formato dos hooks.
     public let fatosNaoReconhecidos: [String]
 
+    /// Os andaimes de nota nova (`Template - Tarefa.md` e companhia), fora de
+    /// `notas` de propósito. Ver `LeitorDeVault.ehTemplate`.
+    public let templates: [Nota]
+
+    init(
+        raiz: URL,
+        notas: [Nota],
+        invalidas: [NotaInvalida],
+        midias: [Midia],
+        fatosNaoReconhecidos: [String],
+        templates: [Nota] = []
+    ) {
+        self.raiz = raiz
+        self.notas = notas
+        self.invalidas = invalidas
+        self.midias = midias
+        self.fatosNaoReconhecidos = fatosNaoReconhecidos
+        self.templates = templates
+    }
+
     public var fatos: [Fato] {
         notas.filter { $0.tipo == .registro }
             .flatMap { nota -> [Fato] in
@@ -90,6 +110,24 @@ public enum LeitorDeVault {
         "README.md", "CLAUDE.md", "CONTRIBUTING.md", "LICENSE.md", "CHANGELOG.md"
     ]
 
+    /// Prefixo dos andaimes de nota nova, tal como o vault os nomeia:
+    /// `Template - Tarefa.md`, `Template - Atualização Diária.md`,
+    /// `Template - Novo Desafio CBL.md`.
+    static let prefixoDeTemplate = "Template - "
+
+    /// Um template cumpre a convenção de frontmatter — tem `tipo` válido, e é
+    /// por isso que ele passa direto pelo validador — mas não é conteúdo: o
+    /// corpo é `{{título da tarefa}}` e o `id` é `T-0000`.
+    ///
+    /// Sem esta separação ele entra na tabela de tarefas como se fosse trabalho
+    /// real, entra na contagem do quadro e chega ao site publicado — que é
+    /// exatamente o que faria o registro parecer preenchido pela metade justo
+    /// para quem vai avaliá-lo. A regra mora aqui, e não em cada tela, porque
+    /// regra que cada chamador precisa lembrar de aplicar é regra que decai.
+    public static func ehTemplate(_ caminhoRelativo: String) -> Bool {
+        (caminhoRelativo as NSString).lastPathComponent.hasPrefix(prefixoDeTemplate)
+    }
+
     public enum Erro: LocalizedError {
         case raizInvalida(URL)
 
@@ -113,6 +151,7 @@ public enum LeitorDeVault {
         guard ehVault(raiz) else { throw Erro.raizInvalida(raiz) }
 
         var notas: [Nota] = []
+        var templates: [Nota] = []
         var invalidas: [NotaInvalida] = []
         var midias: [Midia] = []
         var naoReconhecidas: [String] = []
@@ -199,6 +238,13 @@ public enum LeitorDeVault {
                 corpo: corpo,
                 modificadoEm: modificado
             )
+            // Depois da validação, não antes: um template com frontmatter
+            // quebrado continua sendo cobrado como nota fora da convenção.
+            guard !ehTemplate(caminho) else {
+                templates.append(nota)
+                continue
+            }
+
             notas.append(nota)
 
             if tipo == .registro {
@@ -212,7 +258,8 @@ public enum LeitorDeVault {
             notas: notas.sorted { $0.caminhoRelativo < $1.caminhoRelativo },
             invalidas: invalidas.sorted { $0.caminhoRelativo < $1.caminhoRelativo },
             midias: midias.sorted { $0.modificadoEm > $1.modificadoEm },
-            fatosNaoReconhecidos: naoReconhecidas
+            fatosNaoReconhecidos: naoReconhecidas,
+            templates: templates.sorted { $0.caminhoRelativo < $1.caminhoRelativo }
         )
     }
 
