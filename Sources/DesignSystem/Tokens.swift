@@ -394,20 +394,31 @@ public enum DS {
         public static let alturaDaPreviaGrande: CGFloat = 180
     }
 
-    /// A grade do calendário e o seu sanfonar.
+    /// A grade do calendário e o painel do dia ao lado dela.
     public enum Calendario {
-        public static let larguraMinimaDaCelula: CGFloat = 96
-        public static let alturaMinimaDaCelula: CGFloat = 88
+        /// Pisos da célula. Abaixo deles a grade rola em vez de espremer: um
+        /// número do dia e um chip precisam caber, e 72 × 64 é onde ainda cabem.
+        /// O piso de largura é o que decide se o painel do dia cabe ao lado
+        /// (`GeometriaDaGrade.larguraDoPainel`).
+        public static let larguraMinimaDaCelula: CGFloat = 72
+        public static let alturaMinimaDaCelula: CGFloat = 64
         public static let alturaDoCabecalho: CGFloat = 24
 
-        /// Quantas semanas a grade mostra nos dois extremos: uma tira de sete
-        /// dias comprimida, o mês inteiro estendido. Seis porque é o máximo que
-        /// um mês gregoriano ocupa (fevereiro de 29 dias começando no sábado).
-        public static let semanasMinimas: Int = 1
-        public static let semanasMaximas: Int = 6
+        /// A faixa de proporção da célula, em largura ÷ altura.
+        ///
+        /// A célula acompanha a janela, mas não a qualquer custo: numa tela
+        /// larga e baixa ela virava uma faixa de 2,4:1, e na tira da semana,
+        /// com altura sobrando, viraria uma coluna. Fora da faixa, a grade
+        /// estreita (e centraliza) ou para de crescer — nunca deforma.
+        public static let proporcaoMinimaDaCelula: CGFloat = 0.75
+        public static let proporcaoMaximaDaCelula: CGFloat = 1.6
 
-        /// A faixa de arrasto entre a grade e o detalhe do dia.
-        public static let alturaDoPuxador: CGFloat = 14
+        /// O painel do dia, à direita da grade: uma fração da área, entre
+        /// dois limites. Sem o teto, numa tela grande o painel roubava a
+        /// largura que a grade usa para mostrar o nome das tarefas.
+        public static let fracaoDoPainel: CGFloat = 0.3
+        public static let larguraMinimaDoPainel: CGFloat = 280
+        public static let larguraMaximaDoPainel: CGFloat = 400
 
         /// Quanto o ponteiro precisa ficar parado sobre uma célula antes do
         /// resumo aparecer. Curto demais e o popover pisca ao atravessar a

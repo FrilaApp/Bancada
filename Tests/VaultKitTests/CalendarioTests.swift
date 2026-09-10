@@ -342,8 +342,8 @@ final class GradeDoCalendarioTests: XCTestCase {
     /// O mês que mais estica a grade: fevereiro de 29 dias começando no sábado
     /// ocupa seis linhas.
     func testNenhumMesPassaDeSeisSemanas() {
-        // O teto que `DS.Calendario.semanasMaximas` declara, verificado contra
-        // dez anos de calendário em vez de contra a memória de quem escreveu.
+        // O teto de linhas que a grade precisa acomodar, verificado contra dez
+        // anos de calendário em vez de contra a memória de quem escreveu.
         for ano in 2024...2034 {
             for mes in 1...12 {
                 let iso = String(format: "%04d-%02d-15", ano, mes)

@@ -63,10 +63,12 @@ public struct EventoDeCalendario: Identifiable, Equatable {
         /// para os filtros e o resumo do dia, e a agenda lidera os dois.
         case agenda, fato, diario, tarefaCriada
 
+        /// "Fato" é vocabulário do doc-harness; quem chega de fora conhece a
+        /// pasta `05 - Registros` e a seção de mesmo nome na barra lateral.
         public var rotulo: String {
             switch self {
             case .agenda: return "Agenda"
-            case .fato: return "Fatos"
+            case .fato: return "Registros"
             case .diario: return "Diário"
             case .tarefaCriada: return "Tarefas criadas"
             }
@@ -90,12 +92,25 @@ public struct EventoDeCalendario: Identifiable, Equatable {
     public let data: String          // ISO, como no vault
     public let hora: String?         // HH:MM — só fatos têm
     public let especie: Especie
+    /// A linha como a origem a escreveu — no fato, a descrição crua do log.
     public let rotulo: String
     public let detalhe: String
-    /// Quem fez. Fato traz o autor do commit; tarefa, o responsável; o diário
-    /// não tem autoria própria — a narrativa é do dia, não de uma pessoa.
+    /// Quem fez, já pelo nome que a equipe usa (`Equipe.nome(de:)`). Fato
+    /// traz o autor do commit; tarefa, o responsável; o diário não tem autoria
+    /// própria — a narrativa é do dia, não de uma pessoa.
     public let autor: String?
     public let origem: URL?
+
+    /// O que ler primeiro. Ver `LeituraDeFato`.
+    public let titulo: String
+    /// O hash do commit, para quem precisa conferir.
+    public let referencia: String?
+    public let arquivos: Int?
+    /// A tarefa que o evento cita — a primeira, quando cita mais de uma.
+    public let tarefa: TarefaCitada?
+    public let bastidor: Bool
+    /// O corpo que acompanha o evento; só o diário tem.
+    public let texto: String?
 
     public var id: String { "\(data) \(hora ?? "--") \(especie.rawValue) \(rotulo)" }
 
@@ -106,7 +121,13 @@ public struct EventoDeCalendario: Identifiable, Equatable {
         rotulo: String,
         detalhe: String = "",
         autor: String? = nil,
-        origem: URL? = nil
+        origem: URL? = nil,
+        titulo: String? = nil,
+        referencia: String? = nil,
+        arquivos: Int? = nil,
+        tarefa: TarefaCitada? = nil,
+        bastidor: Bool = false,
+        texto: String? = nil
     ) {
         self.data = data
         self.hora = hora
@@ -115,6 +136,12 @@ public struct EventoDeCalendario: Identifiable, Equatable {
         self.detalhe = detalhe
         self.autor = autor
         self.origem = origem
+        self.titulo = titulo ?? rotulo
+        self.referencia = referencia
+        self.arquivos = arquivos
+        self.tarefa = tarefa
+        self.bastidor = bastidor
+        self.texto = texto
     }
 
     /// Minutos desde a meia-noite; evento sem hora vai para o fim do dia.
@@ -123,6 +150,19 @@ public struct EventoDeCalendario: Identifiable, Equatable {
         let partes = hora.components(separatedBy: ":")
         guard partes.count == 2, let h = Int(partes[0]), let m = Int(partes[1]) else { return 24 * 60 }
         return h * 60 + m
+    }
+}
+
+/// Uma tarefa citada por um evento. O título vem da nota da tarefa; fica
+/// `nil` quando o ID não existe mais no vault — uma tarefa renumerada, por
+/// exemplo —, e aí quem lê vê o ID em vez de um nome inventado.
+public struct TarefaCitada: Equatable, Hashable, Sendable {
+    public let id: String
+    public let titulo: String?
+
+    public init(id: String, titulo: String? = nil) {
+        self.id = id
+        self.titulo = titulo
     }
 }
 
@@ -146,6 +186,14 @@ public enum Calendario {
     public static func eventos(de vault: Vault) -> [EventoDeCalendario] {
         var todos: [EventoDeCalendario] = []
 
+        let titulos = Dictionary(
+            vault.tarefas.compactMap { t in t.identificador.map { ($0, t.titulo) } },
+            uniquingKeysWith: { primeiro, _ in primeiro }
+        )
+        func citada(_ id: String?) -> TarefaCitada? {
+            id.map { TarefaCitada(id: $0, titulo: titulos[$0]) }
+        }
+
         for nota in vault.notas(tipo: .agenda) {
             let (brutos, _) = LeitorDeAgenda.ler(texto: nota.corpo)
             for bruto in brutos {
@@ -164,13 +212,19 @@ public enum Calendario {
         }
 
         for fato in vault.fatos {
+            let leitura = LeituraDeFato.ler(tipo: fato.tipo, descricao: fato.descricao)
             todos.append(EventoDeCalendario(
                 data: fato.data,
                 hora: fato.hora,
                 especie: .fato,
                 rotulo: fato.descricao,
                 detalhe: fato.tipo,
-                autor: fato.autor
+                autor: vault.equipe.nome(de: fato.autor),
+                titulo: leitura.titulo,
+                referencia: leitura.referencia,
+                arquivos: leitura.arquivos,
+                tarefa: citada(Vinculo.tarefas(em: fato.descricao).first),
+                bastidor: leitura.bastidor
             ))
         }
 
@@ -181,7 +235,9 @@ public enum Calendario {
                 especie: .diario,
                 rotulo: nota.titulo,
                 detalhe: nota.caminhoRelativo,
-                origem: nota.url
+                origem: nota.url,
+                titulo: "Narrativa do dia",
+                texto: nota.corpo
             ))
         }
 
@@ -192,8 +248,15 @@ public enum Calendario {
                 especie: .tarefaCriada,
                 rotulo: "\(tarefa.identificador ?? "—") \(tarefa.titulo)",
                 detalhe: tarefa.status?.rotulo ?? "sem status",
-                autor: tarefa.responsavel,
-                origem: tarefa.url
+                // Com mais de um responsável, vale o primeiro: o evento tem um
+                // autor só, e juntar os nomes numa string faria "Cauê e Júlia"
+                // aparecer como uma terceira pessoa no filtro.
+                autor: tarefa.responsavel.flatMap { Equipe.nomes(em: $0).first }.map(vault.equipe.nome(de:)),
+                origem: tarefa.url,
+                // Agrupado sob a própria tarefa, "Tarefa criada" já diz tudo:
+                // o nome dela é o título do grupo.
+                titulo: "Tarefa criada",
+                tarefa: tarefa.identificador.map { TarefaCitada(id: $0, titulo: tarefa.titulo) }
             ))
         }
 
@@ -333,6 +396,30 @@ public enum Calendario {
         formatador.calendar = calendario
         formatador.locale = DataISO.locale(de: calendario)
         formatador.setLocalizedDateFormatFromTemplate("yMMMM")
+        return formatador.string(from: data)
+    }
+
+    /// `quarta-feira, 9 de setembro` (longo) ou `qua., 9 de set.` (curto), no
+    /// idioma do sistema.
+    ///
+    /// O ISO continua sendo a data do vault e do nome dos arquivos; na tela,
+    /// `2026-09-09` obrigava quem lê a converter de cabeça, e o dia da semana —
+    /// que é o que situa alguém numa agenda — não aparecia em lugar nenhum. O
+    /// ano só entra quando não é o de `referencia`.
+    public static func rotuloDoDia(
+        _ iso: String,
+        longo: Bool = true,
+        referencia: String = DataISO.texto(.now),
+        calendario: Calendar = DataISO.calendario
+    ) -> String {
+        guard let data = DataISO.data(iso) else { return iso }
+        let mesmoAno = DataISO.componentes(iso)?.year == DataISO.componentes(referencia)?.year
+        let formatador = DateFormatter()
+        formatador.calendar = calendario
+        formatador.locale = DataISO.locale(de: calendario)
+        formatador.setLocalizedDateFormatFromTemplate(
+            (longo ? "EEEEdMMMM" : "EEEdMMM") + (mesmoAno ? "" : "y")
+        )
         return formatador.string(from: data)
     }
 

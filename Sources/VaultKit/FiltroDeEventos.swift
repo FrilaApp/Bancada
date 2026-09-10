@@ -47,7 +47,12 @@ public struct FiltroDeEventos: Equatable {
         if !termo.isEmpty {
             // Busca sem diacrítico e sem caixa: "diario" acha "diário", que é
             // o mínimo para um vault escrito em português.
-            let campos = [evento.rotulo, evento.detalhe, evento.autor ?? "", evento.data]
+            // O nome da tarefa entra porque é o que o painel mostra: buscar
+            // "ActionShelf" precisa achar o commit que só diz `(T-0001)`.
+            let campos = [
+                evento.rotulo, evento.titulo, evento.detalhe, evento.autor ?? "", evento.data,
+                evento.tarefa?.titulo ?? ""
+            ]
             let casa = campos.contains {
                 $0.range(of: termo, options: [.caseInsensitive, .diacriticInsensitive]) != nil
             }

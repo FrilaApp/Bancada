@@ -21,13 +21,20 @@ import VaultKit
 public struct TextoDeNota: View {
     @Environment(\.cores) private var cores
     private let blocos: [Markdown.Bloco]
+    private let linhasPorItem: Int?
 
     public init(_ markdown: String) {
         self.blocos = Markdown.blocos(de: markdown)
+        self.linhasPorItem = nil
     }
 
-    public init(blocos: [Markdown.Bloco]) {
+    /// `linhasPorItem` corta cada item de lista, para quando o texto é um
+    /// resumo e não a nota inteira — o painel do dia no calendário. O corpo
+    /// e a entrelinha continuam os de leitura: a densidade compacta é do
+    /// chrome, não do texto que se lê.
+    public init(blocos: [Markdown.Bloco], linhasPorItem: Int? = nil) {
         self.blocos = blocos
+        self.linhasPorItem = linhasPorItem
     }
 
     public var body: some View {
@@ -150,6 +157,7 @@ public struct TextoDeNota: View {
                     .font(DS.Tipografia.leitura)
                     .lineSpacing(DS.Tipografia.entrelinhaDeLeitura)
                     .foregroundStyle(cores.texto)
+                    .lineLimit(linhasPorItem)
             }
             Spacer(minLength: 0)
         }

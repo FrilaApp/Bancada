@@ -60,13 +60,17 @@ public struct Vault {
     /// `notas` de propósito. Ver `LeitorDeVault.ehTemplate`.
     public let templates: [Nota]
 
+    /// A tabela de contatos do `CLAUDE.md`. Ver `Equipe`.
+    public let equipe: Equipe
+
     init(
         raiz: URL,
         notas: [Nota],
         invalidas: [NotaInvalida],
         midias: [Midia],
         fatosNaoReconhecidos: [String],
-        templates: [Nota] = []
+        templates: [Nota] = [],
+        equipe: Equipe = Equipe()
     ) {
         self.raiz = raiz
         self.notas = notas
@@ -74,6 +78,7 @@ public struct Vault {
         self.midias = midias
         self.fatosNaoReconhecidos = fatosNaoReconhecidos
         self.templates = templates
+        self.equipe = equipe
     }
 
     public var fatos: [Fato] {
@@ -259,7 +264,11 @@ public enum LeitorDeVault {
             invalidas: invalidas.sorted { $0.caminhoRelativo < $1.caminhoRelativo },
             midias: midias.sorted { $0.modificadoEm > $1.modificadoEm },
             fatosNaoReconhecidos: naoReconhecidas,
-            templates: templates.sorted { $0.caminhoRelativo < $1.caminhoRelativo }
+            templates: templates.sorted { $0.caminhoRelativo < $1.caminhoRelativo },
+            // O `CLAUDE.md` fica fora de `notas` (é documentação do repo), mas
+            // a tabela de contatos dele é a única lista da equipe que existe.
+            equipe: (try? String(contentsOf: raiz.appendingPathComponent("CLAUDE.md"), encoding: .utf8))
+                .map(Equipe.ler(texto:)) ?? Equipe()
         )
     }
 

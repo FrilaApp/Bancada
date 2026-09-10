@@ -95,7 +95,7 @@ As páginas levam `noindex, nofollow`. Isso pede a buscadores que não indexem, 
 
 | Seção | O que resolve |
 |---|---|
-| **Calendário** | Os dias do vault com o que aconteceu em cada um: fatos do log, notas diárias e tarefas criadas. *Andaime — a grade de mês ainda não existe; ver abaixo* |
+| **Calendário** | O que aconteceu em cada dia, em linguagem de gente: a agenda da Academy, a narrativa do dia e o trabalho agrupado por tarefa. O log cru fica no fim, recolhido, para quem precisa conferir |
 | **Trabalho** | A tabela de tarefas (colunas ordenáveis, filtro por status) com os fatos logo abaixo. Selecionar uma tarefa mostra só os fatos que citam o ID dela; sem seleção, o log inteiro indentado por dia → tipo → grupo, com a repetição colapsada — cinco commits "Registra os fatos da sessão" viram um nó `5× … [20:21–22:05]`, que abre e mostra os cinco |
 | **Diário** | A narrativa do dia ao lado dos fatos que a sustentam — a regra de ouro do vault, verificável de relance |
 | **Acervo** | Imagens, vídeos, PDFs e `.pages`, cada um com miniatura de verdade. Selecionar um `.pages` traz o `.md` derivado no painel ao lado |
@@ -113,7 +113,15 @@ Nada ficou inalcançável na fusão. A árvore inteira de registros continua a u
 
 ### O calendário
 
-`VaultKit/Calendario.swift` já agrega o vault em `DiaDoCalendario` — fatos, diários e tarefas criadas por data — e `DataISO` converte as datas do frontmatter ancorando ao meio-dia, para que fuso e horário de verão nunca joguem um evento para a véspera. A tela foi lista enquanto a grade não estava pronta — uma grade incompleta pareceria pronta. Desde `99bfabf` são três modos: Mês, Semana e Lista, com um puxador que comprime a grade entre uma faixa de sete dias e o mês inteiro, navegação entre meses e seleção de dia. Para o formato do vault de hoje, Semana e Lista são os modos úteis; Mês abre quase todo vazio, e isso está registrado na revisão de UI de 09/09.
+`VaultKit/Calendario.swift` já agrega o vault em `DiaDoCalendario` — fatos, diários e tarefas criadas por data — e `DataISO` converte as datas do frontmatter ancorando ao meio-dia, para que fuso e horário de verão nunca joguem um evento para a véspera. A tela foi lista enquanto a grade não estava pronta — uma grade incompleta pareceria pronta. Desde `99bfabf` são três modos: Mês, Semana e Lista, com um puxador que comprime a grade entre uma faixa de sete dias e o mês inteiro, navegação entre meses e seleção de dia.
+
+O calendário não mostra o log como ele foi gravado. A linha `` `df873d0` — Registra os fatos da sessão · 1 arquivo(s) `` é escrita para auditoria, e na célula o que cabia dela era o hash. Entre o vault e a tela há uma camada de tradução, toda em `VaultKit` e coberta por teste:
+
+- **`LeituraDeFato`** separa a mensagem do hash e da contagem de arquivos, e marca como **bastidor** o que é o vault registrando a si mesmo ("Registra os fatos da sessão", `sessao`, atualizações da narrativa) — 37% dos fatos dos três primeiros dias.
+- **`Equipe`** lê a tabela de contatos do `CLAUDE.md` do vault e troca o login do Git pelo primeiro nome: `fbtostadev` vira Fabrício. Quem não casa com ninguém sai como veio.
+- **`ResumoDoDia`** lê o dia em camadas: agenda, os itens de "O que foi feito" da narrativa (sem a referência técnica do fim), o trabalho agrupado pela tarefa citada na mensagem, o bastidor e, por último, o log intacto.
+
+A célula mostra agenda e nome das tarefas; a prévia, uma frase ("Fabrício e Cauê avançaram 5 tarefas, com mais 9 registros fora delas"); o painel, as camadas nessa ordem. O hash continua a um repouso do ponteiro e no "Registro completo".
 
 ## Como o agrupamento decide o que juntar
 
@@ -139,7 +147,10 @@ Sources/VaultKit/     Leitura do vault, sem UI — testável e reaproveitável
   Fato.swift            Parser das linhas de 05 - Registros/
   Agrupador.swift       A regra de colapso descrita acima
   Vinculo.swift         Que fato pertence a que tarefa — pelo ID, nunca por semelhança
-  Calendario.swift      Eventos por dia (fato, diário, tarefa) e datas ISO
+  Calendario.swift      Eventos por dia (agenda, fato, diário, tarefa) e datas ISO
+  Leitura.swift         O fato traduzido para leitura: mensagem primeiro, hash à parte
+  Equipe.swift          Login do Git → nome da pessoa, pela tabela do CLAUDE.md
+  ResumoDoDia.swift     O dia em camadas: agenda, narrativa, tarefas, bastidor, log
   Vault.swift           Varredura da pasta e catálogo de mídia
   Observador.swift      FSEvents — os hooks escrevem por fora do app
 

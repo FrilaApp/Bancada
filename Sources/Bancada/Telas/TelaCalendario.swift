@@ -4,7 +4,12 @@ import VaultKit
 import DesignSystem
 
 /// O calendário do vault: grade que sanfona entre a tira de sete dias e o mês
-/// inteiro, mais uma visão de lista, com busca e filtro por espécie e autor.
+/// inteiro, mais uma visão de lista, com busca e filtro por tipo e pessoa.
+///
+/// O que a tela desenha já vem traduzido (`LeituraDeFato`, `ResumoDoDia`): o
+/// nome da tarefa em vez do commit, "Fabrício" em vez de `fbtostadev`,
+/// "quarta-feira, 9 de setembro" em vez de `2026-09-09`. A linha crua do log
+/// continua existindo — no fim do painel do dia, recolhida, para quem audita.
 ///
 /// A grade não é um seletor de data — ninguém digita uma data aqui. É um mapa
 /// de atividade: cada dia mostra o que aconteceu nele, e o dia sem nada fica
@@ -19,9 +24,14 @@ import DesignSystem
 ///
 /// Três decisões que o resto da tela sustenta:
 ///
-/// - **A semana selecionada nunca sai de vista ao comprimir** (`Calendario.janelaDeSemanas`).
+/// - **A célula acompanha a janela sem deformar** (`GeometriaDaGrade`).
 /// - **O resumo aparece ao lado da célula, nunca sobre ela.**
 /// - **Filtro vazio é ausência de filtro**, nunca resultado vazio.
+///
+/// O painel do dia fica à direita da grade, e não embaixo. Embaixo, ele e a
+/// grade disputavam a altura — era por isso que existia um puxador para
+/// comprimir o mês até uma semana. Ao lado, cada um tem a sua dimensão: a
+/// grade fica com a altura inteira, e comprimir virou o modo Semana.
 struct TelaCalendario: View {
     @Environment(\.cores) private var cores
     let dias: [DiaDoCalendario]
@@ -53,11 +63,17 @@ struct TelaCalendario: View {
 
     @State private var modo: Modo
     @State private var ancora: String = DataISO.texto(.now)
-    @State private var semanasVisiveis: Int = DS.Calendario.semanasMaximas
     @State private var filtro = FiltroDeEventos()
     @State private var previewDoDia: String?
     @State private var esperaDoPreview: Task<Void, Never>?
-    @State private var arrastoAcumulado: CGFloat = 0
+
+    /// O que a pessoa pediu para o painel do dia. Fica salvo: quem prefere a
+    /// grade inteira não precisa fechar o painel a cada abertura do app.
+    @AppStorage("calendario.painelDoDia") private var painelPedido = true
+    /// Se o painel cabe na largura atual. Ver `GeometriaDaGrade.larguraDoPainel`.
+    @State private var painelCabe = true
+
+    private var painelAberto: Bool { painelPedido && painelCabe }
 
     // MARK: - Dado derivado
 
@@ -70,11 +86,9 @@ struct TelaCalendario: View {
     }
 
     private var semanas: [[String]] {
-        Calendario.janelaDeSemanas(de: ancora, semanas: modo == .semana ? 1 : semanasVisiveis)
-    }
-
-    private var totalDeSemanasDoMes: Int {
-        max(Calendario.semanasDoMes(de: ancora).count, DS.Calendario.semanasMinimas)
+        modo == .semana
+            ? Calendario.janelaDeSemanas(de: ancora, semanas: 1)
+            : Calendario.semanasDoMes(de: ancora)
     }
 
     private var diaEmFoco: DiaDoCalendario? { porData[ancora] }
@@ -110,11 +124,25 @@ struct TelaCalendario: View {
 
             switch modo {
             case .mes, .semana:
-                cabecalhoDasColunas
-                grade
-                if modo == .mes { puxador }
-                Divisor()
-                painelDoDia
+                GeometryReader { area in
+                    let painel = GeometriaDaGrade.larguraDoPainel(para: area.size.width)
+                    HStack(spacing: 0) {
+                        // Acima do painel: a prévia de uma célula da última
+                        // coluna sai da grade para a direita, sobre ele.
+                        colunaDaGrade(sobraADireita: painelAberto ? (painel ?? 0) : 0)
+                            .zIndex(1)
+                        if painelAberto, let painel {
+                            Divisor(.vertical)
+                            painelDoDia
+                                .frame(width: painel)
+                                .transition(.move(edge: .trailing).combined(with: .opacity))
+                        }
+                    }
+                    .onAppear { painelCabe = painel != nil }
+                    .onChange(of: painel != nil) { _, cabe in
+                        withAnimation(DS.Movimento.padrao) { painelCabe = cabe }
+                    }
+                }
             case .lista:
                 Divisor()
                 visaoDeLista
@@ -156,7 +184,7 @@ struct TelaCalendario: View {
                     .buttonStyle(BotaoDoSistema(.peca))
                     .font(DS.Tipografia.detalhe)
                     .foregroundStyle(cores.acento)
-                    .help("Voltar para \(hoje)")
+                    .help("Voltar para \(Calendario.rotuloDoDia(hoje))")
             } else {
                 Text("Todos os dias")
                     .font(DS.Tipografia.secao)
@@ -176,16 +204,37 @@ struct TelaCalendario: View {
                 .init(valor: Modo.semana, rotulo: "Semana", simbolo: "calendar.day.timeline.left"),
                 .init(valor: Modo.lista, rotulo: "Lista", simbolo: "list.bullet")
             ])
+
+            // Na Lista não há painel: o dia já está por extenso na própria linha.
+            if modo != .lista { botaoDoPainel }
         }
+    }
+
+    /// Mostra e esconde o painel do dia — o mesmo glifo e o mesmo atalho do
+    /// inspetor no Finder e no Xcode (⌥⌘I, ⌥⌘0), para ninguém ter de aprender.
+    private var botaoDoPainel: some View {
+        Button {
+            withAnimation(DS.Movimento.padrao) { painelPedido.toggle() }
+        } label: {
+            Image(systemName: "sidebar.right")
+        }
+        .buttonStyle(BotaoDoSistema(.glifo))
+        .foregroundStyle(painelAberto ? cores.acento : cores.textoSutil)
+        .disabled(!painelCabe)
+        .keyboardShortcut("i", modifiers: [.command, .option])
+        .help(painelCabe
+              ? (painelPedido ? "Ocultar o painel do dia (⌥⌘I)" : "Mostrar o painel do dia (⌥⌘I)")
+              : "Alargue a janela para ver o painel do dia ao lado da grade")
+        .accessibilityLabel(painelPedido ? "Ocultar o painel do dia" : "Mostrar o painel do dia")
     }
 
     private var barraDeFiltro: some View {
         HStack(spacing: DS.Espaco.sm) {
-            CampoDeBusca(texto: $filtro.busca, dica: "Buscar por descrição ou autor…")
+            CampoDeBusca(texto: $filtro.busca, dica: "Buscar por tarefa, descrição ou pessoa…")
                 .frame(maxWidth: DS.Acervo.larguraIdealDoPainel)
 
             MenuDeFiltro(
-                titulo: "Espécie",
+                titulo: "Tipo",
                 opcoes: opcoesDeEspecie,
                 marcadas: Binding(
                     get: { Set(filtro.especies.map(\.rawValue)) },
@@ -194,7 +243,7 @@ struct TelaCalendario: View {
             )
 
             MenuDeFiltro(
-                titulo: "Autor",
+                titulo: "Pessoa",
                 simbolo: "person",
                 opcoes: opcoesDeAutor,
                 marcadas: $filtro.autores
@@ -260,7 +309,10 @@ struct TelaCalendario: View {
         .overlay(alignment: .bottom) { Divisor() }
     }
 
-    private var cabecalhoDasColunas: some View {
+    /// Os dias da semana, alinhados à grade — que pode ser mais estreita que a
+    /// coluna quando a proporção da célula a segura. A faixa de cromo continua
+    /// de ponta a ponta; só os rótulos acompanham a grade.
+    private func cabecalhoDasColunas(largura: CGFloat) -> some View {
         HStack(spacing: DS.Traco.fio) {
             ForEach(Array(Calendario.rotulosDasColunas().enumerated()), id: \.offset) { _, rotulo in
                 Text(rotulo)
@@ -269,52 +321,69 @@ struct TelaCalendario: View {
                     .frame(maxWidth: .infinity)
             }
         }
-        .frame(height: DS.Calendario.alturaDoCabecalho)
-        .padding(.horizontal, DS.Espaco.md)
+        .frame(width: largura, height: DS.Calendario.alturaDoCabecalho)
+        .frame(maxWidth: .infinity)
         .background(cores.cromo)
     }
 
     // MARK: - Grade
 
-    /// A grade ocupa exatamente as linhas que tem: sem altura declarada, a tira
-    /// de uma semana esticaria para preencher a janela e viraria sete caixotes
-    /// vazios — o oposto de comprimir. O espaço que sobra é do detalhe do dia.
-    private var alturaDaGrade: CGFloat {
-        let linhas = CGFloat(max(semanas.count, 1))
-        let altura = modo == .semana
-            ? DS.Calendario.alturaMinimaDaCelula * 1.5
-            : DS.Calendario.alturaMinimaDaCelula
-        return linhas * altura + (linhas - 1) * DS.Traco.fio
+    /// A coluna da esquerda: cabeçalho e grade, medidos pela área que sobrou.
+    ///
+    /// A grade fica no alto e centralizada; quando a proporção da célula a
+    /// impede de ocupar a largura inteira, a sobra vai para as margens, não
+    /// para dentro da célula. Só rola quando nem os pisos cabem.
+    private func colunaDaGrade(sobraADireita: CGFloat) -> some View {
+        GeometryReader { area in
+            let margens = CGSize(
+                width: 2 * DS.Espaco.md,
+                height: DS.Calendario.alturaDoCabecalho + 2 * DS.Espaco.sm
+            )
+            let medidas = GeometriaDaGrade.calcular(
+                area: CGSize(width: area.size.width - margens.width, height: area.size.height - margens.height),
+                linhas: semanas.count
+            )
+            let sobra = sobraADireita + (area.size.width - medidas.larguraDaGrade) / 2
+            let conteudo = VStack(spacing: 0) {
+                cabecalhoDasColunas(largura: medidas.larguraDaGrade)
+                grade(medidas, sobraADireita: sobra)
+                    .frame(maxWidth: .infinity)
+            }
+
+            if medidas.transborda {
+                ScrollView([.vertical, .horizontal]) { conteudo }
+            } else {
+                conteudo.frame(maxHeight: .infinity, alignment: .top)
+            }
+        }
+        .background(cores.fundo)
     }
 
-    private var grade: some View {
+    private func grade(_ medidas: GeometriaDaGrade, sobraADireita: CGFloat) -> some View {
         VStack(spacing: DS.Traco.fio) {
             ForEach(Array(semanas.enumerated()), id: \.offset) { _, semana in
                 HStack(spacing: DS.Traco.fio) {
                     ForEach(semana, id: \.self) { data in
-                        celula(data)
+                        celula(data, medidas: medidas)
                     }
                 }
             }
         }
-        .frame(height: alturaDaGrade)
-        .padding(.horizontal, DS.Espaco.md)
+        .frame(width: medidas.larguraDaGrade, height: medidas.alturaDaGrade)
         .padding(.vertical, DS.Espaco.sm)
-        .background(cores.fundo)
         .overlayPreferenceValue(AncoraDaPrevia.self) { ancora in
             GeometryReader { area in
                 if let ancora, let data = previewDoDia, let dia = porData[data] {
                     let alvo = area[ancora]
                     Sobreposicao {
                         PreviaDoDia(
-                            data: data,
-                            dia: dia,
+                            resumo: ResumoDoDia(dia),
                             ehHoje: data == hoje,
                             filtrado: filtro.ativo
                         )
                     }
                     .offset(
-                        x: posicaoX(doAlvo: alvo, em: area.size),
+                        x: posicaoX(doAlvo: alvo, em: area.size, sobraADireita: sobraADireita),
                         y: posicaoY(doAlvo: alvo, em: area.size)
                     )
                     .transition(.opacity)
@@ -322,17 +391,21 @@ struct TelaCalendario: View {
             }
             .allowsHitTesting(false)
         }
-        .animation(DS.Movimento.padrao, value: semanasVisiveis)
         .animation(DS.Movimento.padrao, value: semanas.count)
         .animation(DS.Movimento.padrao, value: modo)
     }
 
-    /// Quantos chips cabem na célula antes do "+N".
-    private var chipsPorCelula: Int { modo == .semana ? 4 : 2 }
-
-    private func celula(_ data: String) -> some View {
+    private func celula(_ data: String, medidas: GeometriaDaGrade) -> some View {
+        let chipsPorCelula = medidas.chipsPorCelula
         let dia = porData[data]
-        let eventos = dia?.eventos ?? []
+        let resumo = dia.map(ResumoDoDia.init)
+        let temAlgo = !(dia?.eventos.isEmpty ?? true)
+        // Agenda primeiro — é o cronograma da Academy e tem prioridade de
+        // leitura —, depois o nome das tarefas do dia. Commit cru não entra:
+        // era ele que fazia a célula dizer `` `df873d0` — Regi… ``.
+        let itens = (resumo?.agenda.map(ItemDaCelula.agenda) ?? [])
+            + (resumo?.destaques.map(ItemDaCelula.assunto) ?? [])
+        let trabalho = resumo?.quantidadeDeTrabalho ?? 0
         let doMes = Calendario.mesmoMes(data, ancora)
         let selecionado = data == ancora
         let ehHoje = data == hoje
@@ -353,22 +426,16 @@ struct TelaCalendario: View {
                             .frame(width: DS.Espaco.xs, height: DS.Espaco.xs)
                     }
                     Spacer(minLength: 0)
-
-                    if !eventos.isEmpty {
-                        Text("\(eventos.count)")
-                            .font(DS.Tipografia.monoDetalhe)
-                            .monospacedDigit()
-                            .foregroundStyle(cores.textoSutil)
-                    }
+                    // A contagem de eventos que morava aqui saiu: "30" media
+                    // volume de commit, não o que aconteceu. O véu de fundo
+                    // já diz quanto, e os chips dizem o quê.
                 }
 
-                // Os eventos do dia, não só a contagem deles: é o que separa um
-                // mapa de calor de um calendário.
-                ForEach(eventos.prefix(chipsPorCelula)) { evento in
-                    ChipDeEvento(evento: evento, apagado: !doMes)
+                ForEach(Array(itens.prefix(chipsPorCelula).enumerated()), id: \.offset) { _, item in
+                    ChipDaCelula(item: item, apagado: !doMes)
                 }
-                if eventos.count > chipsPorCelula {
-                    Text("+\(eventos.count - chipsPorCelula)")
+                if itens.count > chipsPorCelula {
+                    Text("+\(itens.count - chipsPorCelula)")
                         .font(DS.Tipografia.monoDetalhe)
                         .foregroundStyle(cores.textoSutil)
                 }
@@ -376,13 +443,8 @@ struct TelaCalendario: View {
                 Spacer(minLength: 0)
             }
             .padding(DS.Espaco.xs + 1)
-            .frame(
-                minWidth: DS.Calendario.larguraMinimaDaCelula / 2,
-                maxWidth: .infinity,
-                maxHeight: .infinity,
-                alignment: .topLeading
-            )
-            .background(fundoDaCelula(quantidade: eventos.count, doMes: doMes))
+            .frame(width: medidas.celula.width, height: medidas.celula.height, alignment: .topLeading)
+            .background(fundoDaCelula(quantidade: trabalho, doMes: doMes))
             .overlay(
                 RoundedRectangle(cornerRadius: DS.Raio.sm)
                     .strokeBorder(
@@ -399,18 +461,19 @@ struct TelaCalendario: View {
             // estão vazias, e a prévia disparava neles para dizer "Nada
             // registrado" — a espera de 600 ms existia para não piscar ao
             // atravessar a grade, não para anunciar ausência.
-            if dentro, !eventos.isEmpty { agendarPreview(para: data) }
+            if dentro, temAlgo { agendarPreview(para: data) }
             else { cancelarPreview(de: data) }
         }
         .anchorPreference(key: AncoraDaPrevia.self, value: .bounds) { ancora in
             previewDoDia == data ? ancora : nil
         }
-        .accessibilityLabel(rotuloAcessivel(data: data, quantidade: eventos.count, ehHoje: ehHoje))
+        .accessibilityLabel(rotuloAcessivel(data: data, resumo: resumo, ehHoje: ehHoje))
         .accessibilityAddTraits(selecionado ? [.isButton, .isSelected] : .isButton)
     }
 
-    /// Véu por densidade, atrás dos chips: a intensidade diz quanto aconteceu
-    /// sem obrigar a contar.
+    /// Véu por densidade de trabalho, atrás dos chips: a intensidade diz
+    /// quanto aconteceu sem obrigar a contar. Bastidor não pinta — um dia só
+    /// de "Registra os fatos da sessão" não é um dia de muito trabalho.
     private func fundoDaCelula(quantidade: Int, doMes: Bool) -> Color {
         guard quantidade > 0 else { return doMes ? cores.superficie : cores.fundo }
         let veu: Double
@@ -428,93 +491,45 @@ struct TelaCalendario: View {
         return String(Int(partes[2]) ?? 0)
     }
 
-    private func rotuloAcessivel(data: String, quantidade: Int, ehHoje: Bool) -> String {
-        var partes = [data]
+    private func rotuloAcessivel(data: String, resumo: ResumoDoDia?, ehHoje: Bool) -> String {
+        var partes = [Calendario.rotuloDoDia(data)]
         if ehHoje { partes.append("hoje") }
-        partes.append(quantidade == 0 ? "sem registro" : Plural.contar(quantidade, "evento", "eventos"))
-        return partes.joined(separator: ", ")
-    }
-
-    // MARK: - Puxador
-
-    private var puxador: some View {
-        let comprimido = semanasVisiveis <= DS.Calendario.semanasMinimas
-
-        return ZStack {
-            Capsule().fill(cores.borda)
-                .frame(width: DS.Espaco.xl, height: DS.Traco.selecao)
-            Image(systemName: comprimido ? "chevron.down" : "chevron.up")
-                .font(DS.Icone.fonte(DS.Icone.micro, peso: .semibold))
-                .foregroundStyle(cores.textoSutil)
-                .offset(x: DS.Espaco.xl)
-        }
-        .frame(maxWidth: .infinity)
-        .frame(height: DS.Calendario.alturaDoPuxador)
-        .background(cores.cromo)
-        .contentShape(Rectangle())
-        .onHover { $0 ? NSCursor.resizeUpDown.push() : NSCursor.pop() }
-        .gesture(
-            DragGesture()
-                .onChanged { gesto in
-                    arrastoAcumulado = gesto.translation.height
-                    let passos = Int((arrastoAcumulado / DS.Calendario.alturaMinimaDaCelula).rounded())
-                    comprimir(para: semanasVisiveis + passos, mantendoArrasto: true)
-                }
-                .onEnded { _ in arrastoAcumulado = 0 }
-        )
-        .onTapGesture {
-            comprimir(para: comprimido ? totalDeSemanasDoMes : DS.Calendario.semanasMinimas)
-        }
-        .help(comprimido ? "Arraste para estender até o mês" : "Arraste para comprimir até a semana")
-        .accessibilityLabel(comprimido ? "Estender para o mês" : "Comprimir para a semana")
+        partes += resumo?.agenda.map(\.titulo) ?? []
+        partes.append(resumo?.frase ?? (resumo == nil ? "sem registro" : ""))
+        return partes.filter { !$0.isEmpty }.joined(separator: ", ")
     }
 
     // MARK: - Detalhe do dia
 
+    /// O dia em camadas, da leitura mais leve para a mais crua. Ver
+    /// `ResumoDoDia`. Na coluna lateral a barra leva só a data: quem trabalhou
+    /// já está na frase logo abaixo, e os dois juntos não cabiam em 280 pt.
     private var painelDoDia: some View {
         VStack(spacing: 0) {
             BarraDePainel {
-                Text(ancora)
+                Text(Calendario.rotuloDoDia(ancora))
                     .font(DS.Tipografia.secao)
-                    .monospacedDigit()
                     .foregroundStyle(cores.texto)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.85)
 
                 if ancora == hoje { Etiqueta(texto: "hoje", cor: cores.acento) }
 
-                ForEach(EventoDeCalendario.Especie.allCases, id: \.self) { especie in
-                    let n = diaEmFoco?.quantidade(de: especie) ?? 0
-                    if n > 0 {
-                        Label("\(n)", systemImage: especie.simbolo)
-                            .font(DS.Tipografia.detalhe)
-                            .foregroundStyle(cores.textoSutil)
-                            .help(especie.rotulo)
-                    }
-                }
-
-                Spacer()
-
-                if let n = diaEmFoco?.eventos.count {
-                    Text(Plural.contar(n, "evento", "eventos"))
-                        .font(DS.Tipografia.detalhe)
-                        .foregroundStyle(cores.textoSutil)
-                        .monospacedDigit()
-                }
+                Spacer(minLength: 0)
             }
 
             if let dia = diaEmFoco, !dia.eventos.isEmpty {
-                List(dia.eventos) { evento in
-                    LinhaDeEvento(evento: evento)
-                }
-                .listStyle(.inset)
+                PainelDoDia(resumo: ResumoDoDia(dia))
+                    .id(dia.data)
             } else {
                 Vazio(
                     simbolo: filtro.ativo ? "line.3.horizontal.decrease.circle" : "tray",
                     titulo: filtro.ativo
-                        ? "Nada em \(ancora) casa com o filtro"
-                        : "Nada registrado em \(ancora)",
+                        ? "Nada neste dia casa com o filtro"
+                        : "Nada registrado neste dia",
                     detalhe: filtro.ativo
                         ? "O dia pode ter eventos fora do recorte atual."
-                        : "Nem fato, nem narrativa diária, nem tarefa criada."
+                        : "Sem agenda, sem trabalho registrado e sem narrativa escrita."
                 )
             }
         }
@@ -522,6 +537,9 @@ struct TelaCalendario: View {
 
     // MARK: - Lista
 
+    /// Um índice dos dias: o que cada um foi, em uma frase e nas tarefas que
+    /// andaram. Listar os commits de todos os dias em sequência dava uma
+    /// parede de hash; o detalhe mora no painel do dia, a um clique.
     private var visaoDeLista: some View {
         Group {
             if diasFiltrados.isEmpty {
@@ -530,27 +548,40 @@ struct TelaCalendario: View {
                     titulo: filtro.ativo ? "Nenhum evento casa com o filtro" : "Nenhum dia com evento",
                     detalhe: filtro.ativo
                         ? "Limpe o filtro para ver o vault inteiro."
-                        : "O calendário reúne os fatos do log, as notas diárias e a criação de tarefas."
+                        : "O calendário reúne a agenda da Academy, o log do vault, as narrativas diárias e a criação de tarefas."
                 )
             } else {
                 List {
                     ForEach(diasFiltrados) { dia in
+                        let resumo = ResumoDoDia(dia)
                         Section {
-                            ForEach(dia.eventos) { evento in
-                                LinhaDeEvento(evento: evento)
-                            }
-                        } header: {
-                            HStack(spacing: DS.Espaco.sm) {
-                                Text(dia.data)
-                                    .font(DS.Tipografia.secao)
-                                    .monospacedDigit()
-                                if dia.data == hoje { Etiqueta(texto: "hoje", cor: cores.acento) }
-                                Spacer()
-                                Text("\(dia.eventos.count)")
-                                    .font(DS.Tipografia.monoDetalhe)
-                                    .monospacedDigit()
+                            if let frase = resumo.frase {
+                                Text(frase)
+                                    .font(DS.Tipografia.corpo)
                                     .foregroundStyle(cores.textoSutil)
                             }
+                            ForEach(LinhaUnica.de(resumo.agenda, em: dia.data)) { linha in
+                                LinhaDeAgenda(evento: linha.valor)
+                            }
+                            ForEach(LinhaUnica.de(resumo.assuntos, em: dia.data, chave: \.id)) { linha in
+                                LinhaDeValor(linha.valor.titulo, valor: "\(linha.valor.eventos.count)")
+                                    .help(ResumoDoDia.listar(linha.valor.autores))
+                            }
+                        } header: {
+                            Button { abrirDia(dia.data) } label: {
+                                HStack(spacing: DS.Espaco.sm) {
+                                    Text(Calendario.rotuloDoDia(dia.data))
+                                        .font(DS.Tipografia.secao)
+                                    if dia.data == hoje { Etiqueta(texto: "hoje", cor: cores.acento) }
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                        .font(DS.Icone.fonte(DS.Icone.micro, peso: .semibold))
+                                        .foregroundStyle(cores.textoSutil)
+                                }
+                                .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
+                            .help("Abrir o dia na semana")
                         }
                     }
                 }
@@ -574,6 +605,14 @@ struct TelaCalendario: View {
             : Calendario.mes(deslocando: ancora, em: passo))
     }
 
+    /// Da lista para o dia: a semana mostra a célula e, ao lado, o painel —
+    /// que abre mesmo se estava fechado, porque abrir o dia é pedir o detalhe.
+    private func abrirDia(_ data: String) {
+        irPara(data)
+        trocarModo(para: .semana)
+        painelPedido = true
+    }
+
     private func andar(_ passo: Int) -> KeyPress.Result {
         irPara(Calendario.dia(deslocando: ancora, em: passo))
         return .handled
@@ -581,18 +620,7 @@ struct TelaCalendario: View {
 
     private func trocarModo(para novo: Modo) {
         fecharPreview()
-        withAnimation(DS.Movimento.padrao) {
-            modo = novo
-            if novo == .mes { semanasVisiveis = totalDeSemanasDoMes }
-        }
-    }
-
-    private func comprimir(para alvo: Int, mantendoArrasto: Bool = false) {
-        let limitado = max(DS.Calendario.semanasMinimas, min(alvo, totalDeSemanasDoMes))
-        guard limitado != semanasVisiveis else { return }
-        if !mantendoArrasto { arrastoAcumulado = 0 }
-        fecharPreview()
-        withAnimation(DS.Movimento.padrao) { semanasVisiveis = limitado }
+        withAnimation(DS.Movimento.padrao) { modo = novo }
     }
 
     // MARK: - Prévia com espera
@@ -622,16 +650,17 @@ struct TelaCalendario: View {
         withAnimation(DS.Movimento.rapido) { previewDoDia = nil }
     }
 
-    /// Ao lado da célula, e dentro da grade.
+    /// Ao lado da célula, nunca sobre ela.
     ///
-    /// Prefere a direita; se não couber — as células de sexta e sábado —, vai
-    /// para a esquerda. Sem isso a prévia sairia pela borda da janela, que é
-    /// metade do motivo de um `popover` nativo existir.
-    private func posicaoX(doAlvo alvo: CGRect, em area: CGSize) -> CGFloat {
+    /// Prefere a direita, e pode passar da grade até a borda da janela —
+    /// `sobraADireita` é a margem da coluna mais o painel do dia, se aberto.
+    /// Se não couber, vai para a esquerda. Sem isso a prévia sairia pela borda
+    /// da janela, que é metade do motivo de um `popover` nativo existir.
+    private func posicaoX(doAlvo alvo: CGRect, em area: CGSize, sobraADireita: CGFloat) -> CGFloat {
         let largura = DS.Calendario.larguraDoPreview
         let folga = DS.Espaco.sm
         let aDireita = alvo.maxX + folga
-        if aDireita + largura <= area.width { return aDireita }
+        if aDireita + largura <= area.width + sobraADireita - folga { return aDireita }
         return max(0, alvo.minX - folga - largura)
     }
 
@@ -656,40 +685,73 @@ private struct AncoraDaPrevia: PreferenceKey {
 
 // MARK: - Componentes da tela
 
-/// Um evento dentro da célula da grade.
+/// Uma linha de `List` com identidade própria.
 ///
-/// A cor vem do tipo do fato — a mesma escala que a árvore de registros usa —,
-/// então `commit` é a mesma cor nas duas telas. Diário e tarefa não são fato e
-/// falam na voz neutra.
-private struct ChipDeEvento: View {
+/// A `List` usa o `id` de cada linha para reciclá-la, e o id tem de ser único
+/// na lista inteira, não só na seção. Com `\.offset` (ou com o id da tarefa,
+/// que se repete de um dia para o outro), a linha 0 de toda seção era "a
+/// mesma linha": a Lista mostrou "Apresentação" em dez dias que não tinham
+/// apresentação nenhuma.
+private struct LinhaUnica<Valor>: Identifiable {
+    let id: String
+    let valor: Valor
+
+    static func de(_ valores: [Valor], em escopo: String, chave: (Valor) -> String) -> [LinhaUnica] {
+        valores.enumerated().map { i, v in LinhaUnica(id: "\(escopo)|\(chave(v))|\(i)", valor: v) }
+    }
+}
+
+extension LinhaUnica where Valor == EventoDeCalendario {
+    static func de(_ eventos: [EventoDeCalendario], em escopo: String) -> [LinhaUnica] {
+        de(eventos, em: escopo, chave: \.id)
+    }
+}
+
+/// O que uma célula da grade pode mostrar.
+private enum ItemDaCelula {
+    case agenda(EventoDeCalendario)
+    /// O nome de uma tarefa do dia, ou o título de um trabalho fora delas.
+    case assunto(String)
+}
+
+/// Um item dentro da célula da grade.
+///
+/// Agenda é o cronograma que a Academy marcou — a regra é que ela tem
+/// prioridade de leitura sobre o resto (`Especie.prioridade`), e o chip segue
+/// a mesma regra em tinta: véu forte e texto na cor da categoria. O assunto
+/// fala na voz neutra, e em sans: é o nome de uma tarefa ou uma mensagem
+/// escrita por gente — a voz mono fica para o que um hook escreveu.
+private struct ChipDaCelula: View {
     @Environment(\.cores) private var cores
-    let evento: EventoDeCalendario
+    let item: ItemDaCelula
     var apagado = false
 
-    private var cor: Color {
-        switch evento.especie {
-        case .agenda: return cores.categoriaDeAgenda(evento.detalhe)
-        case .fato: return cores.tipoDeFato(evento.detalhe)
-        case .diario: return cores.textoSutil
-        case .tarefaCriada: return cores.textoSutil
+    private var texto: String {
+        switch item {
+        case let .agenda(evento): return evento.titulo
+        case let .assunto(titulo): return titulo
         }
     }
 
-    /// Agenda é o cronograma que a Academy marcou — a regra é que ela tem
-    /// prioridade de leitura sobre o resto (`Especie.prioridade`), e o chip
-    /// segue a mesma regra em tinta: véu forte e texto na cor da categoria em
-    /// vez do véu sutil e texto neutro dos outros três. Continua no
-    /// vocabulário do resto do app — mesmo `Etiqueta` de tinta-sobre-fundo —,
-    /// só um degrau mais intenso.
-    private var destaque: Bool { evento.especie == .agenda }
+    private var cor: Color {
+        switch item {
+        case let .agenda(evento): return cores.categoriaDeAgenda(evento.detalhe)
+        case .assunto: return cores.textoSutil
+        }
+    }
+
+    private var destaque: Bool {
+        if case .agenda = item { return true }
+        return false
+    }
 
     var body: some View {
         HStack(spacing: DS.Espaco.xs) {
             Circle()
                 .fill(cor)
                 .frame(width: 5, height: 5)
-            Text(evento.rotulo)
-                .font(DS.Tipografia.monoDetalhe)
+            Text(texto)
+                .font(DS.Tipografia.detalhe)
                 .fontWeight(destaque ? .semibold : .regular)
                 .foregroundStyle(destaque ? cor : cores.texto)
                 .lineLimit(1)
@@ -703,104 +765,322 @@ private struct ChipDeEvento: View {
             in: RoundedRectangle(cornerRadius: DS.Raio.xs)
         )
         .opacity(apagado ? 0.55 : 1)
-        .help(evento.rotulo)
+        .help(texto)
     }
 }
 
-/// Uma linha de evento no painel do dia e na lista: quando, o quê, por quem.
-private struct LinhaDeEvento: View {
+/// O dia inteiro, em camadas: frase, agenda, narrativa, trabalho por tarefa
+/// e, recolhidos no fim, o bastidor e o log cru.
+///
+/// A ordem é a da pergunta de quem abre o dia. Quem chegou agora quer saber
+/// o que aconteceu; quem é da equipe quer saber em que tarefa; quem vai
+/// auditar quer o hash. As três respostas estão aqui — só que a do auditor
+/// deixou de ser a primeira coisa na tela.
+private struct PainelDoDia: View {
+    @Environment(\.cores) private var cores
+    let resumo: ResumoDoDia
+
+    /// O que está aberto mora aqui, e não dentro de cada `DisclosureGroup`:
+    /// a `List` recicla a linha que sai da tela, e o estado interno ia junto —
+    /// abrir uma tarefa, rolar e voltar a encontrava fechada. O `.id(data)`
+    /// de quem cria o painel zera isto ao trocar de dia.
+    @State private var abertos: Set<String> = []
+
+    private func aberto(_ chave: String) -> Binding<Bool> {
+        Binding(
+            get: { abertos.contains(chave) },
+            set: { if $0 { abertos.insert(chave) } else { abertos.remove(chave) } }
+        )
+    }
+
+    var body: some View {
+        let narrativa = resumo.narrativa
+
+        List {
+            if let frase = resumo.frase {
+                Text(frase)
+                    .font(DS.Tipografia.corpo)
+                    .foregroundStyle(cores.textoSutil)
+            }
+
+            if !resumo.agenda.isEmpty {
+                Section {
+                    ForEach(LinhaUnica.de(resumo.agenda, em: "agenda")) { linha in
+                        LinhaDeAgenda(evento: linha.valor)
+                    }
+                } header: { RotuloDeSecao("Agenda da Academy") }
+            }
+
+            if !narrativa.isEmpty {
+                Section {
+                    NarrativaDoDia(itens: narrativa, origem: resumo.origemDaNarrativa)
+                } header: { RotuloDeSecao("O que foi feito") }
+            }
+
+            if !resumo.assuntos.isEmpty {
+                Section {
+                    ForEach(resumo.assuntos) { assunto in
+                        GrupoDeAssunto(assunto: assunto, aberto: aberto(assunto.id))
+                    }
+                } header: { RotuloDeSecao("Por tarefa") }
+            }
+
+            if !resumo.registro.isEmpty {
+                Section {
+                    if !resumo.bastidor.isEmpty {
+                        DisclosureGroup(isExpanded: aberto("bastidor")) {
+                            ForEach(LinhaUnica.de(resumo.bastidor, em: "bastidor")) { linha in
+                                LinhaDeTrabalho(evento: linha.valor)
+                            }
+                        } label: {
+                            rotuloRecolhido(
+                                "Manutenção do registro",
+                                contagem: resumo.bastidor.count,
+                                ajuda: "Commits que o próprio vault faz para manter o log e a narrativa em dia. São reais, mas não são trabalho novo."
+                            )
+                        }
+                    }
+                    DisclosureGroup(isExpanded: aberto("registro")) {
+                        ForEach(LinhaUnica.de(resumo.registro, em: "registro")) { linha in
+                            LinhaDeRegistro(evento: linha.valor)
+                        }
+                    } label: {
+                        rotuloRecolhido(
+                            "Registro completo",
+                            contagem: resumo.registro.count,
+                            ajuda: "O log do dia como os hooks escreveram, com hash e contagem de arquivos."
+                        )
+                    }
+                } header: { RotuloDeSecao("Para conferir") }
+            }
+        }
+        .listStyle(.inset)
+    }
+
+    private func rotuloRecolhido(_ titulo: String, contagem: Int, ajuda: String) -> some View {
+        LinhaDeValor(titulo, valor: "\(contagem)")
+            .help(ajuda)
+    }
+}
+
+/// Um evento da agenda: a cor da categoria, o que é, e de que tipo.
+private struct LinhaDeAgenda: View {
+    @Environment(\.cores) private var cores
+    let evento: EventoDeCalendario
+
+    var body: some View {
+        let cor = cores.categoriaDeAgenda(evento.detalhe)
+        HStack(spacing: DS.Espaco.sm) {
+            Circle().fill(cor).frame(width: 6, height: 6)
+            Text(evento.titulo)
+                .font(DS.Tipografia.corpo)
+                .foregroundStyle(cores.texto)
+            Spacer(minLength: DS.Espaco.md)
+            if let categoria = CategoriaDeAgenda(rawValue: evento.detalhe) {
+                Etiqueta(texto: categoria.rotulo, cor: cor)
+            }
+        }
+    }
+}
+
+/// Os itens de "O que foi feito" da narrativa, na voz serifada.
+///
+/// Os primeiros quatro abrem, em duas linhas cada; o resto espera um clique.
+/// Uma narrativa de dezoito itens de três linhas empurraria o trabalho por
+/// tarefa para fora da tela — e a narrativa inteira continua a um botão, no
+/// arquivo.
+private struct NarrativaDoDia: View {
+    @Environment(\.cores) private var cores
+    let itens: [Markdown.Item]
+    let origem: URL?
+    @State private var tudo = false
+
+    private let visiveisDeInicio = 4
+
+    private var rotuloDoBotao: String {
+        if tudo { return "Mostrar menos" }
+        let escondidos = itens.count - visiveisDeInicio
+        return escondidos > 0 ? "Ler tudo (mais \(escondidos))" : "Ler tudo"
+    }
+
+    var body: some View {
+        let visiveis = tudo ? itens : Array(itens.prefix(visiveisDeInicio))
+        VStack(alignment: .leading, spacing: DS.Espaco.sm) {
+            TextoDeNota(blocos: [.lista(visiveis)], linhasPorItem: tudo ? nil : 2)
+
+            HStack(spacing: DS.Espaco.md) {
+                Button(rotuloDoBotao) {
+                    withAnimation(DS.Movimento.rapido) { tudo.toggle() }
+                }
+                .buttonStyle(BotaoDoSistema(.peca))
+                .font(DS.Tipografia.detalhe)
+                .foregroundStyle(cores.acento)
+
+                if let origem {
+                    Button("Abrir a narrativa") { NSWorkspace.shared.open(origem) }
+                        .buttonStyle(BotaoDoSistema(.peca))
+                        .font(DS.Tipografia.detalhe)
+                        .foregroundStyle(cores.textoSutil)
+                }
+            }
+        }
+        .padding(.vertical, DS.Espaco.xs)
+    }
+}
+
+/// Uma tarefa do dia: o nome dela, quanto andou e quem andou com ela. O que
+/// foi feito, linha a linha, fica dentro.
+private struct GrupoDeAssunto: View {
+    @Environment(\.cores) private var cores
+    let assunto: AssuntoDoDia
+    @Binding var aberto: Bool
+
+    private var detalhe: String {
+        let registros = Plural.contar(assunto.eventos.count, "registro", "registros")
+        let autores = assunto.autores
+        return autores.isEmpty ? registros : "\(registros) · \(ResumoDoDia.listar(autores))"
+    }
+
+    var body: some View {
+        DisclosureGroup(isExpanded: $aberto) {
+            ForEach(LinhaUnica.de(assunto.eventos, em: assunto.id)) { linha in
+                LinhaDeTrabalho(evento: linha.valor)
+            }
+        } label: {
+            // Empilhado: na coluna lateral, nome e detalhe lado a lado
+            // cortavam os dois ao meio.
+            VStack(alignment: .leading, spacing: 2) {
+                Text(assunto.titulo)
+                    .font(DS.Tipografia.corpo)
+                    .foregroundStyle(assunto.tarefa == nil ? cores.textoSutil : cores.texto)
+                    .lineLimit(2)
+                Text(detalhe)
+                    .font(DS.Tipografia.detalhe)
+                    .foregroundStyle(cores.textoSutil)
+                    .lineLimit(1)
+            }
+            .padding(.vertical, 2)
+        }
+    }
+}
+
+/// Um registro já traduzido: quando, o que foi feito, por quem.
+///
+/// O hash e a contagem de arquivos saíram da linha e foram para a dica: estão
+/// a um repouso do ponteiro para quem precisa, e fora do caminho de quem lê.
+private struct LinhaDeTrabalho: View {
+    @Environment(\.cores) private var cores
+    let evento: EventoDeCalendario
+
+    private var dica: String {
+        var partes: [String] = []
+        if let ref = evento.referencia { partes.append("Commit \(ref)") }
+        if let n = evento.arquivos { partes.append(Plural.contar(n, "arquivo", "arquivos")) }
+        if evento.origem != nil { partes.append("clique duas vezes para abrir") }
+        return partes.isEmpty ? evento.titulo : partes.joined(separator: " · ")
+    }
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: DS.Espaco.sm) {
+            Text(evento.hora ?? "—")
+                .font(DS.Tipografia.mono)
+                .foregroundStyle(cores.textoSutil)
+                .monospacedDigit()
+            VStack(alignment: .leading, spacing: 1) {
+                Text(evento.titulo)
+                    .font(DS.Tipografia.corpo)
+                    .foregroundStyle(cores.texto)
+                    .lineLimit(3)
+                if let autor = evento.autor {
+                    Text(autor)
+                        .font(DS.Tipografia.detalhe)
+                        .foregroundStyle(cores.textoSutil)
+                }
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(.vertical, 1)
+        .contentShape(Rectangle())
+        .onTapGesture(count: 2) {
+            if let origem = evento.origem { NSWorkspace.shared.open(origem) }
+        }
+        .help(dica)
+    }
+}
+
+/// Uma linha do log exatamente como os hooks a escreveram — a camada de
+/// auditoria, no fim do painel e recolhida.
+private struct LinhaDeRegistro: View {
     let evento: EventoDeCalendario
 
     var body: some View {
         LinhaDeFato(
             carimbo: evento.hora ?? "—",
-            tipo: evento.especie == .fato ? evento.detalhe : evento.especie.rawValue,
+            tipo: evento.detalhe,
             descricao: evento.rotulo,
             autor: evento.autor
         )
-        .contentShape(Rectangle())
-        .onTapGesture(count: 2) {
-            if let origem = evento.origem { NSWorkspace.shared.open(origem) }
-        }
-        .help(evento.origem == nil
-              ? "Fato do log — escrito pelos hooks, sem arquivo próprio para abrir"
-              : "Clique duas vezes para abrir o arquivo")
+        .help("Fato do log — escrito pelos hooks, sem arquivo próprio para abrir")
     }
 }
 
 /// O resumo que aparece depois da espera de 600 ms.
 ///
-/// Elabora o que a célula já mostra em vez de repetir: a célula lista os
-/// primeiros eventos, e aqui se lê a composição do dia e quem trabalhou nele.
+/// Responde "o que foi este dia" sem abrir o painel: a frase, a agenda e as
+/// tarefas que mais andaram. Contagem por espécie e intervalo de horas saíram
+/// — eram a composição do log, não o que aconteceu.
 private struct PreviaDoDia: View {
     @Environment(\.cores) private var cores
-    let data: String
-    let dia: DiaDoCalendario?
+    let resumo: ResumoDoDia
     let ehHoje: Bool
     var filtrado = false
 
-    private var porAutor: [(String, Int)] {
-        let autores = (dia?.eventos ?? []).compactMap(\.autor)
-        return Dictionary(grouping: autores, by: { $0 })
-            .map { ($0.key, $0.value.count) }
-            .sorted { $0.1 > $1.1 }
-    }
-
-    private var intervalo: String? {
-        let horas = (dia?.eventos ?? []).compactMap(\.hora).sorted()
-        guard let primeira = horas.first, let ultima = horas.last else { return nil }
-        return primeira == ultima ? primeira : "\(primeira)–\(ultima)"
-    }
+    private let tarefasVisiveis = 3
 
     var body: some View {
         VStack(alignment: .leading, spacing: DS.Espaco.sm) {
             HStack(spacing: DS.Espaco.sm) {
-                Text(data).font(DS.Tipografia.secao).monospacedDigit()
+                Text(Calendario.rotuloDoDia(resumo.data)).font(DS.Tipografia.secao)
                 if ehHoje { Etiqueta(texto: "hoje", cor: cores.acento) }
                 Spacer()
             }
 
-            if let dia, !dia.eventos.isEmpty {
-                if let intervalo {
-                    Label(intervalo, systemImage: "clock")
-                        .font(DS.Tipografia.monoDetalhe)
-                        .foregroundStyle(cores.textoSutil)
-                }
-
-                Divisor()
-
-                ForEach(EventoDeCalendario.Especie.allCases, id: \.self) { especie in
-                    let n = dia.quantidade(de: especie)
-                    if n > 0 {
-                        LinhaDeValor(especie.rotulo, valor: "\(n)") {
-                            Image(systemName: especie.simbolo)
-                                .font(DS.Icone.fonte(DS.Icone.micro))
-                                .foregroundStyle(cores.textoSutil)
-                        }
-                    }
-                }
-
-                if !porAutor.isEmpty {
-                    Divisor()
-                    ForEach(porAutor.prefix(3), id: \.0) { autor, n in
-                        LinhaDeValor(autor, valor: "\(n)")
-                    }
-                    if porAutor.count > 3 {
-                        Text("e mais \(porAutor.count - 3)")
-                            .font(DS.Tipografia.detalhe)
-                            .foregroundStyle(cores.textoSutil)
-                    }
-                }
-
-                Divisor()
-                Text(filtrado ? "Recorte do filtro · clique para abrir o dia" : "Clique para abrir o dia")
-                    .font(DS.Tipografia.detalhe)
-                    .foregroundStyle(cores.textoSutil)
-            } else {
-                Text(filtrado ? "Nada aqui casa com o filtro." : "Nada registrado.")
+            if let frase = resumo.frase {
+                Text(frase)
                     .font(DS.Tipografia.corpo)
                     .foregroundStyle(cores.textoSutil)
+                    .fixedSize(horizontal: false, vertical: true)
             }
+
+            if !resumo.agenda.isEmpty {
+                Divisor()
+                ForEach(Array(resumo.agenda.enumerated()), id: \.offset) { _, evento in
+                    HStack(spacing: DS.Espaco.sm) {
+                        Circle().fill(cores.categoriaDeAgenda(evento.detalhe)).frame(width: 5, height: 5)
+                        Text(evento.titulo)
+                            .font(DS.Tipografia.detalhe)
+                            .foregroundStyle(cores.texto)
+                            .lineLimit(2)
+                    }
+                }
+            }
+
+            if !resumo.tarefas.isEmpty {
+                Divisor()
+                ForEach(resumo.tarefas.prefix(tarefasVisiveis)) { assunto in
+                    LinhaDeValor(assunto.titulo, valor: "\(assunto.eventos.count)")
+                }
+                if resumo.tarefas.count > tarefasVisiveis {
+                    Text("e mais \(Plural.contar(resumo.tarefas.count - tarefasVisiveis, "tarefa", "tarefas"))")
+                        .font(DS.Tipografia.detalhe)
+                        .foregroundStyle(cores.textoSutil)
+                }
+            }
+
+            Divisor()
+            Text(filtrado ? "Recorte do filtro · clique para abrir o dia" : "Clique para abrir o dia")
+                .font(DS.Tipografia.detalhe)
+                .foregroundStyle(cores.textoSutil)
         }
         .padding(DS.Espaco.md)
         .frame(width: DS.Calendario.larguraDoPreview)
