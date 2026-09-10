@@ -39,6 +39,15 @@ Consequências práticas:
 scripts/            Automação. Ver README.md.
 ```
 
+`01 - CBL/Desafios/<id>/Agenda - <id>.md` (`tipo: agenda`) é o cronograma
+oficial do desafio publicado pela Academy — não é fato do vault nem narrativa
+do dia, é a terceira coisa: compromisso externo com data já marcada. Uma linha
+por evento, formato `` `data` ou `data-inicio/data-fim` · **categoria** · rótulo ``,
+categorias `rotina` · `marco` · `academia` · `feriado` · `atividade`. Só esse
+arquivo alimenta o calendário da Bancada com eventos fora de fato/diário/tarefa,
+e eles aparecem com prioridade e destaque maior na grade — ver
+`Bancada/Sources/VaultKit/Agenda.swift`.
+
 Nunca crie nota fora dessa estrutura. Se algo não couber em nenhuma pasta, pergunte antes de inventar uma nova.
 
 ---
@@ -46,7 +55,7 @@ Nunca crie nota fora dessa estrutura. Se algo não couber em nenhuma pasta, perg
 ## Convenções de escrita
 
 **Frontmatter YAML é obrigatório** em toda nota. Chaves sem acento, minúsculas. Valores válidos de `tipo`:
-`home` · `indice` · `cbl-desafio` · `atualizacao-diaria` · `roadmap` · `tarefa` · `registro` · `documento-derivado` · `design`
+`home` · `indice` · `cbl-desafio` · `atualizacao-diaria` · `roadmap` · `tarefa` · `registro` · `documento-derivado` · `design` · `agenda`
 
 Valores válidos de `status` em tarefas: `a-fazer` · `em-andamento` · `revisao` · `concluida`
 Em desafios CBL: `ativo` · `concluido` · `pausado`
