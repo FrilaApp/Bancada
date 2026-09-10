@@ -58,8 +58,31 @@ EOF
 # Uso: registrar <tipo> <descrição…>
 registrar() {
   local tipo="$1"; shift
-  local arq; arq="$(garantir_log)"
-  printf -- '- `%s` · **%s** · `%s` · %s\n' "$(agora)" "$(autor)" "$tipo" "$*" >> "$arq"
+  registrar_em "$(hoje)" "$(agora)" "$(autor)" "$tipo" "$*"
+}
+
+# Acrescenta um fato ao log de uma data específica, com hora e autor dados.
+#
+# Existe porque o fato sobre um commit pertence ao dia em que o commit foi
+# feito, não ao dia em que ele foi publicado. Enquanto o registro acontecia no
+# `post-commit` os dois coincidiam sempre; com o registro no `pre-push` podem
+# não coincidir — quem commita na sexta e publica na segunda tem o trabalho
+# lançado no dia certo.
+#
+# Uso: registrar_em <AAAA-MM-DD> <HH:MM> <autor> <tipo> <descrição…>
+registrar_em() {
+  local data="$1" hora="$2" quem="$3" tipo="$4"; shift 4
+  local arq; arq="$(garantir_log "$data")"
+  printf -- '- `%s` · **%s** · `%s` · %s\n' "$hora" "$quem" "$tipo" "$*" >> "$arq"
+}
+
+# Um fato sobre este commit já foi registrado em algum dia?
+#
+# A busca é no acervo inteiro, não só no log de hoje: um commit antigo publicado
+# hoje foi lançado no dia dele, e registrá-lo de novo criaria fato duplicado.
+fato_ja_registrado() {
+  local sha="$1"
+  grep -rqF -- "\`$sha\`" "$REPO_ROOT/$PASTA_REGISTROS" 2>/dev/null
 }
 
 # O Pages pode estar renomeado no disco — resolver sempre pelo bundle ID.

@@ -17,7 +17,7 @@ O sistema tem duas camadas, e **misturá-las corrompe o registro**:
 
 Consequências práticas:
 
-- **Nunca edite nada em `05 - Registros/` à mão.** É append-only, escrito por máquina. Você só lê.
+- **Nunca edite nada em `05 - Registros/` à mão.** É append-only, escrito por máquina. Você só lê. Desde 2026-09-10 isso não depende mais de boa vontade nem de padrão de texto: o hook `pre-commit` recusa qualquer commit que toque a pasta. Para reparo genuíno — hash órfão depois de um rebase, linha duplicada por hook — existe `PERMITIR_REPARO_DE_FATO=1 git commit`, que é para consertar, nunca para escrever fato novo.
 - **Nunca escreva narrativa sem fato correspondente.** Ao rodar `/diario`, cada bullet que você escrever tem que sair de uma linha do log do dia. Se não há fato, não há bullet — não preencha lacunas com suposição plausível.
 - Se o log estiver vazio, diga que está vazio. Um dia sem registro é um dado, não um problema a esconder.
 
@@ -101,7 +101,7 @@ Sempre **`/entrar` antes de começar**: 5 pessoas escrevem no mesmo repo, e reso
 
 - Mensagem em português, imperativo, uma linha: `Adiciona pipeline de exportação do Pages`
 - Se a mudança atende uma tarefa, referencie o id: `… (T-0007)`
-- Cada commit gera automaticamente uma linha em `05 - Registros/` — não registre manualmente.
+- Cada commit gera automaticamente uma linha em `05 - Registros/` — não registre manualmente. **O fato é escrito no `git push`, não no `git commit`**: é no push que a identidade do commit para de poder mudar. Enquanto o registro acontecia no `post-commit`, todo rebase sobre trabalho de outra pessoa reescrevia o commit e deixava a linha apontando para um hash inexistente. A linha carrega a data, a hora e o autor **do commit**, então quem commita na sexta e publica na segunda tem o trabalho lançado no dia certo — e o log fica no máximo um push atrás de si mesmo, nunca à frente do que existe.
 - Nunca use `--no-verify`. O `pre-commit` é o que mantém os `.md` derivados em dia com os `.pages`.
 - **O `push` exige Touch ID.** É um humano confirmando que a publicação é intencional — por isso você nunca deve usar `SKIP_BIOMETRICS=1` por conta própria, nem sugerir isso para contornar o prompt. Se o push falhar por falta do módulo, oriente a rodar `./scripts/bootstrap.sh`.
 
@@ -109,7 +109,7 @@ Sempre **`/entrar` antes de começar**: 5 pessoas escrevem no mesmo repo, e reso
 
 ## Proibido
 
-Os dois primeiros itens não dependem da sua boa vontade: `scripts/guarda.sh` bloqueia mecanicamente pelo hook `PreToolUse`. Estão aqui para você entender o porquê, não para você lembrar de obedecer.
+Os dois primeiros itens não dependem da sua boa vontade: `scripts/guarda.sh` bloqueia pelo hook `PreToolUse`, e o `pre-commit` do git bloqueia no índice. A diferença importa: a guarda procura padrões no texto do comando e por isso erra em todo jeito de escrever que ela não previu — uma edição por heredoc de Python passou direto em 2026-09-10. O `pre-commit` olha o que está de fato no índice, e por isso vale para qualquer ferramenta. Estão aqui para você entender o porquê, não para você lembrar de obedecer.
 
 - **Editar um `.md` derivado de `.pages`** (`tipo: documento-derivado`). É regenerado e sua edição será perdida — mexa no `.pages` original. *(bloqueado)*
 - **Escrever no log de fatos** por qualquer caminho que não seja `scripts/registrar-fato.sh` — inclusive por redirecionamento em Bash. *(bloqueado)*

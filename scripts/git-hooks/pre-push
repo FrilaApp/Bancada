@@ -58,13 +58,66 @@ if [ -x "$actionshelf_bin" ]; then
     exit 1
   fi
   echo "  ✓ Identidade confirmada pela Action Shelf."
-  exit 0
+else
+  echo "🔐 Solicitando autenticação (Touch ID, Apple Watch ou senha do macOS)…"
+  if ! "$raiz/scripts/auth-touchid"; then
+    echo "❌ Autenticação cancelada ou não autorizada. O push foi abortado." >&2
+    exit 1
+  fi
+  echo "  ✓ Identidade confirmada."
 fi
 
-echo "🔐 Solicitando autenticação (Touch ID, Apple Watch ou senha do macOS)…"
-if ! "$raiz/scripts/auth-touchid"; then
-  echo "❌ Autenticação cancelada ou não autorizada. O push foi abortado." >&2
-  exit 1
+# ── Registro dos fatos publicados ────────────────────────────────────────────
+#
+# O fato sobre um commit é escrito **aqui**, e não no `post-commit`, porque é
+# aqui que a identidade do commit para de poder mudar. Enquanto o registro
+# acontecia logo após o commit, todo `rebase` sobre trabalho de outra pessoa
+# reescrevia o commit e deixava a linha apontando para um hash que não existe em
+# ramo nenhum — aconteceu duas vezes, em 2026-09-09 e 2026-09-10.
+#
+# O `post-commit` também disparava durante o próprio rebase, escrevendo fatos
+# sobre commits intermediários que o rebase ainda ia descartar. Toda essa classe
+# de estrago some ao mover o registro para cá: rebase não faz push.
+#
+# O log é publicado no push seguinte, e não neste. É o preço de registrar
+# identidade final — e é um preço honesto: o log fica no máximo um push atrás,
+# nunca apontando para o que não existe.
+[ -n "${DOC_HARNESS_SEM_REGISTRO:-}" ] && exit 0
+
+registrar_intervalo() {
+  local local_sha="$1" remoto_sha="$2" intervalo
+  local zero="0000000000000000000000000000000000000000"
+
+  # Deleção de ramo não publica commit nenhum.
+  [ "$local_sha" = "$zero" ] && return 0
+
+  if [ "$remoto_sha" = "$zero" ]; then
+    # Ramo novo: o que ainda não está em nenhum remoto.
+    intervalo="$local_sha --not --remotes"
+  else
+    intervalo="$remoto_sha..$local_sha"
+  fi
+
+  # shellcheck disable=SC2086
+  "$raiz/scripts/registrar-fato.sh" publicados $intervalo 2>/dev/null || true
+}
+
+while read -r _ref_local sha_local _ref_remoto sha_remoto; do
+  [ -n "${sha_local:-}" ] || continue
+  registrar_intervalo "$sha_local" "$sha_remoto"
+done
+
+# Publica o próprio registro num commit local, para o working tree voltar limpo.
+# Vai junto no próximo push. `--no-verify` porque este é o único caminho de
+# escrita legítimo em `05 - Registros/` — a fronteira do `pre-commit` recusa
+# todos os outros.
+log_do_dia="$raiz/05 - Registros"
+if ! git -C "$raiz" diff --quiet -- "$log_do_dia" 2>/dev/null \
+   || [ -n "$(git -C "$raiz" ls-files --others --exclude-standard -- "$log_do_dia")" ]; then
+  git -C "$raiz" add -- "$log_do_dia"
+  git -C "$raiz" commit -q --no-verify \
+    -m "Registra no log os fatos publicados" >/dev/null 2>&1 || true
+  echo "  ✓ Fatos publicados registrados — sai no próximo push."
 fi
-echo "  ✓ Identidade confirmada."
+
 exit 0
