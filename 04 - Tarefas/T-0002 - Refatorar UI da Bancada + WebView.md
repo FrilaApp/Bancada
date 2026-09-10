@@ -19,8 +19,8 @@ A Bancada é o leitor Mac nativo do vault, hoje somente leitura e coexistindo co
 - [x] `VaultKit/Calendario.swift` + `DataISO` — eventos por dia (fato, diário, tarefa criada) e datas ancoradas ao meio-dia, com testes.
 - [x] Medidas novas em `DS`/`tokens.json`, nenhuma solta dentro das views.
 - [x] `--verificar` sai com `0` e o JSON de `--indice` segue no `versaoDoFormato: 1` — o gerador de site continua funcionando sem alteração.
-- [ ] UI revisada visualmente por quem usa (a refatoração roda; falta o olho).
-- [ ] Grade mensal do calendário — o andaime está de pé, a tela é uma lista.
+- [x] UI revisada visualmente por quem usa — [[06 - Design/Revisão de UI - 2026-09-09|revisão de UI de 09/09]], 10 capturas, 7 achados visuais e 3 auditorias de checklist.
+- [x] Grade mensal do calendário — construída em `99bfabf`, com os três modos (Mês, Semana, Lista) e o puxador que comprime a grade.
 - [ ] WebView / site estático alinhado à nova hierarquia (fora do escopo desta rodada, por decisão).
 
 ## Notas

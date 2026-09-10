@@ -13,7 +13,7 @@ Diário de bordo do **Challenge 18**, compartilhado pela equipe. Este vault é t
 - [[03 - Roadmap/Roadmap - Sumário de Iterações|🗺️ Roadmap]] — sumário cronológico das iterações, consolidando o que vem do CBL e das atualizações diárias.
 - [[04 - Tarefas/00 - Índice Tarefas|✅ Tarefas]] — o quadro da equipe. Uma nota por tarefa, agrupada por status em [[04 - Tarefas/Quadro.base|Quadro]].
 - [[05 - Registros/00 - Índice Registros|📋 Registros]] — o log de fatos, escrito pelos hooks. É a matéria-prima do diário, e não se edita à mão.
-- [[06 - Design/Sistema de Design|🎛 Design]] — o sistema que governa a aparência da Bancada e do site: as três camadas de token, as três vozes e o porquê de cada decisão.
+- [[06 - Design/Sistema de Design|🎛 Design]] — o sistema que governa a aparência da Bancada e do site: as três camadas de token, as três vozes e o porquê de cada decisão. A [[06 - Design/Revisão de UI - 2026-09-09|revisão de UI de 09/09]] registra o quanto o app cumpre isso hoje, com a captura de cada achado.
 
 ## Como o registro funciona
 

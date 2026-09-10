@@ -161,8 +161,16 @@ Registrado para não parecer pronto:
   para a janela; o site multi-página segue `prefers-color-scheme` e só a página
   única tem botão de tema. São superfícies diferentes com donos diferentes da
   preferência, e por ora isso está certo.
-- **A grade do calendário continua ausente**, e por isso `metrica.calendario`
-  descreve uma célula que ninguém desenhou ainda.
+- **A conformidade do app ao sistema não é verificada.** A regra "componente
+  nunca lê primitivo" é prosa em três arquivos: nada impede um valor solto numa
+  view, e o teste de paridade compara tamanho de fonte só contra `> 0`. A
+  [[06 - Design/Revisão de UI - 2026-09-09|revisão de UI de 09/09]] mede o
+  buraco — 16 tamanhos fora da escala e os véus reescritos à mão em
+  `TelaTarefas`.
+- **Acessibilidade não entrou no sistema.** Nada aqui fala de rótulo acessível,
+  ordem de leitura ou anel de foco, e o resultado aparece na revisão: `Cor.foco`
+  e `Traco.foco` existem sem nenhum ponto de uso, e a barra lateral chega ao
+  VoiceOver sem nome.
 
 ---
 ← [[🏠 Início|Início]]
