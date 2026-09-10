@@ -107,7 +107,13 @@ Toda escolha grande tem procedência. Sem procedência, não é decisão de desi
 
 ## O que o sistema recusa
 
-- **Sombra difusa como elevação.** Profundidade vem de camada e de fio.
+- **Sombra difusa como elevação.** Profundidade vem de camada e de fio — e isso
+  vale também para o que flutua. Prévia, dica e painel contextual usam
+  `Sobreposicao`: superfície um passo acima do fundo, fio de 1px, raio `lg`,
+  sem sombra. A regra precisou virar componente depois que o único overlay que
+  o app não desenhava — um `popover` nativo — apareceu contradizendo a
+  doutrina. Enquanto "não use sombra" foi só uma frase, o controle nativo
+  passou por baixo dela.
 - **Um segundo acento.** Se algo novo precisa se destacar, ou usa o acento
   existente, ou usa hierarquia — não uma cor nova.
 - **Acento como fundo de área.** Ação primária, estado ativo, link e foco. Só.
