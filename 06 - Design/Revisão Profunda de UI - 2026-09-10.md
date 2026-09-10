@@ -389,6 +389,61 @@ Não editei a nota do Cauê: a narrativa dela é dele. Ou a regra sobe para o
 
 ---
 
+## Estado das correções
+
+Tudo abaixo foi corrigido no mesmo dia, em `Bancada`. **128 testes, zero
+falhas** (eram 119). O vault passa em `Bancada --verificar`.
+
+| § | achado | como ficou |
+|---|---|---|
+| 1 | app sem menu | `NSMenu` montado — App, Editar, Janela. **Cmd+C, Cmd+Q e Cmd+W existem.** |
+| 2 | site sem voz de narrativa | corpo da nota envolvido em `<article class="narrativa">` no gerador multipágina |
+| 2 | folha sem teto de medida | `DS.Leitura.larguraMaximaDaFolha` — e o teto mora na `Folha`, não na tela |
+| 3 | elevação clara em ΔL 0,87 | `fundo` desceu para `neutro.2`; hoje 3,00 contra 3,71 do escuro |
+| 3 | fio único a 1,13:1 | `divisor` separado de `borda`, +18% de presença; a recusa dos 3:1 ficou documentada com número |
+| 4 | janela sem mínimo real | `contentMinSize` = 920×400, **derivado por teste** da soma dos mínimos |
+| 5 | 17 tamanhos crus | **zero.** Criada `DS.Icone` — 13 dos 17 eram ícone, e faltava escala de ícone |
+| 5 | `papel.aviso` inexistente | criado; os dois pontos que pegavam `status(.revisao)` emprestado consomem ele |
+| 5 | `LinhaDeFato` com consumo parcial | Diário consome; `LinhaDeValor` ganhou `destacado` e Registros consome |
+| 5 | `cornerRadius: 3` cru | criado `DS.Raio.xs` |
+| 6 | comentário como promessa | os dois casos entregam o que prometem; virou recusa na nota de sistema |
+| 7 | nenhum hover é visual | `BotaoDoSistema` — **os 12 `.buttonStyle(.plain)` viraram zero** |
+| 7 | prévia sem transição | entra e sai em `DS.Movimento.rapido`, respeitando Reduzir Movimento |
+| 7 | site sem `transition` nem `:active` | ambos, com os tokens de movimento agora emitidos no CSS |
+| 8 | link sublinhado que não clica | sublinhado removido; os dois casos passam a ter o mesmo tratamento e a mesma razão |
+| 8 | Acervo sem teclado | o cartão virou `Button`, dono dos dois gestos, com `.anelDeFoco` |
+| 9 | `(s)` e "1 eventos" | `Plural.contar` em VaultKit, sob teste; **zero `(s)` no app** |
+| 9 | mesma ação, dois rótulos | "Escolher vault…" nos dois lugares |
+| 9 | três vozes de estado vazio | Diário alinhado ao padrão: nomeia a ausência, ensina o mecanismo |
+| 10 | `#fff` solto no CSS | resolvido por papel |
+
+Fechados de tabela: `DS.Cor.foco` e `DS.Traco.foco` **ganharam ponto de uso**
+(`.anelDeFoco`) depois de existirem desde o começo sem nenhum; os véus escritos
+à mão em `TelaTarefas` viraram `DS.Veu`.
+
+**O que não foi corrigido, e por quê:**
+
+- **O âmbar do claro segue marrom.** É estrutural, não descuido: não existe
+  âmbar mais claro que passe em 4,5:1 sobre superfície quase branca. Virou regra
+  na nota de sistema — onde precisar brilhar, é indicador, não texto.
+- **Os 3:1 da WCAG no fio.** Recusa deliberada, com número: exigiria `neutro.6`,
+  que a 1px é régua e não fio.
+- **Dynamic Type e as alturas fixas.** Fora do escopo desta rodada — é mudança
+  estrutural de layout, não ajuste.
+- **V-06 e V-07**, da revisão anterior, seguem abertos, menos o que caiu junto
+  aqui (o `(s)` do V-07 e parte do nome acessível do V-06).
+
+Três coisas só apareceram porque foram verificadas na tela, e não no código:
+
+1. O menu **compilava, rodava e não aparecia** — a barra lê o título do
+   `NSMenuItem`, não o do submenu, e com ele vazio o item existe invisível.
+2. O verificador do próprio app reprovou os nove anexos desta revisão por falta
+   de frontmatter. O app cobrando a convenção do vault de quem escreveu o app.
+3. A primeira versão de `testFolhaSeSeparaDoFundoNosDoisEsquemas` acusou 25× de
+   desequilíbrio num par correto: media luminância relativa crua, que é quase
+   zero perto do preto. **A premissa do teste estava errada, não os tokens** —
+   segunda vez que isso acontece nesta base.
+
 ## Ordem sugerida
 
 Por retorno sobre esforço, não por gravidade pura:

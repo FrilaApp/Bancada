@@ -1,3 +1,16 @@
+---
+tipo: design
+desafio: C18
+data_criacao: 2026-09-10
+tags: [design, revisao, anexo]
+---
+
+# Revisão profunda de UI · Texto de interface
+
+> Relatório bruto de uma das sete lentes. A nota consolidada, com os achados
+> agrupados por causa e já verificados, é
+> [[06 - Design/Revisão Profunda de UI - 2026-09-10|Revisão Profunda de UI - 2026-09-10]].
+
 # Revisão de texto de interface — Bancada
 
 Lente: texto que um humano lê (rótulos, estados vazios, erros, botões, plural, vocabulário). Português-BR nativo; convenções mecânicas da skill `better-writing` traduzidas para macOS conforme o escopo pediu — nenhuma proposta de Title Case, `…` só em comando que abre diálogo.

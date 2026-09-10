@@ -1,3 +1,16 @@
+---
+tipo: design
+desafio: C18
+data_criacao: 2026-09-10
+tags: [design, revisao, anexo]
+---
+
+# Revisão profunda de UI · Auditoria por checklist
+
+> Relatório bruto de uma das sete lentes. A nota consolidada, com os achados
+> agrupados por causa e já verificados, é
+> [[06 - Design/Revisão Profunda de UI - 2026-09-10|Revisão Profunda de UI - 2026-09-10]].
+
 # Auditoria por checklist — Bancada
 
 Modo **audit** da skill `checklist-design`, a partir do fonte (não abri o app,

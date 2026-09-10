@@ -130,6 +130,96 @@ Toda escolha grande tem procedência. Sem procedência, não é decisão de desi
 - **Mono em texto escrito por gente.** A voz de fato é de quem não digitou.
 - **Estado vazio que se desculpa ou inventa exemplo.** Um dia sem registro é um
   dado, não um problema a esconder.
+- **Comentário que promete comportamento.** Neste repositório o comentário
+  carrega doutrina — é onde as decisões moram —, e por isso ele é lido como
+  contrato. `main.swift` dizia "com Dock e menu" e o menu nunca era montado;
+  `TelaAcervo` dizia "mesma superfície de leitura, mesmo tratamento" e a linha
+  seguinte chamava `TextoDeNota` sem a `Folha`. Comentário que promete e não
+  entrega é código não escrito com aparência de código escrito.
+- **Número solto onde falta um passo na escala.** Dezessete `.font(.system(size:))`
+  crus não eram indisciplina: treze eram **ícone**, e não existia escala de
+  ícone. Quando o mesmo número aparece em vários pontos de uso, o sistema não
+  tem um problema de obediência — tem um passo faltando. Daí vieram `DS.Icone` e
+  `Raio.xs`.
+- **Peça de sistema com consumidor parcial.** É a terceira face do mesmo
+  defeito, e a mais difícil de ver: `LinhaDeFato` era consumida por duas telas
+  das quatro que desenhavam a mesma linha, e `LinhaDeValor` não cobria o peso de
+  destaque que Registros precisava — então Registros forkou. Peça que não cobre
+  o caso real vira peça bifurcada, e bifurcação ninguém revisa.
+- **Papel nomeado em prosa e ausente dos tokens.** Esta nota dizia "Aviso é
+  âmbar" enquanto o código tomava `statusTarefa.revisao` emprestado em dois
+  pontos — um deles pintando um triângulo de alerta com cor de *status de
+  tarefa*. Se a doutrina nomeia um papel, o papel existe.
+
+## Acessibilidade
+
+Acessibilidade não é auditoria depois — é vocabulário, do mesmo jeito que cor e
+tipografia são. A nota não dizia uma palavra sobre isso até a revisão de
+2026-09-10, e o resultado foi um app que chegava ao VoiceOver lendo "2, 5, 2, 6"
+e que não tinha **menu nenhum**, logo não tinha Cmd+C num leitor de vault.
+
+**Todo componente que expõe uma ação declara nome, papel e estado antes de
+declarar aparência.** Sem isso não está pronto, mesmo parecendo pronto na tela.
+
+**Foco é peça, não intenção.** `DS.Cor.foco` e `DS.Traco.foco` existiram desde o
+começo sem um único ponto de uso — projetados e nunca implementados. Hoje têm
+consumidor: o modificador `.anelDeFoco(_:)`. O desenho do anel é **um** para o
+app inteiro, porque a lição já apareceu três vezes aqui: regra que não é peça
+não se cumpre.
+
+**Controle que só responde a arrasto ou clique precisa de caminho de teclado
+antes de ser considerado terminado.** O cartão do Acervo era `onTapGesture` e
+virou `Button`: teclado, foco, hover e pressionado vieram juntos, do mesmo lugar
+que o resto do app. `onTapGesture` não é foco.
+
+**Texto que parece link é clicável, ou não recebe essa aparência.** O sistema
+não empresta a linguagem visual de ação a texto que não age — era o caso do link
+de Markdown, que saía sublinhado sobre um texto sem gesto, sem teclado e sem
+traço de link.
+
+**Imagem ao lado de texto que já a nomeia é decorativa e se marca como tal.**
+Imagem sozinha precisa de rótulo que descreva o que ela mostra, nunca o nome do
+arquivo.
+
+**Um controle desabilitado é uma decisão de estado, não a ausência de uma.**
+Declare a condição exata, e prefira manter habilitado e comunicar com clareza a
+desabilitar sem explicar.
+
+Nada disso é novo em espécie: são as mesmas regras de camada, papel e voz que já
+governam cor e tipo, aplicadas a quem não vê a tela ou não usa mouse.
+
+## O que a medição de 2026-09-10 mudou
+
+A [[06 - Design/Revisão Profunda de UI - 2026-09-10|revisão profunda]] mediu o
+que até então era afirmação. Três decisões saíram de lá, e ficam aqui porque
+mudaram o sistema, não só o código.
+
+**A elevação no claro subiu um passo.** `fundo` era `neutro.1` e virou
+`neutro.2`. A folha separava do fundo por ΔL 0,87 no claro contra 3,71 no
+escuro — a elevação valia um quarto de um lado, e era a causa real de a
+superfície de leitura não se ler como superfície. Agora separa por 3,00.
+
+O custo é declarado: no claro, `fundo` e `cromo` passam a dividir o passo. **No
+claro o sistema tem duas superfícies, não três** — cinza para o que opera,
+branco para o que se lê. Separar as duas custaria a elevação da folha, e a folha
+é o que a tese precisa. `testFolhaSeSeparaDoFundoNosDoisEsquemas` trava isso.
+
+**O fio virou dois.** `borda` contorna peça; `divisor` separa painel de painel.
+Eram o mesmo passo, e o divisor — que numa linguagem sem sombra é quem diz onde
+uma região acaba — media 1,13:1. `divisor` desceu para `neutro.4`/`neutro.9` e
+ganhou 18% de presença, mantendo separação equivalente nos dois esquemas.
+
+**E o sistema recusa, com número, perseguir os 3:1 da WCAG no fio.** Contra
+branco, o primeiro passo da rampa que chega a 3:1 é o `neutro.6` (`#8A8F98`,
+3,25:1). A 1px isso é régua, não fio: destruiria a linguagem inteira para
+satisfazer um critério escrito para *identificar controle*, não para separar
+região. A regra fica: **o fio não carrega sozinho o trabalho da camada.** Quando
+a separação precisa ser lida com certeza, ela vem do tom — e o fio confirma.
+
+O âmbar do claro segue marrom, e isso também é medição, não descuido: matiz 81°
+a L 52,9 é oliva. Não há âmbar mais claro que passe em 4,5:1 sobre superfície
+quase branca — amarelo escurecido vira terra, e é uma propriedade do amarelo.
+Onde o âmbar precisar brilhar, ele é indicador (3:1), não texto.
 
 ## Aparência: o padrão e o override
 
