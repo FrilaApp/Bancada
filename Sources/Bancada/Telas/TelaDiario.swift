@@ -51,11 +51,7 @@ struct TelaDiario: View {
                     // texto. É a mesma distinção que o site faz entre serif e
                     // mono, aqui virada superfície.
                     Folha {
-                        Text(atual.corpo)
-                            .font(DS.Tipografia.leitura)
-                            .lineSpacing(DS.Tipografia.entrelinhaDeLeitura)
-                            .foregroundStyle(cores.texto)
-                            .textSelection(.enabled)
+                        TextoDeNota(atual.corpo)
                     }
                     .frame(minWidth: 320)
                 }

@@ -205,12 +205,9 @@ private struct PainelDeMidia: View {
             VStack(alignment: .leading, spacing: DS.Espaco.sm) {
                 RotuloDeSecao("Markdown derivado")
                 SeloSomenteLeitura(tipo: .documentoDerivado)
-                Text(derivado.corpo)
-                    .font(DS.Tipografia.leitura)
-                    .lineSpacing(DS.Tipografia.entrelinhaDeLeitura)
-                    .foregroundStyle(cores.texto)
-                    .textSelection(.enabled)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                // O derivado de um .pages é narrativa como qualquer nota:
+                // mesma superfície de leitura, mesmo tratamento.
+                TextoDeNota(derivado.corpo)
             }
         } else {
             // Ausência com causa provável, não um espaço em branco.
