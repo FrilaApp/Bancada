@@ -130,12 +130,9 @@ struct JanelaPrincipal: View {
 
     @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {
-        ToolbarItem(placement: .navigation) {
-            Text(estado.secao.titulo).font(DS.Tipografia.secao)
-        }
         // A pasta aberta é o contexto de tudo que a janela mostra — no centro
         // do cabeçalho ela fica visível o tempo todo, sem competir com a
-        // seção à esquerda nem com os botões à direita.
+        // barra lateral nem com os botões de ação à direita.
         ToolbarItem(placement: .principal) { vaultNoCabecalho }
         ToolbarItem {
             Button {
@@ -168,32 +165,42 @@ struct JanelaPrincipal: View {
             Button {
                 NSWorkspace.shared.activateFileViewerSelecting([raiz])
             } label: {
-                VStack(spacing: 0) {
-                    HStack(spacing: DS.Espaco.xs) {
-                        Image(systemName: "folder")
-                            .font(DS.Icone.fonte(DS.Icone.pequeno))
-                            .foregroundStyle(cores.textoSutil)
-                        Text(raiz.lastPathComponent)
-                            .font(DS.Tipografia.corpo)
-                            .foregroundStyle(cores.texto)
-                            .lineLimit(1)
-                    }
+                HStack(spacing: DS.Espaco.xs + 2) {
+                    Image(systemName: "folder")
+                        .font(DS.Icone.fonte(DS.Icone.pequeno, peso: .medium))
+                        .foregroundStyle(cores.textoSutil)
+                    Text(raiz.lastPathComponent)
+                        .font(DS.Tipografia.corpo)
+                        .fontWeight(.medium)
+                        .foregroundStyle(cores.texto)
+                        .lineLimit(1)
                     if let ultima = estado.ultimaLeitura {
+                        Text("·")
+                            .foregroundStyle(cores.divisor)
                         Text("lido às \(ultima.formatted(date: .omitted, time: .standard))")
                             .font(DS.Tipografia.detalhe)
                             .foregroundStyle(cores.textoSutil)
                             .monospacedDigit()
                     }
                 }
-                .contentShape(Rectangle())
+                .padding(.horizontal, DS.Espaco.md)
+                .padding(.vertical, DS.Espaco.xs)
+                .contentShape(Capsule())
             }
-            .buttonStyle(BotaoDoSistema(.peca))
+            .buttonStyle(.plain)
             .help(raiz.path)
             .accessibilityLabel("Mostrar o vault no Finder")
         } else {
-            Text("Nenhum vault aberto")
-                .font(DS.Tipografia.corpo)
-                .foregroundStyle(cores.textoSutil)
+            HStack(spacing: DS.Espaco.xs + 2) {
+                Image(systemName: "folder.badge.questionmark")
+                    .font(DS.Icone.fonte(DS.Icone.pequeno))
+                    .foregroundStyle(cores.textoSutil)
+                Text("Nenhum vault aberto")
+                    .font(DS.Tipografia.corpo)
+                    .foregroundStyle(cores.textoSutil)
+            }
+            .padding(.horizontal, DS.Espaco.md)
+            .padding(.vertical, DS.Espaco.xs)
         }
     }
 

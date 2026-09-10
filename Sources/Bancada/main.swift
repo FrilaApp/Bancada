@@ -34,6 +34,7 @@ final class DelegadoDoApp: NSObject, NSApplicationDelegate {
             defer: false
         )
         janela.title = "Bancada"
+        janela.titleVisibility = .hidden
         janela.titlebarAppearsTransparent = false
         janela.contentView = NSHostingView(rootView: JanelaPrincipal())
         // O `minWidth` do SwiftUI vive dentro do `NSHostingView` e não sobe
