@@ -109,33 +109,6 @@ public struct Pilula: View {
     }
 }
 
-/// Contagem numérica ao lado de um rótulo de navegação.
-///
-/// Some quando é zero: um distintivo em zero é ruído, e o zero é justamente o
-/// estado que não precisa de atenção.
-public struct Distintivo: View {
-    @Environment(\.cores) private var cores
-    private let valor: Int
-    private let cor: Color
-
-    public init(_ valor: Int, cor: Color) {
-        self.valor = valor
-        self.cor = cor
-    }
-
-    public var body: some View {
-        if valor > 0 {
-            Text("\(valor)")
-                .font(DS.Tipografia.detalhe)
-                .monospacedDigit()
-                .padding(.horizontal, DS.Espaco.sm)
-                .padding(.vertical, 1)
-                .background(cor.opacity(DS.Veu.medio), in: Capsule())
-                .foregroundStyle(cor)
-        }
-    }
-}
-
 // MARK: - Superfícies
 
 /// Cartão padrão — superfície, fio e raio médio.

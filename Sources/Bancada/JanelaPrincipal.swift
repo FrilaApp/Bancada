@@ -22,17 +22,33 @@ struct JanelaPrincipal: View {
     // MARK: - Barra lateral
 
     private var barraLateral: some View {
-        List(selection: Binding(
-            get: { estado.secao },
-            set: { estado.secao = $0 ?? .trabalho }
-        )) {
+        List(selection: selecao) {
             ForEach(Secao.conteudo) { secao in
-                Label(secao.titulo, systemImage: secao.simbolo)
-                    .badge(distintivo(secao))
-                    .tag(secao)
+                linha(secao)
             }
         }
-        .safeAreaInset(edge: .bottom) { rodape }
+        .safeAreaInset(edge: .bottom, spacing: 0) { rodape }
+    }
+
+    private var selecao: Binding<Secao?> {
+        Binding(
+            get: { estado.secao },
+            set: { estado.secao = $0 ?? .trabalho }
+        )
+    }
+
+    /// Uma linha da barra lateral, do jeito que a `List` desenha.
+    ///
+    /// O Ajustes usa exatamente esta função, e é essa a correção: antes ele era
+    /// um botão desenhado à mão — fundo translúcido, texto no acento, borda —
+    /// convivendo na mesma coluna com a seleção nativa azul das outras quatro.
+    /// Dois vocabulários de seleção lado a lado, e um recuo de ~9px que não
+    /// batia com as linhas de cima. Alinhamento, seleção e realce agora vêm de
+    /// onde já vinham para as outras.
+    private func linha(_ secao: Secao) -> some View {
+        Label(secao.titulo, systemImage: secao.simbolo)
+            .badge(distintivo(secao, comoTexto: true))
+            .tag(secao)
     }
 
     private func distintivo(_ secao: Secao) -> Int {
@@ -48,39 +64,32 @@ struct JanelaPrincipal: View {
         }
     }
 
+    /// O distintivo como `Text`, para o de Ajustes poder falar em cor de aviso
+    /// sem sair do desenho nativo da linha. Zero vira `nil` — a `List` esconde,
+    /// e zero é justamente o estado que não pede atenção.
+    private func distintivo(_ secao: Secao, comoTexto: Bool) -> Text? {
+        let n = distintivo(secao)
+        guard n > 0 else { return nil }
+        let t = Text("\(n)")
+        return secao == .ajustes ? t.foregroundColor(cores.status(.revisao)) : t
+    }
+
     /// Ajustes fica no pé da barra lateral, fora da lista de seções: é sobre o
     /// app, não sobre o vault, e é onde o macOS ensina a procurar por
     /// configuração. Continua sendo uma `Secao` — só não disputa espaço com o
     /// conteúdo.
+    ///
+    /// É uma `List` de uma linha só, e não um botão: assim a seleção, o recuo e
+    /// o realce são os mesmos das seções acima, sem ninguém reimplementar
+    /// nenhum dos três.
     private var rodape: some View {
         VStack(spacing: 0) {
-            Divider()
-            Button {
-                estado.secao = .ajustes
-            } label: {
-                HStack(spacing: DS.Espaco.sm) {
-                    Image(systemName: Secao.ajustes.simbolo)
-                        .frame(width: DS.Espaco.lg, alignment: .center)
-                    Text(Secao.ajustes.titulo)
-                        .font(DS.Tipografia.corpo)
-                    Spacer()
-                    // Desvio invisível é o que corrói a confiança no registro:
-                    // este é o único distintivo que se quer sempre em zero.
-                    Distintivo(distintivo(.ajustes), cor: cores.status(.revisao))
-                }
-                .foregroundStyle(estado.secao == .ajustes ? cores.acento : cores.texto)
-                .padding(.horizontal, DS.Espaco.md)
-                .padding(.vertical, DS.Espaco.sm)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .contentShape(Rectangle())
-                .background(
-                    RoundedRectangle(cornerRadius: DS.Raio.sm)
-                        .fill(cores.acento.opacity(estado.secao == .ajustes ? DS.Veu.medio : 0))
-                        .padding(.horizontal, DS.Espaco.sm)
-                )
+            Divisor()
+            List(selection: selecao) {
+                linha(.ajustes)
             }
-            .buttonStyle(.plain)
-            .padding(.vertical, DS.Espaco.xs)
+            .scrollDisabled(true)
+            .frame(height: DS.BarraLateral.alturaDoRodape)
         }
     }
 

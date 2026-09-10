@@ -86,27 +86,25 @@ struct TelaAjustes: View {
     /// O seletor de esquema.
     ///
     /// Três estados, com `Sistema` primeiro e como padrão: a regra da Bancada
-    /// continua sendo acompanhar o macOS, e isto é o override. Controle nativo
-    /// e não `Pilula` porque aqui a escolha é exclusiva e obrigatória — uma
-    /// barra de pílulas comunica filtro, que pode não ter nenhum selecionado —,
-    /// e porque é o controle que o macOS usa para esta mesma decisão nas
-    /// próprias Ajustes do sistema.
+    /// continua sendo acompanhar o macOS, e isto é o override.
+    ///
+    /// Usava `Picker(.segmented)` nativo, com o argumento de que o sistema não
+    /// tinha esse controle. Passou a ter — e aí o argumento virou o contrário:
+    /// duas telas com o mesmo controle e dois vocabulários, o azul sólido do
+    /// sistema aqui e a pílula cinza do DS no calendário. Quem tem componente
+    /// e não consome fabrica divergência.
     private var blocoDeAparencia: some View {
         Bloco("Aparência") {
             VStack(alignment: .leading, spacing: DS.Espaco.sm) {
-                Picker(
-                    "Aparência",
-                    selection: Binding(
+                SeletorSegmentado(
+                    selecao: Binding(
                         get: { estado.aparencia },
                         set: { estado.aparencia = $0 }
-                    )
-                ) {
-                    ForEach(Aparencia.allCases) { opcao in
-                        Label(opcao.rotulo, systemImage: opcao.simbolo).tag(opcao)
+                    ),
+                    opcoes: Aparencia.allCases.map {
+                        .init(valor: $0, rotulo: $0.rotulo, simbolo: $0.simbolo)
                     }
-                }
-                .pickerStyle(.segmented)
-                .labelsHidden()
+                )
 
                 // "Sistema" não é autoexplicativo para quem nunca trocou.
                 Text(estado.aparencia.nota)

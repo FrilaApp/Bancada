@@ -246,8 +246,10 @@ final class ParidadeDeTokensTests: XCTestCase {
         XCTAssertEqual(metrica["calendario"]?["esperaDoPreview"], DS.Calendario.esperaDoPreview)
         XCTAssertEqual(metrica["calendario"]?["larguraDoPreview"], Double(DS.Calendario.larguraDoPreview))
         XCTAssertEqual(metrica["calendario"]?["alturaMaximaDoPreview"], Double(DS.Calendario.alturaMaximaDoPreview))
+        XCTAssertEqual(metrica["calendario"]?["diasMinimosParaGrade"], Double(DS.Calendario.diasMinimosParaGrade))
         XCTAssertEqual(metrica["marcador"]?["larguraDoTipo"], Double(DS.Marcador.larguraDoTipo))
         XCTAssertEqual(metrica["marcador"]?["larguraDaHora"], Double(DS.Marcador.larguraDaHora))
+        XCTAssertEqual(metrica["barraLateral"]?["alturaDoRodape"], Double(DS.BarraLateral.alturaDoRodape))
     }
 
     func testTipografiaEspelhaOJSON() throws {

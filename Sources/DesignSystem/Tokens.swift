@@ -314,6 +314,21 @@ public enum DS {
         /// posicioná-la. O conteúdo é curto; o teto existe para o cálculo de
         /// borda, não para cortar texto.
         public static let alturaMaximaDoPreview: CGFloat = 220
+
+        /// Quantos dias com evento justificam abrir na grade do mês.
+        ///
+        /// Abaixo disso a grade fica com 33 das 35 células vazias e parece uma
+        /// planilha em branco — o dado é o mesmo, o modo é que estava errado.
+        /// Uma semana é o corte: com menos de sete dias marcados, Lista mostra
+        /// tudo sem sobra; a partir daí a grade começa a valer a altura que
+        /// ocupa. O vault fica denso sozinho, e o padrão acompanha.
+        public static let diasMinimosParaGrade: Int = 7
+    }
+
+    /// O rodapé da barra lateral: uma `List` de uma linha só, que precisa de
+    /// altura declarada porque `List` não se autodimensiona.
+    public enum BarraLateral {
+        public static let alturaDoRodape: CGFloat = 36
     }
 
     /// Colunas de largura fixa que fazem as linhas de fato alinharem

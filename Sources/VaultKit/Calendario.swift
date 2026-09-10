@@ -204,6 +204,16 @@ public enum Calendario {
     ///
     /// O primeiro dia da semana vem do `Calendar` do sistema (domingo no
     /// Brasil, segunda em boa parte da Europa) em vez de ser fixado no código.
+    /// Quantos dias têm ao menos um evento.
+    ///
+    /// A grade do mês só se paga quando há dias marcados o bastante para
+    /// preenchê-la; abaixo disso ela vira uma planilha em branco de 35 células.
+    /// Quem decide o corte é a interface — aqui fica só a contagem, que é
+    /// leitura do vault e não desenho.
+    public static func diasComEvento(_ dias: [DiaDoCalendario]) -> Int {
+        dias.reduce(0) { $0 + ($1.eventos.isEmpty ? 0 : 1) }
+    }
+
     public static func semanasDoMes(
         de ancoraISO: String,
         calendario: Calendar = DataISO.calendario

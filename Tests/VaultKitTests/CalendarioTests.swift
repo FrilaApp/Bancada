@@ -346,3 +346,50 @@ final class GradeDoCalendarioTests: XCTestCase {
         ])
     }
 }
+
+/// A contagem que decide se o calendário abre em grade ou em lista.
+///
+/// Vem da V-04: o modo Mês era fixo, e com os eventos deste vault concentrados
+/// em dois dias a grade abria com 33 das 35 células vazias. Um padrão fixo em
+/// Lista erraria igual na direção oposta quando o vault encher — então quem
+/// decide é a densidade, e a densidade precisa estar sob teste.
+final class DensidadeDoCalendarioTests: XCTestCase {
+
+    private func dia(_ data: String, eventos: Int) -> DiaDoCalendario {
+        DiaDoCalendario(
+            data: data,
+            eventos: (0..<eventos).map { i in
+                EventoDeCalendario(
+                    data: data,
+                    hora: String(format: "%02d:00", i % 24),
+                    especie: .fato,
+                    rotulo: "evento \(i)",
+                    detalhe: "",
+                    origem: nil
+                )
+            }
+        )
+    }
+
+    func testContaDiaComEventoENaoEvento() {
+        let dias = [dia("2026-09-08", eventos: 28), dia("2026-09-09", eventos: 31)]
+        XCTAssertEqual(Calendario.diasComEvento(dias), 2)
+    }
+
+    /// O caso que a V-04 flagrou: muitos eventos, poucos dias. É o volume que
+    /// engana — quem enche a grade é a quantidade de dias marcados.
+    func testMuitosEventosEmPoucosDiasContinuaPoucosDias() {
+        let dias = [dia("2026-09-08", eventos: 28), dia("2026-09-09", eventos: 31)]
+        XCTAssertEqual(dias.reduce(0) { $0 + $1.eventos.count }, 59)
+        XCTAssertEqual(Calendario.diasComEvento(dias), 2)
+    }
+
+    func testDiaVazioNaoConta() {
+        let dias = [dia("2026-09-08", eventos: 3), dia("2026-09-09", eventos: 0)]
+        XCTAssertEqual(Calendario.diasComEvento(dias), 1)
+    }
+
+    func testVaultSemNadaContaZero() {
+        XCTAssertEqual(Calendario.diasComEvento([]), 0)
+    }
+}

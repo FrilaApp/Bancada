@@ -28,7 +28,30 @@ struct TelaCalendario: View {
 
     enum Modo: Hashable { case mes, semana, lista }
 
-    @State private var modo: Modo = .mes
+    /// Com que modo a tela abre.
+    ///
+    /// Era sempre Mês, e para este vault isso dava 33 de 35 células vazias
+    /// ocupando a altura inteira da janela — no claro, com borda em cada
+    /// célula, o efeito era o de uma planilha em branco. A grade não tinha
+    /// defeito; o padrão de abertura é que não olhava para o dado.
+    ///
+    /// Um padrão fixo em Lista erraria igual na direção oposta assim que a
+    /// equipe acumulasse três meses de commits. Então quem decide é a
+    /// densidade: abaixo de uma semana de dias marcados, Lista mostra tudo sem
+    /// sobra; daí para cima a grade passa a valer a altura que ocupa. Só o
+    /// primeiro desenho usa isto — trocar de modo continua sendo da pessoa.
+    static func modoInicial(para dias: [DiaDoCalendario]) -> Modo {
+        Calendario.diasComEvento(dias) >= DS.Calendario.diasMinimosParaGrade
+            ? .mes
+            : .lista
+    }
+
+    init(dias: [DiaDoCalendario]) {
+        self.dias = dias
+        _modo = State(initialValue: Self.modoInicial(para: dias))
+    }
+
+    @State private var modo: Modo
     @State private var ancora: String = DataISO.texto(.now)
     @State private var semanasVisiveis: Int = DS.Calendario.semanasMaximas
     @State private var filtro = FiltroDeEventos()
