@@ -108,7 +108,7 @@ td:first-child { white-space: nowrap; font-variant-numeric: tabular-nums; }
 .lista-tarefas .caixa { display: inline-flex; align-items: center; justify-content: center;
   width: 15px; height: 15px; margin-right: 8px; border: 1px solid var(--borda);
   border-radius: 4px; font-size: 10px; vertical-align: -2px; }
-.lista-tarefas .caixa.feita { background: var(--status-concluida); border-color: var(--status-concluida); color: #fff; }
+.lista-tarefas .caixa.feita { background: var(--status-concluida); border-color: var(--status-concluida); color: var(--superficie); }
 
 .arvore, .arvore ul { list-style: none; padding-left: 0; margin: 0; }
 .arvore ul { padding-left: var(--espaco-lg); border-left: 1px solid var(--borda);

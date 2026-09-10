@@ -35,7 +35,7 @@ struct TelaRegistros: View {
                         }
                     } header: {
                         Label(
-                            "\(naoReconhecidas.count) linha(s) fora do formato dos hooks",
+                            Plural.contar(naoReconhecidas.count, "linha", "linhas") + " fora do formato dos hooks",
                             systemImage: "exclamationmark.triangle"
                         )
                     }
@@ -112,20 +112,13 @@ private struct LinhaDeGrupo: View {
         }
     }
 
+    /// A contagem à direita saiu de um hook, então fala na voz de fato — que
+    /// é o que `LinhaDeValor` já faz. Esta tela desenhava a linha à mão em
+    /// `detalhe` (sans), divergindo do resto do app sem que ninguém tivesse
+    /// decidido divergir.
     private func linha(rotulo: String, detalhe: String, destacado: Bool) -> some View {
-        HStack(alignment: .firstTextBaseline, spacing: DS.Espaco.md) {
-            Text(rotulo)
-                .font(DS.Tipografia.corpo)
-                .foregroundStyle(cores.texto)
-                .fontWeight(destacado ? .medium : .regular)
-                .lineLimit(3)
-            Spacer(minLength: DS.Espaco.md)
-            Text(detalhe)
-                .font(DS.Tipografia.detalhe)
-                .foregroundStyle(cores.textoSutil)
-                .monospacedDigit()
-        }
-        .padding(.vertical, 1)
+        LinhaDeValor(rotulo, valor: detalhe, destacado: destacado)
+            .padding(.vertical, 1)
     }
 }
 
@@ -194,7 +187,7 @@ private struct CartaoComparativoUI: View {
                 // Cabeçalho do Cartão Comparativo
                 HStack(alignment: .center, spacing: DS.Espaco.sm) {
                     Image(systemName: "photo.stack.fill")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(DS.Icone.fonte(DS.Icone.medio, peso: .semibold))
                         .foregroundStyle(cores.acento)
 
                     Text("Comparativo Visual de Iterações")
@@ -245,13 +238,13 @@ private struct CartaoComparativoUI: View {
 
                             HStack(spacing: 4) {
                                 Text(info.tag)
-                                    .font(.system(size: 10, weight: .bold))
-                                    .padding(.horizontal, 4)
+                                    .font(DS.Tipografia.rotulo)
+                                    .padding(.horizontal, DS.Espaco.xs)
                                     .padding(.vertical, 1)
-                                    .background(cores.superficieSutil, in: RoundedRectangle(cornerRadius: 3))
+                                    .background(cores.superficieSutil, in: RoundedRectangle(cornerRadius: DS.Raio.xs))
 
                                 Text(info.titulo)
-                                    .font(.system(size: 11, weight: .semibold))
+                                    .font(DS.Tipografia.detalhe.fonte.weight(.semibold))
                                     .foregroundStyle(cores.texto)
                                     .lineLimit(1)
                             }
@@ -265,13 +258,13 @@ private struct CartaoComparativoUI: View {
                                     .foregroundStyle(cores.textoSutil)
 
                                 Text(info.data)
-                                    .font(.system(size: 9))
+                                    .font(DS.Tipografia.monoDetalhe)
                                     .foregroundStyle(cores.textoSutil)
                                     .monospacedDigit()
                             }
 
                             Text(info.delta)
-                                .font(.system(size: 10))
+                                .font(DS.Tipografia.detalhe)
                                 .foregroundStyle(cores.textoSutil)
                                 .lineLimit(2)
                                 .fixedSize(horizontal: false, vertical: true)

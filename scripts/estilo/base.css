@@ -60,6 +60,33 @@ details[data-tipo] > summary .rotulo {
   border-radius: 3px;
 }
 
+/* Movimento.
+   O site não declarava uma única `transition` — e declarava, logo abaixo,
+   `transition: none` para quem pede menos movimento: suprimia um movimento que
+   nunca teve. Todo `:hover` cortava seco e não havia `:active` em lugar nenhum.
+   Os dois valores são os mesmos do app (`movimento.rapido` e `.padrao`). */
+a, button, summary, .dia, .caixa {
+  transition: background-color var(--mov-rapido) ease-out,
+              color var(--mov-rapido) ease-out,
+              border-color var(--mov-rapido) ease-out,
+              opacity var(--mov-rapido) ease-out;
+}
+a:active, button:active, summary:active { opacity: 0.7; }
+
+/* Pular para o conteúdo: só aparece no foco de teclado, que é quando serve. */
+.pular {
+  position: absolute;
+  left: -9999px;
+  top: var(--espaco-sm);
+  padding: var(--espaco-sm) var(--espaco-md);
+  background: var(--superficie);
+  color: var(--acento);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  z-index: 10;
+}
+.pular:focus { left: var(--espaco-sm); }
+
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }

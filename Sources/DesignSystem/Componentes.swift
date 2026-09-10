@@ -104,7 +104,7 @@ public struct Pilula: View {
                 )
                 .foregroundStyle(ativo ? cores.acento : cores.textoSutil)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(BotaoDoSistema(.peca, raio: DS.Raio.pilula))
         .animation(DS.Movimento.rapido, value: ativo)
     }
 }
@@ -133,6 +133,7 @@ public struct Cartao<Conteudo: View>: View {
 /// Cartão com título de seção. É a composição que a tela de Ajustes repetia
 /// quatro vezes: cartão, título, conteúdo empilhado, respiro de `md`.
 public struct Bloco<Conteudo: View>: View {
+    @Environment(\.cores) private var cores
     private let titulo: String
     private let simbolo: String?
     private let corDoSimbolo: Color?
@@ -155,8 +156,11 @@ public struct Bloco<Conteudo: View>: View {
             VStack(alignment: .leading, spacing: DS.Espaco.sm) {
                 HStack(spacing: DS.Espaco.sm) {
                     if let simbolo {
+                        // Tamanho e peso declarados: sem isto o glifo herda o
+                        // ambiente e sai fino ao lado de um título semibold.
                         Image(systemName: simbolo)
-                            .foregroundStyle(corDoSimbolo ?? .primary)
+                            .font(DS.Icone.fonte(DS.Icone.medio, peso: .semibold))
+                            .foregroundStyle(corDoSimbolo ?? cores.texto)
                     }
                     Text(titulo).font(DS.Tipografia.secao)
                 }
@@ -215,7 +219,11 @@ public struct Folha<Conteudo: View>: View {
     public var body: some View {
         ScrollView {
             conteudo
-                .frame(maxWidth: .infinity, alignment: .leading)
+                // O teto de medida mora aqui, e não na tela que usa a folha.
+                // Enquanto morou na tela, o Acervo acertava (tem teto de
+                // painel) e o Diário ficava com a medida que sobrasse do
+                // `HSplitView` — que não é decisão de design, é resto.
+                .frame(maxWidth: DS.Leitura.larguraMaximaDaFolha, alignment: .leading)
                 .padding(DS.Espaco.xl)
                 .background(cores.folha, in: RoundedRectangle(cornerRadius: DS.Raio.lg))
                 .overlay(
@@ -323,21 +331,30 @@ public struct LinhaDeValor<Acessorio: View>: View {
     @Environment(\.cores) private var cores
     private let rotulo: String
     private let valor: String
+    private let destacado: Bool
     private let acessorio: Acessorio
 
+    /// `destacado` dá peso de nó-pai numa árvore. Existe porque a tela de
+    /// Registros precisava disso, não achou aqui e reimplementou a linha
+    /// inteira à mão — a peça cobrir o caso real custa um parâmetro; a tela
+    /// bifurcar custa uma divergência que ninguém revisa.
     public init(
         _ rotulo: String,
         valor: String,
+        destacado: Bool = false,
         @ViewBuilder acessorio: () -> Acessorio = { EmptyView() }
     ) {
         self.rotulo = rotulo
         self.valor = valor
+        self.destacado = destacado
         self.acessorio = acessorio()
     }
 
     public var body: some View {
         HStack(spacing: DS.Espaco.sm) {
-            Text(rotulo).font(DS.Tipografia.corpo)
+            Text(rotulo)
+                .font(DS.Tipografia.corpo)
+                .fontWeight(destacado ? .medium : .regular)
             acessorio
             Spacer()
             Text(valor)
@@ -370,7 +387,7 @@ public struct Vazio: View {
     public var body: some View {
         VStack(spacing: DS.Espaco.sm) {
             Image(systemName: simbolo)
-                .font(.system(size: 28, weight: .light))
+                .font(DS.Icone.fonte(DS.Icone.vazio, peso: .light))
                 .foregroundStyle(cores.textoSutil)
             Text(titulo)
                 .font(DS.Tipografia.secao)
@@ -442,7 +459,7 @@ public struct CampoDeBusca: View {
     public var body: some View {
         HStack(spacing: DS.Espaco.sm) {
             Image(systemName: "magnifyingglass")
-                .font(.system(size: 11))
+                .font(DS.Icone.fonte(DS.Icone.pequeno))
                 .foregroundStyle(cores.textoSutil)
 
             TextField(dica, text: $texto)
@@ -455,10 +472,10 @@ public struct CampoDeBusca: View {
                     texto = ""
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 11))
+                        .font(DS.Icone.fonte(DS.Icone.pequeno))
                         .foregroundStyle(cores.textoSutil)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(BotaoDoSistema(.glifo))
                 .help("Limpar a busca")
                 .accessibilityLabel("Limpar a busca")
             }
@@ -534,7 +551,7 @@ public struct MenuDeFiltro: View {
             }
         } label: {
             HStack(spacing: DS.Espaco.xs) {
-                Image(systemName: simbolo).font(.system(size: 10))
+                Image(systemName: simbolo).font(DS.Icone.fonte(DS.Icone.pequeno))
                 Text(titulo).font(DS.Tipografia.detalhe)
                 if !marcadas.isEmpty {
                     Text("\(marcadas.count)")
@@ -570,15 +587,130 @@ public struct ChipRemovivel: View {
         HStack(spacing: DS.Espaco.xs) {
             Text(texto).font(DS.Tipografia.detalhe)
             Button(action: remover) {
-                Image(systemName: "xmark").font(.system(size: 7, weight: .bold))
+                Image(systemName: "xmark").font(DS.Icone.fonte(DS.Icone.micro, peso: .bold))
             }
-            .buttonStyle(.plain)
+            .buttonStyle(BotaoDoSistema(.glifo))
+            // A 9pt o glifo é menor que qualquer alvo defensável; a área
+            // clicável vem do frame, não do desenho.
+            .frame(width: DS.Espaco.md, height: DS.Espaco.md)
             .accessibilityLabel("Remover o filtro \(texto)")
         }
         .padding(.horizontal, DS.Espaco.sm)
         .padding(.vertical, 3)
         .background(cor.opacity(DS.Veu.medio), in: Capsule())
         .foregroundStyle(cor)
+    }
+}
+
+/// O estilo de botão do sistema — o único.
+///
+/// A revisão de 2026-09-10 contou, no app inteiro: zero estados `pressed`, dois
+/// `hover` (e nenhum dos dois pintava nada — um agendava a prévia, o outro
+/// trocava o cursor). São doze `.buttonStyle(.plain)`, que no macOS removem o
+/// realce nativo **sem repor nada**: o botão fica visualmente morto sob o
+/// ponteiro e sob o clique.
+///
+/// A correção não é adicionar hover em doze lugares. É ter um estilo, porque a
+/// mesma lição já apareceu duas vezes nesta base: enquanto "sem sombra difusa"
+/// foi frase, um `popover` nativo passou por baixo dela; virou `Sobreposicao` e
+/// parou. Regra que não é peça não se cumpre.
+///
+/// Duas formas, porque há dois tipos de botão aqui:
+/// - `.peca` — tem área própria (pílula, cartão, linha). O realce pinta o fundo.
+/// - `.glifo` — é só um ícone solto. O realce muda a tinta, porque pintar fundo
+///   atrás de um glifo de 9pt cria uma mancha maior que o próprio ícone.
+public struct BotaoDoSistema: ButtonStyle {
+    public enum Forma { case peca, glifo }
+
+    private let forma: Forma
+    private let raio: CGFloat
+
+    public init(_ forma: Forma = .peca, raio: CGFloat = DS.Raio.sm) {
+        self.forma = forma
+        self.raio = raio
+    }
+
+    public func makeBody(configuration: Configuration) -> some View {
+        Corpo(configuracao: configuration, forma: forma, raio: raio)
+    }
+
+    /// `ButtonStyle` não guarda estado, e hover é estado. Daí a view interna.
+    private struct Corpo: View {
+        @Environment(\.cores) private var cores
+        @Environment(\.isEnabled) private var habilitado
+        @Environment(\.accessibilityReduceMotion) private var menosMovimento
+
+        let configuracao: Configuration
+        let forma: Forma
+        let raio: CGFloat
+
+        @State private var sobre = false
+
+        private var veu: Double {
+            if configuracao.isPressed { return DS.Veu.medio }
+            if sobre { return DS.Veu.sutil }
+            return 0
+        }
+
+        var body: some View {
+            configuracao.label
+                .opacity(opacidade)
+                .background(realceDeFundo)
+                // O alvo é o retângulo inteiro, não o desenho do glifo: sem
+                // isto o clique só pega no traço do ícone.
+                .contentShape(RoundedRectangle(cornerRadius: raio))
+                .onHover { sobre = $0 }
+                .animation(menosMovimento ? nil : DS.Movimento.rapido, value: sobre)
+                .animation(menosMovimento ? nil : DS.Movimento.rapido, value: configuracao.isPressed)
+        }
+
+        /// Desabilitado esmaece; glifo escurece a tinta sob o ponteiro.
+        private var opacidade: Double {
+            if !habilitado { return 0.4 }
+            if forma == .glifo && configuracao.isPressed { return 0.6 }
+            if forma == .glifo && sobre { return 0.8 }
+            return 1
+        }
+
+        @ViewBuilder
+        private var realceDeFundo: some View {
+            if forma == .peca && habilitado {
+                RoundedRectangle(cornerRadius: raio)
+                    .fill(cores.texto.opacity(veu))
+            }
+        }
+    }
+}
+
+extension View {
+    /// Anel de foco de teclado.
+    ///
+    /// `DS.Cor.foco` e `DS.Traco.foco` existiam desde o começo do sistema sem
+    /// um único ponto de uso — projetados e nunca implementados, como a revisão
+    /// do Cauê registrou. Este modificador é o ponto de uso: quem navega por
+    /// teclado precisa saber onde está, e o desenho tem de ser **um** para o
+    /// app inteiro, não um por tela.
+    public func anelDeFoco(_ ativo: Bool, raio: CGFloat = DS.Raio.sm) -> some View {
+        modifier(AnelDeFoco(ativo: ativo, raio: raio))
+    }
+}
+
+private struct AnelDeFoco: ViewModifier {
+    @Environment(\.cores) private var cores
+    @Environment(\.accessibilityReduceMotion) private var menosMovimento
+    let ativo: Bool
+    let raio: CGFloat
+
+    func body(content: Content) -> some View {
+        content
+            .overlay(
+                RoundedRectangle(cornerRadius: raio)
+                    .strokeBorder(ativo ? cores.foco : .clear, lineWidth: DS.Traco.foco)
+                    // O anel fica por fora da peça: por dentro ele come o
+                    // conteúdo e briga com a borda que já está lá.
+                    .padding(-DS.Traco.foco)
+            )
+            .animation(menosMovimento ? nil : DS.Movimento.rapido, value: ativo)
     }
 }
 
@@ -619,7 +751,7 @@ public struct SeletorSegmentado<Valor: Hashable>: View {
                     selecao = opcao.valor
                 } label: {
                     HStack(spacing: DS.Espaco.xs) {
-                        Image(systemName: opcao.simbolo).font(.system(size: 10))
+                        Image(systemName: opcao.simbolo).font(DS.Icone.fonte(DS.Icone.pequeno))
                         Text(opcao.rotulo).font(DS.Tipografia.detalhe)
                     }
                     .padding(.horizontal, DS.Espaco.sm)
@@ -631,7 +763,7 @@ public struct SeletorSegmentado<Valor: Hashable>: View {
                     .foregroundStyle(ativo ? cores.texto : cores.textoSutil)
                     .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(BotaoDoSistema(.peca, raio: DS.Raio.sm - 2))
                 .accessibilityAddTraits(ativo ? [.isButton, .isSelected] : .isButton)
             }
         }

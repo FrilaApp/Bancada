@@ -46,7 +46,8 @@ function main() {
   site.gerar();
 
   console.log(`✓ Site gerado em ${destino}`);
-  console.log(`  ${site.paginasEscritas} páginas · ${site.midiasCopiadas} arquivo(s) de mídia`);
+  const plural = (n, um, muitos) => `${n} ${n === 1 ? um : muitos}`;
+  console.log(`  ${plural(site.paginasEscritas, 'página', 'páginas')} · ${plural(site.midiasCopiadas, 'arquivo', 'arquivos')} de mídia`);
   console.log(`  abra com: open ${path.join(destino, 'index.html')}`);
 }
 
@@ -225,13 +226,14 @@ class Site {
 <link rel="stylesheet" href="${base}estilo.css">
 </head>
 <body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
 <header>
   <a class="marca" href="${base}index.html">Challenge 18</a>
   <nav>${nav}</nav>
 </header>
 <div class="colunas">
   <aside>${secoes}</aside>
-  <main>
+  <main id="conteudo" tabindex="-1">
     <h1>${escapar(titulo)}</h1>
     ${subtitulo ? `<p class="subtitulo">${escapar(subtitulo)}</p>` : ''}
     ${corpo}
@@ -309,7 +311,12 @@ class Site {
       .join('');
     if (campos) corpo += `<div class="campos">${campos}</div>`;
 
-    corpo += this.md(corpoSemTitulo, 'notas');
+    // A voz de narrativa e o teto de 66ch vivem em `.narrativa` desde sempre,
+    // e o gerador multipágina nunca envolvia o corpo nela — só o de página
+    // única fazia. Toda narrativa do site (diário, roadmap, CBL) saía em sans,
+    // sem teto de medida, perto de 110 caracteres por linha. É o V-01 do site:
+    // a tese declarada e não entregue justamente na superfície de leitura.
+    corpo += `<article class="narrativa">${this.md(corpoSemTitulo, 'notas')}</article>`;
 
     return this.pagina({
       titulo: nota.titulo,
@@ -779,6 +786,12 @@ ${this.cssPaginaUnica()}
       `  --raio: ${t.raio.md}px;`,
       ...Object.entries(t.traco).map(([n, v]) => `  --traco-${n}: ${v}px;`),
       ...Object.entries(t.veu).map(([n, v]) => `  --veu-${n}: ${v};`),
+      // Movimento sai do mesmo lugar que o do app. O site tinha `transition:
+      // none` para quem pede menos movimento e nenhuma `transition` para quem
+      // não pede — os tokens existiam em tokens.json e nunca chegavam ao CSS.
+      ...Object.entries(t.movimento)
+        .filter(([n]) => !n.startsWith('_'))
+        .map(([n, v]) => `  --mov-${n}: ${v}s;`),
       `  --tipo-titulo: ${t.tipografia.interface.titulo.tamanho}px;`,
       `  --galeria-card: ${t.metrica.galeria.larguraMinimaCard}px;`,
       `  --galeria-thumb: ${t.metrica.galeria.alturaThumbnail}px;`,

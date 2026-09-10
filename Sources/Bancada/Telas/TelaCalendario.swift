@@ -139,7 +139,7 @@ struct TelaCalendario: View {
         BarraDePainel {
             if modo != .lista {
                 Button { irParaMes(-1) } label: { Image(systemName: "chevron.left") }
-                    .buttonStyle(.plain)
+                    .buttonStyle(BotaoDoSistema(.glifo))
                     .help("Mês anterior")
                     .accessibilityLabel("Mês anterior")
 
@@ -148,12 +148,12 @@ struct TelaCalendario: View {
                     .foregroundStyle(cores.texto)
 
                 Button { irParaMes(1) } label: { Image(systemName: "chevron.right") }
-                    .buttonStyle(.plain)
+                    .buttonStyle(BotaoDoSistema(.glifo))
                     .help("Próximo mês")
                     .accessibilityLabel("Próximo mês")
 
                 Button("Hoje") { irPara(hoje) }
-                    .buttonStyle(.plain)
+                    .buttonStyle(BotaoDoSistema(.peca))
                     .font(DS.Tipografia.detalhe)
                     .foregroundStyle(cores.acento)
                     .help("Voltar para \(hoje)")
@@ -161,7 +161,7 @@ struct TelaCalendario: View {
                 Text("Todos os dias")
                     .font(DS.Tipografia.secao)
                     .foregroundStyle(cores.texto)
-                Text("\(diasFiltrados.count) dia(s) com registro")
+                Text("\(Plural.contar(diasFiltrados.count, "dia", "dias")) com registro")
                     .font(DS.Tipografia.detalhe)
                     .foregroundStyle(cores.textoSutil)
             }
@@ -218,7 +218,9 @@ struct TelaCalendario: View {
     private var contagemDoRecorte: String {
         let total = todosOsEventos.count
         let visiveis = diasFiltrados.reduce(0) { $0 + $1.eventos.count }
-        return filtro.ativo ? "\(visiveis) de \(total) eventos" : "\(total) eventos"
+        return filtro.ativo
+            ? "\(visiveis) de \(Plural.contar(total, "evento", "eventos"))"
+            : Plural.contar(total, "evento", "eventos")
     }
 
     private var chipsDeFiltroAtivo: some View {
@@ -246,7 +248,7 @@ struct TelaCalendario: View {
             Button("Limpar") {
                 withAnimation(DS.Movimento.rapido) { filtro.limpar() }
             }
-            .buttonStyle(.plain)
+            .buttonStyle(BotaoDoSistema(.peca))
             .font(DS.Tipografia.detalhe)
             .foregroundStyle(cores.textoSutil)
 
@@ -315,6 +317,7 @@ struct TelaCalendario: View {
                         x: posicaoX(doAlvo: alvo, em: area.size),
                         y: posicaoY(doAlvo: alvo, em: area.size)
                     )
+                    .transition(.opacity)
                 }
             }
             .allowsHitTesting(false)
@@ -390,7 +393,7 @@ struct TelaCalendario: View {
             .clipShape(RoundedRectangle(cornerRadius: DS.Raio.sm))
             .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(BotaoDoSistema(.peca, raio: DS.Raio.sm))
         .onHover { dentro in
             // Só agenda para dia com evento: num mês típico, 33 das 35 células
             // estão vazias, e a prévia disparava neles para dizer "Nada
@@ -428,7 +431,7 @@ struct TelaCalendario: View {
     private func rotuloAcessivel(data: String, quantidade: Int, ehHoje: Bool) -> String {
         var partes = [data]
         if ehHoje { partes.append("hoje") }
-        partes.append(quantidade == 0 ? "sem registro" : "\(quantidade) evento(s)")
+        partes.append(quantidade == 0 ? "sem registro" : Plural.contar(quantidade, "evento", "eventos"))
         return partes.joined(separator: ", ")
     }
 
@@ -441,7 +444,7 @@ struct TelaCalendario: View {
             Capsule().fill(cores.borda)
                 .frame(width: DS.Espaco.xl, height: DS.Traco.selecao)
             Image(systemName: comprimido ? "chevron.down" : "chevron.up")
-                .font(.system(size: 7, weight: .semibold))
+                .font(DS.Icone.fonte(DS.Icone.micro, peso: .semibold))
                 .foregroundStyle(cores.textoSutil)
                 .offset(x: DS.Espaco.xl)
         }
@@ -491,7 +494,7 @@ struct TelaCalendario: View {
                 Spacer()
 
                 if let n = diaEmFoco?.eventos.count {
-                    Text("\(n) evento(s)")
+                    Text(Plural.contar(n, "evento", "eventos"))
                         .font(DS.Tipografia.detalhe)
                         .foregroundStyle(cores.textoSutil)
                         .monospacedDigit()
@@ -599,18 +602,24 @@ struct TelaCalendario: View {
         esperaDoPreview = Task { @MainActor in
             try? await Task.sleep(for: .seconds(DS.Calendario.esperaDoPreview))
             guard !Task.isCancelled else { return }
-            previewDoDia = data
+            // A `Sobreposicao` herdou do popover nativo a forma que a doutrina
+            // exigia — sem sombra — e perdeu o que o nativo dava de graça: a
+            // entrada animada. Trocar a peça não transfere o comportamento.
+            withAnimation(DS.Movimento.rapido) { previewDoDia = data }
         }
     }
 
     private func cancelarPreview(de data: String) {
         esperaDoPreview?.cancel()
-        if previewDoDia == data { previewDoDia = nil }
+        if previewDoDia == data {
+            withAnimation(DS.Movimento.rapido) { previewDoDia = nil }
+        }
     }
 
     private func fecharPreview() {
         esperaDoPreview?.cancel()
-        previewDoDia = nil
+        guard previewDoDia != nil else { return }
+        withAnimation(DS.Movimento.rapido) { previewDoDia = nil }
     }
 
     /// Ao lado da célula, e dentro da grade.
@@ -689,7 +698,10 @@ private struct ChipDeEvento: View {
         .padding(.horizontal, DS.Espaco.xs)
         .padding(.vertical, 1)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(cor.opacity(destaque ? DS.Veu.forte : DS.Veu.sutil), in: RoundedRectangle(cornerRadius: 3))
+        .background(
+            cor.opacity(destaque ? DS.Veu.forte : DS.Veu.sutil),
+            in: RoundedRectangle(cornerRadius: DS.Raio.xs)
+        )
         .opacity(apagado ? 0.55 : 1)
         .help(evento.rotulo)
     }
@@ -762,7 +774,7 @@ private struct PreviaDoDia: View {
                     if n > 0 {
                         LinhaDeValor(especie.rotulo, valor: "\(n)") {
                             Image(systemName: especie.simbolo)
-                                .font(.system(size: 9))
+                                .font(DS.Icone.fonte(DS.Icone.micro))
                                 .foregroundStyle(cores.textoSutil)
                         }
                     }

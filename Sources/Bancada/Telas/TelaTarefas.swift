@@ -125,9 +125,9 @@ struct TelaTarefas: View {
                 .font(DS.Tipografia.detalhe)
                 .padding(.horizontal, DS.Espaco.md)
                 .padding(.vertical, DS.Espaco.xs + 1)
-                .background(cor.opacity(ativo ? 0.22 : 0.08), in: Capsule())
+                .background(cor.opacity(ativo ? DS.Veu.forte : DS.Veu.sutil), in: Capsule())
                 .foregroundStyle(cor)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(BotaoDoSistema(.peca, raio: DS.Raio.pilula))
     }
 }

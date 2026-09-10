@@ -105,7 +105,7 @@ public enum DS {
             ParDeCor(claro: matiz.profundo, escuro: matiz.luz)
         }
 
-        public static let fundo           = n(1, 13)
+        public static let fundo           = n(2, 13)
         public static let superficie      = n(0, 12)
         public static let superficieSutil = n(2, 11)
         public static let borda           = n(3, 10)
@@ -113,8 +113,14 @@ public enum DS {
         public static let textoSutil      = n(7, 6)
 
         /// O chrome da janela — barra lateral, cabeçalhos de painel, barras de
-        /// filtro. Um passo distinto do fundo, para que "o que opera" e "o que
-        /// se lê" não sejam a mesma superfície.
+        /// filtro.
+        ///
+        /// No escuro fica um passo acima do fundo. No claro divide o passo com
+        /// ele, e é de propósito: separar os dois custaria a elevação da folha,
+        /// que é o que a tese precisa. No claro o sistema tem **duas**
+        /// superfícies, não três — cinza para o que opera, branco para o que se
+        /// lê. A medição de 2026-09-10 mostrou a folha separando por ΔL 0,87;
+        /// hoje separa por 3,00, contra 3,71 do escuro.
         public static let cromo           = n(2, 11)
 
         /// A superfície de leitura: nota, diário, markdown derivado. Fica
@@ -125,7 +131,18 @@ public enum DS {
         /// arquivo. Recua em relação à folha.
         public static let dado            = n(2, 11)
 
-        public static let divisor         = n(3, 10)
+        /// Fio estrutural — separa painel de painel.
+        ///
+        /// Carrega mais peso que `borda`, que contorna peça. Sem sombra, é o
+        /// divisor que diz onde uma região acaba, e ele estava no mesmo passo
+        /// da borda até a medição de 2026-09-10: 1,13:1 contra o fundo.
+        ///
+        /// Não persegue os 3:1 que a WCAG pede para componente, e a recusa tem
+        /// número: contra branco, o primeiro passo da rampa que chega a 3:1 é o
+        /// `neutro.6` (#8A8F98, 3,25:1) — um cinza médio. A 1px isso é régua,
+        /// não fio, e destruiria a linguagem que o sistema escolheu. Ver a nota
+        /// de design.
+        public static let divisor         = n(4, 9)
 
         /// Um só, e raro: ação primária, estado ativo, link, anel de foco.
         /// Nunca fundo de área.
@@ -134,6 +151,14 @@ public enum DS {
 
         /// Só ação destrutiva e erro — nunca aviso, nunca ênfase.
         public static let perigo          = m(Primitivo.vermelho)
+
+        /// Aviso: algo merece atenção e nada quebrou.
+        ///
+        /// Existia só na prosa da nota de design ("Aviso é âmbar") enquanto o
+        /// código tomava `status(.revisao)` emprestado em dois pontos — um
+        /// deles pintando um triângulo de alerta com cor de *status de tarefa*.
+        /// Papel nomeado em texto e ausente dos tokens é papel faltando.
+        public static let aviso           = m(Primitivo.ambar)
 
         public static func status(_ status: StatusTarefa) -> ParDeCor {
             switch status {
@@ -195,6 +220,10 @@ public enum DS {
     }
 
     public enum Raio {
+        /// Peça pequena — etiqueta de evento, distintivo de tag. Existe porque
+        /// dois pontos do app escreviam `cornerRadius: 3` cru: o valor estava
+        /// certo, faltava o nome.
+        public static let xs: CGFloat = 3
         public static let sm: CGFloat = 6
         public static let md: CGFloat = 10
         public static let lg: CGFloat = 16
@@ -207,6 +236,33 @@ public enum DS {
         public static let fio: CGFloat = 1
         public static let foco: CGFloat = 2
         public static let selecao: CGFloat = 2
+    }
+
+    // MARK: - Ícone
+
+    /// Tamanhos de glifo.
+    ///
+    /// Ícone não é texto e não cabe na escala de texto: era exatamente por isso
+    /// que 13 dos 17 `.font(.system(size:))` crus do app eram símbolo, não
+    /// palavra. Enquanto a escala não teve passo de ícone, cada ponto de uso
+    /// inventou o seu — e sete deles estavam **dentro do próprio design
+    /// system**, que carregava o desvio para dentro de quem o consumia direito.
+    ///
+    /// `medio` casa com `corpo` (13pt) para alinhar oticamente ao lado dele.
+    /// `micro` era 7 e virou 9: a 7pt o alvo de ponteiro do X do chip ficava
+    /// menor que qualquer mínimo defensável.
+    public enum Icone {
+        public static let micro: CGFloat = 9
+        public static let pequeno: CGFloat = 11
+        public static let medio: CGFloat = 13
+        public static let grande: CGFloat = 20
+        public static let vazio: CGFloat = 28
+
+        /// Peso de traço padrão dos SF Symbols do sistema. Declarado para que
+        /// ícone ao lado de texto semibold não fique fino por omissão.
+        public static func fonte(_ tamanho: CGFloat, peso: Font.Weight = .regular) -> Font {
+            .system(size: tamanho, weight: peso)
+        }
     }
 
     // MARK: - Tipografia
@@ -279,6 +335,40 @@ public enum DS {
     /// `metrica.*` em `tokens.json`; ficam aqui para que nenhuma view carregue
     /// número mágico.
 
+    /// A janela e o seu mínimo.
+    ///
+    /// `larguraMinimaDoConteudo` é **soma, não escolha**: a barra lateral no
+    /// mínimo mais a mais larga das telas (o Diário). O `minWidth` do SwiftUI
+    /// não sobe do `NSHostingView` para a `NSWindow`, então sem declarar isto
+    /// na janela ela encolhia abaixo do que as telas conseguem desenhar — e o
+    /// autosave devolvia o estado quebrado na abertura seguinte.
+    public enum Janela {
+        public static let larguraPadrao: CGFloat = 1080
+        public static let alturaPadrao: CGFloat = 720
+        public static let larguraMinimaDoDetalhe: CGFloat = 740
+        public static let larguraMinimaDoConteudo: CGFloat = 920
+        public static let alturaMinimaDoConteudo: CGFloat = 400
+    }
+
+    /// As três colunas do Diário: lista de dias, folha, fatos do dia.
+    public enum Diario {
+        public static let larguraMinimaDaLista: CGFloat = 160
+        public static let larguraIdealDaLista: CGFloat = 190
+        public static let larguraMinimaDaFolha: CGFloat = 320
+        public static let larguraMinimaDosFatos: CGFloat = 260
+        public static let larguraIdealDosFatos: CGFloat = 300
+    }
+
+    /// Teto de medida da superfície de leitura.
+    ///
+    /// Uma linha de 15pt em serifa passa de 75 caracteres muito antes do que a
+    /// janela permite. Medida sem teto não é decisão de design: é resto de
+    /// `HSplitView`. O teto pertence à `Folha`, não à tela que a usa — era por
+    /// isso que o Acervo acertava (tem teto de painel) e o Diário não.
+    public enum Leitura {
+        public static let larguraMaximaDaFolha: CGFloat = 620
+    }
+
     public enum Galeria {
         public static let larguraMinimaCard: CGFloat = 180
         public static let alturaThumbnail: CGFloat = 128
@@ -344,6 +434,9 @@ public enum DS {
     /// altura declarada porque `List` não se autodimensiona.
     public enum BarraLateral {
         public static let alturaDoRodape: CGFloat = 36
+        public static let larguraMinima: CGFloat = 180
+        public static let larguraIdeal: CGFloat = 210
+        public static let larguraMaxima: CGFloat = 260
     }
 
     /// Colunas de largura fixa que fazem as linhas de fato alinharem
@@ -401,6 +494,7 @@ public struct CoresDoAmbiente {
     public var acento: Color          { DS.Cor.acento.resolver(esquema) }
     public var foco: Color            { DS.Cor.foco.resolver(esquema) }
     public var perigo: Color          { DS.Cor.perigo.resolver(esquema) }
+    public var aviso: Color           { DS.Cor.aviso.resolver(esquema) }
 
     public func status(_ s: StatusTarefa) -> Color { DS.Cor.status(s).resolver(esquema) }
     public func tipoDeFato(_ t: String) -> Color { DS.Cor.tipoDeFato(t).resolver(esquema) }

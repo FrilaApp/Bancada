@@ -10,10 +10,17 @@ struct JanelaPrincipal: View {
     var body: some View {
         NavigationSplitView {
             barraLateral
-                .navigationSplitViewColumnWidth(min: 180, ideal: 210, max: 260)
+                .navigationSplitViewColumnWidth(
+                    min: DS.BarraLateral.larguraMinima,
+                    ideal: DS.BarraLateral.larguraIdeal,
+                    max: DS.BarraLateral.larguraMaxima
+                )
         } detail: {
             conteudo
-                .frame(minWidth: 520, minHeight: 400)
+                .frame(
+                    minWidth: DS.Janela.larguraMinimaDoDetalhe,
+                    minHeight: DS.Janela.alturaMinimaDoConteudo
+                )
                 .toolbar { toolbar }
         }
         .background(cores.fundo)
@@ -71,7 +78,7 @@ struct JanelaPrincipal: View {
         let n = distintivo(secao)
         guard n > 0 else { return nil }
         let t = Text("\(n)")
-        return secao == .ajustes ? t.foregroundColor(cores.status(.revisao)) : t
+        return secao == .ajustes ? t.foregroundColor(cores.aviso) : t
     }
 
     /// Ajustes fica no pé da barra lateral, fora da lista de seções: é sobre o
@@ -134,7 +141,7 @@ struct JanelaPrincipal: View {
             Button {
                 escolherPasta()
             } label: {
-                Label("Escolher vault", systemImage: "folder")
+                Label("Escolher vault…", systemImage: "folder")
             }
             .help("Abrir outra pasta como vault")
         }
@@ -164,7 +171,7 @@ struct JanelaPrincipal: View {
                 VStack(spacing: 0) {
                     HStack(spacing: DS.Espaco.xs) {
                         Image(systemName: "folder")
-                            .font(.system(size: 10))
+                            .font(DS.Icone.fonte(DS.Icone.pequeno))
                             .foregroundStyle(cores.textoSutil)
                         Text(raiz.lastPathComponent)
                             .font(DS.Tipografia.corpo)
@@ -180,8 +187,9 @@ struct JanelaPrincipal: View {
                 }
                 .contentShape(Rectangle())
             }
-            .buttonStyle(.plain)
+            .buttonStyle(BotaoDoSistema(.peca))
             .help(raiz.path)
+            .accessibilityLabel("Mostrar o vault no Finder")
         } else {
             Text("Nenhum vault aberto")
                 .font(DS.Tipografia.corpo)

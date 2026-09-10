@@ -79,7 +79,7 @@ main { padding: 40px 44px 60px; max-width: 820px; }
 .nota-lateral { font-size: 13px; color: var(--textoSutil); max-width: 66ch;
   border-left: 2px solid var(--borda); padding-left: 14px; margin: 0 0 26px; }
 
-.callout { margin: 18px 0; padding: 14px 16px; border-radius: 8px;
+.callout { margin: 18px 0; padding: 14px 16px; border-radius: var(--raio-sm);
   background: var(--superficieSutil); font-size: 14px; max-width: 66ch; }
 .callout > b { display: block; font-family: var(--mono); font-size: 11px;
   text-transform: uppercase; letter-spacing: 0.07em; color: var(--acento);
@@ -88,7 +88,7 @@ main { padding: 40px 44px 60px; max-width: 820px; }
 blockquote { margin: 18px 0; padding-left: 16px; border-left: 2px solid var(--borda);
   color: var(--textoSutil); }
 
-pre { background: var(--dado); padding: 14px; border-radius: 8px;
+pre { background: var(--dado); padding: 14px; border-radius: var(--raio-sm);
   overflow-x: auto; }
 :not(pre) > code { background: var(--dado); padding: 1px 5px; border-radius: 4px; }
 

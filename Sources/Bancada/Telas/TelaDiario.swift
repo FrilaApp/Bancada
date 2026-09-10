@@ -42,7 +42,7 @@ struct TelaDiario: View {
                     }
                     .tag(nota.id)
                 }
-                .frame(minWidth: 160, idealWidth: 190)
+                .frame(minWidth: DS.Diario.larguraMinimaDaLista, idealWidth: DS.Diario.larguraIdealDaLista)
 
                 if let atual {
                     // O diário é a única coisa nesta janela escrita por gente
@@ -53,7 +53,7 @@ struct TelaDiario: View {
                     Folha {
                         TextoDeNota(atual.corpo)
                     }
-                    .frame(minWidth: 320)
+                    .frame(minWidth: DS.Diario.larguraMinimaDaFolha)
                 }
 
                 VStack(alignment: .leading, spacing: 0) {
@@ -69,27 +69,28 @@ struct TelaDiario: View {
                     if fatosDoDia.isEmpty {
                         Vazio(
                             simbolo: "tray",
-                            titulo: "Dia sem fatos",
-                            detalhe: "Nada foi registrado nesta data."
+                            titulo: "Nada registrado em \(atual?.data ?? "")",
+                            detalhe: "Os hooks do Git escrevem aqui a cada commit."
                         )
                     } else {
+                        // O mesmo fato tinha três desenhos no app: este, o
+                        // do Calendário e o de Registros. `LinhaDeFato` existia
+                        // e era consumida por duas telas das quatro — peça de
+                        // sistema com consumidor parcial é mais difícil de ver
+                        // que peça morta, porque não parece nem morta nem
+                        // ignorada.
                         List(fatosDoDia) { fato in
-                            VStack(alignment: .leading, spacing: 2) {
-                                HStack(spacing: DS.Espaco.sm) {
-                                    Text(fato.hora)
-                                        .font(DS.Tipografia.mono)
-                                        .foregroundStyle(cores.textoSutil)
-                                    MarcadorDeTipo(tipo: fato.tipo)
-                                }
-                                Text(fato.descricao)
-                                    .font(DS.Tipografia.detalhe)
-                                    .foregroundStyle(cores.texto)
-                            }
+                            LinhaDeFato(
+                                carimbo: fato.hora,
+                                tipo: fato.tipo,
+                                descricao: fato.descricao,
+                                autor: fato.autor
+                            )
                         }
                         .listStyle(.inset)
                     }
                 }
-                .frame(minWidth: 260, idealWidth: 300)
+                .frame(minWidth: DS.Diario.larguraMinimaDosFatos, idealWidth: DS.Diario.larguraIdealDosFatos)
                 .background(cores.cromo)
             }
         }

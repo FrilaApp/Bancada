@@ -146,6 +146,7 @@ final class ParidadeDeTokensTests: XCTestCase {
         try conferir(DS.Cor.acento, contra: "acento")
         try conferir(DS.Cor.foco, contra: "foco")
         try conferir(DS.Cor.perigo, contra: "perigo")
+        try conferir(DS.Cor.aviso, contra: "aviso")
     }
 
     /// Se um papel entrar no JSON e ninguém espelhar no Swift, o teste acima
@@ -157,7 +158,7 @@ final class ParidadeDeTokensTests: XCTestCase {
         let noJSON = Set(bloco.keys.filter { !$0.hasPrefix("_") })
         let noSwift: Set<String> = [
             "fundo", "superficie", "superficieSutil", "borda", "texto", "textoSutil",
-            "cromo", "folha", "dado", "divisor", "acento", "foco", "perigo"
+            "cromo", "folha", "dado", "divisor", "acento", "foco", "perigo", "aviso"
         ]
         XCTAssertEqual(
             noJSON, noSwift,
@@ -233,6 +234,7 @@ final class ParidadeDeTokensTests: XCTestCase {
         XCTAssertEqual(try numero("espaco", "lg"), Double(DS.Espaco.lg))
         XCTAssertEqual(try numero("espaco", "xl"), Double(DS.Espaco.xl))
 
+        XCTAssertEqual(try numero("raio", "xs"), Double(DS.Raio.xs))
         XCTAssertEqual(try numero("raio", "sm"), Double(DS.Raio.sm))
         XCTAssertEqual(try numero("raio", "md"), Double(DS.Raio.md))
         XCTAssertEqual(try numero("raio", "lg"), Double(DS.Raio.lg))
@@ -245,6 +247,15 @@ final class ParidadeDeTokensTests: XCTestCase {
         XCTAssertEqual(try numero("veu", "sutil"), DS.Veu.sutil)
         XCTAssertEqual(try numero("veu", "medio"), DS.Veu.medio)
         XCTAssertEqual(try numero("veu", "forte"), DS.Veu.forte)
+    }
+
+    func testEscalaDeIconeEspelhaOJSON() throws {
+        let icone = try XCTUnwrap(json["icone"] as? [String: Double])
+        XCTAssertEqual(icone["micro"], Double(DS.Icone.micro))
+        XCTAssertEqual(icone["pequeno"], Double(DS.Icone.pequeno))
+        XCTAssertEqual(icone["medio"], Double(DS.Icone.medio))
+        XCTAssertEqual(icone["grande"], Double(DS.Icone.grande))
+        XCTAssertEqual(icone["vazio"], Double(DS.Icone.vazio))
     }
 
     func testMetricaDeTelaEspelhaOJSON() throws {
@@ -270,6 +281,20 @@ final class ParidadeDeTokensTests: XCTestCase {
         XCTAssertEqual(metrica["marcador"]?["larguraDoTipo"], Double(DS.Marcador.larguraDoTipo))
         XCTAssertEqual(metrica["marcador"]?["larguraDaHora"], Double(DS.Marcador.larguraDaHora))
         XCTAssertEqual(metrica["barraLateral"]?["alturaDoRodape"], Double(DS.BarraLateral.alturaDoRodape))
+        XCTAssertEqual(metrica["barraLateral"]?["larguraMinima"], Double(DS.BarraLateral.larguraMinima))
+        XCTAssertEqual(metrica["barraLateral"]?["larguraIdeal"], Double(DS.BarraLateral.larguraIdeal))
+        XCTAssertEqual(metrica["barraLateral"]?["larguraMaxima"], Double(DS.BarraLateral.larguraMaxima))
+        XCTAssertEqual(metrica["janela"]?["larguraPadrao"], Double(DS.Janela.larguraPadrao))
+        XCTAssertEqual(metrica["janela"]?["alturaPadrao"], Double(DS.Janela.alturaPadrao))
+        XCTAssertEqual(metrica["janela"]?["larguraMinimaDoDetalhe"], Double(DS.Janela.larguraMinimaDoDetalhe))
+        XCTAssertEqual(metrica["janela"]?["larguraMinimaDoConteudo"], Double(DS.Janela.larguraMinimaDoConteudo))
+        XCTAssertEqual(metrica["janela"]?["alturaMinimaDoConteudo"], Double(DS.Janela.alturaMinimaDoConteudo))
+        XCTAssertEqual(metrica["diario"]?["larguraMinimaDaLista"], Double(DS.Diario.larguraMinimaDaLista))
+        XCTAssertEqual(metrica["diario"]?["larguraIdealDaLista"], Double(DS.Diario.larguraIdealDaLista))
+        XCTAssertEqual(metrica["diario"]?["larguraMinimaDaFolha"], Double(DS.Diario.larguraMinimaDaFolha))
+        XCTAssertEqual(metrica["diario"]?["larguraMinimaDosFatos"], Double(DS.Diario.larguraMinimaDosFatos))
+        XCTAssertEqual(metrica["diario"]?["larguraIdealDosFatos"], Double(DS.Diario.larguraIdealDosFatos))
+        XCTAssertEqual(metrica["leitura"]?["larguraMaximaDaFolha"], Double(DS.Leitura.larguraMaximaDaFolha))
     }
 
     func testTipografiaEspelhaOJSON() throws {
@@ -364,6 +389,75 @@ final class ParidadeDeTokensTests: XCTestCase {
                 "no esquema \(lado) a superfície não está acima do fundo"
             )
         }
+    }
+
+    /// O mínimo da janela é a soma dos mínimos declarados, não um número
+    /// escolhido.
+    ///
+    /// Enquanto foi escolhido, ficou 220pt menor do que o Diário precisa e
+    /// ninguém percebeu — a janela abre em 1080 e o defeito só aparece quando
+    /// alguém arrasta. Se uma coluna crescer, é aqui que o erro estoura.
+    func testMinimoDaJanelaEhASomaDosMinimos() {
+        let diario = DS.Diario.larguraMinimaDaLista
+            + DS.Diario.larguraMinimaDaFolha
+            + DS.Diario.larguraMinimaDosFatos
+        let acervo = DS.Galeria.larguraMinimaCard * 2 + DS.Acervo.larguraMinimaDoPainel
+        let maisLarga = max(diario, acervo)
+
+        XCTAssertEqual(
+            DS.Janela.larguraMinimaDoDetalhe, maisLarga,
+            "o mínimo do detalhe (\(DS.Janela.larguraMinimaDoDetalhe)) não é o da tela mais larga (\(maisLarga))"
+        )
+        XCTAssertEqual(
+            DS.Janela.larguraMinimaDoConteudo,
+            DS.BarraLateral.larguraMinima + DS.Janela.larguraMinimaDoDetalhe,
+            "o mínimo do conteúdo não é barra lateral + detalhe"
+        )
+        XCTAssertGreaterThanOrEqual(
+            DS.Janela.larguraPadrao, DS.Janela.larguraMinimaDoConteudo,
+            "a janela abre menor do que o próprio mínimo"
+        )
+    }
+
+    /// O fio estrutural tem de ter mais presença que o fio de contorno.
+    ///
+    /// Eram o mesmo passo, e o efeito é que nada separava painel de painel numa
+    /// linguagem que recusa sombra. Não perseguimos os 3:1 da WCAG aqui — contra
+    /// branco isso exigiria `neutro.6`, que a 1px é régua e não fio —, mas a
+    /// ordem entre os dois é invariante.
+    func testDivisorSeparaMaisQueBorda() {
+        for (esquema, lado) in [(ColorScheme.light, "claro"), (.dark, "escuro")] {
+            let fundoDaVez = DS.Cor.superficie.hex(esquema)
+            let borda = Self.contraste(DS.Cor.borda.hex(esquema), fundoDaVez)
+            let divisor = Self.contraste(DS.Cor.divisor.hex(esquema), fundoDaVez)
+            XCTAssertGreaterThan(
+                divisor, borda,
+                "no \(lado) o divisor (\(divisor):1) não separa mais que a borda (\(borda):1)"
+            )
+        }
+    }
+
+    /// A folha tem de se destacar do fundo por margem parecida nos dois
+    /// esquemas.
+    ///
+    /// No claro a folha separava por ΔL 0,87 contra 3,71 do escuro: a elevação
+    /// valia um quarto de um lado. O fio não cobria a diferença, e o resultado
+    /// era a superfície de leitura não se lendo como superfície.
+    ///
+    /// Mede em **razão de contraste**, não em diferença de luminância. A
+    /// primeira versão deste teste comparava luminância relativa crua e
+    /// acusava 25× de desequilíbrio num par correto: a luminância relativa é
+    /// quase zero perto do preto, então uma diferença no escuro nunca tem a
+    /// mesma ordem de grandeza que a mesma diferença no claro. A razão
+    /// normaliza, que é justamente para isso que ela existe.
+    func testFolhaSeSeparaDoFundoNosDoisEsquemas() {
+        let claro = Self.contraste(DS.Cor.folha.hex(.light), DS.Cor.fundo.hex(.light))
+        let escuro = Self.contraste(DS.Cor.folha.hex(.dark), DS.Cor.fundo.hex(.dark))
+        let desequilibrio = max(claro, escuro) / min(claro, escuro)
+        XCTAssertLessThan(
+            desequilibrio, 1.15,
+            "a folha separa \(claro):1 no claro e \(escuro):1 no escuro — desequilíbrio de \(desequilibrio)×"
+        )
     }
 
     /// A separação do fio contra a superfície tem de ser a mesma nos dois

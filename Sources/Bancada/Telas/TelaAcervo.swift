@@ -47,8 +47,12 @@ struct TelaAcervo: View {
                     ScrollView {
                         LazyVGrid(columns: colunas, spacing: DS.Espaco.md) {
                             ForEach(visiveis) { midia in
-                                CartaoDeMidia(midia: midia, selecionada: midia.id == selecionada)
-                                    .onTapGesture { selecionada = midia.id }
+                                CartaoDeMidia(
+                                    midia: midia,
+                                    selecionada: midia.id == selecionada,
+                                    selecionar: { selecionada = midia.id },
+                                    abrir: { NSWorkspace.shared.open(midia.url) }
+                                )
                             }
                         }
                         .padding(DS.Espaco.lg)
@@ -95,12 +99,40 @@ struct TelaAcervo: View {
     }
 }
 
+/// O cartão da grade.
+///
+/// Os dois gestos moravam em camadas diferentes: o clique que **seleciona**
+/// ficava na grade e o duplo clique que **abre** ficava aqui dentro. O cartão
+/// não sabia que era selecionável, então não podia sinalizar nada — a única
+/// affordance era o anel de acento, que só aparece depois do fato. E não havia
+/// caminho de teclado nenhum: `onTapGesture` não é foco.
+///
+/// Agora o cartão é dono dos dois e é um `Button`: teclado, foco, hover e
+/// pressionado vêm juntos, de graça, do mesmo lugar que o resto do app.
 private struct CartaoDeMidia: View {
     @Environment(\.cores) private var cores
+    @FocusState private var focado: Bool
     let midia: Midia
     var selecionada = false
+    var selecionar: () -> Void = {}
+    var abrir: () -> Void = {}
 
     var body: some View {
+        Button(action: selecionar) {
+            corpo
+        }
+        .buttonStyle(BotaoDoSistema(.peca, raio: DS.Raio.md))
+        .focused($focado)
+        .anelDeFoco(focado, raio: DS.Raio.md)
+        // Espaço e Enter selecionam (é o Button); Cmd+↓ abre, como no Finder.
+        .onKeyPress(.return) { abrir(); return .handled }
+        .accessibilityLabel(midia.nome)
+        .accessibilityValue(pasta)
+        .accessibilityHint("Enter abre no app do macOS")
+        .accessibilityAddTraits(selecionada ? [.isButton, .isSelected] : .isButton)
+    }
+
+    private var corpo: some View {
         Cartao {
             VStack(alignment: .leading, spacing: 0) {
                 Thumbnail(url: midia.url, altura: DS.Galeria.alturaThumbnail)
@@ -128,9 +160,9 @@ private struct CartaoDeMidia: View {
                 .strokeBorder(selecionada ? cores.acento : .clear, lineWidth: DS.Traco.selecao)
         )
         // Abre no app padrão do macOS — para um `.pages`, o próprio Pages.
-        .onTapGesture(count: 2) { NSWorkspace.shared.open(midia.url) }
+        .onTapGesture(count: 2) { abrir() }
         .contextMenu {
-            Button("Abrir") { NSWorkspace.shared.open(midia.url) }
+            Button("Abrir") { abrir() }
             Button("Mostrar no Finder") {
                 NSWorkspace.shared.activateFileViewerSelecting([midia.url])
             }
@@ -211,8 +243,10 @@ private struct PainelDeMidia: View {
                 RotuloDeSecao("Markdown derivado")
                 SeloSomenteLeitura(tipo: .documentoDerivado)
                 // O derivado de um .pages é narrativa como qualquer nota:
-                // mesma superfície de leitura, mesmo tratamento.
-                TextoDeNota(derivado.corpo)
+                // mesma superfície de leitura, mesmo tratamento. O comentário
+                // dizia isso e a linha abaixo não entregava — faltava a folha,
+                // que é justamente o que dá a superfície.
+                Folha { TextoDeNota(derivado.corpo) }
             }
         } else {
             // Ausência com causa provável, não um espaço em branco.

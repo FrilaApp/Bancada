@@ -57,7 +57,7 @@ struct TelaAjustes: View {
                                     }
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                 }
-                                .buttonStyle(.plain)
+                                .buttonStyle(BotaoDoSistema(.peca))
                             }
                         }
                     }
@@ -172,7 +172,7 @@ struct TelaAjustes: View {
                         LinhaDeValor(tipo.rotulo, valor: "\(n)") {
                             if tipo.somenteLeitura {
                                 Image(systemName: "lock.fill")
-                                    .font(.system(size: 9))
+                                    .font(DS.Icone.fonte(DS.Icone.micro))
                                     .foregroundStyle(cores.textoSutil)
                             }
                         }
@@ -199,7 +199,7 @@ struct TelaAjustes: View {
         Bloco(
             "\(titulo) — \(contagem)",
             simbolo: "exclamationmark.triangle.fill",
-            corDoSimbolo: cores.status(.revisao)
+            corDoSimbolo: cores.aviso
         ) {
             VStack(alignment: .leading, spacing: DS.Espaco.sm) {
                 conteudo()

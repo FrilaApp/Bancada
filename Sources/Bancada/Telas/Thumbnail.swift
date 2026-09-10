@@ -1,6 +1,7 @@
 import SwiftUI
 import QuickLookThumbnailing
 import AppKit
+import DesignSystem
 
 /// Miniatura gerada pelo QuickLook.
 ///
@@ -38,7 +39,7 @@ struct Thumbnail: View {
                         cores.superficieSutil
                         if falhou {
                             Image(systemName: "doc")
-                                .font(.system(size: 20, weight: .light))
+                                .font(DS.Icone.fonte(DS.Icone.grande, peso: .light))
                                 .foregroundStyle(cores.textoSutil)
                         } else {
                             ProgressView().controlSize(.small)

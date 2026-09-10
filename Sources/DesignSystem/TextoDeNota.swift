@@ -168,7 +168,7 @@ public struct TextoDeNota: View {
                 .foregroundStyle(cores.textoSutil)
         case let .tarefa(feita):
             Image(systemName: feita ? "checkmark.square.fill" : "square")
-                .font(.system(size: 12))
+                .font(DS.Icone.fonte(DS.Icone.medio))
                 .foregroundStyle(feita ? cores.status(.concluida) : cores.textoSutil)
         case .vazia:
             Text("—").font(DS.Tipografia.leitura).foregroundStyle(cores.borda)
@@ -233,9 +233,17 @@ public struct TextoDeNota: View {
                 .font(DS.Tipografia.mono.fonte)
                 .foregroundColor(cores.textoSutil)
         case let .wikilink(_, rotulo):
+            // Acento sem sublinhado: sinaliza "isto aponta para algo" sem
+            // prometer o clique que a Bancada não dá — ela lê o vault, o
+            // Obsidian navega nele. Decisão registrada na nota de design.
             return Text(rotulo).foregroundColor(cores.acento)
         case let .link(rotulo, _):
-            return Text(rotulo).foregroundColor(cores.acento).underline()
+            // Mesmo tratamento, pela mesma razão. Saía sublinhado, que é a
+            // affordance mais forte que existe para "clicável" — sobre um
+            // texto sem gesto, sem teclado e sem traço de link para o
+            // VoiceOver. Um caso era decisão e o outro era esquecimento, e
+            // nada na tela distinguia os dois.
+            return Text(rotulo).foregroundColor(cores.acento)
         case let .imagem(alvo, legenda):
             let nome = legenda ?? (alvo as NSString).lastPathComponent
             return Text("🖼 \(nome)")

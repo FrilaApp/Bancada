@@ -88,7 +88,7 @@ struct TelaTrabalho: View {
             Vazio(
                 simbolo: "link.badge.plus",
                 titulo: "Nenhum fato cita \(id)",
-                detalhe: "O vínculo é literal: cite o ID na mensagem de commit — `… conclui a \(id)` — e o fato aparece aqui. \(estado.fatosSemTarefa) fato(s) do log não citam tarefa nenhuma."
+                detalhe: "O vínculo é literal: cite o ID na mensagem de commit — `… conclui a \(id)` — e o fato aparece aqui. \(Plural.contar(estado.fatosSemTarefa, "fato", "fatos")) do log não cita tarefa nenhuma."
             )
         } else {
             List {
