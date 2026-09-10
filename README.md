@@ -113,7 +113,7 @@ Nada ficou inalcançável na fusão. A árvore inteira de registros continua a u
 
 ### O calendário
 
-`VaultKit/Calendario.swift` já agrega o vault em `DiaDoCalendario` — fatos, diários e tarefas criadas por data — e `DataISO` converte as datas do frontmatter ancorando ao meio-dia, para que fuso e horário de verão nunca joguem um evento para a véspera. A tela é, de propósito, uma lista e não uma grade pela metade: uma grade incompleta pareceria pronta. Falta a grade mensal, a navegação entre meses e a seleção de dia.
+`VaultKit/Calendario.swift` já agrega o vault em `DiaDoCalendario` — fatos, diários e tarefas criadas por data — e `DataISO` converte as datas do frontmatter ancorando ao meio-dia, para que fuso e horário de verão nunca joguem um evento para a véspera. A tela foi lista enquanto a grade não estava pronta — uma grade incompleta pareceria pronta. Desde `99bfabf` são três modos: Mês, Semana e Lista, com um puxador que comprime a grade entre uma faixa de sete dias e o mês inteiro, navegação entre meses e seleção de dia. Para o formato do vault de hoje, Semana e Lista são os modos úteis; Mês abre quase todo vazio, e isso está registrado na revisão de UI de 09/09.
 
 ## Como o agrupamento decide o que juntar
 
