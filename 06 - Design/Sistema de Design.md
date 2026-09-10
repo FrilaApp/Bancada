@@ -119,6 +119,14 @@ Toda escolha grande tem procedência. Sem procedência, não é decisão de desi
 - **Acento como fundo de área.** Ação primária, estado ativo, link e foco. Só.
 - **Vermelho fora de destrutivo e erro.** Aviso é âmbar; ênfase não é cor.
 - **Serifada em controle de interface.** A voz de narrativa é do conteúdo.
+- **Controle nativo onde o sistema já tem o seu.** Dois vocabulários para a
+  mesma função — o azul sólido do `Picker(.segmented)` numa tela e a pílula
+  cinza do `SeletorSegmentado` na outra — é divergência fabricada por quem tem
+  componente e não consome. E o inverso também: reimplementar à mão seleção,
+  recuo ou realce que a `List` já desenha.
+- **Peça de sistema sem consumidor.** Componente ou papel que ninguém usa não é
+  vocabulário, é peso morto — e envelhece sem ninguém notar. `Distintivo` saiu
+  quando perdeu o último ponto de uso.
 - **Mono em texto escrito por gente.** A voz de fato é de quem não digitou.
 - **Estado vazio que se desculpa ou inventa exemplo.** Um dia sem registro é um
   dado, não um problema a esconder.
