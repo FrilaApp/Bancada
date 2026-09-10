@@ -197,6 +197,63 @@ final class CalendarioTests: XCTestCase {
         )
         XCTAssertTrue(Calendario.eventos(de: vault).isEmpty)
     }
+
+    private func vaultComAgenda() -> Vault {
+        Vault(
+            raiz: URL(fileURLWithPath: "/v"),
+            notas: [
+                nota(
+                    "05 - Registros/2026/09/2026-09-14.md",
+                    tipo: .registro,
+                    campos: ["tipo": "registro", "data": "2026-09-14"],
+                    corpo: "- `08:00` · **fbtostadev** · `commit` · Um commit de manhã cedo"
+                ),
+                nota(
+                    "01 - CBL/Desafios/C18/Agenda - C18.md",
+                    tipo: .agenda,
+                    campos: ["tipo": "agenda", "desafio": "C18"],
+                    corpo: """
+                    ## Eventos
+                    - `2026-09-14/2026-09-15` · **rotina** · Home Office
+                    - `2026-09-14` · **marco** · Preparar apresentação
+                    """
+                )
+            ],
+            invalidas: [],
+            midias: [],
+            fatosNaoReconhecidos: []
+        )
+    }
+
+    /// A linha com `data-inicio/data-fim` vira um evento por dia coberto —
+    /// não um evento só, que a grade não saberia desenhar em duas células.
+    func testAgendaComIntervaloViraUmEventoPorDia() throws {
+        let dias = Calendario.porDia(de: vaultComAgenda())
+
+        let d14 = try XCTUnwrap(dias.first { $0.data == "2026-09-14" })
+        let d15 = try XCTUnwrap(dias.first { $0.data == "2026-09-15" })
+
+        XCTAssertEqual(d14.quantidade(de: .agenda), 2, "Home Office + Preparar apresentação, os dois no dia 14")
+        XCTAssertEqual(d15.quantidade(de: .agenda), 1, "só Home Office continua no dia 15")
+    }
+
+    /// A categoria crua da linha (`rotina`, `marco`, …) precisa sobreviver
+    /// até o evento — é dali que a cor da célula lê.
+    func testCategoriaDaAgendaVaiParaODetalhe() throws {
+        let eventos = Calendario.eventos(de: vaultComAgenda())
+        let marco = try XCTUnwrap(eventos.first { $0.especie == .agenda && $0.rotulo == "Preparar apresentação" })
+        XCTAssertEqual(marco.detalhe, "marco")
+    }
+
+    /// Regra do time: agenda tem prioridade de leitura sobre o resto, mesmo
+    /// quando um fato do log tem hora mais cedo no mesmo dia.
+    func testAgendaAparecePrimeiroMesmoComFatoDeHoraMaisCedo() throws {
+        let dias = Calendario.porDia(de: vaultComAgenda())
+        let d14 = try XCTUnwrap(dias.first { $0.data == "2026-09-14" })
+
+        XCTAssertEqual(d14.eventos.prefix(2).map(\.especie), [.agenda, .agenda])
+        XCTAssertEqual(d14.eventos.last?.especie, .fato)
+    }
 }
 
 /// A grade: onde erro de semana, virada de mês e horário de verão passam

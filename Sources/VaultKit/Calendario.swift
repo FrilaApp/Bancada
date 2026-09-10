@@ -59,10 +59,13 @@ public enum DataISO {
 /// veio; `hora` é opcional porque só fato tem hora.
 public struct EventoDeCalendario: Identifiable, Equatable {
     public enum Especie: String, CaseIterable, Sendable {
-        case fato, diario, tarefaCriada
+        /// Primeiro no enum de propósito: é a ordem que `allCases` empresta
+        /// para os filtros e o resumo do dia, e a agenda lidera os dois.
+        case agenda, fato, diario, tarefaCriada
 
         public var rotulo: String {
             switch self {
+            case .agenda: return "Agenda"
             case .fato: return "Fatos"
             case .diario: return "Diário"
             case .tarefaCriada: return "Tarefas criadas"
@@ -71,11 +74,17 @@ public struct EventoDeCalendario: Identifiable, Equatable {
 
         public var simbolo: String {
             switch self {
+            case .agenda: return "calendar.badge.clock"
             case .fato: return "circle.fill"
             case .diario: return "text.alignleft"
             case .tarefaCriada: return "checklist"
             }
         }
+
+        /// Menor vem primeiro na célula e sobrevive ao corte de "+N": a
+        /// agenda é o cronograma que a Academy marcou, e por decisão do time
+        /// tem prioridade de leitura sobre o que o vault registrou sozinho.
+        var prioridade: Int { self == .agenda ? 0 : 1 }
     }
 
     public let data: String          // ISO, como no vault
@@ -137,6 +146,23 @@ public enum Calendario {
     public static func eventos(de vault: Vault) -> [EventoDeCalendario] {
         var todos: [EventoDeCalendario] = []
 
+        for nota in vault.notas(tipo: .agenda) {
+            let (brutos, _) = LeitorDeAgenda.ler(texto: nota.corpo)
+            for bruto in brutos {
+                for dia in bruto.dias {
+                    todos.append(EventoDeCalendario(
+                        data: dia,
+                        especie: .agenda,
+                        rotulo: bruto.rotulo,
+                        // A categoria crua vai em `detalhe`, como o tipo do
+                        // fato: é dali que a cor e o filtro por busca leem.
+                        detalhe: bruto.categoria,
+                        origem: nota.url
+                    ))
+                }
+            }
+        }
+
         for fato in vault.fatos {
             todos.append(EventoDeCalendario(
                 data: fato.data,
@@ -184,7 +210,11 @@ public enum Calendario {
             .map { data, lista in
                 DiaDoCalendario(
                     data: data,
-                    eventos: lista.sorted { $0.minutoDoDia < $1.minutoDoDia }
+                    eventos: lista.sorted {
+                        $0.especie.prioridade != $1.especie.prioridade
+                            ? $0.especie.prioridade < $1.especie.prioridade
+                            : $0.minutoDoDia < $1.minutoDoDia
+                    }
                 )
             }
             .sorted { $0.data > $1.data }

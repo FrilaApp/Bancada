@@ -17,6 +17,11 @@ public enum TipoNota: String, CaseIterable, Codable, Sendable {
     /// tipo próprio para não entrar no vault como nota fora da convenção — um
     /// alerta permanente na tela de Ajustes treina a equipe a ignorá-la.
     case design
+    /// O cronograma oficial do desafio, publicado pela Academy. Não é fato do
+    /// vault (não veio de commit) nem narrativa do dia (não é reflexão sobre o
+    /// que já aconteceu) — é a terceira coisa: compromisso externo com data já
+    /// marcada. Ver `LeitorDeAgenda`.
+    case agenda
 
     public var rotulo: String {
         switch self {
@@ -29,6 +34,7 @@ public enum TipoNota: String, CaseIterable, Codable, Sendable {
         case .registro: return "Registro"
         case .documentoDerivado: return "Documento derivado"
         case .design: return "Design"
+        case .agenda: return "Agenda"
         }
     }
 

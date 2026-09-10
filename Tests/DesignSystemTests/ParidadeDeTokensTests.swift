@@ -199,6 +199,26 @@ final class ParidadeDeTokensTests: XCTestCase {
         XCTAssertEqual(desconhecido.escuroHex, DS.Primitivo.neutro[6])
     }
 
+    func testCategoriasDeAgendaEspelhamOJSON() throws {
+        let bloco = try XCTUnwrap(json["categoriaAgenda"] as? [String: Any])
+        for chave in bloco.keys where !chave.hasPrefix("_") {
+            try conferir(DS.Cor.categoriaDeAgenda(chave), contra: chave, em: "categoriaAgenda")
+        }
+        XCTAssertEqual(
+            Set(bloco.keys), Set(CategoriaDeAgenda.allCases.map(\.rawValue)),
+            "categoriaAgenda tem chave que CategoriaDeAgenda não conhece, ou o contrário"
+        )
+    }
+
+    /// Uma categoria que a Academy inventar amanhã não pode nem quebrar nem
+    /// ganhar cor emprestada — a linha já aparece como não reconhecida no
+    /// `LeitorDeAgenda` antes de chegar aqui.
+    func testCategoriaDeAgendaDesconhecidaCaiNoNeutro() {
+        let desconhecida = DS.Cor.categoriaDeAgenda("sprint")
+        XCTAssertEqual(desconhecida.claroHex, DS.Primitivo.neutro[7])
+        XCTAssertEqual(desconhecida.escuroHex, DS.Primitivo.neutro[6])
+    }
+
     // MARK: - Escalas não-cromáticas
 
     func testEscalasNumericasEspelhamOJSON() throws {

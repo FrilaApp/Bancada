@@ -659,11 +659,20 @@ private struct ChipDeEvento: View {
 
     private var cor: Color {
         switch evento.especie {
+        case .agenda: return cores.categoriaDeAgenda(evento.detalhe)
         case .fato: return cores.tipoDeFato(evento.detalhe)
         case .diario: return cores.textoSutil
         case .tarefaCriada: return cores.textoSutil
         }
     }
+
+    /// Agenda é o cronograma que a Academy marcou — a regra é que ela tem
+    /// prioridade de leitura sobre o resto (`Especie.prioridade`), e o chip
+    /// segue a mesma regra em tinta: véu forte e texto na cor da categoria em
+    /// vez do véu sutil e texto neutro dos outros três. Continua no
+    /// vocabulário do resto do app — mesmo `Etiqueta` de tinta-sobre-fundo —,
+    /// só um degrau mais intenso.
+    private var destaque: Bool { evento.especie == .agenda }
 
     var body: some View {
         HStack(spacing: DS.Espaco.xs) {
@@ -672,14 +681,15 @@ private struct ChipDeEvento: View {
                 .frame(width: 5, height: 5)
             Text(evento.rotulo)
                 .font(DS.Tipografia.monoDetalhe)
-                .foregroundStyle(cores.texto)
+                .fontWeight(destaque ? .semibold : .regular)
+                .foregroundStyle(destaque ? cor : cores.texto)
                 .lineLimit(1)
                 .truncationMode(.tail)
         }
         .padding(.horizontal, DS.Espaco.xs)
         .padding(.vertical, 1)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(cor.opacity(DS.Veu.sutil), in: RoundedRectangle(cornerRadius: 3))
+        .background(cor.opacity(destaque ? DS.Veu.forte : DS.Veu.sutil), in: RoundedRectangle(cornerRadius: 3))
         .opacity(apagado ? 0.55 : 1)
         .help(evento.rotulo)
     }

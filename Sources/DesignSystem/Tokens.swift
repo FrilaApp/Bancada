@@ -158,6 +158,21 @@ public enum DS {
             default:       return n(7, 6)
             }
         }
+
+        /// Cor por categoria de agenda. Segue o mesmo padrão de `tipoDeFato`:
+        /// categoria desconhecida cai no neutro, porque uma linha escrita
+        /// fora do vocabulário documentado no `CLAUDE.md` não inventa cor pra
+        /// si — ela já aparece como não reconhecida no leitor.
+        public static func categoriaDeAgenda(_ categoria: String) -> ParDeCor {
+            switch categoria {
+            case "rotina":    return m(Primitivo.ambar)
+            case "marco":     return m(Primitivo.verde)
+            case "academia":  return m(Primitivo.vermelho)
+            case "feriado":   return m(Primitivo.violeta)
+            case "atividade": return m(Primitivo.turquesa)
+            default:          return n(7, 6)
+            }
+        }
     }
 
     /// As opacidades de tinta sobre superfície. Existem para que
@@ -389,6 +404,7 @@ public struct CoresDoAmbiente {
 
     public func status(_ s: StatusTarefa) -> Color { DS.Cor.status(s).resolver(esquema) }
     public func tipoDeFato(_ t: String) -> Color { DS.Cor.tipoDeFato(t).resolver(esquema) }
+    public func categoriaDeAgenda(_ c: String) -> Color { DS.Cor.categoriaDeAgenda(c).resolver(esquema) }
 }
 
 extension EnvironmentValues {
