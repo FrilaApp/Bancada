@@ -419,3 +419,228 @@ public struct SeloSomenteLeitura: View {
         .background(cores.dado, in: RoundedRectangle(cornerRadius: DS.Raio.sm))
     }
 }
+
+// MARK: - Busca e filtro
+
+/// Campo de busca com ícone e botão de limpar.
+///
+/// O rótulo fica no `placeholder` porque o ícone de lupa já diz o que o campo
+/// é — esta é a exceção à regra de rótulo acima do campo, e é a convenção que
+/// todo campo de busca de macOS segue.
+public struct CampoDeBusca: View {
+    @Environment(\.cores) private var cores
+    @Binding private var texto: String
+    private let dica: String
+
+    public init(texto: Binding<String>, dica: String = "Buscar…") {
+        self._texto = texto
+        self.dica = dica
+    }
+
+    public var body: some View {
+        HStack(spacing: DS.Espaco.sm) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 11))
+                .foregroundStyle(cores.textoSutil)
+
+            TextField(dica, text: $texto)
+                .textFieldStyle(.plain)
+                .font(DS.Tipografia.corpo)
+                .foregroundStyle(cores.texto)
+
+            if !texto.isEmpty {
+                Button {
+                    texto = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 11))
+                        .foregroundStyle(cores.textoSutil)
+                }
+                .buttonStyle(.plain)
+                .help("Limpar a busca")
+                .accessibilityLabel("Limpar a busca")
+            }
+        }
+        .padding(.horizontal, DS.Espaco.sm)
+        .padding(.vertical, DS.Espaco.xs + 1)
+        .background(cores.superficie, in: RoundedRectangle(cornerRadius: DS.Raio.sm))
+        .overlay(
+            RoundedRectangle(cornerRadius: DS.Raio.sm)
+                .strokeBorder(cores.borda, lineWidth: DS.Traco.fio)
+        )
+    }
+}
+
+/// Uma opção dentro de um `MenuDeFiltro`.
+public struct OpcaoDeFiltro: Identifiable, Equatable {
+    public let id: String
+    public let rotulo: String
+    public let cor: Color?
+    public let contagem: Int?
+
+    public init(id: String, rotulo: String, cor: Color? = nil, contagem: Int? = nil) {
+        self.id = id
+        self.rotulo = rotulo
+        self.cor = cor
+        self.contagem = contagem
+    }
+}
+
+/// Menu de filtro com marcação múltipla e contador do que está marcado.
+///
+/// Marcar nada é o estado neutro — mostra tudo. É o oposto de uma lista de
+/// seleção, onde nada marcado não mostraria nada, e a diferença precisa ficar
+/// óbvia: por isso o contador só aparece quando há escolha feita.
+public struct MenuDeFiltro: View {
+    @Environment(\.cores) private var cores
+    private let titulo: String
+    private let simbolo: String
+    private let opcoes: [OpcaoDeFiltro]
+    @Binding private var marcadas: Set<String>
+
+    public init(
+        titulo: String,
+        simbolo: String = "line.3.horizontal.decrease",
+        opcoes: [OpcaoDeFiltro],
+        marcadas: Binding<Set<String>>
+    ) {
+        self.titulo = titulo
+        self.simbolo = simbolo
+        self.opcoes = opcoes
+        self._marcadas = marcadas
+    }
+
+    public var body: some View {
+        Menu {
+            ForEach(opcoes) { opcao in
+                Toggle(isOn: Binding(
+                    get: { marcadas.contains(opcao.id) },
+                    set: { ligado in
+                        if ligado { marcadas.insert(opcao.id) } else { marcadas.remove(opcao.id) }
+                    }
+                )) {
+                    if let n = opcao.contagem {
+                        Text("\(opcao.rotulo) (\(n))")
+                    } else {
+                        Text(opcao.rotulo)
+                    }
+                }
+            }
+            if !marcadas.isEmpty {
+                Divider()
+                Button("Desmarcar tudo") { marcadas.removeAll() }
+            }
+        } label: {
+            HStack(spacing: DS.Espaco.xs) {
+                Image(systemName: simbolo).font(.system(size: 10))
+                Text(titulo).font(DS.Tipografia.detalhe)
+                if !marcadas.isEmpty {
+                    Text("\(marcadas.count)")
+                        .font(DS.Tipografia.monoDetalhe)
+                        .monospacedDigit()
+                        .padding(.horizontal, DS.Espaco.xs + 1)
+                        .background(cores.acento.opacity(DS.Veu.medio), in: Capsule())
+                        .foregroundStyle(cores.acento)
+                }
+            }
+            .foregroundStyle(marcadas.isEmpty ? cores.textoSutil : cores.acento)
+        }
+        .menuStyle(.borderlessButton)
+        .fixedSize()
+        .help("Filtrar por \(titulo.lowercased())")
+    }
+}
+
+/// Etiqueta de filtro ativo, com o X que a remove.
+public struct ChipRemovivel: View {
+    @Environment(\.cores) private var cores
+    private let texto: String
+    private let cor: Color
+    private let remover: () -> Void
+
+    public init(texto: String, cor: Color, remover: @escaping () -> Void) {
+        self.texto = texto
+        self.cor = cor
+        self.remover = remover
+    }
+
+    public var body: some View {
+        HStack(spacing: DS.Espaco.xs) {
+            Text(texto).font(DS.Tipografia.detalhe)
+            Button(action: remover) {
+                Image(systemName: "xmark").font(.system(size: 7, weight: .bold))
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Remover o filtro \(texto)")
+        }
+        .padding(.horizontal, DS.Espaco.sm)
+        .padding(.vertical, 3)
+        .background(cor.opacity(DS.Veu.medio), in: Capsule())
+        .foregroundStyle(cor)
+    }
+}
+
+/// Seletor exclusivo com ícone e rótulo — o grupo de botões que troca de modo.
+///
+/// Controle próprio, e não `Pilula`, porque a escolha aqui é exclusiva e
+/// obrigatória: sempre há exatamente um modo ativo. Uma barra de pílulas
+/// comunica filtro, que pode não ter nenhum selecionado.
+public struct SeletorSegmentado<Valor: Hashable>: View {
+    @Environment(\.cores) private var cores
+
+    public struct Opcao: Identifiable {
+        public let valor: Valor
+        public let rotulo: String
+        public let simbolo: String
+        public var id: Valor { valor }
+
+        public init(valor: Valor, rotulo: String, simbolo: String) {
+            self.valor = valor
+            self.rotulo = rotulo
+            self.simbolo = simbolo
+        }
+    }
+
+    @Binding private var selecao: Valor
+    private let opcoes: [Opcao]
+
+    public init(selecao: Binding<Valor>, opcoes: [Opcao]) {
+        self._selecao = selecao
+        self.opcoes = opcoes
+    }
+
+    public var body: some View {
+        HStack(spacing: DS.Traco.fio) {
+            ForEach(opcoes) { opcao in
+                let ativo = opcao.valor == selecao
+                Button {
+                    selecao = opcao.valor
+                } label: {
+                    HStack(spacing: DS.Espaco.xs) {
+                        Image(systemName: opcao.simbolo).font(.system(size: 10))
+                        Text(opcao.rotulo).font(DS.Tipografia.detalhe)
+                    }
+                    .padding(.horizontal, DS.Espaco.sm)
+                    .padding(.vertical, DS.Espaco.xs)
+                    .background(
+                        RoundedRectangle(cornerRadius: DS.Raio.sm - 2)
+                            .fill(cores.superficie.opacity(ativo ? 1 : 0))
+                    )
+                    .foregroundStyle(ativo ? cores.texto : cores.textoSutil)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(ativo ? [.isButton, .isSelected] : .isButton)
+            }
+        }
+        .padding(DS.Traco.selecao)
+        .background(cores.dado, in: RoundedRectangle(cornerRadius: DS.Raio.sm))
+        .overlay(
+            RoundedRectangle(cornerRadius: DS.Raio.sm)
+                .strokeBorder(cores.borda, lineWidth: DS.Traco.fio)
+        )
+        // Sem isto o grupo estica na vertical e incha a barra que o contém.
+        .fixedSize()
+        .animation(DS.Movimento.rapido, value: selecao)
+    }
+}

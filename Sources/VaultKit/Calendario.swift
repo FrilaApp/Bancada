@@ -10,10 +10,23 @@ import Foundation
 public enum DataISO {
     /// Gregoriano explícito: o calendário do sistema pode não ser, e o vault
     /// grava data gregoriana.
+    ///
+    /// O `locale` precisa ser atribuído à mão. `Calendar(identifier:)` devolve
+    /// um calendário cujo `locale` não é `nil` — é um locale *vazio* —, então
+    /// um `?? .current` nunca dispara e todo formatador que herda daqui cai no
+    /// formato raiz do ICU: `2026 M09` no lugar de `setembro de 2026`, e
+    /// `Sun Mon Tue` no lugar de `dom seg ter`.
     public static var calendario: Calendar {
         var c = Calendar(identifier: .gregorian)
         c.timeZone = .current
+        c.locale = .current
         return c
+    }
+
+    /// O locale de um calendário, ignorando o vazio que o Foundation devolve.
+    static func locale(de calendario: Calendar) -> Locale {
+        guard let l = calendario.locale, !l.identifier.isEmpty else { return .current }
+        return l
     }
 
     public static func componentes(_ iso: String) -> DateComponents? {
@@ -70,6 +83,9 @@ public struct EventoDeCalendario: Identifiable, Equatable {
     public let especie: Especie
     public let rotulo: String
     public let detalhe: String
+    /// Quem fez. Fato traz o autor do commit; tarefa, o responsável; o diário
+    /// não tem autoria própria — a narrativa é do dia, não de uma pessoa.
+    public let autor: String?
     public let origem: URL?
 
     public var id: String { "\(data) \(hora ?? "--") \(especie.rawValue) \(rotulo)" }
@@ -80,6 +96,7 @@ public struct EventoDeCalendario: Identifiable, Equatable {
         especie: Especie,
         rotulo: String,
         detalhe: String = "",
+        autor: String? = nil,
         origem: URL? = nil
     ) {
         self.data = data
@@ -87,6 +104,7 @@ public struct EventoDeCalendario: Identifiable, Equatable {
         self.especie = especie
         self.rotulo = rotulo
         self.detalhe = detalhe
+        self.autor = autor
         self.origem = origem
     }
 
@@ -125,7 +143,8 @@ public enum Calendario {
                 hora: fato.hora,
                 especie: .fato,
                 rotulo: fato.descricao,
-                detalhe: "\(fato.tipo) · \(fato.autor)"
+                detalhe: fato.tipo,
+                autor: fato.autor
             ))
         }
 
@@ -147,6 +166,7 @@ public enum Calendario {
                 especie: .tarefaCriada,
                 rotulo: "\(tarefa.identificador ?? "—") \(tarefa.titulo)",
                 detalhe: tarefa.status?.rotulo ?? "sem status",
+                autor: tarefa.responsavel,
                 origem: tarefa.url
             ))
         }
@@ -172,5 +192,144 @@ public enum Calendario {
 
     public static func porDia(de vault: Vault) -> [DiaDoCalendario] {
         porDia(eventos(de: vault))
+    }
+
+    // MARK: - A grade
+
+    /// As semanas que cobrem o mês do dia âncora, cada uma com sete datas ISO.
+    ///
+    /// Inclui os dias vizinhos que completam a primeira e a última semana —
+    /// uma grade com buracos nas pontas obriga quem lê a contar colunas para
+    /// saber em que dia da semana o mês começou.
+    ///
+    /// O primeiro dia da semana vem do `Calendar` do sistema (domingo no
+    /// Brasil, segunda em boa parte da Europa) em vez de ser fixado no código.
+    public static func semanasDoMes(
+        de ancoraISO: String,
+        calendario: Calendar = DataISO.calendario
+    ) -> [[String]] {
+        guard
+            let ancora = DataISO.data(ancoraISO),
+            let intervalo = calendario.dateInterval(of: .month, for: ancora),
+            let primeiraSemana = calendario.dateInterval(of: .weekOfMonth, for: intervalo.start)
+        else { return [] }
+
+        var semanas: [[String]] = []
+        var cursor = primeiraSemana.start
+
+        // `intervalo.end` é o primeiro instante do mês seguinte, então a
+        // comparação estrita é a certa: um mês que fecha no sábado não ganha
+        // uma oitava linha vazia.
+        while cursor < intervalo.end {
+            var semana: [String] = []
+            for deslocamento in 0..<7 {
+                guard let dia = calendario.date(byAdding: .day, value: deslocamento, to: cursor) else { break }
+                semana.append(DataISO.texto(dia))
+            }
+            guard semana.count == 7 else { break }
+            semanas.append(semana)
+            guard let proxima = calendario.date(byAdding: .weekOfYear, value: 1, to: cursor) else { break }
+            cursor = proxima
+        }
+        return semanas
+    }
+
+    /// A janela visível quando a grade está comprimida.
+    ///
+    /// É a regra do sanfonar: a semana do dia âncora nunca sai de vista, e a
+    /// grade cresce a partir dela até o mês inteiro. Comprimir escondendo
+    /// justamente o dia selecionado seria comprimir contra quem está olhando.
+    public static func janelaDeSemanas(
+        de ancoraISO: String,
+        semanas quantidade: Int,
+        calendario: Calendar = DataISO.calendario
+    ) -> [[String]] {
+        let todas = semanasDoMes(de: ancoraISO, calendario: calendario)
+        guard !todas.isEmpty else { return [] }
+
+        let alvo = max(1, min(quantidade, todas.count))
+        guard alvo < todas.count else { return todas }
+
+        let indiceDaAncora = todas.firstIndex { $0.contains(ancoraISO) } ?? 0
+
+        // Cresce para baixo a partir da semana âncora e, quando bate no fim do
+        // mês, completa para cima — assim a janela tem sempre `alvo` semanas.
+        var inicio = indiceDaAncora
+        var fim = indiceDaAncora + 1
+        while fim - inicio < alvo {
+            if fim < todas.count {
+                fim += 1
+            } else if inicio > 0 {
+                inicio -= 1
+            } else {
+                break
+            }
+        }
+        return Array(todas[inicio..<fim])
+    }
+
+    /// Os rótulos das colunas, na ordem em que a grade as desenha e no idioma
+    /// do sistema: `dom seg ter …` aqui, `Mon Tue Wed …` numa máquina em inglês.
+    public static func rotulosDasColunas(calendario: Calendar = DataISO.calendario) -> [String] {
+        let formatador = DateFormatter()
+        formatador.calendar = calendario
+        formatador.locale = DataISO.locale(de: calendario)
+        let simbolos = formatador.shortStandaloneWeekdaySymbols ?? ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"]
+
+        // `firstWeekday` é 1-based (1 = domingo); os símbolos vêm sempre a
+        // partir de domingo, então a lista é rotacionada para casar.
+        let deslocamento = calendario.firstWeekday - 1
+        guard simbolos.count == 7, deslocamento > 0 else { return simbolos }
+        return Array(simbolos[deslocamento...] + simbolos[..<deslocamento])
+    }
+
+    /// `setembro de 2026` — o título do mês, no idioma do sistema.
+    public static func rotuloDoMes(
+        de ancoraISO: String,
+        calendario: Calendar = DataISO.calendario
+    ) -> String {
+        guard let data = DataISO.data(ancoraISO) else { return ancoraISO }
+        let formatador = DateFormatter()
+        formatador.calendar = calendario
+        formatador.locale = DataISO.locale(de: calendario)
+        formatador.setLocalizedDateFormatFromTemplate("yMMMM")
+        return formatador.string(from: data)
+    }
+
+    /// Anda `passo` meses a partir da âncora, preservando o dia quando ele
+    /// existe no mês de destino — 31 de janeiro recuando vira 28 de fevereiro,
+    /// não 3 de março.
+    public static func mes(
+        deslocando ancoraISO: String,
+        em passo: Int,
+        calendario: Calendar = DataISO.calendario
+    ) -> String {
+        guard
+            let data = DataISO.data(ancoraISO),
+            let destino = calendario.date(byAdding: .month, value: passo, to: data)
+        else { return ancoraISO }
+        return DataISO.texto(destino)
+    }
+
+    /// Anda `passo` dias — o que as setas do teclado fazem na grade.
+    public static func dia(
+        deslocando ancoraISO: String,
+        em passo: Int,
+        calendario: Calendar = DataISO.calendario
+    ) -> String {
+        guard
+            let data = DataISO.data(ancoraISO),
+            let destino = calendario.date(byAdding: .day, value: passo, to: data)
+        else { return ancoraISO }
+        return DataISO.texto(destino)
+    }
+
+    public static func mesmoMes(
+        _ a: String,
+        _ b: String,
+        calendario: Calendar = DataISO.calendario
+    ) -> Bool {
+        guard let da = DataISO.data(a), let db = DataISO.data(b) else { return false }
+        return calendario.isDate(da, equalTo: db, toGranularity: .month)
     }
 }

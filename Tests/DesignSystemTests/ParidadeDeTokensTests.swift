@@ -239,6 +239,11 @@ final class ParidadeDeTokensTests: XCTestCase {
         XCTAssertEqual(metrica["calendario"]?["larguraMinimaDaCelula"], Double(DS.Calendario.larguraMinimaDaCelula))
         XCTAssertEqual(metrica["calendario"]?["alturaMinimaDaCelula"], Double(DS.Calendario.alturaMinimaDaCelula))
         XCTAssertEqual(metrica["calendario"]?["alturaDoCabecalho"], Double(DS.Calendario.alturaDoCabecalho))
+        XCTAssertEqual(metrica["calendario"]?["semanasMinimas"], Double(DS.Calendario.semanasMinimas))
+        XCTAssertEqual(metrica["calendario"]?["semanasMaximas"], Double(DS.Calendario.semanasMaximas))
+        XCTAssertEqual(metrica["calendario"]?["alturaDoPuxador"], Double(DS.Calendario.alturaDoPuxador))
+        XCTAssertEqual(metrica["calendario"]?["esperaDoPreview"], DS.Calendario.esperaDoPreview)
+        XCTAssertEqual(metrica["calendario"]?["larguraDoPreview"], Double(DS.Calendario.larguraDoPreview))
         XCTAssertEqual(metrica["marcador"]?["larguraDoTipo"], Double(DS.Marcador.larguraDoTipo))
         XCTAssertEqual(metrica["marcador"]?["larguraDaHora"], Double(DS.Marcador.larguraDaHora))
     }

@@ -282,12 +282,26 @@ public enum DS {
         public static let alturaDaPreviaGrande: CGFloat = 180
     }
 
-    /// A grade do calendário. Os valores existem para a tela que vem depois;
-    /// medida fixa no meio da view é o que se está evitando aqui.
+    /// A grade do calendário e o seu sanfonar.
     public enum Calendario {
         public static let larguraMinimaDaCelula: CGFloat = 96
         public static let alturaMinimaDaCelula: CGFloat = 88
         public static let alturaDoCabecalho: CGFloat = 24
+
+        /// Quantas semanas a grade mostra nos dois extremos: uma tira de sete
+        /// dias comprimida, o mês inteiro estendido. Seis porque é o máximo que
+        /// um mês gregoriano ocupa (fevereiro de 29 dias começando no sábado).
+        public static let semanasMinimas: Int = 1
+        public static let semanasMaximas: Int = 6
+
+        /// A faixa de arrasto entre a grade e o detalhe do dia.
+        public static let alturaDoPuxador: CGFloat = 14
+
+        /// Quanto o ponteiro precisa ficar parado sobre uma célula antes do
+        /// resumo aparecer. Curto demais e o popover pisca ao atravessar a
+        /// grade; longo demais e ninguém descobre que ele existe.
+        public static let esperaDoPreview: Double = 0.6
+        public static let larguraDoPreview: CGFloat = 260
     }
 
     /// Colunas de largura fixa que fazem as linhas de fato alinharem
