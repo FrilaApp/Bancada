@@ -31,6 +31,18 @@ Então o sistema tem **três vozes**, e a escolha de voz nunca é estética:
 | **Narrativa** — serif | diário, corpo de nota, Markdown derivado | uma pessoa falando |
 | **Fato** — mono | hora, tipo, autor, hash, caminho de arquivo | um hook falando |
 
+A superfície de leitura **renderiza** o Markdown; não o exibe. Enquanto o
+Diário mostrava `# 2026-09-09` e as crases como caractere, a voz serifada
+estava desmentindo a si mesma — a serifa existe porque narrativa é uma pessoa
+falando, e o que estava na tela era o arquivo-fonte falando. Pior: a serifa
+fazia a falha parecer intenção. O parser vive em `VaultKit/Markdown.swift`,
+espelha o mesmo subconjunto que `scripts/markdown.js` entrega ao site, e faz a
+mesma promessa: o que ele não cobre **degrada, não quebra**.
+
+Dentro do texto renderizado, as vozes se cruzam de propósito: um hash de commit
+ou um caminho de arquivo entre crases sai em mono mesmo no meio de uma frase em
+serifa. É a regra de ouro do vault na largura de uma palavra.
+
 O token é o **papel**, não o arquivo de fonte: o app usa a superfamília do
 sistema (SF · New York · SF Mono), o site usa IBM Plex Sans/Serif/Mono. Se um
 dia a Bancada virar iPad ou o site virar outra coisa, a regra sobrevive à troca
