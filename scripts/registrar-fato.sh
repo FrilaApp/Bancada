@@ -14,6 +14,13 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib.sh"
 #
 # O autor sai do commit e não da máquina que registra: quem publica o trabalho
 # de outra pessoa (depois de um merge, por exemplo) não rouba a autoria do fato.
+# O commit que publica o próprio log é escrituração, não trabalho — e um fato
+# sobre ele não diz nada que o fato ao lado já não diga. Ficava de fora por
+# acidente da aritmética de intervalo (`remoto..local` exclui o remoto); aqui
+# fica de fora por decisão, que é o que sobrevive a um merge pondo esse commit
+# no meio do intervalo.
+ASSUNTO_DO_LOG="Registra no log os fatos publicados"
+
 registrar_commit() {
   local ref="$1" sha assunto n data hora quem
   sha=$(git -C "$REPO_ROOT" rev-parse --short "$ref")
@@ -23,6 +30,7 @@ registrar_commit() {
   fi
 
   assunto=$(git -C "$REPO_ROOT" log -1 --pretty=%s "$ref")
+  [ "$assunto" = "$ASSUNTO_DO_LOG" ] && return 0
   n=$(git -C "$REPO_ROOT" show --pretty="" --name-only "$ref" | grep -c . || true)
   data=$(git -C "$REPO_ROOT" log -1 --date=format:%Y-%m-%d --pretty=%ad "$ref")
   hora=$(git -C "$REPO_ROOT" log -1 --date=format:%H:%M --pretty=%ad "$ref")
