@@ -2,7 +2,7 @@
 tipo: tarefa
 id: T-0006
 status: a-fazer
-responsavel: Cauê Carneiro
+responsavel: [Cauê Carneiro, Júlia Clovandi]
 desafio: C18
 data_criacao: 2026-09-10
 tags: [tarefa, cbl, benchmarking, pesquisa-mercado, concorrentes, frila]
@@ -13,14 +13,14 @@ tags: [tarefa, cbl, benchmarking, pesquisa-mercado, concorrentes, frila]
 ## Contexto
 O **Frila** nasceu com foco na dor latente do ecossistema gastronômico e de eventos: **"Como estabelecimentos de food service e profissionais freelancers podem confiar um no outro rápido o suficiente para cobrir uma vaga que abre e fecha em poucas horas?"**
 
-A partir do acervo de telas capturadas da App Store e de plataformas ativas no mercado brasileiro (armazenadas em `04 - Tarefas/Anexos/`), foi catalogado um conjunto de **9 concorrentes e referências de mercado**. O conteúdo está estruturado e destinado ao **Cauê Carneiro** para continuidade da pesquisa aprofundada de mercado, mapeamento de gaps, análise de pricing e validação do posicionamento estratégico do Frila no ciclo CBL C18.
+A partir do acervo de telas capturadas da App Store e de plataformas ativas no mercado brasileiro (armazenadas em `04 - Tarefas/Anexos/`), foi catalogado um conjunto de **9 concorrentes e referências de mercado**. O conteúdo está estruturado e destinado a **Cauê Carneiro** e **Júlia Clovandi** para condução e continuidade da pesquisa aprofundada de mercado, mapeamento de gaps, análise de pricing e validação do posicionamento estratégico do Frila no ciclo CBL C18.
 
 ---
 
 ## Feito quando
 - [x] Imagens da pesquisa de concorrentes catalogadas e versionadas no vault em `04 - Tarefas/Anexos/`.
 - [x] Mapeamento inicial dos 9 aplicativos (funções, ratings, modelos de monetização e tração).
-- [ ] Validação aprofundada por Cauê Carneiro da matriz de proposta de valor e diferenciação do Frila frente aos concorrentes diretos (Closeer, eFreela, Estaff, Freela Serviços, Switch).
+- [ ] Validação aprofundada por Cauê Carneiro e Júlia Clovandi da matriz de proposta de valor e diferenciação do Frila frente aos concorrentes diretos (Closeer, eFreela, Estaff, Freela Serviços, Switch).
 - [ ] Investigação sobre como cada plataforma resolve o problema de **confiança imediata** (antecedentes, no-show, avaliação mútua e pontualidade).
 - [ ] Mapeamento da estratégia de monetização do Frila (taxa por turno preenchido vs. assinatura vs. modelo de moedas do GetNinjas).
 - [ ] Integração dos insights com a seção de Pesquisa e Atividades Norteadoras do documento do C18.
@@ -121,7 +121,7 @@ Os concorrentes foram agrupados em três camadas estratégicas:
 
 ---
 
-## Próximos Passos para o Cauê
+## Próximos Passos (Cauê Carneiro & Júlia Clovandi)
 
 1. **Aprofundamento de Avaliações e Reclamações:** Mapear no Reclame Aqui e nos comentários da App Store as principais queixas dos garçons e donos de restaurantes contra Closeer e Estaff (ex: atraso de repasse, ausências não punidas, cancelamentos de última hora).
 2. **Desenvolvimento da Matriz de Diferenciação:** Redigir no documento do CBL como o Frila resolve o dilema de confiança com tempo de resposta inferior a 30 minutos.
