@@ -279,6 +279,13 @@ public enum DS {
     public enum Acervo {
         public static let larguraMinimaDoPainel: CGFloat = 320
         public static let larguraIdealDoPainel: CGFloat = 380
+        /// Teto para o painel de detalhe.
+        ///
+        /// Sem ele, o `HSplitView` reparte a sobra e o painel chega a 40% da
+        /// janela — largura que se justifica com um item selecionado e não se
+        /// justifica nenhuma para dizer "Nada selecionado". A grade é o
+        /// conteúdo; o painel é apoio.
+        public static let larguraMaximaDoPainel: CGFloat = 480
         public static let alturaDaPreviaGrande: CGFloat = 180
     }
 
@@ -302,6 +309,11 @@ public enum DS {
         /// grade; longo demais e ninguém descobre que ele existe.
         public static let esperaDoPreview: Double = 0.6
         public static let larguraDoPreview: CGFloat = 260
+
+        /// Teto de altura da prévia, usado para mantê-la dentro da grade ao
+        /// posicioná-la. O conteúdo é curto; o teto existe para o cálculo de
+        /// borda, não para cortar texto.
+        public static let alturaMaximaDoPreview: CGFloat = 220
     }
 
     /// Colunas de largura fixa que fazem as linhas de fato alinharem

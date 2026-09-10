@@ -276,6 +276,26 @@ struct TelaCalendario: View {
         .padding(.horizontal, DS.Espaco.md)
         .padding(.vertical, DS.Espaco.sm)
         .background(cores.fundo)
+        .overlayPreferenceValue(AncoraDaPrevia.self) { ancora in
+            GeometryReader { area in
+                if let ancora, let data = previewDoDia, let dia = porData[data] {
+                    let alvo = area[ancora]
+                    Sobreposicao {
+                        PreviaDoDia(
+                            data: data,
+                            dia: dia,
+                            ehHoje: data == hoje,
+                            filtrado: filtro.ativo
+                        )
+                    }
+                    .offset(
+                        x: posicaoX(doAlvo: alvo, em: area.size),
+                        y: posicaoY(doAlvo: alvo, em: area.size)
+                    )
+                }
+            }
+            .allowsHitTesting(false)
+        }
         .animation(DS.Movimento.padrao, value: semanasVisiveis)
         .animation(DS.Movimento.padrao, value: semanas.count)
         .animation(DS.Movimento.padrao, value: modo)
@@ -348,16 +368,16 @@ struct TelaCalendario: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .onHover { $0 ? agendarPreview(para: data) : cancelarPreview(de: data) }
-        .popover(
-            isPresented: Binding(
-                get: { previewDoDia == data },
-                set: { if !$0 { previewDoDia = nil } }
-            ),
-            attachmentAnchor: .rect(.bounds),
-            arrowEdge: .trailing
-        ) {
-            PreviaDoDia(data: data, dia: dia, ehHoje: ehHoje, filtrado: filtro.ativo)
+        .onHover { dentro in
+            // Só agenda para dia com evento: num mês típico, 33 das 35 células
+            // estão vazias, e a prévia disparava neles para dizer "Nada
+            // registrado" — a espera de 600 ms existia para não piscar ao
+            // atravessar a grade, não para anunciar ausência.
+            if dentro, !eventos.isEmpty { agendarPreview(para: data) }
+            else { cancelarPreview(de: data) }
+        }
+        .anchorPreference(key: AncoraDaPrevia.self, value: .bounds) { ancora in
+            previewDoDia == data ? ancora : nil
         }
         .accessibilityLabel(rotuloAcessivel(data: data, quantidade: eventos.count, ehHoje: ehHoje))
         .accessibilityAddTraits(selecionado ? [.isButton, .isSelected] : .isButton)
@@ -568,6 +588,37 @@ struct TelaCalendario: View {
     private func fecharPreview() {
         esperaDoPreview?.cancel()
         previewDoDia = nil
+    }
+
+    /// Ao lado da célula, e dentro da grade.
+    ///
+    /// Prefere a direita; se não couber — as células de sexta e sábado —, vai
+    /// para a esquerda. Sem isso a prévia sairia pela borda da janela, que é
+    /// metade do motivo de um `popover` nativo existir.
+    private func posicaoX(doAlvo alvo: CGRect, em area: CGSize) -> CGFloat {
+        let largura = DS.Calendario.larguraDoPreview
+        let folga = DS.Espaco.sm
+        let aDireita = alvo.maxX + folga
+        if aDireita + largura <= area.width { return aDireita }
+        return max(0, alvo.minX - folga - largura)
+    }
+
+    private func posicaoY(doAlvo alvo: CGRect, em area: CGSize) -> CGFloat {
+        let teto = DS.Calendario.alturaMaximaDoPreview
+        return min(max(0, alvo.minY), max(0, area.height - teto))
+    }
+}
+
+/// Onde a prévia deve aparecer: os limites da célula sob o cursor.
+///
+/// Publicar a âncora e desenhar na grade — em vez de um `popover` por célula —
+/// é o que permite a prévia usar a `Sobreposicao` do sistema, sem a sombra
+/// difusa que a moldura nativa traz junto.
+private struct AncoraDaPrevia: PreferenceKey {
+    static let defaultValue: Anchor<CGRect>? = nil
+
+    static func reduce(value: inout Anchor<CGRect>?, nextValue: () -> Anchor<CGRect>?) {
+        value = nextValue() ?? value
     }
 }
 

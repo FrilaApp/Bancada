@@ -195,6 +195,35 @@ public struct Bloco<Conteudo: View>: View {
     }
 }
 
+/// Superfície que flutua sobre o resto: prévia, dica, painel contextual.
+///
+/// Existe porque o único overlay que o app não desenhava era um `popover`
+/// nativo, e ele trazia a sombra difusa que este sistema recusa — a única peça
+/// da tela contradizendo a doutrina de profundidade por camada de tom e fio de
+/// 1px. Elevação aqui é a mesma do resto: `superficie` um passo acima do
+/// fundo, fio de 1px, raio `lg`. Nada de sombra.
+///
+/// Quem flutua não intercepta clique: a prévia é para ler, e o alvo por baixo
+/// continua clicável.
+public struct Sobreposicao<Conteudo: View>: View {
+    @Environment(\.cores) private var cores
+    private let conteudo: Conteudo
+
+    public init(@ViewBuilder conteudo: () -> Conteudo) {
+        self.conteudo = conteudo()
+    }
+
+    public var body: some View {
+        conteudo
+            .background(cores.superficie, in: RoundedRectangle(cornerRadius: DS.Raio.lg))
+            .overlay(
+                RoundedRectangle(cornerRadius: DS.Raio.lg)
+                    .strokeBorder(cores.borda, lineWidth: DS.Traco.fio)
+            )
+            .allowsHitTesting(false)
+    }
+}
+
 /// A superfície de leitura: a nota posta sobre o chrome, como uma folha sobre
 /// a mesa.
 ///

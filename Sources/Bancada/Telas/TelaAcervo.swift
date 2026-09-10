@@ -57,10 +57,15 @@ struct TelaAcervo: View {
             }
             .frame(minWidth: DS.Galeria.larguraMinimaCard * 2)
 
+            // O teto importa: sem ele o `HSplitView` reparte a sobra e o
+            // painel chega a 40% da janela — largura que se justifica com um
+            // item aberto e não se justifica nenhuma para dizer "Nada
+            // selecionado". A grade é o conteúdo; o painel é apoio.
             PainelDeMidia(midia: atual, vault: vault)
                 .frame(
                     minWidth: DS.Acervo.larguraMinimaDoPainel,
-                    idealWidth: DS.Acervo.larguraIdealDoPainel
+                    idealWidth: DS.Acervo.larguraIdealDoPainel,
+                    maxWidth: DS.Acervo.larguraMaximaDoPainel
                 )
         }
     }

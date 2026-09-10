@@ -235,6 +235,7 @@ final class ParidadeDeTokensTests: XCTestCase {
         XCTAssertEqual(metrica["trabalho"]?["alturaMinimaDoPainel"], Double(DS.Trabalho.alturaMinimaDoPainel))
         XCTAssertEqual(metrica["acervo"]?["larguraMinimaDoPainel"], Double(DS.Acervo.larguraMinimaDoPainel))
         XCTAssertEqual(metrica["acervo"]?["larguraIdealDoPainel"], Double(DS.Acervo.larguraIdealDoPainel))
+        XCTAssertEqual(metrica["acervo"]?["larguraMaximaDoPainel"], Double(DS.Acervo.larguraMaximaDoPainel))
         XCTAssertEqual(metrica["acervo"]?["alturaDaPreviaGrande"], Double(DS.Acervo.alturaDaPreviaGrande))
         XCTAssertEqual(metrica["calendario"]?["larguraMinimaDaCelula"], Double(DS.Calendario.larguraMinimaDaCelula))
         XCTAssertEqual(metrica["calendario"]?["alturaMinimaDaCelula"], Double(DS.Calendario.alturaMinimaDaCelula))
@@ -244,6 +245,7 @@ final class ParidadeDeTokensTests: XCTestCase {
         XCTAssertEqual(metrica["calendario"]?["alturaDoPuxador"], Double(DS.Calendario.alturaDoPuxador))
         XCTAssertEqual(metrica["calendario"]?["esperaDoPreview"], DS.Calendario.esperaDoPreview)
         XCTAssertEqual(metrica["calendario"]?["larguraDoPreview"], Double(DS.Calendario.larguraDoPreview))
+        XCTAssertEqual(metrica["calendario"]?["alturaMaximaDoPreview"], Double(DS.Calendario.alturaMaximaDoPreview))
         XCTAssertEqual(metrica["marcador"]?["larguraDoTipo"], Double(DS.Marcador.larguraDoTipo))
         XCTAssertEqual(metrica["marcador"]?["larguraDaHora"], Double(DS.Marcador.larguraDaHora))
     }

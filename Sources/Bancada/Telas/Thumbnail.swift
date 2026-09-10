@@ -18,26 +18,37 @@ struct Thumbnail: View {
     @State private var falhou = false
 
     var body: some View {
-        ZStack {
-            if let imagem {
-                Image(nsImage: imagem)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            } else {
-                cores.superficieSutil
-                if falhou {
-                    Image(systemName: "doc")
-                        .font(.system(size: 20, weight: .light))
-                        .foregroundStyle(cores.textoSutil)
+        // `Color.clear` é quem define o tamanho; a imagem entra por cima, como
+        // overlay. Parece rodeio, mas é o que impede a miniatura de ditar o
+        // layout: com a imagem dentro de um ZStack, uma captura de 520×68 pede
+        // ~975pt de largura para preencher 128pt de altura, e o cartão inteiro
+        // estourava a coluna da grade — vazando sobre a barra lateral de um
+        // lado e por baixo do painel de detalhe do outro. `.clipped()` sozinho
+        // não resolve: ele recorta o desenho, não o tamanho pedido.
+        Color.clear
+            .frame(height: altura)
+            .frame(maxWidth: .infinity)
+            .overlay {
+                if let imagem {
+                    Image(nsImage: imagem)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
                 } else {
-                    ProgressView().controlSize(.small)
+                    ZStack {
+                        cores.superficieSutil
+                        if falhou {
+                            Image(systemName: "doc")
+                                .font(.system(size: 20, weight: .light))
+                                .foregroundStyle(cores.textoSutil)
+                        } else {
+                            ProgressView().controlSize(.small)
+                        }
+                    }
                 }
             }
-        }
-        .frame(height: altura)
-        .frame(maxWidth: .infinity)
-        .clipped()
-        .task(id: url) { await gerar() }
+            .clipped()
+            .contentShape(Rectangle())
+            .task(id: url) { await gerar() }
     }
 
     private func gerar() async {
