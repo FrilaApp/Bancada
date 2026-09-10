@@ -1,9 +1,9 @@
 ---
 tipo: documento-derivado
 origem: "01 - CBL/Desafios/C18/Documentos/CBL_C18.pages"
-hash_origem: 66c42784a2a7a8771be000281aee4efe249465990b5689f507e1557b7032189c
-exportado_em: 2026-09-08T22:15
-exportado_por: fbtostadev
+hash_origem: 1671b003d412df8ccec7812d0c460c8e35e3a07c2522ef5d07c9bf46c15f0a08
+exportado_em: 2026-09-10T14:58
+exportado_por: Júlia Clovandi Vasconcelos 
 conversao: ok
 tags: [documento]
 ---
@@ -63,6 +63,8 @@ Essential Questions
 Por que eu me engajo com esse tema?
 
 Qual a minha relação com a Big Idea do grupo?
+
+Como estabelecimentos de food service e profissionais freelancers podem confiar um no outro rápido o suficiente para cobrir uma vaga que abre e fecha em poucas horas?
 
 <Adicione mais perguntas>
 
