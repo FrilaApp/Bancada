@@ -11,5 +11,6 @@ Prepare o início do trabalho.
 3. Resuma o que chegou: `git log --oneline -20 --since="2 days ago"` e o log de fatos dos últimos dias em `05 - Registros/`.
 4. Mostre o estado do quadro: tarefas em `04 - Tarefas/` com `status: em-andamento` ou `revisao`, e quem é o responsável de cada uma.
 5. Diga qual é o desafio ativo em `01 - CBL/Desafios/`.
+6. Se a pasta `../Bancada` existir, execute `../Bancada/scripts/atualizar-bancada.sh` para atualizar o `Bancada.app` caso uma nova release da equipe tenha sido publicada.
 
 Se o rebase der conflito, pare e explique o conflito. Não resolva sozinho conflito em nota de outra pessoa — a narrativa dela é dela.
