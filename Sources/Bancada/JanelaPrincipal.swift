@@ -185,9 +185,11 @@ struct JanelaPrincipal: View {
                 }
                 .padding(.horizontal, DS.Espaco.md)
                 .padding(.vertical, DS.Espaco.xs)
-                .contentShape(Capsule())
             }
-            .buttonStyle(.plain)
+            // `.plain` tirava o realce nativo sem repor nada — o botão ficava
+            // morto sob o ponteiro, que é o que a revisão de 10/09 eliminou do
+            // app. O raio de pílula faz o realce acompanhar a cápsula.
+            .buttonStyle(BotaoDoSistema(.peca, raio: DS.Raio.pilula))
             .help(raiz.path)
             .accessibilityLabel("Mostrar o vault no Finder")
         } else {

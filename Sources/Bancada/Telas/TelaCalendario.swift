@@ -578,9 +578,10 @@ struct TelaCalendario: View {
                                         .font(DS.Icone.fonte(DS.Icone.micro, peso: .semibold))
                                         .foregroundStyle(cores.textoSutil)
                                 }
-                                .contentShape(Rectangle())
+                                .padding(.vertical, DS.Espaco.xs)
+                                .padding(.horizontal, DS.Espaco.xs)
                             }
-                            .buttonStyle(.plain)
+                            .buttonStyle(BotaoDoSistema(.peca))
                             .help("Abrir o dia na semana")
                         }
                     }
