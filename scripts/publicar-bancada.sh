@@ -50,6 +50,17 @@ MSG
 # 1. Pré-voo: Testes locais (não publicar app com defeito)
 # ---------------------------------------------------------------------------
 echo "▸ [1/5] Validando integridade do código local (swift test)..."
+
+# Os testes rodam sobre o que está no disco, mas a tag vai no HEAD. Com mudança
+# solta na pasta — inclusive arquivo novo, que o SwiftPM compila sem perguntar —
+# o script validaria um código e publicaria outro.
+pendentes=$(git -c core.quotepath=off status --porcelain)
+if [ -n "$pendentes" ]; then
+  quarentena_fallback \
+    "Há alterações não commitadas na pasta de trabalho. Os testes validariam um código diferente do que a tag vai publicar:\n\n$(printf '%s\n' "$pendentes" | sed 's/^/      · /')" \
+    "    1. Faça commit das alterações, ou guarde-as com 'git stash -u'.\n    2. Execute './scripts/publicar-bancada.sh' com a pasta limpa."
+fi
+
 if ! swift test >/dev/null 2>&1; then
   quarentena_fallback \
     "A suíte de testes locais (VaultKit / DesignSystem) falhou." \
