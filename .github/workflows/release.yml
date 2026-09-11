@@ -26,6 +26,13 @@ concurrency:
 jobs:
   publicar:
     runs-on: macos-15
+
+    # Desde a unificação em monorepo, o checkout traz a raiz inteira — o
+    # Package.swift e os scripts vivem em Bancada/, não mais na raiz.
+    defaults:
+      run:
+        working-directory: Bancada
+
     steps:
       - uses: actions/checkout@v4
 
