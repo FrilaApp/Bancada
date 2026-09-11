@@ -107,6 +107,71 @@ Sempre **`/entrar` antes de começar**: 5 pessoas escrevem no mesmo repo, e reso
 
 ---
 
+## O site publicado
+
+**https://bancada-buu.pages.dev** — desde 2026-09-11, o vault também é um site.
+Existe para mentores e avaliadores, que não vão instalar app nenhum.
+
+**Todo push em `main` republica o site.** Não há passo manual: o GitHub Actions
+compila, lê o vault e publica na Cloudflare Pages em cerca de dois minutos.
+Quem estiver com a aba aberta vê um aviso de *"há conteúdo novo"* — o site
+consulta um `versao.json` a cada 30 segundos e avisa em vez de recarregar
+sozinho, para não jogar fora a posição de quem está lendo.
+
+> ⚠️ **O site está aberto na internet.** Qualquer pessoa com a URL lê o vault
+> inteiro: tarefas, narrativa diária e o log de fatos com nome e horário de
+> cada um. O `noindex` pede a buscadores que não indexem, mas **não é controle
+> de acesso**. Fechar é configurar o Cloudflare Access com lista de e-mails —
+> passo a passo em `Bancada/docs/cloudflare.md`.
+
+### O portão
+
+Antes de publicar, o build roda `bancada-indice --verificar`. Se houver nota
+fora da convenção ou linha de registro fora do formato dos hooks, ele sai com
+código 2, **o build falha e o site anterior continua no ar**. Publicar tarde é
+melhor que publicar um registro que se contradiz.
+
+Na prática: se o seu push não apareceu no site, provavelmente o vault está
+inconsistente. Rode localmente para ver o quê:
+
+```bash
+cd Bancada && ./bancada-indice --verificar ../doc-harness
+```
+
+### O que vai para o site
+
+Vai: desafio CBL, agenda, roadmap, narrativa diária, documentos derivados,
+design, tarefas, log de fatos e o acervo de mídia.
+
+Não vai, por decisão: os índices (`00 - Índice *.md`, que são listas de
+wikilinks só úteis dentro do Obsidian), os templates (andaimes cheios de
+`{{marcadores}}`, que fariam o registro parecer preenchido pela metade) e o
+rodapé de navegação de cada nota.
+
+**Ao criar um `tipo` de nota novo**, acrescente-o em `SECOES`, no
+`Bancada/scripts/gerar-site.js` — senão a nota não aparece no site. Isso já
+aconteceu: o tipo `agenda` foi criado em 10/09 e a agenda oficial do C18 ficou
+fora do site até 11/09, sem erro nenhum, simplesmente ausente. Hoje o build
+avisa quando um tipo fica de fora, mas o aviso não conserta sozinho.
+
+### Republicar à mão
+
+Raramente necessário — só se o build falhar por motivo externo, ou para
+republicar depois de mexer no gerador sem mexer no vault:
+
+```bash
+gh workflow run site.yml -R BlendOps/Bancada
+gh run watch -R BlendOps/Bancada
+```
+
+O site é gerado a partir do **binário da Bancada**, nunca por um parser
+próprio: `./Bancada --indice` emite o vault já parseado e agrupado, e o
+gerador só renderiza. Duas implementações da mesma regra divergem com o tempo,
+e um registro que conta histórias diferentes conforme quem olha perde a
+serventia inteira.
+
+---
+
 ## Proibido
 
 Os dois primeiros itens não dependem da sua boa vontade: `scripts/guarda.sh` bloqueia pelo hook `PreToolUse`, e o `pre-commit` do git bloqueia no índice. A diferença importa: a guarda procura padrões no texto do comando e por isso erra em todo jeito de escrever que ela não previu — uma edição por heredoc de Python passou direto em 2026-09-10. O `pre-commit` olha o que está de fato no índice, e por isso vale para qualquer ferramenta. Estão aqui para você entender o porquê, não para você lembrar de obedecer.

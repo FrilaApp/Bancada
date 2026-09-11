@@ -72,14 +72,24 @@ Imprime as contagens do vault e a árvore de registros agrupada. Sai com `0` se 
 
 ## O site para quem está fora
 
-Mentores e avaliadores não vão instalar app nenhum, então o mesmo vault também vira um site estático:
+Mentores e avaliadores não vão instalar app nenhum, então o mesmo vault também vira um site estático — **no ar em https://bancada-buu.pages.dev**.
+
+Desde 2026-09-11 ele se republica sozinho: todo push em `main` que toque `doc-harness/` ou `Bancada/` dispara o build, que compila o `bancada-indice`, verifica o vault, gera o HTML e publica na Cloudflare Pages. Leva cerca de dois minutos. Quem estiver com a aba aberta recebe um aviso de conteúdo novo.
+
+> ⚠️ O site está **aberto na internet**. O `noindex` pede a buscadores que não indexem, mas não é controle de acesso. Fechar com lista de e-mails: `docs/cloudflare.md`.
+
+Antes de publicar, o build roda `--verificar` como portão: vault inconsistente reprova, o build falha e o site anterior continua no ar. Publicar tarde é melhor que publicar um registro que se contradiz.
+
+Para gerar local, sem publicar:
 
 ```bash
 ./build.sh --com-site          # compila e gera em site/
 node scripts/gerar-site.js ../doc-harness [destino]
 ```
 
-Sai HTML puro, sem JavaScript e sem dependência de npm — o colapso dos grupos de registro usa `<details>`. Tema claro e escuro acompanham o sistema do leitor.
+Sai HTML puro e sem dependência de npm — o colapso dos grupos de registro usa `<details>`. A única peça de JavaScript é o aviso de conteúdo novo, que consulta um `versao.json` de ~50 bytes a cada 30 segundos; sem ele o site continua sendo o HTML estático que sempre foi. Tema claro e escuro acompanham o sistema do leitor.
+
+**Ao criar um `tipo` de nota novo no vault**, acrescente-o em `SECOES` no `scripts/gerar-site.js`, senão a nota não chega ao site. O build avisa quando um tipo fica de fora — o aviso existe porque o tipo `agenda` passou um dia inteiro fora do site sem ninguém notar.
 
 **O gerador não parseia nada.** Ele chama `./Bancada --indice`, que emite o vault inteiro como JSON já parseado e agrupado, e só renderiza. Isso é o ponto: duas implementações da mesma regra divergem com o tempo, e um registro que conta histórias diferentes conforme quem olha perde a serventia inteira.
 
