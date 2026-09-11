@@ -65,12 +65,13 @@ jobs:
       - uses: actions/checkout@v4
 
       # O gerador é Node puro, sem uma única dependência de npm — e a imagem
-      # oficial do Swift não traz Node.
+      # oficial do Swift não traz Node. O `npm` entra junto não por causa dele,
+      # mas do wrangler-action, que roda a CLI da Cloudflare via npx.
       - name: Instalar o Node
         run: |
           apt-get update -qq
-          apt-get install -y --no-install-recommends nodejs
-          node --version
+          apt-get install -y --no-install-recommends nodejs npm
+          node --version && npm --version
 
       - name: Cachear o .build
         uses: actions/cache@v4
