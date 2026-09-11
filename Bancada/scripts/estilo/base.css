@@ -1,0 +1,92 @@
+/* Base compartilhada pelas duas saídas do site.
+   Gerado dentro de estilo.css / bordo.html por scripts/gerar-site.js — as
+   variáveis :root vêm de tokens.json e são emitidas antes deste arquivo.
+
+   Aqui moram o reset, as três vozes e tudo que não é layout. Os dois modos de
+   saída (multi-página e página única) divergem só em layout: antes divergiam
+   também em tipografia, e um mentor que abrisse os dois via dois produtos. */
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--fundo);
+  color: var(--texto);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { max-width: 100%; }
+
+/* As três vozes ------------------------------------------------------
+   Uma superfamília, três registros: interface, narrativa e fato. A Plex foi
+   desenhada para documentação técnica, e usar serif/sans/mono da mesma
+   família faz a distinção entre narrativa e fato ler como mudança de
+   registro, não de tipografia. É a regra de ouro do vault virada forma.
+
+   `.narrativa` é o que alguém escreveu. `.mono`, `code`, carimbo de hora,
+   tipo de fato e caminho de arquivo é o que saiu de um hook. Nenhum dos dois
+   empresta a voz do outro. */
+
+code, .mono { font-family: var(--mono); font-size: 0.88em; }
+
+.narrativa { font-family: var(--serif); max-width: 66ch; }
+
+/* Rótulo de grupo em micro-caps: hierarquia sem borda nem peso extra. */
+.rotulo {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--textoSutil);
+}
+
+/* O nó de tipo na árvore de registros é o `MarcadorDeTipo` do app: voz mono,
+   cor da categoria. A cor de cada tipo é emitida a partir de tokens.json. */
+details[data-tipo] > summary .dito,
+details[data-tipo] > summary .rotulo {
+  font-family: var(--mono);
+  font-weight: 500;
+}
+
+/* Foco e movimento --------------------------------------------------- */
+
+:focus-visible {
+  outline: var(--traco-foco) solid var(--foco);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* Movimento.
+   O site não declarava uma única `transition` — e declarava, logo abaixo,
+   `transition: none` para quem pede menos movimento: suprimia um movimento que
+   nunca teve. Todo `:hover` cortava seco e não havia `:active` em lugar nenhum.
+   Os dois valores são os mesmos do app (`movimento.rapido` e `.padrao`). */
+a, button, summary, .dia, .caixa {
+  transition: background-color var(--mov-rapido) ease-out,
+              color var(--mov-rapido) ease-out,
+              border-color var(--mov-rapido) ease-out,
+              opacity var(--mov-rapido) ease-out;
+}
+a:active, button:active, summary:active { opacity: 0.7; }
+
+/* Pular para o conteúdo: só aparece no foco de teclado, que é quando serve. */
+.pular {
+  position: absolute;
+  left: -9999px;
+  top: var(--espaco-sm);
+  padding: var(--espaco-sm) var(--espaco-md);
+  background: var(--superficie);
+  color: var(--acento);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  z-index: 10;
+}
+.pular:focus { left: var(--espaco-sm); }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

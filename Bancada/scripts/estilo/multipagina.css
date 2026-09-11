@@ -1,0 +1,152 @@
+/* Layout do modo multi-página: cabeçalho fixo, sumário lateral, uma página
+   por nota. A base (reset, vozes, foco) vem de base.css. */
+
+header {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; gap: var(--espaco-lg);
+  padding: var(--espaco-md) var(--espaco-lg);
+  background: var(--cromo);
+  border-bottom: var(--traco-fio) solid var(--divisor);
+}
+.marca { font-weight: 650; color: var(--texto); text-decoration: none; }
+header nav { display: flex; gap: var(--espaco-md); flex-wrap: wrap; }
+header nav a { color: var(--textoSutil); text-decoration: none; font-size: 0.92em; }
+header nav a.ativo, header nav a:hover { color: var(--acento); }
+
+.colunas { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: var(--espaco-lg);
+  max-width: 1180px; margin: 0 auto; padding: var(--espaco-lg); align-items: start; }
+
+aside { position: sticky; top: 68px; font-size: 0.9em; }
+aside .grupo { margin-bottom: var(--espaco-lg); }
+aside h3 { margin: 0 0 var(--espaco-sm); font-size: 0.78em; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--textoSutil); }
+aside ul { list-style: none; margin: 0; padding: 0; }
+aside li { margin: 2px 0; }
+aside a { color: var(--texto); text-decoration: none; display: block; padding: 3px 8px;
+  border-radius: 6px; }
+aside a:hover { background: var(--cromo); }
+aside a.ativo { background: var(--cromo); color: var(--acento); font-weight: 600; }
+
+main { min-width: 0; }
+/* Títulos e corpo de nota falam na voz de narrativa — a mesma escolha da
+   página única, para as duas saídas não parecerem dois produtos. */
+main h1, main h2, main h3 { font-family: var(--serif); font-weight: 600;
+  letter-spacing: -0.015em; text-wrap: balance; }
+main h1 { font-size: var(--tipo-titulo); margin: 0 0 var(--espaco-sm); }
+main p, main li, main blockquote { font-family: var(--serif); }
+/* Fato continua monoespaçado: tabela, árvore de registros e etiquetas. */
+main table, main .arvore, .etiqueta, .campos { font-family: var(--sans); }
+main h2 { font-size: 1.15em; margin: var(--espaco-lg) 0 var(--espaco-sm); }
+main h3 { font-size: 1em; margin: var(--espaco-lg) 0 var(--espaco-sm); }
+.subtitulo { color: var(--textoSutil); margin: 0 0 var(--espaco-lg); }
+
+a { color: var(--acento); }
+.link-ausente { color: var(--textoSutil); border-bottom: 1px dotted var(--borda); }
+
+.numeros { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--espaco-md); margin-bottom: var(--espaco-lg); }
+.numero { background: var(--superficie); border: 1px solid var(--borda);
+  border-radius: var(--raio); padding: var(--espaco-md); }
+.numero strong { display: block; font-size: 1.7em; line-height: 1.2; }
+.numero span { color: var(--textoSutil); font-size: 0.82em; }
+
+.destaque { background: var(--superficie); border: 1px solid var(--borda);
+  border-radius: var(--raio); padding: var(--espaco-lg); margin-bottom: var(--espaco-lg); }
+.destaque h2 { margin-top: 0; }
+
+.campos { display: flex; flex-wrap: wrap; gap: var(--espaco-md); font-size: 0.85em;
+  color: var(--textoSutil); margin-bottom: var(--espaco-lg);
+  padding-bottom: var(--espaco-md); border-bottom: 1px solid var(--borda); }
+.campos b { color: var(--texto); font-weight: 600; }
+
+.aviso { background: var(--dado); border-radius: var(--raio);
+  padding: var(--espaco-md); font-size: 0.88em; color: var(--textoSutil); }
+
+blockquote { margin: var(--espaco-md) 0; padding: var(--espaco-sm) var(--espaco-md);
+  border-left: 3px solid var(--borda); color: var(--textoSutil); }
+
+/* Callouts do Obsidian (> [!info] …).
+   O tipo do callout é dito pelo rótulo, não por uma barra colorida na
+   lateral — mesmo tratamento da página única, para as duas superfícies não
+   divergirem no visual. */
+.callout { margin: var(--espaco-md) 0; padding: var(--espaco-md);
+  border-radius: var(--raio); background: var(--dado); font-size: 0.94em; }
+.callout > b { display: block; margin-bottom: 5px; color: var(--acento);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.8em;
+  text-transform: uppercase; letter-spacing: 0.07em; }
+.callout > p:first-of-type { margin-top: 0; }
+.callout > p:last-child { margin-bottom: 0; }
+.callout-warning > b, .callout-aviso > b { color: var(--status-revisao); }
+
+/* Item de lista ainda não preenchido no vault: ocupa a linha sem fingir
+   conteúdo que não existe. */
+.vazio-item { list-style: none; min-height: 1.2em; }
+.vazio-item::before { content: "—"; color: var(--borda); }
+
+pre { background: var(--dado); padding: var(--espaco-md);
+  border-radius: var(--raio); overflow-x: auto; }
+pre code { font-size: 0.86em; }
+:not(pre) > code { background: var(--dado); padding: 1px 5px; border-radius: 4px; }
+
+hr { border: 0; border-top: 1px solid var(--borda); margin: var(--espaco-lg) 0; }
+
+.rolagem { overflow-x: auto; margin: var(--espaco-md) 0; }
+table { border-collapse: collapse; width: 100%; font-size: 0.92em; }
+th, td { text-align: left; padding: var(--espaco-sm) var(--espaco-md);
+  border-bottom: 1px solid var(--borda); }
+th { font-size: 0.78em; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--textoSutil); font-weight: 600; }
+
+.etiqueta { display: inline-block; padding: 2px 10px;
+  border-radius: var(--raio-pilula); font-size: 0.82em; white-space: nowrap; }
+/* O ID da tarefa é identificador, não frase: quebrar no hífen o transforma
+   em duas coisas que não existem. */
+td:first-child { white-space: nowrap; font-variant-numeric: tabular-nums; }
+/* As regras .status-* são emitidas a partir de tokens.json, junto do :root. */
+
+.lista-tarefas { list-style: none; padding-left: 0; }
+.lista-tarefas .caixa { display: inline-flex; align-items: center; justify-content: center;
+  width: 15px; height: 15px; margin-right: 8px; border: 1px solid var(--borda);
+  border-radius: 4px; font-size: 10px; vertical-align: -2px; }
+.lista-tarefas .caixa.feita { background: var(--status-concluida); border-color: var(--status-concluida); color: var(--superficie); }
+
+.arvore, .arvore ul { list-style: none; padding-left: 0; margin: 0; }
+.arvore ul { padding-left: var(--espaco-lg); border-left: 1px solid var(--borda);
+  margin-left: 6px; }
+.arvore li { margin: 3px 0; }
+.arvore summary { cursor: pointer; padding: 3px 0; display: flex; gap: var(--espaco-md);
+  justify-content: space-between; align-items: baseline; }
+.arvore summary::marker { color: var(--textoSutil); }
+.arvore .rotulo { min-width: 0; }
+.arvore .apoio { color: var(--textoSutil); font-size: 0.82em; white-space: nowrap;
+  font-variant-numeric: tabular-nums; }
+.arvore .fato { display: flex; gap: var(--espaco-md); justify-content: space-between;
+  align-items: baseline; padding: 3px 0; }
+.grupo-repetido > summary .rotulo { font-weight: 600; }
+
+.lista-dias { list-style: none; padding: 0; }
+.lista-dias li { display: flex; justify-content: space-between; padding: var(--espaco-sm) 0;
+  border-bottom: 1px solid var(--borda); }
+
+.grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--galeria-card), 1fr));
+  gap: var(--espaco-md); }
+.cartao { margin: 0; background: var(--superficie); border: 1px solid var(--borda);
+  border-radius: var(--raio); overflow: hidden; }
+.cartao img, .cartao video { width: 100%; height: var(--galeria-thumb);
+  object-fit: cover; display: block; background: var(--superficieSutil); }
+.sem-previa { height: var(--galeria-thumb); display: flex; align-items: center;
+  justify-content: center; background: var(--superficieSutil); color: var(--textoSutil);
+  font-size: 0.82em; }
+.cartao figcaption { padding: var(--espaco-md); display: flex; flex-direction: column; gap: 3px; }
+.cartao .apoio { color: var(--textoSutil); font-size: 0.78em; word-break: break-all; }
+.cartao .acao { font-size: 0.85em; margin-top: 4px; }
+
+.vazio { color: var(--textoSutil); }
+
+footer { max-width: 1180px; margin: 0 auto; padding: var(--espaco-lg);
+  border-top: 1px solid var(--borda); color: var(--textoSutil); font-size: 0.82em; }
+
+@media (max-width: 800px) {
+  .colunas { grid-template-columns: 1fr; }
+  aside { position: static; }
+}
