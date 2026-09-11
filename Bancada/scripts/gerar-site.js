@@ -12,10 +12,25 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const { execFileSync } = require('child_process');
 const { renderizar, escapar } = require('./markdown');
 
 const RAIZ_PROJETO = path.resolve(__dirname, '..');
+
+/// Identidade do conteúdo publicado, para o site saber que mudou.
+///
+/// `geradoEm` sai do cálculo de propósito: é `.now` no momento do build, então
+/// entraria diferente a cada execução e o aviso de "conteúdo novo" dispararia
+/// sem nada ter mudado. Um aviso que aparece à toa é um aviso que se aprende a
+/// ignorar — e aí não serve mais quando o conteúdo muda de verdade.
+function hashDoIndice(indice) {
+  const { geradoEm, ...conteudo } = indice;
+  return crypto.createHash('sha256')
+    .update(JSON.stringify(conteudo))
+    .digest('hex')
+    .slice(0, 16);
+}
 
 function main() {
   const args = process.argv.slice(2);
@@ -52,9 +67,28 @@ function main() {
 }
 
 function lerIndice(vault) {
-  const binario = path.join(RAIZ_PROJETO, 'Bancada');
+  // Índice já pronto: o caminho do CI quando o build separa produzir de
+  // renderizar. Também serve para depurar o gerador contra um índice salvo,
+  // sem precisar de um vault por perto.
+  if (process.env.BANCADA_INDICE_JSON) {
+    const arquivo = path.resolve(process.env.BANCADA_INDICE_JSON);
+    if (!fs.existsSync(arquivo)) {
+      console.error(`✗ BANCADA_INDICE_JSON aponta para um arquivo que não existe: ${arquivo}`);
+      process.exit(1);
+    }
+    return JSON.parse(fs.readFileSync(arquivo, 'utf8'));
+  }
+
+  // `BANCADA_BIN` existe por causa do CI: o runner é Linux e compila o
+  // `bancada-indice`, enquanto na máquina de quem desenvolve o binário é o
+  // `./Bancada` do macOS. Os dois emitem o mesmo JSON — é o mesmo `NucleoCLI`.
+  const binario = process.env.BANCADA_BIN
+    ? path.resolve(process.env.BANCADA_BIN)
+    : path.join(RAIZ_PROJETO, 'Bancada');
   if (!fs.existsSync(binario)) {
-    console.error('✗ O binário da Bancada não existe. Rode ./build.sh primeiro.');
+    console.error(process.env.BANCADA_BIN
+      ? `✗ BANCADA_BIN aponta para um binário que não existe: ${binario}`
+      : '✗ O binário da Bancada não existe. Rode ./build.sh primeiro.');
     process.exit(1);
   }
   try {
@@ -115,6 +149,14 @@ class Site {
         this.escrever(this.arquivoDaNota(nota.caminho), this.paginaDeNota(nota, secao));
       }
     }
+
+    // O arquivo que as abas abertas consultam. Fica separado do índice de
+    // propósito: o índice passa de 300 KB, e baixá-lo a cada 30 segundos só
+    // para descobrir que nada mudou desperdiçaria a banda de quem está lendo.
+    this.escrever('versao.json', JSON.stringify({
+      versao: hashDoIndice(this.indice),
+      geradoEm: this.indice.geradoEm,
+    }) + '\n');
 
     this.copiarMidia();
   }
@@ -243,8 +285,62 @@ class Site {
   Gerado a partir do vault <code>doc-harness</code> em ${escapar(geradoEm)}.
   A narrativa deste registro é escrita a partir de fatos automáticos — nada aqui é preenchido por suposição.
 </footer>
+${this.avisoDeAtualizacao(base)}
 </body>
 </html>`;
+  }
+
+  /// O aviso de conteúdo novo — a única peça de JavaScript do site multipágina.
+  ///
+  /// O vault muda por fora de quem está lendo: os hooks do Git escrevem em
+  /// `05 - Registros/` a cada commit, e o build republica em poucos minutos.
+  /// Sem isso, uma aba aberta mostra um registro velho sem dar nenhum sinal —
+  /// que é exatamente a falha que a Bancada nativa evita com o relógio andando
+  /// no cabeçalho.
+  ///
+  /// **Avisa, não recarrega.** Recarregar sozinho jogaria fora a posição de
+  /// quem está no meio de um registro longo. Quem decide é quem lê.
+  ///
+  /// Degrada em silêncio: sem JS, ou com a rede caindo, o site continua sendo
+  /// o HTML estático que já era. O `<details>` do colapso de registros nunca
+  /// dependeu de script e continua não dependendo.
+  avisoDeAtualizacao(base) {
+    if (this.paginaUnica) return '';
+    const versao = hashDoIndice(this.indice);
+    return `<div id="atualizacao" hidden role="status" aria-live="polite">
+  <span>Há conteúdo novo no vault.</span>
+  <button type="button" onclick="location.reload()">Atualizar</button>
+</div>
+<script>
+(function () {
+  var atual = ${JSON.stringify(versao)};
+  var painel = document.getElementById('atualizacao');
+  var alvo = ${JSON.stringify(base + 'versao.json')};
+
+  function checar() {
+    // 'no-store' porque o que se quer saber é o estado do servidor. Um 304 do
+    // cache responderia "igual ao que você já tem", que é sempre verdade e
+    // nunca útil.
+    fetch(alvo, { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (dados) {
+        if (dados && dados.versao && dados.versao !== atual) {
+          painel.hidden = false;
+          clearInterval(timer);
+        }
+      })
+      .catch(function () { /* rede caiu; a próxima passada tenta de novo */ });
+  }
+
+  var timer = setInterval(checar, 30000);
+
+  // Voltar para a aba é quando a chance de ter perdido algo é maior, e é o
+  // momento em que esperar mais 30s pareceria o site estar quebrado.
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) checar();
+  });
+})();
+</script>`;
   }
 
   // MARK: - Páginas

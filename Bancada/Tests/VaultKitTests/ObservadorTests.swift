@@ -1,6 +1,11 @@
 import XCTest
 @testable import VaultKit
 
+// Mesmo guard de `Sources/VaultKit/Observador.swift`: sem ele a suíte não
+// compila no runner Linux do CI, e o alvo que existe para ser portável
+// derrubaria justamente o build que ele veio destravar.
+#if canImport(CoreServices)
+
 /// O observador é testado numa pasta temporária, e não commitando no vault
 /// real: um commit de teste deixaria um fato permanente no log, que é
 /// append-only. O log do dia 08/09 já carrega dois desses.
@@ -83,3 +88,5 @@ private final class ContadorSeguro: @unchecked Sendable {
         return n
     }
 }
+
+#endif

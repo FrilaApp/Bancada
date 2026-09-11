@@ -146,6 +146,37 @@ td:first-child { white-space: nowrap; font-variant-numeric: tabular-nums; }
 footer { max-width: 1180px; margin: 0 auto; padding: var(--espaco-lg);
   border-top: 1px solid var(--borda); color: var(--textoSutil); font-size: 0.82em; }
 
+/* O aviso de conteúdo novo.
+   Ancorado no rodapé da janela e não no topo: o vault muda enquanto alguém
+   está lendo, e empurrar o conteúdo para baixo no meio de um parágrafo é pior
+   que a notícia que o aviso traz. */
+#atualizacao {
+  position: fixed; inset-block-end: var(--espaco-lg); inset-inline-start: 50%;
+  transform: translateX(-50%);
+  display: flex; align-items: center; gap: var(--espaco-md);
+  padding: var(--espaco-sm) var(--espaco-md);
+  background: var(--cromo); color: var(--texto);
+  border: 1px solid var(--borda); border-radius: var(--raio);
+  box-shadow: 0 6px 24px rgb(0 0 0 / 0.18);
+  font-family: var(--sans); font-size: 0.85em;
+  z-index: 10;
+}
+#atualizacao[hidden] { display: none; }
+#atualizacao button {
+  font: inherit; font-weight: 600; cursor: pointer;
+  padding: 4px 10px; border-radius: calc(var(--raio) - 2px);
+  border: 1px solid var(--acento); background: var(--acento); color: var(--superficie);
+}
+#atualizacao button:hover { opacity: 0.9; }
+
+@media (prefers-reduced-motion: no-preference) {
+  #atualizacao { animation: surgir 160ms ease-out; }
+  @keyframes surgir {
+    from { opacity: 0; transform: translate(-50%, 8px); }
+    to   { opacity: 1; transform: translate(-50%, 0); }
+  }
+}
+
 @media (max-width: 800px) {
   .colunas { grid-template-columns: 1fr; }
   aside { position: static; }

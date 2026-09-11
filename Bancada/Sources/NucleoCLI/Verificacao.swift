@@ -1,15 +1,18 @@
 import Foundation
 import VaultKit
-import DesignSystem
 
-/// `./Bancada --verificar [caminho]` — lê o vault e imprime o que encontrou,
-/// sem abrir janela.
+/// `--verificar [caminho]` — lê o vault e imprime o que encontrou, sem abrir
+/// janela.
 ///
 /// Existe por dois motivos práticos: confirmar que a leitura funciona num
 /// ambiente sem interface (CI, sessão remota), e dar ao time uma checagem
 /// rápida do vault sem precisar do app aberto. É estritamente leitura.
-enum Verificacao {
-    static func executar(caminho: String?) -> Int32 {
+///
+/// No CI é o portão antes de publicar: sai com 2 se o vault tem nota fora da
+/// convenção, o build falha e o site anterior continua no ar — melhor que
+/// publicar um registro que se contradiz.
+public enum Verificacao {
+    public static func executar(caminho: String?) -> Int32 {
         let raiz = URL(fileURLWithPath: caminho ?? FileManager.default.currentDirectoryPath)
             .standardizedFileURL
 

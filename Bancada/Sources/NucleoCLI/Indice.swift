@@ -1,9 +1,14 @@
 import Foundation
 import VaultKit
-import DesignSystem
 
-/// `./Bancada --indice [caminho]` — emite o vault inteiro como JSON na saída
-/// padrão.
+/// `--indice [caminho]` — emite o vault inteiro como JSON na saída padrão.
+///
+/// Vive no `NucleoCLI` e não no alvo do app porque duas superfícies precisam
+/// dele: o `Bancada.app` no macOS, e o executável `bancada-indice` que roda no
+/// runner Linux do CI para gerar o site. O alvo do app importa `SwiftUI` e
+/// `AppKit` no topo do `main.swift`, o que tornaria este código impossível de
+/// compilar fora de Apple — e reimplementá-lo em JavaScript recriaria
+/// exatamente a divergência que o parser único existe para evitar.
 ///
 /// É a peça que sustenta "um parser, duas superfícies": o gerador do site
 /// consome este JSON em vez de reimplementar em JavaScript o parser de
@@ -16,13 +21,13 @@ import DesignSystem
 /// VaultKit: o formato do JSON é um contrato com o gerador, e merece ser
 /// explícito e mudar por decisão, não como efeito colateral de um campo novo
 /// no modelo.
-enum Indice {
+public enum Indice {
     /// 2 — os templates saíram de `notas` para um `templates` próprio. Mudança
     /// deliberada de contrato: até a versão 1, o andaime `Template - Tarefa.md`
     /// chegava ao site como tarefa `T-0000 — {{título da tarefa}}`.
-    static let versaoDoFormato = 2
+    public static let versaoDoFormato = 2
 
-    static func executar(caminho: String?) -> Int32 {
+    public static func executar(caminho: String?) -> Int32 {
         let base = URL(fileURLWithPath: caminho ?? FileManager.default.currentDirectoryPath)
             .standardizedFileURL
 
