@@ -31,6 +31,7 @@ Para criar uma tarefa, use `/tarefa` no Claude Code — ele cuida do id sequenci
 - [[04 - Tarefas/T-0005 - Corrigir atualização automática da Bancada em relação ao Obsidian|T-0005 — Corrigir atualização automática da Bancada em relação ao Obsidian]] · `a-fazer` · 🔴 urgente
 - [[04 - Tarefas/T-0006 - Benchmarking e pesquisa de concorrentes de mercado do Frila|T-0006 — Benchmarking e pesquisa de concorrentes de mercado do Frila]] · `a-fazer`
 - [[04 - Tarefas/T-0007 - Testar a Bancada em uso real|T-0007 — Testar a Bancada em uso real]] · `em-andamento`
+- [[04 - Tarefas/T-0008 - Corrigir contraste entre elementos em row highlight|T-0008 — Corrigir contraste entre elementos em row highlight]] · `a-fazer`
 
 ---
 ← [[🏠 Início]]
