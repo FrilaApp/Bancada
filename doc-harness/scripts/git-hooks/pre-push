@@ -1,0 +1,123 @@
+#!/bin/bash
+# Bloqueia git push até que a identidade do autor seja confirmada biometricamente.
+# Existe para que nada saia desta máquina sem uma pessoa presente — inclusive
+# quando um agente estiver conduzindo o trabalho.
+#
+# Escape emergencial / CI: SKIP_BIOMETRICS=1 git push
+set -euo pipefail
+
+[ -n "${SKIP_BIOMETRICS:-}" ] && exit 0
+
+raiz="$(git rev-parse --show-toplevel 2>/dev/null)" || {
+  echo "❌ Push abortado: não consegui localizar a raiz do repositório." >&2
+  exit 1
+}
+
+# Compila sob demanda caso o binário ainda não exista nesta máquina.
+if [ ! -x "$raiz/scripts/auth-touchid" ]; then
+  if command -v swiftc >/dev/null 2>&1 && [ -f "$raiz/scripts/auth-touchid.swift" ]; then
+    swiftc "$raiz/scripts/auth-touchid.swift" -o "$raiz/scripts/auth-touchid" 2>/dev/null || true
+    chmod +x "$raiz/scripts/auth-touchid" 2>/dev/null || true
+  fi
+fi
+
+# Falha fechado: sem o módulo, o push não sai. Um gate que passa em silêncio
+# é pior que gate nenhum, porque cria confiança falsa.
+if [ ! -x "$raiz/scripts/auth-touchid" ]; then
+  cat >&2 <<'MSG'
+❌ Push abortado: o módulo de autenticação não está disponível nesta máquina.
+
+Este repositório exige confirmação de identidade antes de publicar.
+Para habilitar aqui:
+
+  xcode-select --install     # instala o swiftc, se estiver faltando
+  ./scripts/bootstrap.sh     # compila o módulo
+
+Se você precisa publicar agora e sabe o que está fazendo:
+
+  SKIP_BIOMETRICS=1 git push
+MSG
+  exit 1
+fi
+
+# Camada opcional: quem tiver o ActionShelf (app pessoal do fbtostadev, fora
+# deste repositório) usa a interface dele em vez do prompt padrão do sistema.
+# Para os outros colaboradores, "$actionshelf_bin" nunca existe, o bloco abaixo
+# não roda, e o fluxo cai direto no Touch ID padrão logo em seguida — ninguém
+# mais precisa deste projeto para publicar.
+# Prioridade 1: Action Shelf na Notch (Mini-App com física de molas)
+actionshelf_bin="$raiz/../ActionShelf/ActionShelf"
+if [ ! -x "$actionshelf_bin" ] && [ -f "$raiz/../ActionShelf/build.sh" ]; then
+  "$raiz/../ActionShelf/build.sh" >/dev/null 2>&1 || true
+fi
+
+if [ -x "$actionshelf_bin" ]; then
+  echo "🔐 Exibindo Action Shelf na Notch (Touch ID / macOS)…"
+  if ! "$actionshelf_bin" --reason "Autorizar o envio de alterações (git push) no Challenge 18"; then
+    echo "❌ Autenticação cancelada ou não autorizada. O push foi abortado." >&2
+    exit 1
+  fi
+  echo "  ✓ Identidade confirmada pela Action Shelf."
+else
+  echo "🔐 Solicitando autenticação (Touch ID, Apple Watch ou senha do macOS)…"
+  if ! "$raiz/scripts/auth-touchid"; then
+    echo "❌ Autenticação cancelada ou não autorizada. O push foi abortado." >&2
+    exit 1
+  fi
+  echo "  ✓ Identidade confirmada."
+fi
+
+# ── Registro dos fatos publicados ────────────────────────────────────────────
+#
+# O fato sobre um commit é escrito **aqui**, e não no `post-commit`, porque é
+# aqui que a identidade do commit para de poder mudar. Enquanto o registro
+# acontecia logo após o commit, todo `rebase` sobre trabalho de outra pessoa
+# reescrevia o commit e deixava a linha apontando para um hash que não existe em
+# ramo nenhum — aconteceu duas vezes, em 2026-09-09 e 2026-09-10.
+#
+# O `post-commit` também disparava durante o próprio rebase, escrevendo fatos
+# sobre commits intermediários que o rebase ainda ia descartar. Toda essa classe
+# de estrago some ao mover o registro para cá: rebase não faz push.
+#
+# O log é publicado no push seguinte, e não neste. É o preço de registrar
+# identidade final — e é um preço honesto: o log fica no máximo um push atrás,
+# nunca apontando para o que não existe.
+[ -n "${DOC_HARNESS_SEM_REGISTRO:-}" ] && exit 0
+
+registrar_intervalo() {
+  local local_sha="$1" remoto_sha="$2" intervalo
+  local zero="0000000000000000000000000000000000000000"
+
+  # Deleção de ramo não publica commit nenhum.
+  [ "$local_sha" = "$zero" ] && return 0
+
+  if [ "$remoto_sha" = "$zero" ]; then
+    # Ramo novo: o que ainda não está em nenhum remoto.
+    intervalo="$local_sha --not --remotes"
+  else
+    intervalo="$remoto_sha..$local_sha"
+  fi
+
+  # shellcheck disable=SC2086
+  "$raiz/scripts/registrar-fato.sh" publicados $intervalo 2>/dev/null || true
+}
+
+while read -r _ref_local sha_local _ref_remoto sha_remoto; do
+  [ -n "${sha_local:-}" ] || continue
+  registrar_intervalo "$sha_local" "$sha_remoto"
+done
+
+# Publica o próprio registro num commit local, para o working tree voltar limpo.
+# Vai junto no próximo push. `--no-verify` porque este é o único caminho de
+# escrita legítimo em `05 - Registros/` — a fronteira do `pre-commit` recusa
+# todos os outros.
+log_do_dia="$raiz/05 - Registros"
+if ! git -C "$raiz" diff --quiet -- "$log_do_dia" 2>/dev/null \
+   || [ -n "$(git -C "$raiz" ls-files --others --exclude-standard -- "$log_do_dia")" ]; then
+  git -C "$raiz" add -- "$log_do_dia"
+  git -C "$raiz" commit -q --no-verify \
+    -m "Registra no log os fatos publicados" >/dev/null 2>&1 || true
+  echo "  ✓ Fatos publicados registrados — sai no próximo push."
+fi
+
+exit 0

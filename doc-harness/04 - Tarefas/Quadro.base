@@ -1,0 +1,42 @@
+filters:
+  and:
+    - 'tipo == "tarefa"'
+properties:
+  status:
+    displayName: Status
+  responsavel:
+    displayName: Responsável
+  desafio:
+    displayName: Desafio
+  data_criacao:
+    displayName: Criada em
+views:
+  - type: cards
+    name: Quadro
+    groupBy: status
+    order:
+      - file.name
+      - responsavel
+      - desafio
+  - type: table
+    name: Tabela
+    order:
+      - file.name
+      - status
+      - responsavel
+      - desafio
+      - data_criacao
+    sort:
+      - property: status
+        direction: ASC
+      - property: data_criacao
+        direction: DESC
+  - type: table
+    name: Em andamento
+    filters:
+      and:
+        - 'status == "em-andamento"'
+    order:
+      - file.name
+      - responsavel
+      - desafio

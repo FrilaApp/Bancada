@@ -1,0 +1,71 @@
+#!/bin/bash
+# Se algum .pages entrou no commit, regenera o .md derivado e o inclui no mesmo
+# commit — assim o texto versionado nunca fica defasado em relação ao documento.
+# Escape para quando isso atrapalhar: SKIP_PAGES=1 git commit
+raiz="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+
+# ── Fronteira do log de fatos ────────────────────────────────────────────────
+#
+# `05 - Registros/` é escrito só pelo `registrar-fato.sh`. Isso já estava dito
+# em três lugares — no CLAUDE.md, no cabeçalho de cada log e na guarda do Claude
+# Code — e nenhum dos três impedia de fato.
+#
+# A guarda do Claude Code (scripts/guarda.sh) tentava impedir procurando, no
+# texto do comando, o caminho junto de um operador de escrita de shell: `>`,
+# `tee`, `sed -i`, `rm`, `mv`. Em 2026-09-10 uma edição por heredoc de Python
+# passou direto: tinha o caminho e nenhum daqueles operadores. O defeito não foi
+# a lista estar curta — é que uma lista de padrões descreve *como* alguém
+# escreveria, e erra em todo jeito que ela não previu.
+#
+# Aqui a regra não adivinha: olha o que está de fato no índice. Vale para
+# qualquer ferramenta, para qualquer linguagem, e para gente também.
+#
+# O commit que o próprio `pre-push` faz para publicar o log usa `--no-verify` e
+# não passa por aqui — é a única escrita legítima.
+if [ -z "${PERMITIR_REPARO_DE_FATO:-}" ]; then
+  fatos="$(git diff --cached --name-only --diff-filter=ACMRD | grep '^05 - Registros/' || true)"
+  if [ -n "$fatos" ]; then
+    {
+      echo "❌ Commit abortado: este commit altera o log de fatos à mão."
+      echo
+      printf '%s\n' "$fatos" | sed 's/^/  /'
+      echo
+      echo "05 - Registros/ é o log de fatos: escrito só pelos hooks, via"
+      echo "scripts/registrar-fato.sh. A procedência é o que dá valor ao registro,"
+      echo "e ela não sobrevive a edição manual."
+      echo
+      echo "Se a narrativa está errada, corrija em 02 - Atualizações Diárias/ —"
+      echo "o fato fica como está."
+      echo
+      echo "Se o log está genuinamente corrompido (hash órfão depois de um"
+      echo "rebase, linha duplicada por hook) e você sabe o que está fazendo:"
+      echo
+      echo "  PERMITIR_REPARO_DE_FATO=1 git commit"
+      echo
+      echo "Use isso para reparo, nunca para escrever fato novo."
+    } >&2
+    exit 1
+  fi
+fi
+
+# ── Markdown derivado dos .pages ─────────────────────────────────────────────
+[ -n "${SKIP_PAGES:-}" ] && exit 0
+
+# O bash do macOS é o 3.2 — sem mapfile. Lê a lista linha a linha.
+# Um .pages pode ser um bundle (diretório): nesse caso o Git versiona os
+# arquivos internos, e os caminhos são "X.pages/Index.zip". O sed reduz ambos
+# os formatos à raiz do documento.
+alterados="$(git diff --cached --name-only --diff-filter=ACM \
+  | sed -n 's|\(.*\.pages\)\(/.*\)\{0,1\}$|\1|p' | sort -u)"
+[ -z "$alterados" ] && exit 0
+
+echo "Atualizando Markdown derivado dos .pages…"
+printf '%s\n' "$alterados" | while IFS= read -r p; do
+  [ -n "$p" ] || continue
+  "$raiz/scripts/pages-export.sh" "$raiz/$p" >/dev/null 2>&1 || true
+  md="$raiz/${p%.pages}.md"
+  [ -f "$md" ] && git add "$md"
+  prev="$raiz/${p%.pages} (prévia).jpg"
+  [ -f "$prev" ] && git add "$prev"
+done
+exit 0

@@ -1,0 +1,23 @@
+# Log de fatos: append-only, escrito por hooks, lido por script.
+# merge=union une os dois lados sem nunca gerar conflito — essencial com 5 pessoas
+# commitando no mesmo dia. Cada linha carrega hora + autor + SHA, então uma
+# duplicata exata é praticamente impossível.
+"05 - Registros/**/*.md" merge=union
+
+# NÃO aplicar merge=union no diário, no roadmap ou nas tarefas:
+# ali o conflito é informativo e deve ser resolvido por uma pessoa.
+
+# .pages é um zip opaco (protobuf comprimido). Sem merge, sem diff textual —
+# o diff de verdade acontece no .md derivado ao lado.
+*.pages binary
+*.key binary
+*.numbers binary
+
+# Normalizar quebras de linha em texto
+*.md text eol=lf
+*.base text eol=lf
+*.sh text eol=lf
+*.json text eol=lf
+
+# Bundles .pages são diretórios: o conteúdo interno também é opaco.
+*.pages/** binary
