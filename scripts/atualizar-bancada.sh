@@ -51,6 +51,13 @@ if [ -d "$destino/Contents" ]; then
   versao_local=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$destino/Contents/Info.plist" 2>/dev/null || echo "0.0.0")
 fi
 
+# Até a v0.4.0, todo build local saía carimbado como 1.0 — número que nenhuma
+# release teve. Lido como versão, ele passa na frente de qualquer 0.x e trava a
+# máquina para sempre; lido pelo que é, é build sem versão, igual ao 0.0.0.
+if [ "$versao_local" = "1.0" ]; then
+  versao_local="0.0.0"
+fi
+
 # Comparação semântica: só atualiza se a versão remota for estritamente superior à local
 if [ -n "$versao_local" ] && [ "$versao_local" != "0.0.0" ]; then
   maior=$(printf '%s\n%s\n' "$versao_local" "$versao_remota" | sort -V | tail -n 1)

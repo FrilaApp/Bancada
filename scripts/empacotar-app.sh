@@ -26,8 +26,17 @@ mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BINARIO" "$APP/Contents/MacOS/Bancada"
 cp scripts/Info.plist "$APP/Contents/Info.plist"
 
-# Sem versão explícita, vale o 1.0/1 do Info.plist versionado — o build local
-# não precisa inventar número.
+# Sem versão explícita, o build local se identifica pela tag mais próxima:
+# `0.4.0` exatamente na tag, `0.4.0-2-g1a2b3c4` dois commits depois, com
+# `-dirty` se houver mudança não commitada. É o que deixa o atualizador
+# comparar: enquanto todo build local saía como 1.0, ele parecia mais novo que
+# qualquer release 0.x e a máquina nunca mais recebia atualização. Sem tag à
+# vista, vale o 0.0.0 do Info.plist, que o atualizador lê como "sem versão".
+if [ -z "$VERSAO" ]; then
+  VERSAO=$(git describe --tags --match 'v[0-9]*' --dirty 2>/dev/null || true)
+  VERSAO="${VERSAO#v}"
+fi
+
 if [ -n "$VERSAO" ]; then
   # CFBundleVersion só aceita dígitos e pontos — um "1.0.0-rc1" faz o macOS
   # tratar o bundle como malformado. A versão legível fica na outra chave.
