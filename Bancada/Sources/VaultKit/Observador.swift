@@ -1,5 +1,15 @@
 import Foundation
 
+// FSEvents vem de CoreServices, que só existe em plataformas Apple. Este é o
+// único arquivo do VaultKit que não é Foundation puro — e é justamente o que
+// permite ao resto do módulo compilar em Linux, onde o CI roda o
+// `bancada-indice` para gerar o site.
+//
+// O guard não deixa nada inalcançável no app: quem consome `ObservadorDeVault`
+// é `Sources/Bancada/EstadoDaBancada.swift`, que só existe no alvo macOS.
+#if canImport(CoreServices)
+import CoreServices
+
 /// Avisa quando algo muda dentro do vault.
 ///
 /// Existe por causa do fluxo real do doc-harness: os hooks do Git escrevem em
@@ -90,3 +100,5 @@ public final class ObservadorDeVault {
         fila.asyncAfter(deadline: .now() + pausa, execute: trabalho)
     }
 }
+
+#endif

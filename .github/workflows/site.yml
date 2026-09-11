@@ -1,0 +1,137 @@
+# Publica o site de leitura do vault, para mentores e avaliadores que não vão
+# instalar app nenhum.
+#
+# Desde a unificação dos três repositórios, o conteúdo (`doc-harness/`) e quem
+# sabe lê-lo (`Bancada/`) vivem lado a lado. Isso simplificou o gatilho: era
+# preciso um `repository_dispatch` e um token pessoal para atravessar de um
+# repositório ao outro, e agora basta `on: push`.
+#
+# Roda em Linux, e não no macos-15 do release.yml, por causa de aritmética: o
+# runner macOS conta minutos a 10x, e com o ritmo real do vault — entre 21 e 50
+# commits por dia — o orçamento do plano free acabaria em dois dias. É esse
+# número que motivou extrair o `bancada-indice` do binário do app.
+name: Site
+
+on:
+  push:
+    branches: [main]
+    paths:
+      # O que muda o site é o vault e o leitor. Mexer no ActionShelf ou no
+      # README da raiz não muda uma linha publicada, e cada build desses sai do
+      # orçamento de minutos.
+      - 'doc-harness/**'
+      - 'Bancada/Sources/**'
+      - 'Bancada/Package.swift'
+      - 'Bancada/scripts/**'
+      - 'Bancada/tokens.json'
+      - '.github/workflows/site.yml'
+  pull_request:
+    paths:
+      - 'Bancada/Sources/**'
+      - 'Bancada/Tests/**'
+      - 'Bancada/Package.swift'
+      - 'Bancada/scripts/**'
+      - '.github/workflows/site.yml'
+  workflow_dispatch:
+
+# Uma rajada de dez pushes vira um build só. Sem isso, um `/entrar` que empurra
+# quinze commits de uma vez enfileiraria quinze builds para publicar quinze
+# vezes o mesmo estado final.
+#
+# `cancel-in-progress: true` — oposto do release.yml, e de propósito: lá cada
+# tag é um artefato distinto que precisa existir; aqui só o último estado do
+# vault importa, e um build atropelado não perde nada.
+concurrency:
+  group: site-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    container: swift:6.2
+
+    defaults:
+      run:
+        working-directory: Bancada
+
+    env:
+      # Lido em `if:` mais abaixo. O contexto `secrets` não é acessível
+      # diretamente numa condição de passo, então ele desce por aqui.
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+    steps:
+      # Um checkout só, e o vault vem junto. Era aqui que morava a necessidade
+      # de um token pessoal, quando `doc-harness` era outro repositório.
+      - uses: actions/checkout@v4
+
+      # O gerador é Node puro, sem uma única dependência de npm — e a imagem
+      # oficial do Swift não traz Node.
+      - name: Instalar o Node
+        run: |
+          apt-get update -qq
+          apt-get install -y --no-install-recommends nodejs
+          node --version
+
+      - name: Cachear o .build
+        uses: actions/cache@v4
+        with:
+          path: Bancada/.build
+          key: ${{ runner.os }}-swift-${{ hashFiles('Bancada/Package.swift', 'Bancada/Sources/**/*.swift') }}
+          restore-keys: ${{ runner.os }}-swift-
+
+      # A primeira vez que esta suíte roda fora do macOS. É o que prova que o
+      # guard de CoreServices no Observador está correto — e o que quebraria se
+      # alguém acrescentasse ao VaultKit uma dependência de framework Apple.
+      - name: Rodar os testes
+        run: swift test
+
+      - name: Compilar o bancada-indice
+        run: swift build -c release --product bancada-indice
+
+      # O portão. Sai com 2 se há nota fora da convenção ou linha de registro
+      # fora do formato dos hooks; o build falha e o site anterior continua no
+      # ar. Publicar um registro que se contradiz é pior que publicar tarde.
+      - name: Verificar o vault
+        run: .build/release/bancada-indice --verificar ../doc-harness
+
+      - name: Gerar o site
+        env:
+          BANCADA_BIN: .build/release/bancada-indice
+        run: node scripts/gerar-site.js ../doc-harness site
+
+      # Sempre sobe, publique-se ou não: é como se confere o resultado sem
+      # depender de host nenhum.
+      - name: Guardar o site como artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: Bancada/site
+          retention-days: 14
+
+      # Um PR valida o build; publicar é do main. Sem esta condição, abrir um PR
+      # publicaria o vault inteiro por engano.
+      - name: Publicar na Cloudflare Pages
+        if: env.CLOUDFLARE_API_TOKEN != '' && github.event_name != 'pull_request'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: Bancada
+          command: pages deploy site --project-name=bancada --branch=main
+
+      - name: Dizer o que aconteceu
+        if: always()
+        run: |
+          {
+            echo "### Build do site"
+            echo ""
+            echo "- Páginas geradas: $(find site -name '*.html' 2>/dev/null | wc -l)"
+            echo "- Versão do conteúdo: \`$(cat site/versao.json 2>/dev/null)\`"
+            if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+              echo "- Publicação: ⏭️ falta o secret \`CLOUDFLARE_API_TOKEN\`"
+            elif [ "${{ github.event_name }}" = "pull_request" ]; then
+              echo "- Publicação: ⏭️ PR valida o build, publicar é do main"
+            else
+              echo "- Publicação: ✅ https://bancada-buu.pages.dev"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

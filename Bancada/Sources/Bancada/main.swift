@@ -1,6 +1,7 @@
 import SwiftUI
 import AppKit
 import DesignSystem
+import NucleoCLI
 
 /// Ponto de entrada.
 ///
@@ -137,6 +138,10 @@ final class DelegadoDoApp: NSObject, NSApplicationDelegate {
 }
 
 // Modos de linha de comando: leem o vault e saem, sem abrir janela.
+//
+// A implementação vive em `NucleoCLI`, compartilhada com o executável
+// `bancada-indice` que o CI compila em Linux. O despacho fica aqui para que
+// `./Bancada --indice` continue funcionando exatamente como sempre funcionou.
 let caminhoPedido = CommandLine.arguments.dropFirst().first { !$0.hasPrefix("--") }
 
 if CommandLine.arguments.contains("--verificar") {
