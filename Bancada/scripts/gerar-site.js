@@ -39,6 +39,7 @@ function main() {
 
   const vault = path.resolve(posicionais[0] || path.join(RAIZ_PROJETO, '..', 'doc-harness'));
   const indice = lerIndice(vault);
+  avisarSobreTiposNaoPublicados(indice);
   const tokens = JSON.parse(fs.readFileSync(path.join(RAIZ_PROJETO, 'tokens.json'), 'utf8'));
 
   // Modo página única: um HTML só, para publicar onde só cabe um arquivo —
@@ -105,11 +106,45 @@ function lerIndice(vault) {
 // Ordem de leitura para um mentor: o desafio primeiro, o log por último.
 const SECOES = [
   { tipo: 'cbl-desafio',       titulo: 'Desafio' },
+  // Logo depois do desafio porque responde a pergunta seguinte de quem acabou
+  // de ler o que o time se propôs a fazer: até quando.
+  { tipo: 'agenda',            titulo: 'Agenda' },
   { tipo: 'roadmap',           titulo: 'Roadmap' },
   { tipo: 'atualizacao-diaria', titulo: 'Diário' },
   { tipo: 'documento-derivado', titulo: 'Documentos' },
   { tipo: 'design',            titulo: 'Design' },
 ];
+
+/// Avisa quando um tipo de nota existe no vault mas não chega ao site.
+///
+/// Escrito depois de a `Agenda - C18.md` ficar quatro dias fora do site sem
+/// ninguém notar: o tipo `agenda` foi criado no vault, `SECOES` não mudou, e a
+/// nota simplesmente não apareceu. Nenhum erro, nenhuma página vazia — some.
+///
+/// Esse é o modo de falha ruim num site cuja premissa é que o registro está
+/// completo. Um mentor não tem como saber que falta alguma coisa.
+function avisarSobreTiposNaoPublicados(indice) {
+  // Tipos que não entram em SECOES por decisão, e não por esquecimento.
+  const tratadosEmOutroLugar = new Set([
+    'tarefa',    // tem página própria (tarefas.html)
+    'registro',  // idem (registros.html)
+    'indice',    // listas de wikilinks que só fazem sentido no Obsidian
+    'home',      // a capa do site cumpre esse papel
+  ]);
+
+  const publicados = new Set(SECOES.map((s) => s.tipo));
+  const orfaos = [...new Set(indice.notas.map((n) => n.tipo))]
+    .filter((t) => !publicados.has(t) && !tratadosEmOutroLugar.has(t));
+
+  if (!orfaos.length) return;
+
+  console.warn(`\n⚠︎  ${orfaos.length} tipo(s) de nota fora do site:`);
+  for (const tipo of orfaos) {
+    const quantas = indice.notas.filter((n) => n.tipo === tipo).length;
+    console.warn(`      ${tipo} — ${quantas} nota(s) não publicada(s)`);
+  }
+  console.warn('    Acrescente em SECOES, ou em `tratadosEmOutroLugar` se for de propósito.\n');
+}
 
 class Site {
   constructor(indice, tokens, vault, destino, paginaUnica = false) {
