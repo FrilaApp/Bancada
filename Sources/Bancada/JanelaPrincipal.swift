@@ -30,11 +30,10 @@ struct JanelaPrincipal: View {
 
     private var barraLateral: some View {
         List(selection: selecao) {
-            ForEach(Secao.conteudo) { secao in
+            ForEach(Secao.allCases) { secao in
                 linha(secao)
             }
         }
-        .safeAreaInset(edge: .bottom, spacing: 0) { rodape }
     }
 
     private var selecao: Binding<Secao?> {
@@ -65,6 +64,7 @@ struct JanelaPrincipal: View {
         case .trabalho:   return vault.tarefas.count
         case .diario:     return estado.diarios.count
         case .acervo:     return vault.midias.count
+        case .onboarding: return 0
         // Desvio invisível é o que corrói a confiança no registro: este
         // distintivo é o único que se quer sempre em zero.
         case .ajustes:    return vault.invalidas.count + vault.fatosNaoReconhecidos.count
@@ -81,37 +81,33 @@ struct JanelaPrincipal: View {
         return secao == .ajustes ? t.foregroundColor(cores.aviso) : t
     }
 
-    /// Ajustes fica no pé da barra lateral, fora da lista de seções: é sobre o
-    /// app, não sobre o vault, e é onde o macOS ensina a procurar por
-    /// configuração. Continua sendo uma `Secao` — só não disputa espaço com o
-    /// conteúdo.
-    ///
-    /// É uma `List` de uma linha só, e não um botão: assim a seleção, o recuo e
-    /// o realce são os mesmos das seções acima, sem ninguém reimplementar
-    /// nenhum dos três.
-    private var rodape: some View {
-        VStack(spacing: 0) {
-            Divisor()
-            List(selection: selecao) {
-                linha(.ajustes)
-            }
-            .scrollDisabled(true)
-            .frame(height: DS.BarraLateral.alturaDoRodape)
-        }
-    }
+
 
     // MARK: - Conteúdo
 
     @ViewBuilder
     private var conteudo: some View {
-        if let erro = estado.erro {
+        if estado.secao == .onboarding {
+            TelaOnboarding(estado: estado, aoEscolherPasta: escolherPasta)
+        } else if estado.secao == .ajustes {
+            TelaAjustes(estado: estado, aoEscolherPasta: escolherPasta)
+        } else if let erro = estado.erro {
             Vazio(simbolo: "exclamationmark.triangle", titulo: "Não deu para ler o vault", detalhe: erro)
         } else if estado.vault == nil {
-            Vazio(
-                simbolo: "folder.badge.questionmark",
-                titulo: "Nenhum vault aberto",
-                detalhe: "Escolha a pasta do doc-harness — a mesma que você abre no Obsidian."
-            )
+            VStack(spacing: DS.Espaco.md) {
+                Vazio(
+                    simbolo: "folder.badge.questionmark",
+                    titulo: "Nenhum vault aberto",
+                    detalhe: "Escolha a pasta do doc-harness — a mesma que você abre no Obsidian."
+                )
+                HStack(spacing: DS.Espaco.sm) {
+                    Button("Escolher vault…", action: escolherPasta)
+                    Button("Ver Guia de Onboarding") {
+                        estado.secao = .onboarding
+                    }
+                }
+                .controlSize(.small)
+            }
         } else {
             switch estado.secao {
             case .calendario:
@@ -122,8 +118,8 @@ struct JanelaPrincipal: View {
                 TelaDiario(diarios: estado.diarios, fatos: estado.vault?.fatos ?? [])
             case .acervo:
                 TelaAcervo(midias: estado.vault?.midias ?? [], vault: estado.vault)
-            case .ajustes:
-                TelaAjustes(estado: estado, aoEscolherPasta: escolherPasta)
+            case .onboarding, .ajustes:
+                EmptyView()
             }
         }
     }
@@ -218,3 +214,4 @@ struct JanelaPrincipal: View {
         estado.raiz = url
     }
 }
+

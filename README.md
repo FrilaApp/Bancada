@@ -99,6 +99,7 @@ As páginas levam `noindex, nofollow`. Isso pede a buscadores que não indexem, 
 | **Trabalho** | A tabela de tarefas (colunas ordenáveis, filtro por status) com os fatos logo abaixo. Selecionar uma tarefa mostra só os fatos que citam o ID dela; sem seleção, o log inteiro indentado por dia → tipo → grupo, com a repetição colapsada — cinco commits "Registra os fatos da sessão" viram um nó `5× … [20:21–22:05]`, que abre e mostra os cinco |
 | **Diário** | A narrativa do dia ao lado dos fatos que a sustentam — a regra de ouro do vault, verificável de relance |
 | **Acervo** | Imagens, vídeos, PDFs e `.pages`, cada um com miniatura de verdade. Selecionar um `.pages` traz o `.md` derivado no painel ao lado |
+| **Onboarding** | Guia passo a passo de setup para novos colaboradores: a arquitetura do ecossistema (tríade doc-harness, Bancada e automações), o catálogo completo de Slash Commands com cópia rápida e as regras inegociáveis do vault |
 | **Ajustes** | No pé da barra lateral, fora da lista de seções: qual pasta está aberta e quando foi lida; o resumo do conteúdo do vault; notas sem frontmatter válido e linhas de registro fora do formato dos hooks |
 
 A pasta aberta e a hora da última leitura ficam no centro do cabeçalho da janela, visíveis em qualquer seção — clicar abre a pasta no Finder. O relógio andando sozinho é o que prova que a janela não está mostrando um estado velho: o conteúdo vem do disco a cada leitura, nunca de cache, e os hooks escrevem no vault por fora do app.

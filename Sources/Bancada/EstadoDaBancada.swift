@@ -11,12 +11,11 @@ import DesignSystem
 /// saúde do vault, que é diagnóstico, não conteúdo. Fundir não tirou nenhuma
 /// capacidade — cada uma virou um recorte dentro da seção que a contém.
 enum Secao: String, CaseIterable, Identifiable {
-    case calendario, trabalho, diario, acervo, ajustes
+    case calendario, trabalho, diario, acervo, onboarding, ajustes
 
     var id: String { rawValue }
 
-    /// `Ajustes` fica separada no pé da lista: é sobre o app, não sobre o vault.
-    static var conteudo: [Secao] { allCases.filter { $0 != .ajustes } }
+    static var conteudo: [Secao] { allCases }
 
     var titulo: String {
         switch self {
@@ -24,6 +23,7 @@ enum Secao: String, CaseIterable, Identifiable {
         case .trabalho:   return "Trabalho"
         case .diario:     return "Diário"
         case .acervo:     return "Acervo"
+        case .onboarding: return "Onboarding"
         case .ajustes:    return "Ajustes"
         }
     }
@@ -34,6 +34,7 @@ enum Secao: String, CaseIterable, Identifiable {
         case .trabalho:   return "hammer"
         case .diario:     return "calendar.day.timeline.left"
         case .acervo:     return "square.grid.2x2"
+        case .onboarding: return "signpost.right.and.left"
         case .ajustes:    return "gearshape"
         }
     }
