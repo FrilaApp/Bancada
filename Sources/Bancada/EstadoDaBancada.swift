@@ -3,6 +3,10 @@ import Observation
 import VaultKit
 import DesignSystem
 
+extension Notification.Name {
+    static let abrirAjustes = Notification.Name("com.blendops.bancada.abrirAjustes")
+}
+
 /// As seções da barra lateral.
 ///
 /// São menos que as telas que existiam antes porque três pares contavam a
@@ -11,7 +15,7 @@ import DesignSystem
 /// saúde do vault, que é diagnóstico, não conteúdo. Fundir não tirou nenhuma
 /// capacidade — cada uma virou um recorte dentro da seção que a contém.
 enum Secao: String, CaseIterable, Identifiable {
-    case calendario, trabalho, diario, acervo, onboarding, ajustes
+    case calendario, trabalho, diario, acervo, onboarding
 
     var id: String { rawValue }
 
@@ -24,7 +28,6 @@ enum Secao: String, CaseIterable, Identifiable {
         case .diario:     return "Diário"
         case .acervo:     return "Acervo"
         case .onboarding: return "Onboarding"
-        case .ajustes:    return "Ajustes"
         }
     }
 
@@ -35,7 +38,6 @@ enum Secao: String, CaseIterable, Identifiable {
         case .diario:     return "calendar.day.timeline.left"
         case .acervo:     return "square.grid.2x2"
         case .onboarding: return "signpost.right.and.left"
-        case .ajustes:    return "gearshape"
         }
     }
 }
