@@ -16,6 +16,10 @@ import DesignSystem
 final class DelegadoDoApp: NSObject, NSApplicationDelegate {
     private var janela: NSWindow?
 
+    @objc func abrirAjustes(_ sender: Any?) {
+        NotificationCenter.default.post(name: .abrirAjustes, object: nil)
+    }
+
     func applicationDidFinishLaunching(_ notificacao: Notification) {
         // Antes da janela existir: aplicar depois faria a janela abrir com a
         // aparência do sistema e trocar à vista, o que parece defeito.
@@ -82,6 +86,10 @@ final class DelegadoDoApp: NSObject, NSApplicationDelegate {
         menuApp.addItem(withTitle: "Sobre \(nome)",
                         action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)),
                         keyEquivalent: "")
+        menuApp.addItem(.separator())
+        menuApp.addItem(withTitle: "Ajustes…",
+                        action: #selector(abrirAjustes(_:)),
+                        keyEquivalent: ",")
         menuApp.addItem(.separator())
         menuApp.addItem(withTitle: "Ocultar \(nome)",
                         action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")

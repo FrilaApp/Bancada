@@ -6,6 +6,7 @@ import DesignSystem
 struct JanelaPrincipal: View {
     @Environment(\.cores) private var cores
     @State private var estado = EstadoDaBancada()
+    @State private var mostrandoAjustes = false
 
     var body: some View {
         NavigationSplitView {
@@ -24,6 +25,9 @@ struct JanelaPrincipal: View {
                 .toolbar { toolbar }
         }
         .background(cores.fundo)
+        .onReceive(NotificationCenter.default.publisher(for: .abrirAjustes)) { _ in
+            mostrandoAjustes.toggle()
+        }
     }
 
     // MARK: - Barra lateral
@@ -34,7 +38,88 @@ struct JanelaPrincipal: View {
                 linha(secao)
             }
         }
-        .safeAreaInset(edge: .bottom, spacing: 0) { rodape }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            barraUtilitaria
+        }
+    }
+
+    /// Barra utilitária no rodapé da barra lateral.
+    ///
+    /// Separa a navegação principal (conteúdo) das ferramentas de sistema (ajustes e status).
+    /// À esquerda: indicador sutil de integridade do vault.
+    /// À direita: botão de engrenagem para Ajustes & Diagnóstico (⌘,).
+    private var barraUtilitaria: some View {
+        VStack(spacing: 0) {
+            Divisor()
+            HStack(spacing: DS.Espaco.xs) {
+                indicadorDeStatus
+                Spacer(minLength: DS.Espaco.xs)
+                botaoAjustes
+            }
+            .padding(.horizontal, DS.Espaco.sm)
+            .frame(height: DS.BarraLateral.alturaDoRodape)
+            .background(cores.cromo)
+        }
+    }
+
+    @ViewBuilder
+    private var indicadorDeStatus: some View {
+        Button {
+            mostrandoAjustes.toggle()
+        } label: {
+            HStack(spacing: DS.Espaco.xs + 2) {
+                Circle()
+                    .fill(corDoStatus)
+                    .frame(width: 7, height: 7)
+                Text(textoDoStatus)
+                    .font(DS.Tipografia.detalhe)
+                    .foregroundStyle(cores.textoSutil)
+                    .lineLimit(1)
+            }
+            .padding(.horizontal, DS.Espaco.xs)
+            .padding(.vertical, DS.Espaco.xs)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(BotaoDoSistema(.peca, raio: DS.Raio.sm))
+        .help(ajudaDoStatus)
+    }
+
+    private var botaoAjustes: some View {
+        Button {
+            mostrandoAjustes.toggle()
+        } label: {
+            Image(systemName: "gearshape")
+                .font(DS.Icone.fonte(DS.Icone.medio))
+                .foregroundStyle(mostrandoAjustes ? cores.acento : cores.textoSutil)
+                .frame(width: 26, height: 26)
+        }
+        .buttonStyle(BotaoDoSistema(.peca, raio: DS.Raio.sm))
+        .help("Ajustes & Diagnóstico (⌘,)")
+        .keyboardShortcut(",", modifiers: .command)
+        .popover(isPresented: $mostrandoAjustes, arrowEdge: .trailing) {
+            popoverAjustes
+        }
+    }
+
+    private var corDoStatus: Color {
+        guard estado.vault != nil else { return cores.textoSutil }
+        return alertasDoVault > 0 ? cores.aviso : cores.status(.concluida)
+    }
+
+    private var textoDoStatus: String {
+        guard estado.vault != nil else { return "Sem vault" }
+        if alertasDoVault > 0 {
+            return alertasDoVault == 1 ? "1 aviso" : "\(alertasDoVault) avisos"
+        }
+        return "Vault íntegro"
+    }
+
+    private var ajudaDoStatus: String {
+        guard estado.vault != nil else { return "Nenhum vault aberto" }
+        if alertasDoVault > 0 {
+            return "\(alertasDoVault) alerta(s) de consistência no vault — clique para ver diagnósticos"
+        }
+        return "Vault íntegro e consistente — clique para abrir Ajustes e Diagnóstico"
     }
 
     private var selecao: Binding<Secao?> {
@@ -45,13 +130,6 @@ struct JanelaPrincipal: View {
     }
 
     /// Uma linha da barra lateral, do jeito que a `List` desenha.
-    ///
-    /// O Ajustes usa exatamente esta função, e é essa a correção: antes ele era
-    /// um botão desenhado à mão — fundo translúcido, texto no acento, borda —
-    /// convivendo na mesma coluna com a seleção nativa azul das outras quatro.
-    /// Dois vocabulários de seleção lado a lado, e um recuo de ~9px que não
-    /// batia com as linhas de cima. Alinhamento, seleção e realce agora vêm de
-    /// onde já vinham para as outras.
     private func linha(_ secao: Secao) -> some View {
         Label(secao.titulo, systemImage: secao.simbolo)
             .badge(distintivo(secao, comoTexto: true))
@@ -65,53 +143,44 @@ struct JanelaPrincipal: View {
         case .trabalho:   return vault.tarefas.count
         case .diario:     return estado.diarios.count
         case .acervo:     return vault.midias.count
-        // Desvio invisível é o que corrói a confiança no registro: este
-        // distintivo é o único que se quer sempre em zero.
-        case .ajustes:    return vault.invalidas.count + vault.fatosNaoReconhecidos.count
+        case .onboarding: return 0
         }
     }
 
-    /// O distintivo como `Text`, para o de Ajustes poder falar em cor de aviso
-    /// sem sair do desenho nativo da linha. Zero vira `nil` — a `List` esconde,
-    /// e zero é justamente o estado que não pede atenção.
     private func distintivo(_ secao: Secao, comoTexto: Bool) -> Text? {
         let n = distintivo(secao)
         guard n > 0 else { return nil }
-        let t = Text("\(n)")
-        return secao == .ajustes ? t.foregroundColor(cores.aviso) : t
+        return Text("\(n)")
     }
 
-    /// Ajustes fica no pé da barra lateral, fora da lista de seções: é sobre o
-    /// app, não sobre o vault, e é onde o macOS ensina a procurar por
-    /// configuração. Continua sendo uma `Secao` — só não disputa espaço com o
-    /// conteúdo.
-    ///
-    /// É uma `List` de uma linha só, e não um botão: assim a seleção, o recuo e
-    /// o realce são os mesmos das seções acima, sem ninguém reimplementar
-    /// nenhum dos três.
-    private var rodape: some View {
-        VStack(spacing: 0) {
-            Divisor()
-            List(selection: selecao) {
-                linha(.ajustes)
-            }
-            .scrollDisabled(true)
-            .frame(height: DS.BarraLateral.alturaDoRodape)
-        }
+    private var alertasDoVault: Int {
+        guard let vault = estado.vault else { return 0 }
+        return vault.invalidas.count + vault.fatosNaoReconhecidos.count
     }
 
     // MARK: - Conteúdo
 
     @ViewBuilder
     private var conteudo: some View {
-        if let erro = estado.erro {
+        if estado.secao == .onboarding {
+            TelaOnboarding(estado: estado, aoEscolherPasta: escolherPasta)
+        } else if let erro = estado.erro {
             Vazio(simbolo: "exclamationmark.triangle", titulo: "Não deu para ler o vault", detalhe: erro)
         } else if estado.vault == nil {
-            Vazio(
-                simbolo: "folder.badge.questionmark",
-                titulo: "Nenhum vault aberto",
-                detalhe: "Escolha a pasta do doc-harness — a mesma que você abre no Obsidian."
-            )
+            VStack(spacing: DS.Espaco.md) {
+                Vazio(
+                    simbolo: "folder.badge.questionmark",
+                    titulo: "Nenhum vault aberto",
+                    detalhe: "Escolha a pasta do doc-harness — a mesma que você abre no Obsidian."
+                )
+                HStack(spacing: DS.Espaco.sm) {
+                    Button("Escolher vault…", action: escolherPasta)
+                    Button("Ver Guia de Onboarding") {
+                        estado.secao = .onboarding
+                    }
+                }
+                .controlSize(.small)
+            }
         } else {
             switch estado.secao {
             case .calendario:
@@ -122,8 +191,8 @@ struct JanelaPrincipal: View {
                 TelaDiario(diarios: estado.diarios, fatos: estado.vault?.fatos ?? [])
             case .acervo:
                 TelaAcervo(midias: estado.vault?.midias ?? [], vault: estado.vault)
-            case .ajustes:
-                TelaAjustes(estado: estado, aoEscolherPasta: escolherPasta)
+            case .onboarding:
+                EmptyView()
             }
         }
     }
@@ -153,19 +222,21 @@ struct JanelaPrincipal: View {
         }
     }
 
-    /// Nome da pasta aberta e a hora da última leitura.
+    /// Nome da pasta aberta, a hora da última leitura e revelação no Finder.
     ///
-    /// O horário não é enfeite: o conteúdo vem do disco a cada leitura, nunca
-    /// de cache, e os hooks escrevem no vault por fora do app. Ver o relógio
-    /// andar sozinho é o que prova que a janela não está mostrando um estado
-    /// velho. Clicar abre a pasta no Finder.
+    /// Clicar na cápsula revela o vault no Finder (ou abre o seletor de pasta se nenhum estiver aberto).
+    /// Se houver notas ou registros fora da convenção, a cápsula acusa com distintivo de aviso.
     @ViewBuilder
     private var vaultNoCabecalho: some View {
-        if let raiz = estado.raiz {
-            Button {
+        Button {
+            if let raiz = estado.raiz {
                 NSWorkspace.shared.activateFileViewerSelecting([raiz])
-            } label: {
-                HStack(spacing: DS.Espaco.xs + 2) {
+            } else {
+                escolherPasta()
+            }
+        } label: {
+            HStack(spacing: DS.Espaco.xs + 2) {
+                if let raiz = estado.raiz {
                     Image(systemName: "folder")
                         .font(DS.Icone.fonte(DS.Icone.pequeno, peso: .medium))
                         .foregroundStyle(cores.textoSutil)
@@ -182,28 +253,75 @@ struct JanelaPrincipal: View {
                             .foregroundStyle(cores.textoSutil)
                             .monospacedDigit()
                     }
+                    if alertasDoVault > 0 {
+                        HStack(spacing: 2) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .font(DS.Icone.fonte(DS.Icone.micro))
+                            Text("\(alertasDoVault)")
+                                .font(DS.Tipografia.detalhe)
+                                .fontWeight(.semibold)
+                                .monospacedDigit()
+                        }
+                        .foregroundStyle(cores.aviso)
+                        .padding(.horizontal, DS.Espaco.xs + 2)
+                        .padding(.vertical, 1)
+                        .background(cores.aviso.opacity(DS.Veu.sutil), in: Capsule())
+                    }
+                } else {
+                    Image(systemName: "folder.badge.questionmark")
+                        .font(DS.Icone.fonte(DS.Icone.pequeno))
+                        .foregroundStyle(cores.textoSutil)
+                    Text("Nenhum vault aberto")
+                        .font(DS.Tipografia.corpo)
+                        .foregroundStyle(cores.textoSutil)
                 }
-                .padding(.horizontal, DS.Espaco.md)
-                .padding(.vertical, DS.Espaco.xs)
-            }
-            // `.plain` tirava o realce nativo sem repor nada — o botão ficava
-            // morto sob o ponteiro, que é o que a revisão de 10/09 eliminou do
-            // app. O raio de pílula faz o realce acompanhar a cápsula.
-            .buttonStyle(BotaoDoSistema(.peca, raio: DS.Raio.pilula))
-            .help(raiz.path)
-            .accessibilityLabel("Mostrar o vault no Finder")
-        } else {
-            HStack(spacing: DS.Espaco.xs + 2) {
-                Image(systemName: "folder.badge.questionmark")
-                    .font(DS.Icone.fonte(DS.Icone.pequeno))
-                    .foregroundStyle(cores.textoSutil)
-                Text("Nenhum vault aberto")
-                    .font(DS.Tipografia.corpo)
-                    .foregroundStyle(cores.textoSutil)
             }
             .padding(.horizontal, DS.Espaco.md)
             .padding(.vertical, DS.Espaco.xs)
         }
+        .buttonStyle(BotaoDoSistema(.peca, raio: DS.Raio.pilula))
+        .help(estado.raiz != nil ? "Revelar pasta no Finder" : "Escolher pasta do vault")
+    }
+
+    private var popoverAjustes: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                HStack(spacing: DS.Espaco.xs + 2) {
+                    Image(systemName: "slider.horizontal.3")
+                        .font(DS.Icone.fonte(DS.Icone.pequeno, peso: .semibold))
+                        .foregroundStyle(cores.acento)
+                    Text("Ajustes do Sistema")
+                        .font(DS.Tipografia.secao)
+                        .foregroundStyle(cores.texto)
+                }
+
+                Spacer()
+
+                Button {
+                    mostrandoAjustes = false
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(DS.Icone.fonte(DS.Icone.medio))
+                        .foregroundStyle(cores.textoSutil)
+                }
+                .buttonStyle(.plain)
+                .help("Fechar (Esc)")
+            }
+            .padding(.horizontal, DS.Espaco.lg)
+            .padding(.top, DS.Espaco.md)
+            .padding(.bottom, DS.Espaco.xs)
+
+            Divisor()
+
+            TelaAjustes(estado: estado, aoEscolherPasta: {
+                mostrandoAjustes = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    escolherPasta()
+                }
+            })
+        }
+        .frame(width: 480, height: 530)
+        .background(cores.fundo)
     }
 
     private func escolherPasta() {
@@ -218,3 +336,4 @@ struct JanelaPrincipal: View {
         estado.raiz = url
     }
 }
+
