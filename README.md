@@ -1,4 +1,4 @@
-# FRILA
+# BANCADA
 
 Monorepo unificando os projetos da organização BlendOps, mantidos como módulos independentes (cada um preserva seu histórico de commits original):
 
