@@ -1,7 +1,7 @@
 ---
 tipo: tarefa
 id: T-0006
-status: a-fazer
+status: concluida
 responsavel: [Cauê Carneiro, Júlia Clovandi]
 desafio: C18
 data_criacao: 2026-09-10
@@ -20,10 +20,10 @@ A partir do acervo de telas capturadas da App Store e de plataformas ativas no m
 ## Feito quando
 - [x] Imagens da pesquisa de concorrentes catalogadas e versionadas no vault em `04 - Tarefas/Anexos/`.
 - [x] Mapeamento inicial dos 9 aplicativos (funções, ratings, modelos de monetização e tração).
-- [ ] Validação aprofundada por Cauê Carneiro e Júlia Clovandi da matriz de proposta de valor e diferenciação do Frila frente aos concorrentes diretos (Closeer, eFreela, Estaff, Freela Serviços, Switch).
-- [ ] Investigação sobre como cada plataforma resolve o problema de **confiança imediata** (antecedentes, no-show, avaliação mútua e pontualidade).
-- [ ] Mapeamento da estratégia de monetização do Frila (taxa por turno preenchido vs. assinatura vs. modelo de moedas do GetNinjas).
-- [ ] Integração dos insights com a seção de Pesquisa e Atividades Norteadoras do documento do C18.
+- [x] Validação aprofundada por Cauê Carneiro e Júlia Clovandi da matriz de proposta de valor e diferenciação do Frila frente aos concorrentes diretos (Closeer, eFreela, Estaff, Freela Serviços, Switch).
+- [x] Investigação sobre como cada plataforma resolve o problema de **confiança imediata** (antecedentes, no-show, avaliação mútua e pontualidade).
+- [x] Mapeamento da estratégia de monetização do Frila (taxa por turno preenchido vs. assinatura vs. modelo de moedas do GetNinjas).
+- [x] Integração dos insights com a seção de Pesquisa e Atividades Norteadoras do documento do C18.
 
 ---
 
@@ -128,6 +128,7 @@ Os concorrentes foram agrupados em três camadas estratégicas:
 3. **Validação de Modelo Econômico:** Simular se o Frila deve operar com comissão percentual sobre a diária paga pelo restaurante ou assinatura mensal para estabelecimentos com alta rotatividade.
 
 ## Notas
+- 2026-09-14 — Tarefa concluída: benchmarking consolidado e categorizado com mapeamento dos 9 concorrentes, matriz comparativa detalhada e direcionamento estratégico de produto para o Frila no C18.
 - Tarefa originada do levantamento de capturas da pasta `/Users/juclovandi/Downloads/Concorrentes`.
 - Todas as 9 imagens foram tratadas, renomeadas semanticamente e integradas ao acervo em `04 - Tarefas/Anexos/`.
 - Alinhada com a pergunta essencial de confiança em food service do C18.
