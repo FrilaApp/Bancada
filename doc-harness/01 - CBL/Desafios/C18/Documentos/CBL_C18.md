@@ -1,9 +1,9 @@
 ---
 tipo: documento-derivado
 origem: "01 - CBL/Desafios/C18/Documentos/CBL_C18.pages"
-hash_origem: 1671b003d412df8ccec7812d0c460c8e35e3a07c2522ef5d07c9bf46c15f0a08
-exportado_em: 2026-09-10T14:58
-exportado_por: Júlia Clovandi Vasconcelos 
+hash_origem: 9f18b7c5e3b5fd406d682d76e2bcb121d855987d8a6abae20baa77a31105cfcb
+exportado_em: 2026-09-15T11:44
+exportado_por: Cauê Carneiro
 conversao: ok
 tags: [documento]
 ---
@@ -42,7 +42,9 @@ Data:
 
 Links:
 
-FIgJam
+FigJam - Challenge 18
+
+Documentação do projeto - github.com/BlendOps/Frila
 
 Engage
 
@@ -50,11 +52,13 @@ Big idea Generation
 
 Big Idea:
 
-<Insira aqui uma foto do Brainstorming de big idea caso tenha feito>
+*<Insira aqui uma foto do Brainstorming de big idea caso tenha feito>*
 
 Milestone - Big Idea:
 
-<Insira aqui a big idea escolhida>
+Confiança entre desconhecidos.
+
+A big idea não é “trabalho freelancer” nem “food service”. É confiança: o que faz duas pessoas que nunca se viram combinarem um trabalho, uma aparecer e a outra pagar, sem contrato e sem intermediário. Escolhemos esse recorte porque foi onde a pesquisa convergiu. O trabalho avulso é só o contexto em que essa falta de confiança fica mais visível e mais cara.
 
 Essential Questioning
 
@@ -66,19 +70,23 @@ Qual a minha relação com a Big Idea do grupo?
 
 Como estabelecimentos de food service e profissionais freelancers podem confiar um no outro rápido o suficiente para cobrir uma vaga que abre e fecha em poucas horas?
 
-<Adicione mais perguntas>
+O que faz alguém confiar em um desconhecido quando não há tempo para verificar nada?
+
+Por que um histórico de trabalho que existe na cabeça das pessoas não existe em lugar nenhum que possa ser mostrado?
+
+Quando a informalidade deixa de ser conveniência e passa a ser risco para os dois lados?
+
+O que uma ferramenta precisa garantir para valer a troca por algo gratuito que todo mundo já usa?
 
 Milestone - Main Essential Question:
 
-<Insira aqui Essential Question que melhor direciona o grupo a um challenge statement>
+Como estabelecimentos de food service e profissionais freelancers podem confiar um no outro rápido o suficiente para cobrir uma vaga que abre e fecha em poucas horas?
 
-<Você pode fazer um mapa mental de challenges para gerar mais opções e refinar a versão final>
-
-Exemplo:
+Essa é a pergunta que melhor direciona o grupo, por três motivos. Ela nomeia as duas pontas, e não só o contratante. Ela carrega a restrição de tempo, que é o que separa esse problema de recrutamento comum. E ela não presume a solução: não diz aplicativo, não diz plataforma, não diz cadastro.
 
 Milestone - Challenge statement:
 
-<Insira aqui o challenge definido>
+Tornar possível que um estabelecimento e um profissional que nunca trabalharam juntos fechem um turno com confiança suficiente para os dois, em menos de uma hora, no Distrito Federal.
 
 Investigate
 
@@ -86,29 +94,65 @@ Ciclo exploratório - General Research
 
 Guiding questioning
 
-<Faça diversas perguntas, não existe pergunta errada. Liste todas, depois priorize e responda>
-
 Guiding Questions
 
 Resource
 
-Ex: Quais são as formas de solucionar o Challenge?
+Contratar para turno avulso é realmente difícil, ou é percepção nossa?
 
-*<Insira aqui a sua resposta>*
+É difícil e é crônico. 90% dos empresários de bares e restaurantes classificam a contratação como difícil ou muito difícil. Motivos declarados: falta de qualificação (64%), ausência de interessados nas vagas (61%), horários pouco atrativos (33%), alta disputa (23%) e migração para outras áreas (21%). Em cargos como sushiman, churrasqueiro e cozinheiro, 88% classificam a dificuldade como alta ou muito alta.
 
-Ex: Quem são as pessoas afetadas pelo meu challenge?
+Fonte
 
-*<Insira aqui a sua resposta>*
+Qual o tamanho do buraco que a rotatividade abre?
 
-<Adicione mais perguntas>
+Rotatividade de 73,49% entre dez/2024 e nov/2025. Na média, é como se cada bar ou restaurante trocasse a equipe inteira a cada 16 meses.
+
+Fonte
+
+O mercado de eventos é grande o bastante para sustentar um segundo segmento?
+
+R$ 25,33 bilhões movimentados só no primeiro bimestre de 2026, o maior valor da série histórica iniciada em 2019. O estoque de empregos formais do setor foi de 111.401 vínculos em 2019 para 205.538 em fevereiro de 2026, alta de 84,5%. Projeção de 143 mil novas vagas formais em 2026.
+
+Fonte
+
+Onde essa contratação acontece hoje?
+
+No WhatsApp. Ele está instalado em 98,3% dos smartphones brasileiros (Mobile Time/Opinion Box, 4.138 respondentes) e é o principal canal comercial de 82% dos pequenos negócios (Sebrae, Pulso 12ª edição, 8,2 mil ouvidos). Existem grupos de freela organizados por cidade, e as regras publicadas deles tratam só de conduta: nada sobre pagamento, comparecimento ou responsabilidade.
+
+Fonte
+
+Os grupos de WhatsApp garantem alguma coisa?
+
+Não. As regras publicadas de um grupo ativo de freelancer para bares e restaurantes proíbem conteúdo adulto, palavrão, menor de idade e link. Não há nenhuma regra sobre pagamento, comparecimento ou responsabilidade, e quem administra declaradamente não participa do pagamento nem do trabalho.
+
+Fonte
+
+O WhatsApp funciona mal?
+
+Não sabemos, e isso é importante admitir. Não encontramos nenhuma fonte independente medindo taxa de furo, calote ou insatisfação de quem contrata por grupo. O que existe é conteúdo de fornecedores de software vendendo o contrário do WhatsApp, que é fonte interessada. Ausência de garantia não é o mesmo que funcionar mal.
+
+*Sem fonte pública*
+
+Existe um vetor regulatório a favor ou contra?
+
+A favor, provavelmente. A PEC 221/2019, que acaba com a escala 6x1, passou na Câmara em 27/05/2026 e na CCJ do Senado em 02/09/2026, prevendo transição de 44 para 40 horas semanais. Com dois dias de folga, a cobertura de turno avulso tende a crescer. Modo de falha: a PEC ainda pode ser alterada no plenário e a transição gradual pode diluir o efeito por anos.
+
+Fonte
+
+O mercado tem dinheiro para pagar por uma solução?
+
+Tem faturamento, mas margem apertada. O setor faturou R$ 495 bilhões em 2025 contra R$ 455 bilhões em 2024. No DF, porém, 43% dos estabelecimentos tiveram lucro, 33% ficaram no equilíbrio e 21% no prejuízo, e 40% relatam inadimplência de clientes. Sensibilidade a preço tende a ser alta.
+
+Fonte
+
+Campanha política é mesmo um terceiro segmento viável?
+
+Existe volume e existe obrigação de registro. A Portaria TSE nº 444/2026 fixa limites de contratação de pessoal para militância: no DF começa em 300 pessoas e sobe uma a cada mil eleitores adicionais, valendo para a chapa inteira. Estourar o teto pode configurar corrupção eleitoral. Mas não encontramos nenhuma fonte descrevendo como essas pessoas são recrutadas e pagas na prática.
+
+Fonte
 
 Guiding Activities
-
-<São atividades que ajudam a responder as perguntas que não consigo resposta com pesquisas simples.>
-
-<Aqui você registra o planejamento e o resultado da atividade.>
-
-<Essa tabela é uma sugestão de organização. Vocês podem alterá-la para se adequar as necessidades das atividades do grupo.>
 
 Atividade
 
@@ -118,45 +162,93 @@ Recursos
 
 FeedBack
 
-*<O que foi feito - Macro atividade>*
+Desk research sobre o problema, com separação explícita entre dado e hipótese
 
-*- <Micro atividade 01>*
+- Levantamento em fontes setoriais (Abrasel, ABRAPE, Sebrae, TSE)
 
-*- <Micro atividade 02>*
+- Definição de um sistema de marcação: Dado, Relato, Fonte interessada, [H] e Lacuna
 
-*<Insira aqui os resultados coletados na atividade>*
+- Registro obrigatório de link e data de acesso em toda afirmação
+
+12/09/2026
+
+Fontes setoriais públicas, buscador, registro em 01-O-PROBLEMA.md
+
+O sistema de marcação mudou o resultado da pesquisa. Ao obrigar cada frase a declarar sua origem, várias afirmações que o grupo já tratava como verdade caíram para hipótese. Três páginas (Reclame Aqui, TSE e Abrasel) bloqueiam acesso automatizado e obrigaram a usar cobertura de imprensa como fonte secundária, o que está sinalizado no texto.
 
 Síntese
 
-- <Principais insights encontrados durante a pesquisa>
+• Contratar é difícil, é crônico e o setor sabe disso. 90% dos empresários declaram dificuldade, e a rotatividade de 73,49% garante que o buraco se reabre sempre.
 
-<O grupo pode fazer um mural de achados para ir sintetizando todo o aprendizado do investigate>
+• O canal onde isso acontece hoje não é uma plataforma, é o WhatsApp, que tem custo zero, alcance quase universal e nenhuma fricção de cadastro. Qualquer solução compete com isso.
 
-Exemplo:
+• Não há medida independente de que o WhatsApp falhe. O que se verifica é que o canal não tem garantia embutida. Essa distinção virou regra do projeto.
+
+• A lacuna central, e a mais cara, é a frequência. Nenhuma fonte pública mede quantas vezes um estabelecimento fica sem alguém em cima da hora nem quanto isso custa. Esse número sustenta ou derruba a razão de ser do projeto, e só existe em campo.
 
 Milestone - Challenge Statement Refinado
 
-<Se, durante as pesquisas, vieram mais informações em que você possa refinar o challenge Statement - Opcional>
+O challenge statement original falava em resolver a dificuldade de contratar freelancers. A pesquisa mostrou que o problema não é de estoque de gente, e sim de confiança verificável, então o statement foi reescrito para nomear a confiança e a restrição de tempo em vez da contratação:
+
+Tornar possível que um estabelecimento e um profissional que nunca trabalharam juntos fechem um turno com confiança suficiente para os dois, em menos de uma hora, no Distrito Federal.
 
 Ciclo exploratório - Domain Research
 
 Guiding questioning
 
-<Faça diversas perguntas, não existe pergunta errada. Liste todas, depois priorize e responda>
-
 Guiding Questions
 
 Resource
 
-Adicione mais perguntas
+Quem são as pessoas afetadas pelo challenge?
+
+Três grupos de quem contrata: bares, restaurantes e cafeterias com equipe fixa enxuta; contratantes de evento (buffet, produtora, empresa de staff); e campanhas políticas. Do lado de quem trabalha: profissionais operacionais de gastronomia, eventos, varejo, logística, limpeza, beleza e pets.
+
+*Sem fonte pública*
+
+Quem de fato aperta o botão dentro do estabelecimento?
+
+Quase nunca é o dono. É quem está na linha de fogo: o maître, chefe de salão ou chefe de cozinha no restaurante; o gerente de loja no varejo; o supervisor de turno na logística. O dono aprova o teto de gastos. Continua [H]: nenhuma fonte confirma isso, é inferência do grupo e precisa de campo.
+
+*Sem fonte pública*
+
+O que quem trabalha reclama hoje?
+
+A fonte mais rica não foi reportagem, foram as avaliações públicas dos apps concorrentes. A queixa dominante não é falta de vaga, é não ser chamado, e aparece em três apps de empresas diferentes. Vistas ao menos oito avaliações com esse padrão: “A plataforma parece um clube fechado, onde sempre os mesmos freelancers são escolhidos” (estaff, 1 estrela); “São centenas de freelancers para uma única vaga” (eFreela, 1 estrela); “Já estou a 6 meses e até hoje nunca fui chamado” (estaff, 3 estrelas).
+
+Fonte
+
+Qual a segunda queixa mais forte?
+
+O aviso não chega. Seis avaliações em dois apps: “As notificações de Job que te oferecem não chegam. Você tem q entrar de 10 em 10 minutos e olhar” (Closeer, 1 estrela); “Eu já fui chamada 2 vezes e perdi por conta disso” (eFreela, 5 estrelas). Quem elogia o produto reclama disso do mesmo jeito que quem detesta, o que torna o sinal mais confiável.
+
+Fonte
+
+O cadastro é uma barreira?
+
+É, e antes de qualquer trabalho acontecer. Selfie que não centraliza (Closeer), documento que não sobe (eFreela, três avaliações distintas), reconhecimento facial que não reconhece, campo de experiência com bug que impede concluir o currículo. Uma avaliação recusa o processo por desconfiança: “não acho seguro adicionar minha foto segurando meus documentos” (estaff, 2 estrelas).
+
+Fonte
+
+Os dois lados estão igualmente insatisfeitos?
+
+Não, e a assimetria é grande. O app do estabelecimento da Switch tem 4,9 na App Store com avaliações como “muito bom, rápido e prático, auxilia muito no processo de contratação”. Os apps do profissional, das mesmas empresas, acumulam as queixas acima. Quem contrata está satisfeito; quem trabalha, muito menos.
+
+Fonte
+
+O profissional é o lado escasso do mercado?
+
+Não, e essa foi a correção mais importante da pesquisa. A escassez é de candidato a vaga fixa: 61% dos empresários reclamam de ausência de interessados, e há análise publicada apontando que o trabalhador prefere o avulso porque a diária rende R$ 100 a R$ 150 contra cerca de R$ 84 por dia no CLT. Para turno avulso, sobra gente. O que é escasso é confiança verificável. Dado de 2023, valores defasados.
+
+Fonte
+
+Quanto se paga por uma diária?
+
+Referências, não tabela de mercado: R$ 10 a R$ 15 por hora, diária de oito horas entre R$ 80 e R$ 150, e de R$ 120 a R$ 350 por evento (fonte interessada). Em Brasília, anúncio de garçom freela a R$ 130 de diária (Jooble, 09/2026). As avaliações mostram que o valor é a crítica moral recorrente: “Atendente 6h = R$ 60-70. Vale só se passando fome” (Switch, 02/12/2025).
+
+Fonte
 
 Guiding Activities
-
-<São atividades que ajudam a responder as perguntas que não consigo resposta com pesquisas simples.>
-
-<Aqui você registra o planejamento e o resultado da atividade.>
-
-<Essa tabela é uma sugestão de organização. Vocês podem alterá-la para se adequar as necessidades das atividades do grupo.>
 
 Atividade
 
@@ -166,45 +258,105 @@ Recursos
 
 FeedBack
 
-*<O que foi feito - Macro atividade>*
+Mineração de avaliações públicas dos apps concorrentes como substituto temporário de entrevista
 
-*- <Micro atividade 01>*
+- Leitura das avaliações nas fichas de Closeer, estaff, eFreela e Switch, nos dois lados
 
-*- <Micro atividade 02>*
+- Agrupamento das queixas por padrão recorrente, contando quantos relatos sustentam cada um
 
-*<Insira aqui os resultados coletados na atividade>*
+- Transcrição literal das citações, com app, nota e data
+
+12/09/2026
+
+Google Play e App Store, fichas públicas dos quatro apps
+
+Deu muito mais resultado do que esperávamos de uma fonte secundária. O padrão “me candidato e nunca sou chamado” apareceu em três empresas diferentes, o que descarta ser problema de um produto só e aponta falha estrutural do marketplace passivo. Ressalva de método aprendida na marra: uma coleta em 12/09 e outra em 14/09 deram notas diferentes para os mesmos apps, porque mediam lojas diferentes. Toda nota agora é registrada junto com a loja e a data.
 
 Síntese
 
-- <Principais insights encontrados durante a pesquisa>
+• A dor de quem trabalha não é falta de vaga, é falta de acesso à vaga. Isso inverte a premissa de produto: o gargalo está na seleção, não na oferta.
 
-<O grupo pode fazer um mural de achados para ir sintetizando todo o aprendizado do investigate>
+• Cadastro extenso e verificação pesada afastam gente antes de qualquer trabalho acontecer, e ainda geram desconfiança sobre uso de documento pessoal.
 
-Exemplo:
+• Notificação não é detalhe técnico, é o produto. Um aviso que não chega equivale a uma vaga que não existiu.
+
+• A insatisfação é assimétrica: quem contrata está satisfeito com os apps existentes, quem trabalha não. Um produto que só otimiza para o contratante repete o erro do setor.
 
 Milestone - Persona
 
-- <Descreva como é o seu público-alvo, a sua proto-persona>
+Persona primária, lado contratante: o maître sob estresse. Trabalha no salão, não na sala. São 16h de uma sexta, faltou um garçom e o movimento começa em duas horas. Não é o dono, mas é quem sente o problema e escolhe a ferramenta: hoje, o grupo de WhatsApp. O que ele precisa não é de um banco de currículos, é de uma pessoa confirmada. Publicar uma vaga precisa levar menos de um minuto. Status: proto-persona de desk research, ainda não validada em campo.
 
-Ciclo exploratório - Business Research
+Persona primária, lado profissional: quem se candidata e nunca é chamado. Tem experiência real, muitas vezes anos dela, mas nenhum jeito de provar isso para um estabelecimento que não o conhece. Usa Android de entrada, com plano de dados limitado, e acompanha vários grupos de WhatsApp ao mesmo tempo. Já se cadastrou em pelo menos um app do setor e desistiu, seja porque nunca foi chamado, seja porque o cadastro travou. Não está implorando por qualquer vaga: escolhe, e a diária avulsa paga melhor que o dia de CLT. Status: proto-persona, ainda não validada em campo.
+
+Ciclo exploratório - Business Research e Benchmarking de Concorrência
 
 Guiding questioning
-
-<Faça diversas perguntas, não existe pergunta errada. Liste todas, depois priorize e responda>
 
 Guiding Questions
 
 Resource
 
-Adicione mais perguntas
+Quantos concorrentes existem e quem são?
+
+Mapeamos 14 nomes: 11 brasileiros diretos ou adjacentes (GetNinjas, Switch, Closeer, estaff, eFreela, Freela Serviços, Worc, Toopa, TradePRO Freelance, JobHunter, Fiverr) e 3 referências internacionais (Instawork, Qwick, 7shifts), com dossiê e fontes por empresa.
+
+*Sem fonte pública*
+
+Quantos deles operam no Distrito Federal?
+
+Um, e não é especializado no nicho. O GetNinjas tem presença comprovável por produto real, não por alegação de marketing: as páginas de Brasília e de eventos no DF estão no ar, com categorias como garçom, bartender, segurança e DJ listadas para a cidade. Verificado por acesso direto em 14/09/2026. Todos os outros ou não declaram o DF, ou declaram operação nacional sem nenhuma vaga publicada aqui.
+
+Fonte
+
+Como cada concorrente cobra?
+
+Quatro modelos distintos. Do contratante por hora com sobretaxas: Switch, que cobra 10% extra para pedidos com menos de 24h, mais taxa de cancelamento e multa por atraso. Percentual por job do contratante: Closeer (valor não divulgado), eFreela (~10%), Toopa (10%). Assinatura mais taxa: Freela Serviços, com planos de R$ 0 a R$ 499/mês e taxa de 10% a 20%. Do profissional: GetNinjas, com moedas pré-pagas (1 moeda = R$ 0,15) para desbloquear contato de lead.
+
+Fonte
+
+Cobrar do profissional funciona?
+
+Não há evidência a favor, e há desgaste público documentado. O modelo de moedas do GetNinjas é a queixa dominante de quem trabalha: pelo menos 8 relatos distintos no Reclame Aqui, incluindo profissional que gastou mais de R$ 700 em moedas e teve apenas uma pessoa respondendo. O cliente recebe propostas de até 4 profissionais ao mesmo tempo: todos gastam moeda, só um fecha.
+
+Fonte
+
+Os números de tração dos concorrentes são confiáveis?
+
+Não, e essa é uma descoberta em si. A Switch publica hoje quatro números diferentes de serviços atendidos em três páginas do próprio site (40 mil, 50 mil duas vezes e 75 mil), nunca reconciliados. A Worc publica três (5 milhões, 2 milhões e 40 mil). A estaff declara 1,4 milhão de profissionais contra uma captura anterior de 686 mil. Todo número de tração deste setor deve ser tratado como piso de marketing.
+
+Fonte
+
+Qual a vulnerabilidade estrutural mais repetida do setor?
+
+Cadastro não é liquidez. A Freela Serviços declara 198.232 profissionais cadastrados contra apenas 392 contratantes e 203 contratações concluídas. A eFreela alega 300 mil usuários contra pouco mais de 100 mil instalações mensuráveis no Android. A Worc anunciou mais de 1.400 vagas abertas numa página que, na mesma sessão, mostrou zero vagas no próprio quadro ao vivo.
+
+Fonte
+
+O setor é estável?
+
+Menos do que a lista sugere. A Toopa parece ter saído de operação: domínio fora do ar por DNS, ficha da App Store retornando 404, nenhuma cobertura de imprensa desde agosto de 2021. A Worc tem reputação Não Recomendada no Reclame Aqui (4,3/10, só 21,4% voltariam a negociar). A controladora do GetNinjas, a Reag Investimentos, é alvo da Operação Carbono Oculto e não publica balanço desde o 3T24. Lá fora, a Qwick tem indícios de processo de falência.
+
+Fonte
+
+Alguém já atende campanha política?
+
+Sim, uma empresa: a Freela Serviços cobre campanhas eleitorais com panfletagem, bandeirista, motorista e coordenação. É o único overlap direto com esse segmento do Frila e merece investigação mais próxima se a campanha política avançar como prioridade.
+
+Fonte
+
+O que as referências internacionais fazem de diferente?
+
+Cobram markup sobre a hora trabalhada, não assinatura. Instawork (EUA/Canadá) cobra tarifa horária all-inclusive e tem taxa de efetivação de US$ 2.500, que cai para US$ 1.000 após 320h da mesma pessoa e zera após 480h. Qwick cobra markup de cerca de 40% por turno. 7shifts não é marketplace, é software de escala.
+
+Fonte
+
+O que o Fiverr ensina sobre modelo de receita?
+
+Que receita recorrente é mais resiliente que comissão pura, mesmo para quem domina a transação. No 2º trimestre de 2026, a receita de marketplace (comissão) caiu 15,5% ano a ano, enquanto a receita de serviços, que inclui a camada de assinatura, cresceu 2%. Compradores ativos caíram 21,9%.
+
+Fonte
 
 Guiding Activities
-
-<São atividades que ajudam a responder as perguntas que não consigo resposta com pesquisas simples.>
-
-<Aqui você registra o planejamento e o resultado da atividade.>
-
-<Essa tabela é uma sugestão de organização. Vocês podem alterá-la para se adequar as necessidades das atividades do grupo.>
 
 Atividade
 
@@ -214,63 +366,85 @@ Recursos
 
 FeedBack
 
-*<O que foi feito - Macro atividade>*
+Benchmarking de concorrência com verificação em primeira mão
 
-*- <Micro atividade 01>*
+- Levantamento de todos os nomes de concorrente já citados em qualquer documento do projeto
 
-*- <Micro atividade 02>*
+- Pesquisa por empresa: site, preços, termos de uso, fichas nas duas lojas, Reclame Aqui, Glassdoor e imprensa
 
-*<Insira aqui os resultados coletados na atividade>*
+- Registro de modelo de cobrança, tração, presença no DF, fortes, fracos e citações
+
+- Verificação direta de presença no DF navegando nas páginas de cidade
+
+14/09/2026
+
+Sites oficiais, Google Play, App Store, Reclame Aqui, Glassdoor, imprensa setorial
+
+Três achados mudaram a leitura estratégica. Primeiro: o DF está vazio de concorrência especializada, o que muda a natureza da disputa. Segundo: a expectativa inicial se inverteu, porque a Toopa, que o grupo assumia ativa, parece ter fechado, enquanto a Worc segue operando. Terceiro: quase todo concorrente com número verificável exibe a mesma distância entre cadastro e contratação, o que transformou “cadastro não é liquidez” na hipótese central do produto.
 
 Síntese
 
-- <Principais insights encontrados durante a pesquisa>
+• O DF está vazio de concorrência especializada. A estratégia territorial deixa de ser aposta de diferenciação e passa a ser janela temporal: não há incumbente local para vencer, há um vácuo para ocupar antes de alguém ocupar.
 
-<O grupo pode fazer um mural de achados para ir sintetizando todo o aprendizado do investigate>
+• Cadastro não é liquidez é a vulnerabilidade estrutural do setor. Todo concorrente compete por volume de cadastro e nenhum resolve a distância entre cadastrar e ser contratado. É o ponto exato onde o despacho ativo ataca.
+
+• As piores avaliações do setor vêm de quem trabalha, qualquer que seja o modelo de cobrança. Isso valida, agora com evidência de mercado, a aposta em reputação binária e custo zero para o profissional.
+
+• O mercado é mais instável do que parece. Vários concorrentes estabelecidos carregam problema sério de execução ou de saúde institucional, o que é mais oportunidade do que ameaça para um entrante regional.
+
+• Nenhum número de tração do setor é auditado, e vários se contradizem dentro do próprio site da empresa. Vale como alerta para quando formos publicar os nossos.
 
 Milestone - Modelo de negócios
 
-- <Descreva como é o seu modelo de negócios>
+Ainda não definido, e essa é uma decisão consciente. O grupo optou por não fixar modelo de cobrança antes da validação de campo, porque toda conta de receita depende de um preço que ainda não existe, e porque a pesquisa mostrou que errar aqui é caro: cobrar do profissional gera desgaste público documentado, e a comissão pura perde para receita recorrente mesmo em quem domina a transação.
+
+O que já está decidido: não se cobra do profissional. É a única definição fechada, e vem da evidência de que em todo concorrente pesquisado as piores avaliações vêm do lado de quem trabalha.
+
+A referência de mercado está levantada: quatro modelos mapeados entre os concorrentes, cada um com preço e fonte. Serve como referência, não como resposta.
+
+A conta de TAM/SAM/SOM em reais fica suspensa até haver preço validado. O que se pode afirmar hoje é o tamanho do universo de contratantes potenciais no DF: por volta de 30 mil estabelecimentos, empregando cerca de 100 mil pessoas.
 
 Act
 
 Solution Concepts
 
-- <Escreva aqui a proposta de solução encontrada>
+O Frila é uma plataforma onde o estabelecimento publica o turno que precisa cobrir, a vaga é enviada ativamente para quem está perto e pode aceitar, e a pessoa se candidata com um toque. Depois do turno, os dois respondem se chamariam o outro de novo.
+
+Três mecanismos sustentam a proposta, e cada um responde a um achado específico da pesquisa:
+
+• Despacho ativo por geolocalização. A vaga não fica num mural esperando ser encontrada: é notificada a quem atende os critérios de função, raio, disponibilidade e histórico, com prioridade para quem tem melhor taxa de comparecimento. Responde ao achado de que cadastro não é liquidez, e à queixa dominante de quem trabalha, que é nunca ser chamado.
+
+• Reputação binária e bidirecional. A pergunta não é uma nota de 1 a 5, é “você chamaria essa pessoa de novo?” e “você trabalharia nesse local de novo?”. Nota média com poucas avaliações não informa nada; sete de sete chamariam de novo informa. E o aval é herdável do mundo informal.
+
+• Custo zero para o profissional. Responde ao padrão de que as piores avaliações do setor vêm de quem trabalha, em todos os modelos de cobrança pesquisados.
 
 Milestone - Solution Concept
 
-<Escreva aqui a Solution definida>
+Uma plataforma de contratação por turno avulso para estabelecimentos de food service, contratantes de evento e campanhas políticas do Distrito Federal, que precisam cobrir um turno em poucas horas com alguém em quem possam confiar, para que a contratação avulsa saia da informalidade total do grupo de WhatsApp sem virar burocracia, e que seja diferente dos marketplaces existentes, que acumulam cadastro e deixam o profissional esperando ser escolhido.
 
-Template
+Essa solução está ligada à nossa pesquisa porque os três mecanismos centrais saíram diretamente das evidências coletadas: o despacho ativo responde ao padrão cadastro não é liquidez, presente em praticamente todo concorrente com número verificável; a reputação binária e herdável responde ao achado de que o recurso escasso é confiança verificável e não pessoa; e o custo zero para o profissional responde ao fato de que as piores avaliações do setor vêm de quem trabalha.
 
-“Um [tipo de solução] para [público alvo] que [quer/precisa/deseja] [algo] para que [objetivo da solution] e que seja diferente de [contraponto ao que já existe/problema]
+E é uma solução para o nosso challenge porque o challenge pede que duas partes que nunca trabalharam juntas fechem um turno com confiança suficiente em menos de uma hora. O despacho ativo resolve o tempo levando a vaga a quem é elegível em vez de esperar que alguém a encontre, e a reputação binária com taxa de comparecimento resolve a confiança, dando a cada lado um sinal objetivo sobre o outro antes de decidir.
 
-Essa solução está ligada a minha pesquisa porque [motivo] e é uma solução para o meu challenge porque [motivo]”
+Até aqui é o estado atual do projeto, em 14/09/2026.
 
-Exemplo: “Uma Talk sobre CBL para os alunos da Academy que querem ser independentes e contínuos no aprendizado e que esse aprendizado se adapte ao processo de desenvolvimento e que ela seja diferente das metodologias tradicionais e dependentes de um professor.
-
-Essa solução está ligada a minha síntese porque os estudantes aprendem mais se aprendem o conteúdo com práticas e se estão engajados a solucionar um problema que faça sentido para eles. Essa Solution Concept é uma Solução porque a metodologia do CBL é flexível ao contexto do aluno e consegue tornar seu aprendizado autônomo.”
+Os ciclos exploratórios seguintes permanecem em branco porque ainda não aconteceram. O próximo marco do calendário da C18 é a Apple Review de apresentação de escopo, que pede Solution Concept, Modelo de Negócios e protótipo de baixa fidelidade. O que falta antes de avançar, em ordem: (1) validação de campo com 50 conversas; (2) medir os grupos de WhatsApp de freela do DF, contando vagas por dia, funções, antecedência e valores; (3) decidir o modelo de monetização; (4) protótipo de baixa fidelidade. Estado de maturidade: TRL 2, conceito formulado e nada implementado.
 
 Ciclo exploratório - Engenharia de Software
 
 Guiding questioning
 
-<Faça diversas perguntas, não existe pergunta errada. Liste todas, depois priorize e responda>
+*<Faça diversas perguntas, não existe pergunta errada. Liste todas, depois priorize e responda>*
 
 Guiding Questions
 
 Resource
 
-Adicione mais perguntas
+*<Adicione mais perguntas>*
 
 Guiding Activities
 
-<São atividades que ajudam a responder as perguntas que não consigo resposta com pesquisas simples.>
-
-<Aqui você registra o planejamento e o resultado da atividade.>
-
-<Essa tabela é uma sugestão de organização. Vocês podem alterá-la para se adequar as necessidades das atividades do grupo.>
+*<São atividades que ajudam a responder as perguntas que não consigo resposta com pesquisas simples.>*
 
 Atividade
 
@@ -280,71 +454,55 @@ Recursos
 
 FeedBack
 
-*<O que foi feito - Macro atividade>*
-
-*- <Micro atividade 01>*
-
-*- <Micro atividade 02>*
-
-*<Insira aqui os resultados coletados na atividade>*
+*<O que foi feito>*
 
 Síntese
 
-- <Principais insights encontrados durante a pesquisa>
-
-<O grupo pode fazer um mural de achados para ir sintetizando todo o aprendizado do investigate>
-
-Exemplo:
-
-Diagrama de arquitetura
+*<Principais insights encontrados durante a pesquisa>*
 
 Milestone - Documento de Visão
 
-- <Link do documento>
+*<Link do documento>*
 
-Milestone - Documento de de especificação de requisito
+Milestone - Documento de especificação de requisito
 
-- <Link do documento>
+*<Link do documento>*
 
 Milestone - Diagramas de caso de uso
 
-- <Link do documento>
+*<Link do documento>*
 
-Milestone - Diagramas de clase
+Milestone - Diagramas de classe
 
-- <Link do documento>
+*<Link do documento>*
 
 Milestone - Modelagem de banco de dados
 
-- <Link do documento>
+*<Link do documento>*
 
 Milestone - Diagrama de arquitetura
 
-- <Link do documento>
+*<Link do documento>*
 
 Milestone - Histórias de Usuário/Backlog do produto
 
-- Link do kanban
+*<Link do documento>*
 
 Ciclo exploratório - Lo-fi e Hi-fi prototype
 
 Guiding questioning
 
-<Faça diversas perguntas, não existe pergunta errada. Liste todas, depois priorize e responda>
+*<Faça diversas perguntas, não existe pergunta errada. Liste todas, depois priorize e responda>*
 
 Guiding Questions
 
 Resource
 
-Adicione mais perguntas
+*<Adicione mais perguntas>*
 
 Guiding Activities
 
-<São atividades que ajudam a responder as perguntas que não consigo resposta com pesquisas simples.>
-
-<Aqui você registra o planejamento e o resultado da atividade.>
-
-<Essa tabela é uma sugestão de organização. Vocês podem alterá-la para se adequar as necessidades das atividades do grupo.>
+*<São atividades que ajudam a responder as perguntas que não consigo resposta com pesquisas simples.>*
 
 Atividade
 
@@ -354,57 +512,35 @@ Recursos
 
 FeedBack
 
-Design Critics
-
-09/10
-
-*- <Micro atividade 01>*
-
-*- <Micro atividade 02>*
-
-*<Insira aqui os resultados coletados na atividade>*
-
-*<O que foi feito - Macro atividade>*
-
-*- <Micro atividade 01>*
-
-*- <Micro atividade 02>*
-
-*<Insira aqui os resultados coletados na atividade>*
+*<O que foi feito>*
 
 Síntese
 
-- <Principais insights encontrados durante a pesquisa>
-
-<O grupo pode fazer um mural de achados para ir sintetizando todo o aprendizado do investigate>
+*<Principais insights encontrados durante a pesquisa>*
 
 Milestone - Lo-fi Prototype
 
-Link do Figma do protótipo
+*<Link do documento>*
 
 Milestone - Hi-fi Prototype
 
-Link do Figma do protótipo
+*<Link do documento>*
 
 Ciclo exploratório - Implementação
 
 Guiding questioning
 
-<Faça diversas perguntas, não existe pergunta errada. Liste todas, depois priorize e responda>
+*<Faça diversas perguntas, não existe pergunta errada. Liste todas, depois priorize e responda>*
 
 Guiding Questions
 
 Resource
 
-Adicione mais perguntas
+*<Adicione mais perguntas>*
 
 Guiding Activities
 
-<São atividades que ajudam a responder as perguntas que não consigo resposta com pesquisas simples.>
-
-<Aqui você registra o planejamento e o resultado da atividade.>
-
-<Essa tabela é uma sugestão de organização. Vocês podem alterá-la para se adequar as necessidades das atividades do grupo.>
+*<São atividades que ajudam a responder as perguntas que não consigo resposta com pesquisas simples.>*
 
 Atividade
 
@@ -414,41 +550,27 @@ Recursos
 
 FeedBack
 
-*<O que foi feito - Macro atividade>*
-
-*- <Micro atividade 01>*
-
-*- <Micro atividade 02>*
-
-*<Insira aqui os resultados coletados na atividade>*
+*<O que foi feito>*
 
 Síntese
 
-- <Principais insights encontrados durante a pesquisa>
-
-<O grupo pode fazer um mural de achados para ir sintetizando todo o aprendizado do investigate>
-
-Exemplo:
+*<Principais insights encontrados durante a pesquisa>*
 
 Ciclo exploratório - Business
 
 Guiding questioning
 
-<Faça diversas perguntas, não existe pergunta errada. Liste todas, depois priorize e responda>
+*<Faça diversas perguntas, não existe pergunta errada. Liste todas, depois priorize e responda>*
 
 Guiding Questions
 
 Resource
 
-Adicione mais perguntas
+*<Adicione mais perguntas>*
 
 Guiding Activities
 
-<São atividades que ajudam a responder as perguntas que não consigo resposta com pesquisas simples.>
-
-<Aqui você registra o planejamento e o resultado da atividade.>
-
-<Essa tabela é uma sugestão de organização. Vocês podem alterá-la para se adequar as necessidades das atividades do grupo.>
+*<São atividades que ajudam a responder as perguntas que não consigo resposta com pesquisas simples.>*
 
 Atividade
 
@@ -458,43 +580,31 @@ Recursos
 
 FeedBack
 
-*<O que foi feito - Macro atividade>*
-
-*- <Micro atividade 01>*
-
-*- <Micro atividade 02>*
-
-*<Insira aqui os resultados coletados na atividade>*
+*<O que foi feito>*
 
 Síntese
 
-- <Principais insights encontrados durante a pesquisa>
-
-<O grupo pode fazer um mural de achados para ir sintetizando todo o aprendizado do investigate>
+*<Principais insights encontrados durante a pesquisa>*
 
 Milestone - Plano de Marketing
 
-- <Descrição do plano de Marketing>
+*<Link do documento>*
 
 Ciclo exploratório - Análise de métricas da App Store
 
 Guiding questioning
 
-<Faça diversas perguntas, não existe pergunta errada. Liste todas, depois priorize e responda>
+*<Faça diversas perguntas, não existe pergunta errada. Liste todas, depois priorize e responda>*
 
 Guiding Questions
 
 Resource
 
-Adicione mais perguntas
+*<Adicione mais perguntas>*
 
 Guiding Activities
 
-<São atividades que ajudam a responder as perguntas que não consigo resposta com pesquisas simples.>
-
-<Aqui você registra o planejamento e o resultado da atividade.>
-
-<Essa tabela é uma sugestão de organização. Vocês podem alterá-la para se adequar as necessidades das atividades do grupo.>
+*<São atividades que ajudam a responder as perguntas que não consigo resposta com pesquisas simples.>*
 
 Atividade
 
@@ -504,23 +614,15 @@ Recursos
 
 FeedBack
 
-*<O que foi feito - Macro atividade>*
-
-*- <Micro atividade 01>*
-
-*- <Micro atividade 02>*
-
-*<Insira aqui os resultados coletados na atividade>*
+*<O que foi feito>*
 
 Síntese
 
-- <Principais insights encontrados durante a pesquisa>
-
-<O grupo pode fazer um mural de achados para ir sintetizando todo o aprendizado do investigate>
+*<Principais insights encontrados durante a pesquisa>*
 
 Milestone - Análise
 
-- <Análise das métricas e avaliação do plano de Marketing>
+*<Link do documento>*
 
 Learning Goals
 
@@ -532,11 +634,11 @@ Descrição
 
 Iniciante
 
-Eu conheço o o conceito do Learning Objective.
+Eu conheço o conceito do Learning Objective.
 
 Progredindo
 
-Eu entendo o conceito do Learning Objective e consigo aplica-lo com ajuda.
+Eu entendo o conceito do Learning Objective e consigo aplicá-lo com ajuda.
 
 Proficiente
 
