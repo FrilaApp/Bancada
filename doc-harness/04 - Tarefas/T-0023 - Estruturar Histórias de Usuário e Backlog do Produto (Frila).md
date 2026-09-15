@@ -2,7 +2,7 @@
 tipo: tarefa
 id: T-0023
 status: a-fazer
-responsavel: Júlia Clovandi
+responsavel: [Fabrício Tosta, Júlia Clovandi]
 desafio: C18
 data_criacao: 2026-09-15
 tags: [tarefa, cbl, c18, user-stories, backlog, po, requisitos]
@@ -24,6 +24,7 @@ Como Product Owner (PO), sou a responsável direta por transformar as regras de 
 
 ## Notas
 - 2026-09-15 — Tarefa criada após confirmação da exigência formal de Histórias de Usuário e Backlog pela mentoria. Entrega alinhada para a 1ª Apple Review (28/09).
+- Fabrício Tosta e Júlia Clovandi definidos como co-responsáveis para conduzir e alinhar a estruturação em conjunto.
 
 ---
 ← [[04 - Tarefas/00 - Índice Tarefas|Índice de Tarefas]]
