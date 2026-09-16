@@ -1,8 +1,8 @@
 ---
 tipo: documento-derivado
 origem: "doc-harness/01 - CBL/Desafios/C18/Documentos de Produto/Frila_Documento_de_Requisitos.docx"
-hash_origem: 0980520418ff255b875716ce368569c7a6e5097b873ac182ef2c8c7ffc023d39
-exportado_em: 2026-09-15T23:58
+hash_origem: adebe5c31719f94618c02ce4103d78b235cb450ccc9f1f9b6badbdfa4c07167f
+exportado_em: 2026-09-16T01:08
 exportado_por: Cauê Carneiro <cauecarneiroc@gmail.com>
 conversao: ok
 tags: [documento]
@@ -1422,7 +1422,11 @@ O eixo do modelo é uma cadeia só — vaga → posição → turno → avaliaç
 
 *Figura 1 — O ciclo de uma vaga: da publicação à avaliação*
 
-*Figura 2 — Identidade, catálogo e histórico*
+*Figura 2 — Uma conta de acesso, dois papéis*
+
+*Figura 3 — O que decide quem recebe o despacho*
+
+*Figura 4 — Os estados de uma posição e as transições válidas*
 
 Descrição das Entidades Principais
 
@@ -1566,13 +1570,13 @@ N:1 com Posicao; N:1 com Turno
 
 A regra de dependência vale em toda seta: o domínio é alvo de todas e origem de nenhuma. Quando precisa falar com o mundo, declara um protocolo e espera que alguém o implemente — é o que permite testar despacho, elegibilidade e reputação sem rede, sem interface e sem simulador.
 
-*Figura 3 — A regra de dependência entre as camadas*
+*Figura 5 — A regra de dependência entre as camadas*
 
-*Figura 4 — Camada de domínio: entidades e serviços*
+*Figura 6 — Camada de domínio: entidades e serviços*
 
-*Figura 5 — Camada de dados: portas e implementações*
+*Figura 7 — Portas e implementações: produção e teste*
 
-*Figura 6 — Camada de apresentação*
+*Figura 8 — Camada de apresentação*
 
 Descrição das Classes Principais
 
@@ -1766,13 +1770,15 @@ Persistência, despacho, autenticação e envio de push. Pode ser serviço exter
 
 Diagrama de arquitetura
 
-*Figura 7 — Contexto: atores e dependências externas*
+*Figura 9 — Contexto: atores e dependências externas*
 
-*Figura 8 — Contêineres: os três clientes, o backend e o push*
+*Figura 10 — Contêineres: quatro clientes, uma API, o despacho em fila*
 
-*Figura 9 — As quatro camadas dentro do app iOS*
+*Figura 11 — As duas estratégias para iOS, Android e web*
 
-*Figura 10 — O caminho crítico: da publicação à confirmação*
+*Figura 12 — As quatro camadas dentro do aplicativo*
+
+*Figura 13 — Da publicação à confirmação, com os prazos de cada etapa*
 
 Módulo 1 (obrigatório)
 
