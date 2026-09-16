@@ -1,9 +1,9 @@
 ---
 tipo: documento-derivado
 origem: "01 - CBL/Desafios/C18/Documentos/CBL_C18.pages"
-hash_origem: 9f18b7c5e3b5fd406d682d76e2bcb121d855987d8a6abae20baa77a31105cfcb
-exportado_em: 2026-09-15T11:44
-exportado_por: Cauê Carneiro
+hash_origem: ee0acd233fe46100e1428bfa93b30cdff312ed53f9eb8f565d710c62a6848a5d
+exportado_em: 2026-09-16T18:45
+exportado_por: Júlia Clovandi Vasconcelos 
 conversao: ok
 tags: [documento]
 ---
@@ -52,13 +52,7 @@ Big idea Generation
 
 Big Idea:
 
-*<Insira aqui uma foto do Brainstorming de big idea caso tenha feito>*
-
-Milestone - Big Idea:
-
-Confiança entre desconhecidos.
-
-A big idea não é “trabalho freelancer” nem “food service”. É confiança: o que faz duas pessoas que nunca se viram combinarem um trabalho, uma aparecer e a outra pagar, sem contrato e sem intermediário. Escolhemos esse recorte porque foi onde a pesquisa convergiu. O trabalho avulso é só o contexto em que essa falta de confiança fica mais visível e mais cara.
+Freelancer
 
 Essential Questioning
 
@@ -70,21 +64,21 @@ Qual a minha relação com a Big Idea do grupo?
 
 Como estabelecimentos de food service e profissionais freelancers podem confiar um no outro rápido o suficiente para cobrir uma vaga que abre e fecha em poucas horas?
 
-O que faz alguém confiar em um desconhecido quando não há tempo para verificar nada?
+O que faz alguém confiar em um desconhecido para exercer um trabalho em seu estabelecimento quando não há tempo para verificar nada?
 
-Por que um histórico de trabalho que existe na cabeça das pessoas não existe em lugar nenhum que possa ser mostrado?
+Como transformar a reputação "boca a boca" de um freelancer em um histórico profissional visível e confiável?
 
-Quando a informalidade deixa de ser conveniência e passa a ser risco para os dois lados?
+Quando a informalidade deixa de ser conveniência e passa a ser risco para os dois lados ao se tratar de contratações freelancers?
 
-O que uma ferramenta precisa garantir para valer a troca por algo gratuito que todo mundo já usa?
+Como entregar valor e segurança suficientes para substituir grupos gratuitos de WhatsApp nas contratações?
 
 Milestone - Main Essential Question:
 
-Como estabelecimentos de food service e profissionais freelancers podem confiar um no outro rápido o suficiente para cobrir uma vaga que abre e fecha em poucas horas?
+*Como estabelecimentos de food service e profissionais freelancers podem confiar um no outro rápido o suficiente para cobrir uma vaga que abre e fecha em poucas horas?*
 
-Essa é a pergunta que melhor direciona o grupo, por três motivos. Ela nomeia as duas pontas, e não só o contratante. Ela carrega a restrição de tempo, que é o que separa esse problema de recrutamento comum. E ela não presume a solução: não diz aplicativo, não diz plataforma, não diz cadastro.
+Essa é a pergunta que melhor direciona o grupo, por três motivos. Ela nomeia as duas pontas, e não só o contratante. Ela carrega a restrição de tempo, que é o que separa esse problema de recrutamento comum. E ela não presume a solução.
 
-Milestone - Challenge statement:
+Milestone - Challenge Statement:
 
 Tornar possível que um estabelecimento e um profissional que nunca trabalharam juntos fechem um turno com confiança suficiente para os dois, em menos de uma hora, no Distrito Federal.
 
@@ -92,7 +86,7 @@ Investigate
 
 Ciclo exploratório - General Research
 
-Guiding questioning
+Guidingquestioning
 
 Guiding Questions
 
@@ -162,13 +156,13 @@ Recursos
 
 FeedBack
 
-Desk research sobre o problema, com separação explícita entre dado e hipótese
+Desk research sobre o problema, com separação explícita entre dado e hipótese.
 
 - Levantamento em fontes setoriais (Abrasel, ABRAPE, Sebrae, TSE)
 
 - Definição de um sistema de marcação: Dado, Relato, Fonte interessada, [H] e Lacuna
 
-- Registro obrigatório de link e data de acesso em toda afirmação
+Montagem de uma Matriz CSD no FigJam
 
 12/09/2026
 
@@ -178,17 +172,15 @@ O sistema de marcação mudou o resultado da pesquisa. Ao obrigar cada frase a d
 
 Síntese
 
-• Contratar é difícil, é crônico e o setor sabe disso. 90% dos empresários declaram dificuldade, e a rotatividade de 73,49% garante que o buraco se reabre sempre.
+• *Contratar é difícil, é crônico e o setor sabe disso. 90% dos empresários declaram dificuldade, e a rotatividade de 73,49% garante que o buraco se reabre sempre.*
 
-• O canal onde isso acontece hoje não é uma plataforma, é o WhatsApp, que tem custo zero, alcance quase universal e nenhuma fricção de cadastro. Qualquer solução compete com isso.
+*• O canal onde isso acontece hoje não é uma plataforma, é o WhatsApp, que tem custo zero, alcance quase universal e nenhuma fricção de cadastro. Qualquer solução compete com isso.*
 
-• Não há medida independente de que o WhatsApp falhe. O que se verifica é que o canal não tem garantia embutida. Essa distinção virou regra do projeto.
+*• Não há medida independente de que o WhatsApp falhe. O que se verifica é que o canal não tem garantia embutida. Essa distinção virou regra do projeto.*
 
-• A lacuna central, e a mais cara, é a frequência. Nenhuma fonte pública mede quantas vezes um estabelecimento fica sem alguém em cima da hora nem quanto isso custa. Esse número sustenta ou derruba a razão de ser do projeto, e só existe em campo.
+- *A lacuna central, e a mais cara, é a frequência. Nenhuma fonte pública mede quantas vezes um estabelecimento fica sem alguém em cima da hora nem quanto isso custa. Esse número sustenta ou derruba a razão de ser do projeto, e só existe em campo.*
 
 Milestone - Challenge Statement Refinado
-
-O challenge statement original falava em resolver a dificuldade de contratar freelancers. A pesquisa mostrou que o problema não é de estoque de gente, e sim de confiança verificável, então o statement foi reescrito para nomear a confiança e a restrição de tempo em vez da contratação:
 
 Tornar possível que um estabelecimento e um profissional que nunca trabalharam juntos fechem um turno com confiança suficiente para os dois, em menos de uma hora, no Distrito Federal.
 
@@ -274,17 +266,17 @@ Deu muito mais resultado do que esperávamos de uma fonte secundária. O padrão
 
 Síntese
 
-• A dor de quem trabalha não é falta de vaga, é falta de acesso à vaga. Isso inverte a premissa de produto: o gargalo está na seleção, não na oferta.
+• *A dor de quem trabalha não é falta de vaga, é falta de acesso à vaga. Isso inverte a premissa de produto: o gargalo está na seleção, não na oferta.*
 
-• Cadastro extenso e verificação pesada afastam gente antes de qualquer trabalho acontecer, e ainda geram desconfiança sobre uso de documento pessoal.
+*• Cadastro extenso e verificação pesada afastam gente antes de qualquer trabalho acontecer, e ainda geram desconfiança sobre uso de documento pessoal.*
 
-• Notificação não é detalhe técnico, é o produto. Um aviso que não chega equivale a uma vaga que não existiu.
+*• Notificação não é detalhe técnico, é o produto. Um aviso que não chega equivale a uma vaga que não existiu.*
 
-• A insatisfação é assimétrica: quem contrata está satisfeito com os apps existentes, quem trabalha não. Um produto que só otimiza para o contratante repete o erro do setor.
+*• A insatisfação é assimétrica: quem contrata está satisfeito com os apps existentes, quem trabalha não. Um produto que só otimiza para o contratante repete o erro do setor.*
 
 Milestone - Persona
 
-Persona primária, lado contratante: o maître sob estresse. Trabalha no salão, não na sala. São 16h de uma sexta, faltou um garçom e o movimento começa em duas horas. Não é o dono, mas é quem sente o problema e escolhe a ferramenta: hoje, o grupo de WhatsApp. O que ele precisa não é de um banco de currículos, é de uma pessoa confirmada. Publicar uma vaga precisa levar menos de um minuto. Status: proto-persona de desk research, ainda não validada em campo.
+Persona primária, lado contratante:o maître sob estresse. Trabalha no salão, não na sala. São 16h de uma sexta, faltou um garçom e o movimento começa em duas horas. Não é o dono, mas é quem sente o problema e escolhe a ferramenta: hoje, o grupo de WhatsApp. O que ele precisa não é de um banco de currículos, é de uma pessoa confirmada. Publicar uma vaga precisa levar menos de um minuto. Status: proto-persona de desk research, ainda não validada em campo.
 
 Persona primária, lado profissional: quem se candidata e nunca é chamado. Tem experiência real, muitas vezes anos dela, mas nenhum jeito de provar isso para um estabelecimento que não o conhece. Usa Android de entrada, com plano de dados limitado, e acompanha vários grupos de WhatsApp ao mesmo tempo. Já se cadastrou em pelo menos um app do setor e desistiu, seja porque nunca foi chamado, seja porque o cadastro travou. Não está implorando por qualquer vaga: escolhe, e a diária avulsa paga melhor que o dia de CLT. Status: proto-persona, ainda não validada em campo.
 
@@ -366,7 +358,7 @@ Recursos
 
 FeedBack
 
-Benchmarking de concorrência com verificação em primeira mão
+Benchmarking de concorrência
 
 - Levantamento de todos os nomes de concorrente já citados em qualquer documento do projeto
 
@@ -384,57 +376,48 @@ Três achados mudaram a leitura estratégica. Primeiro: o DF está vazio de conc
 
 Síntese
 
-• O DF está vazio de concorrência especializada. A estratégia territorial deixa de ser aposta de diferenciação e passa a ser janela temporal: não há incumbente local para vencer, há um vácuo para ocupar antes de alguém ocupar.
+*• O DF está vazio de concorrência especializada. A estratégia territorial deixa de ser aposta de diferenciação e passa a ser janela temporal: não há incumbente local para vencer, há um vácuo para ocupar antes de alguém ocupar.*
 
-• Cadastro não é liquidez é a vulnerabilidade estrutural do setor. Todo concorrente compete por volume de cadastro e nenhum resolve a distância entre cadastrar e ser contratado. É o ponto exato onde o despacho ativo ataca.
+*• Cadastro não é liquidez é a vulnerabilidade estrutural do setor. Todo concorrente compete por volume de cadastro e nenhum resolve a distância entre cadastrar e ser contratado. É o ponto exato onde o despacho ativo ataca.*
 
-• As piores avaliações do setor vêm de quem trabalha, qualquer que seja o modelo de cobrança. Isso valida, agora com evidência de mercado, a aposta em reputação binária e custo zero para o profissional.
+*• As piores avaliações do setor vêm de quem trabalha, qualquer que seja o modelo de cobrança. Isso valida, agora com evidência de mercado, a aposta em reputação binária e custo zero para o profissional.*
 
-• O mercado é mais instável do que parece. Vários concorrentes estabelecidos carregam problema sério de execução ou de saúde institucional, o que é mais oportunidade do que ameaça para um entrante regional.
+*• O mercado é mais instável do que parece. Vários concorrentes estabelecidos carregam problema sério de execução ou de saúde institucional, o que é mais oportunidade do que ameaça para um entrante regional.*
 
-• Nenhum número de tração do setor é auditado, e vários se contradizem dentro do próprio site da empresa. Vale como alerta para quando formos publicar os nossos.
+*• Nenhum número de tração do setor é auditado, e vários se contradizem dentro do próprio site da empresa. Vale como alerta para quando formos publicar os nossos.*
 
 Milestone - Modelo de negócios
 
-Ainda não definido, e essa é uma decisão consciente. O grupo optou por não fixar modelo de cobrança antes da validação de campo, porque toda conta de receita depende de um preço que ainda não existe, e porque a pesquisa mostrou que errar aqui é caro: cobrar do profissional gera desgaste público documentado, e a comissão pura perde para receita recorrente mesmo em quem domina a transação.
+* Estruturado como SaaS B2B e taxa de conexão de software, cobrado exclusivamente do estabelecimento contratante, sem qualquer intermediação do pagamento da diária.*
 
-O que já está decidido: não se cobra do profissional. É a única definição fechada, e vem da evidência de que em todo concorrente pesquisado as piores avaliações vêm do lado de quem trabalha.
+*O modelo apoia-se em três definições estratégicas:*
 
-A referência de mercado está levantada: quatro modelos mapeados entre os concorrentes, cada um com preço e fonte. Serve como referência, não como resposta.
-
-A conta de TAM/SAM/SOM em reais fica suspensa até haver preço validado. O que se pode afirmar hoje é o tamanho do universo de contratantes potenciais no DF: por volta de 30 mil estabelecimentos, empregando cerca de 100 mil pessoas.
+- *Custo zero para o profissional. O trabalhador não paga taxa de cadastro, de acesso ou de saque. A diária é combinada no anúncio e paga diretamente pelo contratante ao freelancer no término do turno (via Pix direto ou dinheiro). A plataforma não atua como intermediadora financeira nem opera custódia (escrow), eliminando passivos trabalhistas e regulação bancária por decisão deliberada de escopo.*
+- *Cobrança por conexão e escala (Contratante). O modelo opera em duas fases:*
+- *Fase 1 (MVP e Validação no DF): Taxa fixa de conexão de R$ 15,00 a R$ 20,00 por turno confirmado com sucesso (Pay-per-Match). O estabelecimento só é cobrado quando o turno é aceito e preenchido; vagas canceladas ou não atendidas não geram custo.*
+- *Fase 2 (Recorrência): Planos de assinatura mensal de R$ 149 a R$ 249/mês para bares e buffets de alta rotatividade, concedendo despacho prioritário ilimitado e gestão de escalas na web.*
+- *Viabilidade e Unit Economics no DF. Com a eliminação da custódia financeira, os custos variáveis da plataforma resumem-se à infraestrutura de nuvem, mapas e mensageria push/SMS (~R$ 1,50 por vaga), gerando uma margem de contribuição unitária de ~90% (R$ 13,50 líquidos por turno). Em um mercado potencial de 30 mil estabelecimentos no DF, o ponto de equilíbrio operacional inicial (~R$ 2.000/mês de infraestrutura) é atingido com apenas 148 turnos preenchidos por mês em todo o Distrito Federal — menos de 5 turnos por dia.*
 
 Act
 
 Solution Concepts
 
-O Frila é uma plataforma onde o estabelecimento publica o turno que precisa cobrir, a vaga é enviada ativamente para quem está perto e pode aceitar, e a pessoa se candidata com um toque. Depois do turno, os dois respondem se chamariam o outro de novo.
-
-Três mecanismos sustentam a proposta, e cada um responde a um achado específico da pesquisa:
-
-• Despacho ativo por geolocalização. A vaga não fica num mural esperando ser encontrada: é notificada a quem atende os critérios de função, raio, disponibilidade e histórico, com prioridade para quem tem melhor taxa de comparecimento. Responde ao achado de que cadastro não é liquidez, e à queixa dominante de quem trabalha, que é nunca ser chamado.
-
-• Reputação binária e bidirecional. A pergunta não é uma nota de 1 a 5, é “você chamaria essa pessoa de novo?” e “você trabalharia nesse local de novo?”. Nota média com poucas avaliações não informa nada; sete de sete chamariam de novo informa. E o aval é herdável do mundo informal.
-
-• Custo zero para o profissional. Responde ao padrão de que as piores avaliações do setor vêm de quem trabalha, em todos os modelos de cobrança pesquisados.
+- O Frila é uma plataforma onde o estabelecimento publica o turno que precisa cobrir, a vaga é enviada ativamente para quem está perto e pode aceitar, e a pessoa se candidata com um toque. Depois do turno, os dois respondem se chamariam o outro de novo. Três mecanismos sustentam a proposta, e cada um responde a um achado específico da pesquisa:
+- Despacho ativo por geolocalização. A vaga não fica num mural esperando ser encontrada: é notificada a quem atende os critérios de função, raio, disponibilidade e histórico, com prioridade para quem tem melhor taxa de comparecimento. Responde ao achado de que cadastro não é liquidez, e à queixa dominante de quem trabalha, que é nunca ser chamado.
+- Reputação binária e bidirecional. A pergunta não é uma nota de 1 a 5, é “você chamaria essa pessoa de novo?” e “você trabalharia nesse local de novo?”. Nota média com poucas avaliações não informa nada; sete de sete chamariam de novo informa. E o aval é herdável do mundo informal.
+- Custo zero para o profissional. Responde ao padrão de que as piores avaliações do setor vêm de quem trabalha, em todos os modelos de cobrança pesquisados.
 
 Milestone - Solution Concept
 
-Uma plataforma de contratação por turno avulso para estabelecimentos de food service, contratantes de evento e campanhas políticas do Distrito Federal, que precisam cobrir um turno em poucas horas com alguém em quem possam confiar, para que a contratação avulsa saia da informalidade total do grupo de WhatsApp sem virar burocracia, e que seja diferente dos marketplaces existentes, que acumulam cadastro e deixam o profissional esperando ser escolhido.
+Uma plataforma de contratação por turno avulso para estabelecimentos de food service e contratantes de evento do Distrito Federal, que precisam cobrir um turno em poucas horas com alguém em quem possam confiar, para que a contratação avulsa saia da informalidade total do grupo de WhatsApp sem virar burocracia, e que seja diferente dos marketplaces existentes, que acumulam cadastro e deixam o profissional esperando ser escolhido.
 
 Essa solução está ligada à nossa pesquisa porque os três mecanismos centrais saíram diretamente das evidências coletadas: o despacho ativo responde ao padrão cadastro não é liquidez, presente em praticamente todo concorrente com número verificável; a reputação binária e herdável responde ao achado de que o recurso escasso é confiança verificável e não pessoa; e o custo zero para o profissional responde ao fato de que as piores avaliações do setor vêm de quem trabalha.
 
 E é uma solução para o nosso challenge porque o challenge pede que duas partes que nunca trabalharam juntas fechem um turno com confiança suficiente em menos de uma hora. O despacho ativo resolve o tempo levando a vaga a quem é elegível em vez de esperar que alguém a encontre, e a reputação binária com taxa de comparecimento resolve a confiança, dando a cada lado um sinal objetivo sobre o outro antes de decidir.
 
-Até aqui é o estado atual do projeto, em 14/09/2026.
-
-Os ciclos exploratórios seguintes permanecem em branco porque ainda não aconteceram. O próximo marco do calendário da C18 é a Apple Review de apresentação de escopo, que pede Solution Concept, Modelo de Negócios e protótipo de baixa fidelidade. O que falta antes de avançar, em ordem: (1) validação de campo com 50 conversas; (2) medir os grupos de WhatsApp de freela do DF, contando vagas por dia, funções, antecedência e valores; (3) decidir o modelo de monetização; (4) protótipo de baixa fidelidade. Estado de maturidade: TRL 2, conceito formulado e nada implementado.
-
 Ciclo exploratório - Engenharia de Software
 
 Guiding questioning
-
-*<Faça diversas perguntas, não existe pergunta errada. Liste todas, depois priorize e responda>*
 
 Guiding Questions
 
@@ -443,8 +426,6 @@ Resource
 *<Adicione mais perguntas>*
 
 Guiding Activities
-
-*<São atividades que ajudam a responder as perguntas que não consigo resposta com pesquisas simples.>*
 
 Atividade
 
@@ -492,8 +473,6 @@ Ciclo exploratório - Lo-fi e Hi-fi prototype
 
 Guiding questioning
 
-*<Faça diversas perguntas, não existe pergunta errada. Liste todas, depois priorize e responda>*
-
 Guiding Questions
 
 Resource
@@ -501,8 +480,6 @@ Resource
 *<Adicione mais perguntas>*
 
 Guiding Activities
-
-*<São atividades que ajudam a responder as perguntas que não consigo resposta com pesquisas simples.>*
 
 Atividade
 
@@ -530,8 +507,6 @@ Ciclo exploratório - Implementação
 
 Guiding questioning
 
-*<Faça diversas perguntas, não existe pergunta errada. Liste todas, depois priorize e responda>*
-
 Guiding Questions
 
 Resource
@@ -539,8 +514,6 @@ Resource
 *<Adicione mais perguntas>*
 
 Guiding Activities
-
-*<São atividades que ajudam a responder as perguntas que não consigo resposta com pesquisas simples.>*
 
 Atividade
 
@@ -560,8 +533,6 @@ Ciclo exploratório - Business
 
 Guiding questioning
 
-*<Faça diversas perguntas, não existe pergunta errada. Liste todas, depois priorize e responda>*
-
 Guiding Questions
 
 Resource
@@ -569,8 +540,6 @@ Resource
 *<Adicione mais perguntas>*
 
 Guiding Activities
-
-*<São atividades que ajudam a responder as perguntas que não consigo resposta com pesquisas simples.>*
 
 Atividade
 
@@ -594,8 +563,6 @@ Ciclo exploratório - Análise de métricas da App Store
 
 Guiding questioning
 
-*<Faça diversas perguntas, não existe pergunta errada. Liste todas, depois priorize e responda>*
-
 Guiding Questions
 
 Resource
@@ -603,8 +570,6 @@ Resource
 *<Adicione mais perguntas>*
 
 Guiding Activities
-
-*<São atividades que ajudam a responder as perguntas que não consigo resposta com pesquisas simples.>*
 
 Atividade
 

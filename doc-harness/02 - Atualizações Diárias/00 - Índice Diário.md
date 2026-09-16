@@ -11,6 +11,7 @@ Para um novo dia, duplique o [[02 - Atualizações Diárias/Template - Atualiza�
 
 ## 2026
 ### Setembro
+- [[02 - Atualizações Diárias/2026/09/2026-09-16|2026-09-16]]
 - [[02 - Atualizações Diárias/2026/09/2026-09-15|2026-09-15]]
 - [[02 - Atualizações Diárias/2026/09/2026-09-10|2026-09-10]]
 - [[02 - Atualizações Diárias/2026/09/2026-09-09|2026-09-09]]

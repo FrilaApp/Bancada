@@ -176,7 +176,7 @@ Permitir que um contratante publique um turno avulso e o preencha em poucas hora
 
 Público-alvo
 
-Contratantes de food service (bares, restaurantes, cafeterias e similares), contratantes de evento (buffets, produtoras e empresas de staff), coordenações de campanha política, e profissionais operacionais que trabalham por turno avulso. Praça inicial: Distrito Federal.
+Contratantes de food service (bares, restaurantes, cafeterias e similares), contratantes de evento (buffets, produtoras e empresas de staff), e profissionais operacionais que trabalham por turno avulso. Praça inicial: Distrito Federal.
 
 Plataformas
 
@@ -298,9 +298,9 @@ Mitigação do risco de caracterização de vínculo empregatício, hoje em disc
 
 RN17
 
-Para vaga de campanha política, o sistema DEVE permitir exportar o registro de quem trabalhou, quando e por qual valor.
+O sistema DEVE permitir ao contratante exportar o relatório consolidado de turnos realizados com data, horários auditados, valor acordado e profissional alocado.
 
-Campanha presta contas, e despesa de pessoal é declarável. A Portaria TSE nº 444/2026 fixa teto de contratação, no DF a partir de 300 pessoas por chapa, e estourá-lo pode configurar corrupção eleitoral.
+Garante suporte a fechamento contábil, comprovação de custos operacionais e conciliação financeira para restaurantes, bares e buffets de eventos.
 
 RN18
 
@@ -1096,7 +1096,7 @@ UC01: Publicar vaga
 
 Ator(es)
 
-Contratante (food service, evento ou campanha)
+Contratante (food service ou evento)
 
 Pré-condição
 
@@ -1456,7 +1456,7 @@ id, usuario_id, raio_km, ponto_base, taxa_comparecimento, turnos_realizados, est
 
 Estabelecimento
 
-Contratante: bar, restaurante, buffet, produtora ou campanha.
+Contratante: bar, restaurante, buffet ou produtora.
 
 id, nome, documento, tipo, endereco, geo_lat, geo_lng, criado_em
 
