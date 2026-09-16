@@ -32,8 +32,8 @@ Para criar uma tarefa, use `/tarefa` no Claude Code — ele cuida do id sequenci
 - [[04 - Tarefas/T-0006 - Benchmarking e pesquisa de concorrentes de mercado do Frila|T-0006 — Benchmarking e pesquisa de concorrentes de mercado do Frila]] · `concluida`
 - [[04 - Tarefas/T-0007 - Testar a Bancada em uso real|T-0007 — Testar a Bancada em uso real]] · `em-andamento`
 - [[04 - Tarefas/T-0008 - Corrigir contraste entre elementos em row highlight|T-0008 — Corrigir contraste entre elementos em row highlight]] · `a-fazer`
-- [[04 - Tarefas/T-0009 - Desenvolvimento do documento de visão|T-0009 — Desenvolvimento do documento de visão]] · `em-andamento`
-- [[04 - Tarefas/T-0010 - Estruturar o modelo de negócio e monetização do Frila|T-0010 — Estruturar o modelo de negócio e monetização do Frila]] · `a-fazer`
+- [[04 - Tarefas/T-0009 - Desenvolvimento do documento de visão|T-0009 — Desenvolvimento do documento de visão]] · `concluida`
+- [[04 - Tarefas/T-0010 - Estruturar o modelo de negócio e monetização do Frila|T-0010 — Estruturar o modelo de negócio e monetização do Frila]] · `concluida`
 - [[04 - Tarefas/T-0011 - Alinhar escopo e fluxos do protótipo de baixa fidelidade|T-0011 — Alinhar escopo e fluxos do protótipo de baixa fidelidade]] · `a-fazer`
 - [[04 - Tarefas/T-0012 - Coletar decisões técnicas e gerar diagramas de engenharia|T-0012 — Coletar decisões técnicas e gerar diagramas de engenharia]] · `a-fazer`
 - [[04 - Tarefas/T-0013 - Fechamento formal da especificação de requisitos do Frila|T-0013 — Fechamento formal da especificação de requisitos do Frila]] · `a-fazer`
