@@ -1,3 +1,11 @@
+---
+tipo: documento-produto
+desafio: C18
+data_criacao: 2026-09-15
+origem: "Frila/Documentos/MD/01-O-PROBLEMA.md"
+tags: [produto, frila]
+---
+
 # Frila — O Problema
 
 **Versão 1.0 · setembro/2026**
@@ -270,3 +278,6 @@ Todas acessadas em 12 de setembro de 2026. Nenhuma das páginas consultadas cont
 
 **Cobrar do profissional**
 - [DMT em Debate — o leilão digital do GetNinjas](https://www.dmtemdebate.com.br/getninjas-o-perverso-leilao-digital-de-trabalho-humano/) · [Outras Palavras](https://outraspalavras.net/tecnologiaemdisputa/getninjas-o-perverso-leilao-digital-de-trabalho-humano/)
+
+---
+← [[01 - CBL/00 - Índice CBL|Índice CBL]]

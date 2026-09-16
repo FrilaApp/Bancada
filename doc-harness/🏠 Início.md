@@ -14,6 +14,7 @@ Diário de bordo do **Challenge 18**, compartilhado pela equipe. Este vault é t
 - [[04 - Tarefas/00 - Índice Tarefas|✅ Tarefas]] — o quadro da equipe. Uma nota por tarefa, agrupada por status em [[04 - Tarefas/Quadro.base|Quadro]].
 - [[05 - Registros/00 - Índice Registros|📋 Registros]] — o log de fatos, escrito pelos hooks. É a matéria-prima do diário, e não se edita à mão.
 - [[06 - Design/Sistema de Design|🎛 Design]] — o sistema que governa a aparência da Bancada e do site: as três camadas de token, as três vozes e o porquê de cada decisão. A [[06 - Design/Revisão de UI - 2026-09-09|revisão de UI de 09/09]] registra o quanto o app cumpre isso hoje, com a captura de cada achado.
+- [[07 - Arquitetura/Diagrama de Arquitetura|🏗 Arquitetura]] — as decisões técnicas que o código do **Frila** vai seguir: a [[07 - Arquitetura/Modelagem de Banco de Dados|modelagem de banco]], o [[07 - Arquitetura/Diagrama de Classe|diagrama de classe]] e o desenho do sistema. Preenchem a Seção 6 do Documento de Requisitos e marcam `[H]` tudo o que ainda é hipótese.
 
 ## Como o registro funciona
 

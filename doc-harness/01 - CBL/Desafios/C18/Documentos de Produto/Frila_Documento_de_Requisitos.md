@@ -1,8 +1,8 @@
 ---
 tipo: documento-derivado
 origem: "doc-harness/01 - CBL/Desafios/C18/Documentos de Produto/Frila_Documento_de_Requisitos.docx"
-hash_origem: d67f59bf0d3de47b291eeae512c8cff6fccd218e5184d2f75403883005b6380f
-exportado_em: 2026-09-15T11:44
+hash_origem: 0980520418ff255b875716ce368569c7a6e5097b873ac182ef2c8c7ffc023d39
+exportado_em: 2026-09-15T23:58
 exportado_por: Cauê Carneiro <cauecarneiroc@gmail.com>
 conversao: ok
 tags: [documento]
@@ -1418,9 +1418,11 @@ Dado que uma posição confirmada é cancelada antes do início do turno, quando
 
 6.2 Diagrama de Banco de Dados (DER)
 
-Diagrama Entidade-Relacionamento (DER)
+O eixo do modelo é uma cadeia só — vaga → posição → turno → avaliação —, o ciclo de vida de uma unidade de trabalho da publicação à reputação. Despacho e candidatura penduram-se nela como o registro de quem foi chamado e quem respondeu. As duas vistas abaixo são do mesmo esquema: separá-las evita o emaranhado de linhas que um único desenho com dezesseis entidades produz.
 
-*Inserir o diagrama aqui. As entidades principais e seus relacionamentos estão descritos na tabela abaixo.*
+*Figura 1 — O ciclo de uma vaga: da publicação à avaliação*
+
+*Figura 2 — Identidade, catálogo e histórico*
 
 Descrição das Entidades Principais
 
@@ -1562,9 +1564,15 @@ N:1 com Posicao; N:1 com Turno
 
 6.3 Diagrama de Classes
 
-Diagrama de Classes
+A regra de dependência vale em toda seta: o domínio é alvo de todas e origem de nenhuma. Quando precisa falar com o mundo, declara um protocolo e espera que alguém o implemente — é o que permite testar despacho, elegibilidade e reputação sem rede, sem interface e sem simulador.
 
-*Inserir o diagrama aqui. As classes mais relevantes e suas responsabilidades estão descritas na tabela abaixo.*
+*Figura 3 — A regra de dependência entre as camadas*
+
+*Figura 4 — Camada de domínio: entidades e serviços*
+
+*Figura 5 — Camada de dados: portas e implementações*
+
+*Figura 6 — Camada de apresentação*
 
 Descrição das Classes Principais
 
@@ -1758,9 +1766,13 @@ Persistência, despacho, autenticação e envio de push. Pode ser serviço exter
 
 Diagrama de arquitetura
 
-Diagrama de Arquitetura
+*Figura 7 — Contexto: atores e dependências externas*
 
-*Inserir o diagrama aqui, com as quatro camadas, os três clientes (profissional, estabelecimento e painel) e as dependências externas de push, geolocalização e backend.*
+*Figura 8 — Contêineres: os três clientes, o backend e o push*
+
+*Figura 9 — As quatro camadas dentro do app iOS*
+
+*Figura 10 — O caminho crítico: da publicação à confirmação*
 
 Módulo 1 (obrigatório)
 

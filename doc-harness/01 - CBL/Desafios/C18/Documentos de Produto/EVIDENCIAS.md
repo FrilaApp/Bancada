@@ -1,3 +1,11 @@
+---
+tipo: documento-produto
+desafio: C18
+data_criacao: 2026-09-15
+origem: "Frila/Documentos/MD/EVIDENCIAS.md"
+tags: [produto, frila]
+---
+
 # Frila · Evidências
 
 **Versão 1.0 · setembro/2026**
@@ -342,3 +350,6 @@ Perguntas em ordem de importância, as mesmas da seção 6 de [`01-O-PROBLEMA.md
 **O que se pode medir sem entrevistar ninguém**
 
 16. Entrar nos grupos de WhatsApp de freela do DF e contar: quantas vagas por dia, de que funções, com que antecedência, a que valores, e quantas são reabertas por falta de resposta. É a única medida barata e direta do problema disponível hoje.
+
+---
+← [[01 - CBL/00 - Índice CBL|Índice CBL]]

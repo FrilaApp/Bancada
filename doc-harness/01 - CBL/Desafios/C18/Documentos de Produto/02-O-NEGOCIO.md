@@ -1,3 +1,11 @@
+---
+tipo: documento-produto
+desafio: C18
+data_criacao: 2026-09-15
+origem: "Frila/Documentos/MD/02-O-NEGOCIO.md"
+tags: [produto, frila]
+---
+
 # Frila — O Negócio
 
 **Versão 1.0 · setembro/2026**
@@ -243,3 +251,5 @@ Honestidade sobre o que este documento afirma sem prova. As perguntas que testam
 - Que o maître, e não o dono, é quem decide `[H]`
 - Que a desintermediação (contratar direto na segunda vez) é administrável `[H]`
 
+---
+← [[01 - CBL/00 - Índice CBL|Índice CBL]]

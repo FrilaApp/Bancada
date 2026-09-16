@@ -109,6 +109,10 @@ const SECOES = [
   // Logo depois do desafio porque responde a pergunta seguinte de quem acabou
   // de ler o que o time se propôs a fazer: até quando.
   { tipo: 'agenda',            titulo: 'Agenda' },
+  // O que o time está construindo, antes do que já construiu: primeiro a
+  // estratégia do produto, depois as decisões técnicas que ela impõe.
+  { tipo: 'documento-produto', titulo: 'Produto' },
+  { tipo: 'arquitetura',       titulo: 'Arquitetura' },
   { tipo: 'roadmap',           titulo: 'Roadmap' },
   { tipo: 'atualizacao-diaria', titulo: 'Diário' },
   { tipo: 'documento-derivado', titulo: 'Documentos' },

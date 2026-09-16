@@ -22,6 +22,16 @@ public enum TipoNota: String, CaseIterable, Codable, Sendable {
     /// que já aconteceu) — é a terceira coisa: compromisso externo com data já
     /// marcada. Ver `LeitorDeAgenda`.
     case agenda
+    /// Estratégia e pesquisa do produto Frila: problema, negócio, mercado e
+    /// evidência. Nasce em Markdown fora deste repositório e é trazida para cá
+    /// como o lastro do desafio. Difere de `documentoDerivado` porque aqui o
+    /// `.md` é o original, não o espelho de um `.pages` ou `.docx`.
+    case documentoProduto = "documento-produto"
+    /// As decisões técnicas que o código do Frila segue: modelo de dados,
+    /// classes e camadas. Como `design`, é regra e não narrativa — a diferença
+    /// é o alvo: `design` governa a Bancada e o site, `arquitetura` governa o
+    /// produto que a equipe vai construir.
+    case arquitetura
 
     public var rotulo: String {
         switch self {
@@ -35,6 +45,8 @@ public enum TipoNota: String, CaseIterable, Codable, Sendable {
         case .documentoDerivado: return "Documento derivado"
         case .design: return "Design"
         case .agenda: return "Agenda"
+        case .documentoProduto: return "Documento de produto"
+        case .arquitetura: return "Arquitetura"
         }
     }
 

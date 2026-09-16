@@ -36,8 +36,17 @@ Consequências práticas:
 06 - Design/        O sistema de design que governa a Bancada e o site. Escrito
                     à mão, mas não é narrativa de um dia: é regra que o código
                     segue. Os valores vivem em Bancada/tokens.json.
+07 - Arquitetura/   As decisões técnicas que o código do Frila segue: modelo de
+                    dados, classes e camadas. Mesma natureza de 06 - Design —
+                    regra, não narrativa — com outro alvo: aqui é o produto que
+                    a equipe vai construir, não a ferramenta que ela usa.
 scripts/            Automação. Ver README.md.
 ```
+
+`01 - CBL/Desafios/<id>/Documentos de Produto/` guarda a estratégia do Frila
+(`tipo: documento-produto`): problema, negócio, mercado e evidência. Nasce em
+Markdown fora deste repositório, então o `.md` é o original — e não o espelho
+regenerável que `documento-derivado` descreve.
 
 `01 - CBL/Desafios/<id>/Agenda - <id>.md` (`tipo: agenda`) é o cronograma
 oficial do desafio publicado pela Academy — não é fato do vault nem narrativa
@@ -55,7 +64,7 @@ Nunca crie nota fora dessa estrutura. Se algo não couber em nenhuma pasta, perg
 ## Convenções de escrita
 
 **Frontmatter YAML é obrigatório** em toda nota. Chaves sem acento, minúsculas. Valores válidos de `tipo`:
-`home` · `indice` · `cbl-desafio` · `atualizacao-diaria` · `roadmap` · `tarefa` · `registro` · `documento-derivado` · `design` · `agenda`
+`home` · `indice` · `cbl-desafio` · `atualizacao-diaria` · `roadmap` · `tarefa` · `registro` · `documento-derivado` · `design` · `agenda` · `documento-produto` · `arquitetura`
 
 Valores válidos de `status` em tarefas: `a-fazer` · `em-andamento` · `revisao` · `concluida`
 Em desafios CBL: `ativo` · `concluido` · `pausado`

@@ -1,3 +1,11 @@
+---
+tipo: documento-produto
+desafio: C18
+data_criacao: 2026-09-15
+origem: "Frila/Documentos/MD/03-ESPECIFICACAO-DO-PRODUTO.md"
+tags: [produto, frila]
+---
+
 # Frila — Especificação do Produto
 
 **Versão 1.0 · setembro/2026**
@@ -55,3 +63,6 @@ A avaliação nos dois sentidos e o custo zero para o profissional não são det
 **Rapidez.** Despacho ativo por geolocalização resolve uma urgência em minutos, não em dias — a vaga vai até quem é elegível, em vez de esperar ser encontrada.
 
 **Organização.** Painel de operação interno para quando um frila não preenche, múltiplos usuários por estabelecimento, e escala de evento em lote para formaturas e casamentos — o que tira a contratação avulsa da bagunça de conversa de WhatsApp e memória.
+
+---
+← [[01 - CBL/00 - Índice CBL|Índice CBL]]

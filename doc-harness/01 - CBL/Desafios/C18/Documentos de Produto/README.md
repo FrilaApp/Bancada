@@ -1,3 +1,11 @@
+---
+tipo: documento-produto
+desafio: C18
+data_criacao: 2026-09-15
+origem: "Frila/Documentos/MD/README.md"
+tags: [produto, frila]
+---
+
 # Frila
 
 **Versão 1.0 · setembro/2026**
@@ -189,3 +197,6 @@ Este documento resume. Cada seção tem um documento detalhado por trás, e é l
 | Tese e estado do projeto | [`00-LEIA-PRIMEIRO.md`](00-LEIA-PRIMEIRO.md) |
 
 Onde este resumo divergir do documento detalhado, o detalhado vale, porque é onde cada número carrega sua marca de origem.
+
+---
+← [[01 - CBL/00 - Índice CBL|Índice CBL]]

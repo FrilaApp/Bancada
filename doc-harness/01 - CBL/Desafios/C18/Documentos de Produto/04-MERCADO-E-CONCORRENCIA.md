@@ -1,3 +1,11 @@
+---
+tipo: documento-produto
+desafio: C18
+data_criacao: 2026-09-15
+origem: "Frila/Documentos/MD/04-MERCADO-E-CONCORRENCIA.md"
+tags: [produto, frila]
+---
+
 # Frila — Mercado e Concorrência
 
 **Versão 1.0 · setembro/2026**
@@ -256,3 +264,6 @@ As fontes de cada concorrente estão listadas ao final do respectivo perfil, nas
 - [Rotatividade no setor — Abrasel](https://abrasel.com.br/noticias/noticias/rotatividade-de-mao-de-obra-segue-alta-nos-bares-e-restaurantes/) · [Monitor Mercantil](https://monitormercantil.com.br/rotatividade-de-mao-de-obra-segue-alta-em-bares-e-restaurantes/)
 - [Quantos restaurantes tem no Brasil — OndeAbrir (fonte secundária)](https://ondeabrir.com/blog/quantos-restaurantes-tem-no-brasil)
 - [PEC do Fim da Escala 6x1 — Wikipédia (atualizada em 03/09/2026)](https://pt.wikipedia.org/wiki/PEC_do_Fim_da_Escala_6x1)
+
+---
+← [[01 - CBL/00 - Índice CBL|Índice CBL]]
