@@ -409,7 +409,7 @@ Solution Concepts
 
 Milestone - Solution Concept
 
-Uma plataforma horizontal de contratação por turno avulso para profissionais operacionais, com foco de alavancagem inicial nos setores de maior urgência e densidade do Distrito Federal — food service, eventos e campanhas —, que precisam cobrir um turno em poucas horas com alguém em quem possam confiar, para que a contratação avulsa saia da informalidade total do grupo de WhatsApp sem virar burocracia, e que seja diferente dos marketplaces existentes, que acumulam cadastro e deixam o profissional esperando ser escolhido.
+Uma plataforma horizontal de contratação por turno avulso para profissionais operacionais, com foco de alavancagem inicial nos setores de maior urgência e densidade do Distrito Federal (food service, eventos e campanhas), que precisam cobrir um turno em poucas horas com alguém em quem possam confiar, para que a contratação avulsa saia da informalidade total do grupo de WhatsApp sem virar burocracia, e que seja diferente dos marketplaces existentes, que acumulam cadastro e deixam o profissional esperando ser escolhido.
 
 Essa solução está ligada à nossa pesquisa porque os três mecanismos centrais saíram diretamente das evidências coletadas: o despacho ativo responde ao padrão cadastro não é liquidez, presente em praticamente todo concorrente com número verificável; a reputação binária e herdável responde ao achado de que o recurso escasso é confiança verificável e não pessoa; e o custo zero para o profissional responde ao fato de que as piores avaliações do setor vêm de quem trabalha.
 
