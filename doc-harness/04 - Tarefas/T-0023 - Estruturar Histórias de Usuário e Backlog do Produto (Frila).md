@@ -1,7 +1,7 @@
 ---
 tipo: tarefa
 id: T-0023
-status: a-fazer
+status: revisao
 responsavel: [Fabrício Tosta, Júlia Clovandi]
 desafio: C18
 data_criacao: 2026-09-15
@@ -16,15 +16,15 @@ A coordenação/mentoria da Apple Developer Academy solicitou a entrega formal d
 Como Product Owner (PO), sou a responsável direta por transformar as regras de negócio e os requisitos funcionais já mapeados em narrativas centradas no usuário final (*"Como [persona], quero [ação] para que [benefício]"*), acompanhadas de critérios de aceitação e da priorização do Backlog (ex: método MoSCoW: Must have, Should have, Could have) para guiar o desenvolvimento do MVP.
 
 ## Feito quando
-- [ ] Épicos do produto estruturados (ex: Épico 1: Publicação Expressa de Vagas; Épico 2: Despacho Ativo e Notificação; Épico 3: Candidatura 1-Toque; Épico 4: Confiança e Avaliação Mútua).
-- [ ] Histórias de Usuário (US01 a US...) redigidas cobrindo todas as personas (Contratante de Food Service, Profissional Freelancer e Operador Interno).
-- [ ] Critérios de Aceitação definidos para cada história (formato *Dado que / Quando / Então* ou checklist de aceitação).
-- [ ] Backlog do Produto priorizado, separando claramente o que entra no escopo do MVP (para a versão da App Store) do que fica para releases futuras.
-- [ ] Documento de Histórias de Usuário e Backlog integrado ao vault e referenciado no documento de requisitos.
+- [x] Épicos do produto estruturados (7 Épicos: Onboarding, Publicação Expressa, Despacho Ativo, Candidatura 1-Toque, Execução/Check-in, Confiança/Reputação Binária e Auditoria/Suporte).
+- [x] Histórias de Usuário (US01 a US25) redigidas cobrindo todas as personas (Marcos/Food Service, Carla/Eventos, Lucas/Freelancer e Roberta/Operação Frila).
+- [x] Critérios de Aceitação definidos para cada história em formato BDD (*Dado que / Quando / Então*).
+- [x] Backlog do Produto priorizado via MoSCoW, separando claramente o escopo do MVP (16 US · ~63 pts) das releases futuras (Should Have, Could Have e Won't Have).
+- [x] Documento formal integrado ao vault em [[01 - CBL/Desafios/C18/Documentos de Produto/Frila_Historias_de_Usuario_e_Backlog|Frila_Historias_de_Usuario_e_Backlog.md]].
 
 ## Notas
 - 2026-09-15 — Tarefa criada após confirmação da exigência formal de Histórias de Usuário e Backlog pela mentoria. Entrega alinhada para a 1ª Apple Review (28/09).
-- Fabrício Tosta e Júlia Clovandi definidos como co-responsáveis para conduzir e alinhar a estruturação em conjunto.
+- 2026-09-17 — Júlia Clovandi concluiu a estruturação dos 7 Épicos, 25 Histórias de Usuário em BDD e Matriz MoSCoW. Movida para `revisao` para alinhamento com Fabrício Tosta no dia 18/09 e fechamento dos wireframes de baixa fidelidade ([[04 - Tarefas/T-0011 - Alinhar escopo e fluxos do protótipo de baixa fidelidade|T-0011]]).
 
 ---
 ← [[04 - Tarefas/00 - Índice Tarefas|Índice de Tarefas]]

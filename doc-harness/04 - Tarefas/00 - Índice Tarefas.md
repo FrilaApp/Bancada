@@ -46,7 +46,7 @@ Para criar uma tarefa, use `/tarefa` no Claude Code — ele cuida do id sequenci
 - [[04 - Tarefas/T-0020 - Relatório de análise de métricas pós-lançamento da App Store|T-0020 — Relatório de análise de métricas pós-lançamento da App Store]] · `a-fazer`
 - [[04 - Tarefas/T-0021 - Preparar apresentação da segunda Apple Review (10-11)|T-0021 — Preparar apresentação da segunda Apple Review (10-11)]] · `a-fazer`
 - [[04 - Tarefas/T-0022 - Consolidação final e apresentação de encerramento do CBL (04-12)|T-0022 — Consolidação final e apresentação de encerramento do CBL (04-12)]] · `a-fazer`
-- [[04 - Tarefas/T-0023 - Estruturar Histórias de Usuário e Backlog do Produto (Frila)|T-0023 — Estruturar Histórias de Usuário e Backlog do Produto (Frila)]] · `a-fazer`
+- [[04 - Tarefas/T-0023 - Estruturar Histórias de Usuário e Backlog do Produto (Frila)|T-0023 — Estruturar Histórias de Usuário e Backlog do Produto (Frila)]] · `revisao`
 - [[04 - Tarefas/T-0024 - Diagramas de classe, banco de dados e arquitetura|T-0024 — Diagramas de classe, banco de dados e arquitetura]] · `revisao`
 
 ---
