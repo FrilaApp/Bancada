@@ -176,7 +176,7 @@ Permitir que um contratante publique um turno avulso e o preencha em poucas hora
 
 Público-alvo
 
-Contratantes de food service (bares, restaurantes, cafeterias e similares), contratantes de evento (buffets, produtoras e empresas de staff), e profissionais operacionais que trabalham por turno avulso. Praça inicial: Distrito Federal.
+Contratantes de food service (bares, restaurantes, cafeterias e similares), contratantes de evento (buffets, produtoras e empresas de staff), coordenações de campanha, e profissionais operacionais que trabalham por turno avulso. Praça inicial: Distrito Federal.
 
 Plataformas
 
@@ -300,7 +300,7 @@ RN17
 
 O sistema DEVE permitir ao contratante exportar o relatório consolidado de turnos realizados com data, horários auditados, valor acordado e profissional alocado.
 
-Garante suporte a fechamento contábil, comprovação de custos operacionais e conciliação financeira para restaurantes, bares e buffets de eventos.
+Garante suporte ao fechamento contábil e conciliação financeira de restaurantes, bares e buffets, bem como à prestação de contas exigida em campanhas e produções de grande porte.
 
 RN18
 
@@ -1096,7 +1096,7 @@ UC01: Publicar vaga
 
 Ator(es)
 
-Contratante (food service ou evento)
+Contratante (food service, evento ou campanha)
 
 Pré-condição
 
@@ -1456,7 +1456,7 @@ id, usuario_id, raio_km, ponto_base, taxa_comparecimento, turnos_realizados, est
 
 Estabelecimento
 
-Contratante: bar, restaurante, buffet ou produtora.
+Contratante: bar, restaurante, buffet, produtora ou coordenação de campanha.
 
 id, nome, documento, tipo, endereco, geo_lat, geo_lng, criado_em
 

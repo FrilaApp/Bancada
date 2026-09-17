@@ -186,7 +186,7 @@ O que a arquitetura precisa ter:
 | RNF08 · exclusão em 15 dias | Anonimização preservando turno e avaliação da contraparte |
 | RNF13 · auditabilidade | `ocorrencia` e `despacho` são append-only na prática |
 | RN13 · suspensão com contestação | Suspensão é `ocorrencia` com motivo obrigatório; contestação é outra, vinculada |
-| RN17 · prestação de contas de campanha | Exportação por período, com data, função, horário e valor |
+| RN17 · auditoria e prestação de contas | Exportação por período, com data, função, horário e valor |
 
 ---
 
