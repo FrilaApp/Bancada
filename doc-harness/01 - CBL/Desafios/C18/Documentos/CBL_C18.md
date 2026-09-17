@@ -1,8 +1,8 @@
 ---
 tipo: documento-derivado
 origem: "01 - CBL/Desafios/C18/Documentos/CBL_C18.pages"
-hash_origem: ee0acd233fe46100e1428bfa93b30cdff312ed53f9eb8f565d710c62a6848a5d
-exportado_em: 2026-09-16T18:45
+hash_origem: 6584a6eb1ad14d18c1132c74a51df2fd48ded2767c9ecb6478e87861e711bfa4
+exportado_em: 2026-09-17T15:55
 exportado_por: Júlia Clovandi Vasconcelos 
 conversao: ok
 tags: [documento]
