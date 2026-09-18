@@ -1,8 +1,8 @@
 ---
 tipo: documento-derivado
 origem: "doc-harness/01 - CBL/Desafios/C18/Documentos de Produto/Frila_Documento_de_Requisitos.docx"
-hash_origem: adebe5c31719f94618c02ce4103d78b235cb450ccc9f1f9b6badbdfa4c07167f
-exportado_em: 2026-09-16T01:08
+hash_origem: a77fd332f97e99f57513038e8bf5f01823805d3b0389f293934a0ab575474d52
+exportado_em: 2026-09-18T14:08
 exportado_por: Cauê Carneiro <cauecarneiroc@gmail.com>
 conversao: ok
 tags: [documento]
@@ -32,11 +32,11 @@ Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva
 
 Versão
 
-v1.0.0
+v1.1.0
 
 Data
 
-14/09/2026
+18/09/2026
 
 Histórico de Versões
 
@@ -55,6 +55,14 @@ v1.0.0
 Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva
 
 Criação inicial. Deriva as regras de negócio, requisitos e casos de uso do Documento de Visão v1.0.0 e dos documentos 00 a 04 revisados em setembro/2026.
+
+v1.1.0
+
+18/09/2026
+
+Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva
+
+Seção 6.1 completa: diagrama de casos de uso em três vistas, tabela de atores, UC01 a UC08 revisados (despacho sem ampliar raio, turnos sobrepostos barrados, fluxos alternativos que faltavam) e UC09 a UC16 novos, cobrindo os RFs que não tinham caso de uso. Matriz de rastreabilidade e numeração das figuras atualizadas.
 
 Glossário
 
@@ -85,6 +93,18 @@ Seção 2
 UC
 
 Use Case (Caso de Uso). Interação entre ator e sistema para atingir um objetivo.
+
+Seção 6.1
+
+Ator
+
+Quem interage com o sistema para atingir um objetivo: pessoa ou papel, nunca o próprio sistema.
+
+Seção 6.1
+
+«include» / «extend»
+
+Relações entre casos de uso. «include»: o caso incluído sempre acontece dentro do outro. «extend»: o caso acontece só sob uma condição, a partir de um ponto do outro.
 
 Seção 6.1
 
@@ -1086,9 +1106,47 @@ Indefinido
 
 6.1 Diagrama de Casos de Uso
 
-Diagrama de Casos de Uso
+Dezesseis casos de uso cobrem os vinte e cinco requisitos funcionais: nenhum RF fica sem caso de uso na matriz da Seção 7.1. Um único desenho com todos eles e quatro atores vira um emaranhado de linhas, então o diagrama é apresentado em três vistas, cada uma respondendo a uma pergunta. Um caso de uso pode aparecer em mais de uma vista, como o UC07.
 
-*Inserir o diagrama aqui. Atores previstos: Profissional, Contratante, Operador do Painel e Sistema (despacho automático). Casos de uso UC01 a UC08, descritos abaixo.*
+O despacho (UC02) não tem ator primário. Ele é incluído pela publicação (UC01) e pela reabertura (UC08), e as levas seguintes, o lembrete pré-turno e o pedido de avaliação são disparados pelo agendador do sistema. Desenhar o próprio sistema como ator colocaria o Frila do lado de fora do Frila.
+
+*Figura 1 — Ciclo do turno: da publicação à avaliação (UC01 a UC08)*
+
+*Figura 2 — Cadastro, perfil e confiança (UC09 a UC13)*
+
+*Figura 3 — Suporte e direitos de quem usa (UC07, UC14 a UC16)*
+
+Atores
+
+Ator
+
+Quem é
+
+Casos de Uso
+
+Profissional
+
+Quem executa turnos avulsos: garçom, bartender, cozinheiro, recepcionista, promotor e outras funções operacionais. Maior de 18 anos.
+
+UC03, UC05, UC06, UC08, UC09, UC13, UC14, UC15, UC16
+
+Contratante
+
+Usuário de um estabelecimento que publica turnos: bar, restaurante, buffet, produtora ou outro negócio. Age com papel de administrador ou de operador do estabelecimento (RF21).
+
+UC01, UC04, UC05, UC06, UC08, UC10, UC11, UC12, UC13, UC14, UC15, UC16
+
+Operador do Painel
+
+Pessoa da equipe Frila que acompanha a janela crítica, atende suporte e apura contestações. Não confundir com o operador do estabelecimento.
+
+UC07, UC08, UC14, UC15
+
+Usuário
+
+Generalização de Profissional e Contratante, usada onde os dois têm o mesmo direito.
+
+UC14, UC15, UC16
 
 Descrição dos Casos de Uso
 
@@ -1096,17 +1154,17 @@ UC01: Publicar vaga
 
 Ator(es)
 
-Contratante (food service, evento ou campanha)
+Contratante (administrador ou operador do estabelecimento)
 
 Pré-condição
 
-O contratante está autenticado e o estabelecimento tem cadastro completo.
+O contratante está autenticado e o estabelecimento tem cadastro completo (UC10).
 
 Fluxo Principal
 
 1. O contratante escolhe publicar uma vaga.
 
-2. O sistema apresenta o formulário com função, data, horário de início e fim, local, valor por posição, número de posições e modo de preenchimento.
+2. O sistema apresenta o formulário com função, data, horário de início e fim, local, valor por posição, número de posições e modo de preenchimento (urgência ou seleção).
 
 3. O contratante preenche os campos. O local é pré-preenchido com o endereço do estabelecimento.
 
@@ -1114,13 +1172,15 @@ Fluxo Principal
 
 5. O contratante confirma a publicação.
 
-6. O sistema registra a vaga, cria uma posição por unidade solicitada e aciona UC02.
+6. O sistema registra a vaga, cria uma posição por unidade solicitada e inclui UC02.
 
 Fluxo Alternativo
 
-4a. Algum campo obrigatório está ausente ou inválido: o sistema indica o campo e impede a publicação.
-
 3a. O contratante opta por republicar uma vaga anterior: o sistema pré-preenche todos os campos e solicita apenas a nova data e o novo horário (RF05).
+
+3b. O contratante monta a escala de um evento: informa várias funções, cada uma com seu número de posições, e o sistema publica tudo numa única operação, acompanhando o preenchimento por função (RF19).
+
+4a. Algum campo obrigatório está ausente ou inválido: o sistema indica o campo e impede a publicação.
 
 Pós-condição
 
@@ -1128,7 +1188,7 @@ Vaga publicada, posições criadas com estado aberto e despacho iniciado.
 
 Regras Relacionadas
 
-RN02, RN03, RN18
+RN02, RN03, RN04, RN18
 
 Critério de Aceito (BDD)
 
@@ -1138,7 +1198,7 @@ UC02: Despachar vaga aos profissionais elegíveis
 
 Ator(es)
 
-Sistema (automático), disparado pela publicação ou pela reabertura de posição
+Nenhum ator primário. Incluído por UC01 e UC08; as levas seguintes são disparadas pelo agendador do sistema.
 
 Pré-condição
 
@@ -1146,9 +1206,9 @@ Existe ao menos uma posição aberta na vaga.
 
 Fluxo Principal
 
-1. O sistema seleciona os profissionais elegíveis: função compatível, local dentro do raio declarado, disponibilidade na janela e histórico aceitável.
+1. O sistema seleciona os profissionais elegíveis: função compatível, local dentro do raio declarado pelo profissional, disponibilidade na janela, perfil ativo e nenhum turno confirmado que se sobreponha ao da vaga.
 
-2. O sistema ordena os elegíveis por prioridade: equipe de confiança do estabelecimento primeiro, depois por taxa de comparecimento.
+2. O sistema ordena os elegíveis: equipe de confiança do estabelecimento primeiro (UC11), depois por taxa de comparecimento e histórico.
 
 3. O sistema monta a primeira leva e envia a notificação.
 
@@ -1158,11 +1218,15 @@ Fluxo Principal
 
 Fluxo Alternativo
 
-1a. Não há nenhum elegível: o sistema registra a ausência de oferta e marca a vaga para o Painel de Operação (UC07).
+1a. Não há nenhum elegível: o sistema registra a ausência de oferta e sinaliza a vaga no Painel de Operação (UC07).
+
+3a. O profissional ignora ou recusa a notificação: nada é registrado contra ele (RN16), e ele segue elegível para as próximas vagas.
 
 4a. A entrega da notificação falha: o sistema reagenda a entrega e registra o motivo (RNF02).
 
-5a. Os elegíveis se esgotam antes do preenchimento: o sistema amplia o raio dentro do limite configurado e, persistindo, aciona UC07.
+5a. Os elegíveis se esgotam antes do preenchimento: o sistema encerra as levas e sinaliza a vaga no Painel de Operação (UC07). O raio declarado pelo profissional nunca é ampliado pelo sistema (RN05).
+
+5b. A posição entra na janela crítica ainda aberta: as levas continuam e a posição passa a constar também no Painel de Operação (UC07).
 
 Pós-condição
 
@@ -1170,7 +1234,7 @@ Profissionais elegíveis notificados, com registro de envio e de entrega.
 
 Regras Relacionadas
 
-RN04, RN05, RN06
+RN04, RN05, RN06, RN16
 
 Critério de Aceito (BDD)
 
@@ -1184,7 +1248,7 @@ Profissional
 
 Pré-condição
 
-O profissional está autenticado, tem perfil ativo e recebeu o despacho ou encontrou a vaga na busca.
+O profissional está autenticado, tem perfil ativo e recebeu o despacho (UC02) ou encontrou a vaga na busca por região (RF07).
 
 Fluxo Principal
 
@@ -1194,13 +1258,15 @@ Fluxo Principal
 
 3. O profissional se candidata com um toque.
 
-4. O sistema registra a candidatura e aciona UC04.
+4. O sistema registra a candidatura e a submete a UC04.
 
 Fluxo Alternativo
 
 3a. A posição já foi preenchida enquanto o profissional visualizava: o sistema informa o encerramento e oferece outras vagas próximas.
 
-3b. O profissional já tem turno confirmado na mesma janela: o sistema alerta sobre o conflito e pede confirmação explícita antes de prosseguir.
+3b. O profissional já tem turno confirmado que se sobrepõe a este: o sistema impede a candidatura e mostra o turno em conflito. A regra é garantida no banco de dados, e não só na tela (decisão D1).
+
+3c. O perfil está suspenso: o sistema mostra o motivo e o caminho para contestar (UC15).
 
 Pós-condição
 
@@ -1208,7 +1274,7 @@ Candidatura registrada e submetida ao fluxo de confirmação.
 
 Regras Relacionadas
 
-RN03, RN10, RN19
+RN03, RN05, RN08, RN10
 
 Critério de Aceito (BDD)
 
@@ -1218,11 +1284,11 @@ UC04: Confirmar profissional na posição
 
 Ator(es)
 
-Contratante, ou Sistema no modo urgência
+Contratante no modo seleção. No modo urgência, a confirmação é automática.
 
 Pré-condição
 
-Existe ao menos uma candidatura para a posição.
+Existe ao menos uma candidatura válida para a posição.
 
 Fluxo Principal
 
@@ -1240,7 +1306,9 @@ Fluxo Alternativo
 
 2a. O contratante não escolhe até a janela crítica: a posição entra no Painel de Operação (UC07).
 
-3a. Duas candidaturas chegam simultaneamente: o sistema confirma exatamente uma e devolve retorno claro à outra.
+2b. A candidatura expira sem escolha: o candidato é avisado e segue livre para outras vagas. O prazo de expiração é a decisão D3, ainda aberta.
+
+3a. Duas confirmações chegam simultaneamente: o sistema confirma exatamente uma, e a outra recebe a resposta de posição já ocupada.
 
 Pós-condição
 
@@ -1248,7 +1316,7 @@ Posição preenchida, ambas as partes notificadas e contato liberado.
 
 Regras Relacionadas
 
-RN10, RN19
+RN08, RN10, RN19
 
 Critério de Aceito (BDD)
 
@@ -1262,11 +1330,11 @@ Profissional e Contratante
 
 Pré-condição
 
-Existe uma posição confirmada cujo horário de início já chegou.
+Existe uma posição confirmada cujo horário de início se aproxima.
 
 Fluxo Principal
 
-1. O sistema envia o lembrete pré-turno para os dois lados.
+1. O sistema envia o lembrete pré-turno para os dois lados, com endereço, horário e contato da contraparte (RF12).
 
 2. O profissional registra o início ao chegar.
 
@@ -1278,11 +1346,13 @@ Fluxo Principal
 
 Fluxo Alternativo
 
-2a. O profissional não registra o início dentro da tolerância: o sistema alerta o contratante e sinaliza a posição no Painel de Operação.
-
-4a. Os registros das partes divergem: o sistema mantém os dois, sinaliza a divergência e a encaminha à operação.
+2a. O profissional não registra o início dentro da tolerância: o sistema alerta o contratante e sinaliza a posição no Painel de Operação (UC07).
 
 2b. O profissional não comparece: o contratante registra a ausência, o que afeta a taxa de comparecimento, e a posição pode ser reaberta (UC08).
+
+3a. O contratante não confirma o início: vale o registro do profissional, marcado como não confirmado, e o caso vai ao Painel de Operação.
+
+4a. Os registros das partes divergem: o sistema mantém os dois, sinaliza a divergência e a encaminha ao Painel de Operação.
 
 Pós-condição
 
@@ -1290,11 +1360,11 @@ Turno registrado com horários e valor, e avaliação liberada após o término 
 
 Regras Relacionadas
 
-RN11, RN09, RN18
+RN09, RN11, RN18
 
 Critério de Aceito (BDD)
 
-Dado que um turno confirmado foi executado, quando as duas partes registram início e fim, então o sistema grava os horários e o valor acordado e disponibiliza o registro para consulta e exportação por ambos.
+Dado que um turno confirmado foi executado, quando as duas partes registram início e fim, então o sistema grava os horários e o valor acordado e disponibiliza o registro para consulta e exportação por ambos (UC13).
 
 UC06: Avaliar após o turno
 
@@ -1326,7 +1396,7 @@ Fluxo Alternativo
 
 Pós-condição
 
-Reputação e taxa de comparecimento atualizadas para os dois lados.
+Reputação e taxa de comparecimento atualizadas para os dois lados. O aval externo (UC12) nunca entra nesse cálculo.
 
 Regras Relacionadas
 
@@ -1344,13 +1414,13 @@ Operador do Painel
 
 Pré-condição
 
-Existe posição aberta dentro da janela crítica, ou uma vaga sinalizada por ausência de elegíveis, divergência de registro ou não comparecimento.
+Existe posição aberta dentro da janela crítica, ou um caso sinalizado por ausência de elegíveis, divergência de registro, não comparecimento, chamado de suporte (UC14) ou contestação (UC15).
 
 Fluxo Principal
 
 1. O sistema lista no painel as posições em risco, com tempo restante, histórico de despacho e contato das partes.
 
-2. O operador escolhe uma posição e analisa o que já foi tentado.
+2. O operador escolhe um caso e analisa o que já foi tentado.
 
 3. O operador aciona profissionais manualmente ou contata o contratante para ajustar valor, horário ou função.
 
@@ -1362,7 +1432,7 @@ Fluxo Alternativo
 
 3a. Não há como preencher: o operador registra o turno como não preenchido, com o motivo, e comunica o contratante. O caso alimenta a revisão de raio, valor e antecedência.
 
-3b. O caso é uma divergência de registro ou uma disputa entre as partes: o operador apura, registra a decisão e, se aplicável, aciona UC08 ou a suspensão prevista em RN13.
+3b. O caso é uma divergência de registro ou uma disputa entre as partes: o operador apura, registra a decisão e, se aplicável, aciona UC08 ou a suspensão prevista em RN13, sempre com motivo registrado.
 
 Pós-condição
 
@@ -1370,7 +1440,7 @@ Intervenção registrada e posição preenchida ou encerrada com motivo.
 
 Regras Relacionadas
 
-RN12, RN13
+RN12, RN13, RN16
 
 Critério de Aceito (BDD)
 
@@ -1384,7 +1454,7 @@ Profissional, Contratante ou Operador do Painel
 
 Pré-condição
 
-Existe uma posição confirmada ainda não executada, ou um não comparecimento registrado.
+Existe uma posição confirmada ainda não executada, ou um não comparecimento registrado em UC05.
 
 Fluxo Principal
 
@@ -1394,11 +1464,13 @@ Fluxo Principal
 
 3. O sistema notifica a contraparte.
 
-4. O sistema devolve a posição ao estado aberto e aciona UC02 imediatamente.
+4. O sistema devolve a posição ao estado aberto e inclui UC02 imediatamente.
 
 5. O sistema contabiliza o evento no histórico da parte que cancelou, distinguindo cancelamento com antecedência de não comparecimento.
 
 Fluxo Alternativo
+
+1a. O cancelamento parte do operador, depois de apurar um caso em UC07: o motivo registrado é o da apuração.
 
 4a. O horário de início já passou: a posição não é reaberta; o caso vai para o Painel de Operação como turno não coberto.
 
@@ -1416,17 +1488,335 @@ Critério de Aceito (BDD)
 
 Dado que uma posição confirmada é cancelada antes do início do turno, quando o motivo é informado, então a contraparte é notificada, a posição volta a ficar aberta e um novo despacho é disparado em até 30 segundos.
 
+UC09: Cadastrar-se e manter o perfil profissional
+
+Ator(es)
+
+Profissional
+
+Pré-condição
+
+Não existe conta ativa com o mesmo telefone ou e-mail.
+
+Fluxo Principal
+
+1. O profissional informa nome, telefone e e-mail e confirma ter 18 anos ou mais.
+
+2. O sistema confirma o telefone por código.
+
+3. O profissional declara suas funções, o ponto base com o raio de atuação e a disponibilidade por dia e faixa de horário.
+
+4. O sistema ativa o perfil, que passa a entrar no despacho.
+
+5. A qualquer momento, o profissional altera funções, raio ou disponibilidade, e a mudança vale no despacho seguinte, sem novo login.
+
+Fluxo Alternativo
+
+1a. A pessoa declara ter menos de 18 anos: o cadastro é recusado, e nada além do necessário para registrar a recusa é guardado (RN20).
+
+3a. O profissional sai antes de declarar funções e raio: o cadastro fica salvo, mas o perfil não entra em nenhum despacho até completá-los.
+
+5a. O sistema pede verificação de identidade: ela é progressiva e acontece depois do primeiro despacho, nunca como barreira de entrada. O documento não aparece em log (RN14, RN15).
+
+Pós-condição
+
+Perfil ativo e apto a receber despacho, sem nenhuma cobrança.
+
+Regras Relacionadas
+
+RN01, RN14, RN15, RN20
+
+Critério de Aceito (BDD)
+
+Dado que tenho 18 anos ou mais, quando informo nome, telefone, e-mail, funções, raio e disponibilidade, então fico apto a receber despacho em menos de 3 minutos, sem enviar documento e sem pagar nada.
+
+UC10: Cadastrar o estabelecimento e gerenciar seus usuários
+
+Ator(es)
+
+Contratante com papel de administrador do estabelecimento
+
+Pré-condição
+
+O responsável tem 18 anos ou mais e uma conta de acesso.
+
+Fluxo Principal
+
+1. O contratante informa nome ou razão social, documento (CNPJ ou CPF), endereço e responsável.
+
+2. O sistema valida o documento e localiza o endereço no mapa.
+
+3. O sistema cria o estabelecimento, com o responsável como administrador.
+
+4. O administrador convida outros usuários por telefone ou e-mail e atribui a cada um o papel de administrador ou de operador do estabelecimento.
+
+5. O convidado aceita com a própria conta, sem compartilhar senha.
+
+Fluxo Alternativo
+
+2a. O endereço não é localizado com precisão: o sistema pede que o contratante confirme o ponto no mapa.
+
+4a. O administrador remove um usuário: o acesso é revogado na hora, e o histórico do estabelecimento permanece.
+
+4b. O responsável muda: a administração é transferida, e vagas, turnos e reputação continuam com o estabelecimento.
+
+Pós-condição
+
+Estabelecimento apto a publicar vagas (UC01), com usuários e papéis registrados.
+
+Regras Relacionadas
+
+RN15, RN20
+
+Critério de Aceito (BDD)
+
+Dado que cadastrei o estabelecimento, quando convido um gerente como operador, então ele passa a publicar e acompanhar vagas com a própria conta, sem compartilhamento de senha, e o histórico permanece com o estabelecimento se eu sair.
+
+UC11: Manter a equipe de confiança
+
+Ator(es)
+
+Contratante
+
+Pré-condição
+
+O profissional tem perfil ativo no Frila.
+
+Fluxo Principal
+
+1. O contratante abre o perfil de um profissional, a partir do histórico de turnos (UC13) ou de uma candidatura.
+
+2. O contratante adiciona o profissional à equipe de confiança do estabelecimento.
+
+3. O sistema registra a inclusão, e o profissional passa a receber a primeira leva das próximas vagas para as quais for elegível (UC02).
+
+4. O contratante pode remover o profissional da equipe a qualquer momento.
+
+Fluxo Alternativo
+
+3a. O profissional da equipe não é elegível para uma vaga, por função, raio ou disponibilidade: ele não é notificado. A equipe muda a ordem do despacho, nunca a regra de elegibilidade (RN05).
+
+3b. O profissional recusa vagas da equipe: não há penalidade nem remoção automática (RN16).
+
+Pós-condição
+
+Equipe atualizada, valendo a partir do próximo despacho.
+
+Regras Relacionadas
+
+RN05, RN06, RN16
+
+Critério de Aceito (BDD)
+
+Dado que um profissional está na equipe de confiança do meu estabelecimento e é elegível para a vaga, quando publico, então ele é notificado na primeira leva, antes da ordenação geral por taxa de comparecimento.
+
+UC12: Registrar aval externo
+
+Ator(es)
+
+Contratante
+
+Pré-condição
+
+O contratante está identificado e já trabalhou com o profissional fora da plataforma.
+
+Fluxo Principal
+
+1. O contratante localiza o profissional pelo telefone ou pelo perfil.
+
+2. O contratante declara ter trabalhado com ele, informando a função e o período aproximado.
+
+3. O sistema registra o aval, atribuído ao contratante identificado.
+
+4. O aval passa a aparecer no perfil do profissional, separado do histórico interno.
+
+Fluxo Alternativo
+
+1a. O profissional ainda não tem perfil: o sistema oferece um convite para o cadastro (UC09), e o aval só é registrado quando o perfil existir.
+
+3a. O mesmo contratante já registrou aval para esse profissional: o sistema atualiza o registro existente em vez de somar outro.
+
+Pós-condição
+
+Aval visível no perfil do profissional e nunca somado à taxa de comparecimento.
+
+Regras Relacionadas
+
+RN08
+
+Critério de Aceito (BDD)
+
+Dado que trabalhei com um profissional fora da plataforma, quando registro o aval, então ele aparece no perfil do profissional atribuído a mim, separado do histórico interno, e não altera a taxa de comparecimento.
+
+UC13: Consultar e exportar o histórico de turnos
+
+Ator(es)
+
+Profissional e Contratante
+
+Pré-condição
+
+Existe ao menos um turno registrado em UC05.
+
+Fluxo Principal
+
+1. O usuário escolhe o período.
+
+2. O sistema lista os turnos com data, função, horários registrados, valor acordado e contraparte.
+
+3. O usuário pede a exportação em CSV ou PDF.
+
+4. O sistema gera o arquivo e o disponibiliza para download ou envio por e-mail.
+
+Fluxo Alternativo
+
+1a. O período não tem turnos: o sistema informa e não gera arquivo vazio.
+
+2a. Um turno tem registros divergentes: ele aparece marcado como em apuração, com os dois registros lado a lado.
+
+Pós-condição
+
+Arquivo gerado com os turnos do período. O valor é o acordado e registrado, nunca um pagamento processado pelo Frila.
+
+Regras Relacionadas
+
+RN09, RN11, RN17, RN18
+
+Critério de Aceito (BDD)
+
+Dado que tenho turnos registrados no mês, quando exporto o período, então o arquivo traz data, função, horários auditados, valor acordado e contraparte de cada turno, pronto para o fechamento contábil.
+
+UC14: Acionar suporte durante o turno
+
+Ator(es)
+
+Usuário (Profissional ou Contratante), atendido pelo Operador do Painel
+
+Pré-condição
+
+Existe um turno confirmado em andamento ou prestes a começar.
+
+Fluxo Principal
+
+1. O usuário aciona o suporte a partir da tela do turno.
+
+2. O usuário escolhe o motivo (endereço, atraso, conduta, segurança ou outro) e descreve o caso.
+
+3. O sistema abre um chamado vinculado ao turno e mostra o tempo de resposta declarado.
+
+4. O chamado aparece no Painel de Operação (UC07).
+
+5. O operador responde e registra a resolução.
+
+Fluxo Alternativo
+
+2a. O motivo é de segurança: além do chamado, o sistema orienta o contato imediato com as autoridades.
+
+5a. O tempo de resposta declarado se esgota: o chamado sobe de prioridade no painel e o usuário é avisado.
+
+Pós-condição
+
+Chamado registrado, vinculado ao turno e respondido.
+
+Regras Relacionadas
+
+RN11, RN15
+
+Critério de Aceito (BDD)
+
+Dado que estou num turno confirmado, quando aciono o suporte, então um chamado vinculado ao turno aparece no Painel de Operação e eu vejo o tempo de resposta declarado.
+
+UC15: Consultar e contestar suspensão
+
+Ator(es)
+
+Usuário suspenso (Profissional ou Contratante), atendido pelo Operador do Painel
+
+Pré-condição
+
+O perfil foi suspenso com motivo registrado (UC07).
+
+Fluxo Principal
+
+1. Ao entrar, o usuário vê o motivo e a data da suspensão.
+
+2. O usuário abre uma contestação com relato e, se quiser, evidência.
+
+3. O sistema cria o chamado com prazo de resposta e informa o prazo ao usuário.
+
+4. O operador apura e decide, registrando o fundamento.
+
+5. O sistema comunica a decisão. Se a suspensão for revertida, o perfil volta a ficar ativo.
+
+Fluxo Alternativo
+
+4a. O prazo vence sem decisão: o chamado é escalado e o usuário é avisado do novo prazo.
+
+5a. A suspensão é mantida: o usuário recebe o fundamento por escrito.
+
+Pós-condição
+
+Contestação decidida, com fundamento registrado.
+
+Regras Relacionadas
+
+RN13, RN15, RN16
+
+Critério de Aceito (BDD)
+
+Dado que meu perfil foi suspenso, quando abro o aplicativo, então vejo o motivo registrado e consigo abrir uma contestação que recebe prazo de resposta definido.
+
+UC16: Exportar dados pessoais e excluir a conta
+
+Ator(es)
+
+Usuário (Profissional ou Contratante)
+
+Pré-condição
+
+O usuário está autenticado.
+
+Fluxo Principal
+
+1. O usuário abre as configurações de privacidade da conta.
+
+2. O usuário pede a exportação, e o sistema gera um arquivo com seus dados pessoais.
+
+3. O usuário pede a exclusão da conta dentro do aplicativo e confirma.
+
+4. O sistema registra a solicitação, encerra as sessões e tira o perfil do despacho e da busca na hora.
+
+5. Em até 15 dias, os dados pessoais são apagados, e os turnos já realizados são anonimizados, preservando o histórico da contraparte.
+
+Fluxo Alternativo
+
+3a. O usuário tem turnos confirmados no futuro: o sistema avisa que a exclusão os cancela e, confirmada a exclusão, aplica UC08 com o motivo “exclusão de conta”.
+
+3b. O usuário é o único administrador de um estabelecimento com outros usuários: o sistema pede que ele transfira a administração antes (UC10).
+
+Pós-condição
+
+Conta excluída; histórico da contraparte preservado de forma anônima.
+
+Regras Relacionadas
+
+RN15
+
+Critério de Aceito (BDD)
+
+Dado que quero sair do Frila, quando peço a exclusão dentro do aplicativo, então a conta deixa de aparecer na hora e é excluída em até 15 dias, sem precisar de e-mail ou site externo, como exige a diretriz 5.1.1(v) da App Store.
+
 6.2 Diagrama de Banco de Dados (DER)
 
 O eixo do modelo é uma cadeia só — vaga → posição → turno → avaliação —, o ciclo de vida de uma unidade de trabalho da publicação à reputação. Despacho e candidatura penduram-se nela como o registro de quem foi chamado e quem respondeu. As duas vistas abaixo são do mesmo esquema: separá-las evita o emaranhado de linhas que um único desenho com dezesseis entidades produz.
 
-*Figura 1 — O ciclo de uma vaga: da publicação à avaliação*
+*Figura 4 — O ciclo de uma vaga: da publicação à avaliação*
 
-*Figura 2 — Uma conta de acesso, dois papéis*
+*Figura 5 — Uma conta de acesso, dois papéis*
 
-*Figura 3 — O que decide quem recebe o despacho*
+*Figura 6 — O que decide quem recebe o despacho*
 
-*Figura 4 — Os estados de uma posição e as transições válidas*
+*Figura 7 — Os estados de uma posição e as transições válidas*
 
 Descrição das Entidades Principais
 
@@ -1570,13 +1960,13 @@ N:1 com Posicao; N:1 com Turno
 
 A regra de dependência vale em toda seta: o domínio é alvo de todas e origem de nenhuma. Quando precisa falar com o mundo, declara um protocolo e espera que alguém o implemente — é o que permite testar despacho, elegibilidade e reputação sem rede, sem interface e sem simulador.
 
-*Figura 5 — A regra de dependência entre as camadas*
+*Figura 8 — A regra de dependência entre as camadas*
 
-*Figura 6 — Camada de domínio: entidades e serviços*
+*Figura 9 — Camada de domínio: entidades e serviços*
 
-*Figura 7 — Portas e implementações: produção e teste*
+*Figura 10 — Portas e implementações: produção e teste*
 
-*Figura 8 — Camada de apresentação*
+*Figura 11 — Camada de apresentação*
 
 Descrição das Classes Principais
 
@@ -1770,15 +2160,15 @@ Persistência, despacho, autenticação e envio de push. Pode ser serviço exter
 
 Diagrama de arquitetura
 
-*Figura 9 — Contexto: atores e dependências externas*
+*Figura 12 — Contexto: atores e dependências externas*
 
-*Figura 10 — Contêineres: quatro clientes, uma API, o despacho em fila*
+*Figura 13 — Contêineres: quatro clientes, uma API, o despacho em fila*
 
-*Figura 11 — As duas estratégias para iOS, Android e web*
+*Figura 14 — As duas estratégias para iOS, Android e web*
 
-*Figura 12 — As quatro camadas dentro do aplicativo*
+*Figura 15 — As quatro camadas dentro do aplicativo*
 
-*Figura 13 — Da publicação à confirmação, com os prazos de cada etapa*
+*Figura 16 — Da publicação à confirmação, com os prazos de cada etapa*
 
 Módulo 1 (obrigatório)
 
@@ -1838,7 +2228,7 @@ RN14, RN15, RN20
 
 RNF07, RNF08, RNF09
 
-UC03
+UC09
 
 RF02
 
@@ -1848,7 +2238,7 @@ RN15, RN20
 
 RNF07, RNF08
 
-UC01
+UC10
 
 RF03
 
@@ -1858,7 +2248,7 @@ RN05
 
 RNF09
 
-UC02
+UC09, UC02
 
 RF04
 
@@ -1918,7 +2308,7 @@ RN19
 
 RNF14
 
-UC04
+UC01, UC04
 
 RF10
 
@@ -1998,7 +2388,7 @@ RN08
 
 RNF13
 
-UC06
+UC12
 
 RF18
 
@@ -2008,7 +2398,7 @@ RN06
 
 RNF03
 
-UC02
+UC11, UC02
 
 RF19
 
@@ -2038,7 +2428,7 @@ RN15
 
 RNF07
 
-UC01, UC04
+UC10
 
 RF22
 
@@ -2048,7 +2438,7 @@ RN11, RN17
 
 RNF13
 
-UC05
+UC13
 
 RF23
 
@@ -2058,7 +2448,7 @@ RN13
 
 RNF12
 
-UC07
+UC14, UC07
 
 RF24
 
@@ -2068,7 +2458,7 @@ RN13, RN16
 
 RNF13
 
-UC07, UC08
+UC15
 
 RF25
 
@@ -2078,6 +2468,6 @@ RN15
 
 RNF08, RNF13
 
-Nenhum
+UC16
 
 *RN01 (não cobrar do profissional), RN09 (não processar pagamento) e RN20 (maioridade) não aparecem vinculadas a um único requisito porque são restrições de produto que valem sobre o sistema inteiro: a primeira e a segunda determinam o que não existe, e a terceira condiciona todo o cadastro. Elas são verificadas por ausência, já que nenhum fluxo pode introduzi-las, e não por um requisito específico que as implemente.*
