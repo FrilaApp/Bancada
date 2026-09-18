@@ -38,7 +38,7 @@ Para criar uma tarefa, use `/tarefa` no Claude Code — ele cuida do id sequenci
 - [[04 - Tarefas/T-0012 - Coletar decisões técnicas e gerar diagramas de engenharia|T-0012 — Coletar decisões técnicas e gerar diagramas de engenharia]] · `revisao`
 - [[04 - Tarefas/T-0013 - Fechamento formal da especificação de requisitos do Frila|T-0013 — Fechamento formal da especificação de requisitos do Frila]] · `revisao`
 - [[04 - Tarefas/T-0014 - Elaborar pitch e deck da primeira Apple Review (28-09)|T-0014 — Elaborar pitch e deck da primeira Apple Review (28-09)]] · `a-fazer`
-- [[04 - Tarefas/T-0015 - Roteiro e entrevistas de validação de campo no DF|T-0015 — Roteiro e entrevistas de validação de campo no DF]] · `a-fazer`
+- [[04 - Tarefas/T-0015 - Roteiro e entrevistas de validação de campo no DF|T-0015 — Roteiro e entrevistas de validação de campo no DF]] · `em-andamento`
 - [[04 - Tarefas/T-0016 - Elaborar plano de marketing e estratégia de Go-To-Market|T-0016 — Elaborar plano de marketing e estratégia de Go-To-Market]] · `a-fazer`
 - [[04 - Tarefas/T-0017 - Definir plano de métricas, KPIs e telemetria do produto|T-0017 — Definir plano de métricas, KPIs e telemetria do produto]] · `a-fazer`
 - [[04 - Tarefas/T-0018 - Coordenação de TestFlight e testes de usabilidade externos|T-0018 — Coordenação de TestFlight e testes de usabilidade externos]] · `a-fazer`
