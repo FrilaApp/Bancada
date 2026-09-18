@@ -7,7 +7,7 @@ desafio: C18
 data: 2026-09-17
 status: revisao
 origem: "01 - CBL/Desafios/C18/Documentos de Produto/Frila_Historias_de_Usuario_e_Backlog.pages"
-hash_origem: 59cb6ab05c8daaa2e45ea65ffc1c44e01ededa0f2ddebeee2f8c8bd12b4f69ac
+hash_origem: 9becf64d7cc5a921b4bc36d95d2577f8b31c186c18e8650de3b13b7ab6239e8b
 tags: [documento, user-stories, backlog, moscow, produto, frila]
 ---
 

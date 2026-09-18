@@ -22,7 +22,7 @@ A estratégia de mercado é territorial e sequencial: nascer no Distrito Federal
 
 **O que isso NÃO é:** um mural passivo de vagas onde o contratante posta e espera. A candidatura existe, mas quem faz o trabalho pesado é o despacho — a vaga é notificada ativamente aos profissionais elegíveis por raio geográfico, função e disponibilidade, em vez de esperar alguém encontrar o anúncio.
 
-**Em aberto, deliberadamente:** o modelo de monetização e a stack técnica ainda não estão decididos. O único requisito técnico já fechado é a existência de um app iOS nativo, com o backend podendo ser externo.
+**Em aberto, deliberadamente:** o modelo de precificação final e a validação da disposição a pagar aguardam a pesquisa de campo. A estrutura de monetização está desenhada como B2B SaaS / taxa de conexão no contratante com custo zero ao trabalhador ([[04 - Tarefas/T-0010 - Estruturar o modelo de negócio e monetização do Frila|T-0010]]), e a arquitetura técnica está estruturada em MVVM com domínio isolado em Swift/SwiftUI ([[04 - Tarefas/T-0024 - Diagramas de classe, banco de dados e arquitetura|T-0024]]).
 
 ---
 
@@ -67,7 +67,7 @@ As duas camadas dizem a mesma coisa. Quando divergirem, a camada detalhada é a 
 ## Prioridades atuais
 
 1. **Validação de campo.** 50 conversas. Sem isso, todo número deste conjunto de documentos é hipótese. As perguntas já estão formuladas e em ordem de importância em `01-O-PROBLEMA.md`, seção 6, e repetidas em `EVIDENCIAS.md`.
-2. **Decidir monetização e stack técnica**, hoje ambos em aberto. O modelo de cobrança de cada concorrente está levantado em `04-MERCADO-E-CONCORRENCIA.md` e serve de referência, não de resposta.
+2. **Refinar a precificação de campo e fechar pendências técnicas de infraestrutura** (D9 a D13), apoiando-se na modelagem B2B SaaS estruturada em [[04 - Tarefas/T-0010 - Estruturar o modelo de negócio e monetização do Frila|T-0010]] e na lista de [[07 - Arquitetura/Pendências Técnicas Para Codar|Pendências Técnicas]].
 
 **Já decidido:** Brasília é o primeiro mercado, não um laboratório. O objetivo aqui não é só validar — é dominar o DF antes de sair dele. Validado e consolidado no DF, o próximo passo é o resto do Brasil, depois outros países.
 
