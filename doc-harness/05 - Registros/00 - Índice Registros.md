@@ -22,7 +22,7 @@ Tipos de fato: `commit` · `pages` · `sessao`
 
 | Data | Dia | Fatos | |
 |---|---|---|---|
-| 2026-09-08 | Terça | 26 | [[05 - Registros/2026/09/2026-09-08\|abrir]] |
+| 2026-09-08 | Terça | 26 | [[05 - Registros/2026/09/2026-09-08|abrir]] |
 
 ---
 ← [[🏠 Início]]

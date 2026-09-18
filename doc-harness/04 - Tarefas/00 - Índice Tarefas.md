@@ -35,8 +35,8 @@ Para criar uma tarefa, use `/tarefa` no Claude Code — ele cuida do id sequenci
 - [[04 - Tarefas/T-0009 - Desenvolvimento do documento de visão|T-0009 — Desenvolvimento do documento de visão]] · `concluida`
 - [[04 - Tarefas/T-0010 - Estruturar o modelo de negócio e monetização do Frila|T-0010 — Estruturar o modelo de negócio e monetização do Frila]] · `concluida`
 - [[04 - Tarefas/T-0011 - Alinhar escopo e fluxos do protótipo de baixa fidelidade|T-0011 — Alinhar escopo e fluxos do protótipo de baixa fidelidade]] · `a-fazer`
-- [[04 - Tarefas/T-0012 - Coletar decisões técnicas e gerar diagramas de engenharia|T-0012 — Coletar decisões técnicas e gerar diagramas de engenharia]] · `a-fazer`
-- [[04 - Tarefas/T-0013 - Fechamento formal da especificação de requisitos do Frila|T-0013 — Fechamento formal da especificação de requisitos do Frila]] · `a-fazer`
+- [[04 - Tarefas/T-0012 - Coletar decisões técnicas e gerar diagramas de engenharia|T-0012 — Coletar decisões técnicas e gerar diagramas de engenharia]] · `revisao`
+- [[04 - Tarefas/T-0013 - Fechamento formal da especificação de requisitos do Frila|T-0013 — Fechamento formal da especificação de requisitos do Frila]] · `revisao`
 - [[04 - Tarefas/T-0014 - Elaborar pitch e deck da primeira Apple Review (28-09)|T-0014 — Elaborar pitch e deck da primeira Apple Review (28-09)]] · `a-fazer`
 - [[04 - Tarefas/T-0015 - Roteiro e entrevistas de validação de campo no DF|T-0015 — Roteiro e entrevistas de validação de campo no DF]] · `a-fazer`
 - [[04 - Tarefas/T-0016 - Elaborar plano de marketing e estratégia de Go-To-Market|T-0016 — Elaborar plano de marketing e estratégia de Go-To-Market]] · `a-fazer`

@@ -41,6 +41,16 @@ O quanto disso está verificado e o quanto é suposição está em `01-O-PROBLEM
 
 ---
 
+## 3. A proposta de valor
+
+O Frila substitui a incerteza do boca a boca por três garantias operacionais que canais informais não conseguem oferecer:
+
+1. **Despacho ativo:** A vaga vai até o trabalhador certo por geolocalização e disponibilidade em minutos, resolvendo emergências sem que o gestor precise parar o salão.
+2. **Confiança verificável:** A reputação binária mútua ("chamaria de novo?") e a taxa objetiva de comparecimento eliminam o risco de contratar desconhecidos.
+3. **Custo zero e transparência para o trabalhador:** O profissional recebe 100% do valor acordado diretamente do contratante, sem desconto de comissões, sem taxas de intermediação e sem fotos invasivas de documentos.
+
+---
+
 ## 4. Para quem
 
 ### 4.1. O profissional
@@ -184,11 +194,15 @@ O primeiro que se candidata e é aprovado leva, no modo padrão de urgência. Qu
 
 ### 5.4. Confirmação
 
-Os dois lados recebem a confirmação com local, horário, função, valor e um contato. A partir daqui existe compromisso registrado. eles podem entrar em contato um com o outro por email ou whatzapp
+Os dois lados recebem a confirmação com local, horário, função, valor e o canal de contato direto liberado (WhatsApp e telefone). A partir daqui existe compromisso formal registrado no sistema.
+
+### 5.5. Execução do turno e check-in
+
+O sistema envia lembrete inteligente pré-turno duas horas antes do início. No local, o profissional realiza o check-in geolocalizado confirmando sua presença e o check-out ao término da jornada, gerando rastro auditável de horas trabalhadas.
 
 ### 5.6. Pagamento
 
-Eles combinam o pagamento entre eles
+O pagamento do valor acordado é realizado diretamente entre contratante e profissional (em dinheiro ou Pix imediato ao final do turno). O Frila não processa, não retém e não custodia pagamentos (RN09), preservando a autonomia das partes e eliminando tarifas sobre o trabalhador.
 
 
 ### 5.7. Reputação
