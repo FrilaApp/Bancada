@@ -399,6 +399,14 @@ class Site {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="${base}estilo.css">
+<script>
+(function() {
+  var salvo = localStorage.getItem('bancada_theme');
+  var prefereDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  var tema = salvo || (prefereDark ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', tema);
+})();
+</script>
 </head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -413,9 +421,16 @@ class Site {
     <span class="marca-sub">BlendOps · CBL</span>
   </div>
   <nav>${nav}</nav>
-  <div class="header-status">
-    <span class="status-pulsar"></span>
-    <span class="status-texto">Vault Live</span>
+  <div class="header-direita">
+    <button type="button" class="btn-tema" id="btn-tema" aria-label="Alternar modo claro/escuro" title="Alternar modo claro/escuro">
+      <svg class="icone-sol" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+      <svg class="icone-lua" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+      <span class="btn-tema-rotulo">Claro</span>
+    </button>
+    <div class="header-status">
+      <span class="status-pulsar"></span>
+      <span class="status-texto">Vault Live</span>
+    </div>
   </div>
 </header>
 <div class="colunas">
@@ -457,6 +472,25 @@ ${this.avisoDeAtualizacao(base)}
       }
     });
   });
+
+  var btnTema = document.getElementById('btn-tema');
+  if (btnTema) {
+    function atualizarBotao(t) {
+      var rotulo = btnTema.querySelector('.btn-tema-rotulo');
+      if (rotulo) rotulo.textContent = t === 'light' ? 'Escuro' : 'Claro';
+      btnTema.setAttribute('aria-label', t === 'light' ? 'Ativar modo escuro' : 'Ativar modo claro');
+      btnTema.setAttribute('title', t === 'light' ? 'Ativar modo escuro' : 'Ativar modo claro');
+    }
+    var atual = document.documentElement.getAttribute('data-theme') || 'dark';
+    atualizarBotao(atual);
+    btnTema.addEventListener('click', function() {
+      var cur = document.documentElement.getAttribute('data-theme') || 'dark';
+      var proximo = cur === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', proximo);
+      try { localStorage.setItem('bancada_theme', proximo); } catch(e) {}
+      atualizarBotao(proximo);
+    });
+  }
 })();
 </script>
 </body>
@@ -535,6 +569,32 @@ ${this.avisoDeAtualizacao(base)}
 
     let corpo = '';
 
+    corpo += `<div class="cartao-documento-cbl">
+      <div class="cartao-cbl-conteudo">
+        <div class="cartao-cbl-icone">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+        </div>
+        <div class="cartao-cbl-textos">
+          <div class="cartao-cbl-badges">
+            <span class="badge-destaque">Documento Oficial</span>
+            <span class="badge-apoio">28 páginas · Apple Pages</span>
+          </div>
+          <h3>CBL — Challenge 18</h3>
+          <p>Explore o documento oficial integrado com visualizador estilo PDF: Big Idea (Freelancer), Perguntas Essenciais, Pesquisa de Campo e Benchmarking de Mercado.</p>
+        </div>
+      </div>
+      <div class="cartao-cbl-acoes">
+        <a href="notas/01-cbl-desafios-c18-documentos-cbl-c18.html" class="btn-primario-cbl">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Abrir Leitor de Documento
+        </a>
+        <a href="midia/01 - CBL/Desafios/C18/Documentos/CBL_C18.pdf" class="btn-secundario-cbl" download="CBL_C18.pdf">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          PDF (9 MB)
+        </a>
+      </div>
+    </div>`;
+
     if (ativo) {
       const corpoSemTitulo = ativo.corpo.replace(/^#\s+.*\n?/, '');
       corpo += `<article class="narrativa">${this.md(corpoSemTitulo, '')}</article>`;
@@ -555,6 +615,9 @@ ${this.avisoDeAtualizacao(base)}
   }
 
   paginaDeNota(nota, secao) {
+    if (nota.caminho.includes('CBL_C18')) {
+      return this.paginaLeitorCBL(nota, secao);
+    }
     // O H1 vira o título da página; repeti-lo no corpo seria redundante.
     const corpoSemTitulo = nota.corpo.replace(/^#\s+.*\n?/, '');
     let corpo = '';
@@ -622,12 +685,335 @@ ${this.avisoDeAtualizacao(base)}
       .join('');
     if (campos) corpo += `<div class="campos">${campos}</div>`;
 
+    if (nota.caminho === '01 - CBL/Desafios/C18/C18.md') {
+      corpo += `<div class="cartao-documento-cbl">
+        <div class="cartao-cbl-conteudo">
+          <div class="cartao-cbl-icone">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+          </div>
+          <div class="cartao-cbl-textos">
+            <div class="cartao-cbl-badges">
+              <span class="badge-destaque">Documento Oficial</span>
+              <span class="badge-apoio">28 páginas · Apple Pages</span>
+            </div>
+            <h3>CBL — Challenge 18</h3>
+            <p>Acesse o documento original com 28 páginas no leitor integrado estilo PDF.</p>
+          </div>
+        </div>
+        <div class="cartao-cbl-acoes">
+          <a href="01-cbl-desafios-c18-documentos-cbl-c18.html" class="btn-primario-cbl">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            Abrir Leitor de Documento
+          </a>
+          <a href="../midia/01 - CBL/Desafios/C18/Documentos/CBL_C18.pdf" class="btn-secundario-cbl" download="CBL_C18.pdf">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            PDF (9 MB)
+          </a>
+        </div>
+      </div>`;
+    }
+
     corpo += `<article class="narrativa">${this.md(corpoSemTitulo, 'notas')}</article>`;
 
     return this.pagina({
       titulo: this.limparTitulo(nota.titulo),
       subtitulo: secao.titulo,
       corpo,
+      ativo: this.arquivoDaNota(nota.caminho),
+      daPasta: 'notas',
+    });
+  }
+
+  paginaLeitorCBL(nota, secao) {
+    const base = '../';
+    const totalPaginas = 28;
+    const caminhoPdf = `${base}midia/01 - CBL/Desafios/C18/Documentos/CBL_C18.pdf`;
+    const corpoSemTitulo = nota.corpo.replace(/^#\s+.*\n?/, '');
+
+    const secoescbl = [
+      { pag: 1, titulo: 'Informações Gerais & Links', sub: 'Grupo, Mentores e FigJam' },
+      { pag: 1, titulo: '1. Engage — Big Idea', sub: 'Freelancer' },
+      { pag: 2, titulo: 'Milestone — Pergunta Essencial', sub: 'Confiança mútua no turno avulso' },
+      { pag: 2, titulo: 'Milestone — Challenge Statement', sub: 'Turno fechado com confiança em < 1h no DF' },
+      { pag: 3, titulo: '2. Investigate — General Research', sub: 'Dificuldade de contratação & rotatividade' },
+      { pag: 4, titulo: 'Regulação & Dinâmica de Mercado', sub: 'PEC 6x1, margens e campanhas políticas' },
+      { pag: 5, titulo: 'Síntese da Pesquisa Geral', sub: 'WhatsApp sem garantias & lacuna de frequência' },
+      { pag: 6, titulo: 'Domain Research — Avaliações de Apps', sub: 'Queixas reais: falta de chamados e notificações' },
+      { pag: 7, titulo: 'Síntese do Domínio', sub: 'Falta de acesso à vaga vs escassez de confiança' },
+      { pag: 8, titulo: 'Personas & Benchmarking', sub: 'Maître sob estresse e 9 concorrentes' },
+      { pag: 9, titulo: 'Modelos de Cobrança e Monetização', sub: 'Switch, Closeer e eFreela' },
+      { pag: 10, titulo: 'Campanhas Políticas & Atividades', sub: 'Portaria TSE e matriz CSD' },
+      { pag: 11, titulo: '3. Act — Solução Frila', sub: 'Plataforma com despacho ativo por geolocalização' },
+      { pag: 12, titulo: 'Viabilidade & Unit Economics no DF', sub: 'Custos variáveis (~R$ 1,50) e margens' },
+      { pag: 13, titulo: 'Arquitetura do Frila', sub: 'Conexão direta com as evidências coletadas' },
+      { pag: 14, titulo: 'Diagramas de Casos de Uso & Classe', sub: 'Estruturação técnica e entidades' },
+      { pag: 15, titulo: 'Implementação & Validação de Campo', sub: 'Protocolo DF e entrevistas com maîtres' },
+      { pag: 16, titulo: 'Análise de Métricas da App Store', sub: 'Hipóteses de conversão, onboarding e retenção' },
+      { pag: 17, titulo: 'Objetivos de Aprendizagem (Págs 17–28)', sub: 'Design System, IA Generativa, Agentes e MVP' },
+    ];
+
+    const itensSumario = secoescbl.map((s) => `
+      <a href="#pag-${s.pag}" class="sumario-item" data-pag="${s.pag}">
+        <span class="sumario-titulo">${escapar(s.titulo)}</span>
+        <span class="sumario-pag">pág. ${s.pag}</span>
+      </a>
+    `).join('');
+
+    let folhasHtml = '';
+    for (let i = 1; i <= totalPaginas; i++) {
+      const pad = String(i).padStart(2, '0');
+      const imgSrc = `${base}midia/01 - CBL/Desafios/C18/Documentos/paginas/page-${pad}.jpg`;
+      const loading = i <= 2 ? 'eager' : 'lazy';
+      folhasHtml += `
+        <article class="leitor-folha" id="pag-${i}" data-pagina="${i}">
+          <div class="folha-cabecalho">
+            <span class="folha-doc">CBL — Challenge 18</span>
+            <span class="folha-ind">Página ${i} de ${totalPaginas}</span>
+          </div>
+          <div class="folha-corpo">
+            <img src="${imgSrc}" alt="Página ${i} do Documento Oficial CBL Challenge 18" loading="${loading}" class="folha-img">
+          </div>
+          <div class="folha-rodape">
+            <span class="folha-org">Apple Developer Academy · BlendOps</span>
+            <span class="folha-cont">${pad} / ${totalPaginas}</span>
+          </div>
+        </article>
+      `;
+    }
+
+    const leitorHtml = `
+      <div class="leitor-documento-container" id="leitor-cbl">
+        <div class="leitor-toolbar" role="toolbar" aria-label="Controles do leitor de documento">
+          <div class="leitor-toolbar-esquerda">
+            <div class="leitor-doc-info">
+              <svg class="leitor-icone-doc" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+              <span class="leitor-doc-nome">CBL_C18.pages</span>
+              <span class="leitor-doc-badge">Oficial</span>
+              <span class="leitor-doc-paginas">${totalPaginas} págs</span>
+            </div>
+          </div>
+
+          <div class="leitor-toolbar-centro">
+            <button type="button" id="leitor-btn-ant" class="leitor-btn" aria-label="Página anterior" title="Página anterior (←)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <div class="leitor-paginacao">
+              <span>Pág.</span>
+              <input type="number" id="leitor-input-pag" min="1" max="${totalPaginas}" value="1" aria-label="Número da página">
+              <span>de ${totalPaginas}</span>
+            </div>
+            <button type="button" id="leitor-btn-prox" class="leitor-btn" aria-label="Próxima página" title="Próxima página (→)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+
+            <div class="leitor-dropdown-wrapper">
+              <button type="button" id="leitor-btn-sumario" class="leitor-btn" aria-expanded="false" aria-haspopup="true" title="Abrir sumário de seções do documento">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                <span>Sumário</span>
+                <svg class="chevron-sm" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-9"/></svg>
+              </button>
+              <div id="leitor-sumario-dropdown" class="leitor-dropdown" hidden>
+                <div class="leitor-dropdown-topo">Seções do Documento</div>
+                ${itensSumario}
+              </div>
+            </div>
+          </div>
+
+          <div class="leitor-toolbar-direita">
+            <button type="button" id="leitor-btn-modo" class="leitor-btn" title="Alternar entre rolagem contínua e página individual">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>
+              <span id="leitor-rotulo-modo">Contínuo</span>
+            </button>
+
+            <button type="button" id="leitor-btn-foco" class="leitor-btn" title="Modo Foco: expande para largura total integrada na página (tecla F)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+              <span id="leitor-rotulo-foco">Foco</span>
+            </button>
+
+            <a href="${caminhoPdf}" class="leitor-btn leitor-btn-destaque" download="CBL_C18.pdf" title="Baixar PDF original de 28 páginas (9.1 MB)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Baixar PDF</span>
+            </a>
+
+            <button type="button" onclick="window.print()" class="leitor-btn" title="Imprimir páginas do documento">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
+              <span>Imprimir</span>
+            </button>
+
+            <button type="button" id="leitor-btn-texto" class="leitor-btn" title="Alternar entre páginas gráficas e texto Markdown">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              <span id="leitor-rotulo-texto">Ver Texto</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="leitor-stage" id="leitor-stage">
+          ${folhasHtml}
+        </div>
+
+        <div id="leitor-texto-container" class="narrativa leitor-texto-bloco" hidden>
+          <div class="callout callout-info">
+            <b>Visualização em Texto Integral</b>
+            <p>Este texto é a extração Markdown do documento <code>CBL_C18.pages</code>, disponível para busca e cópia rápida.</p>
+          </div>
+          ${this.md(corpoSemTitulo, 'notas')}
+        </div>
+      </div>
+
+      <script>
+      (function() {
+        var container = document.getElementById('leitor-cbl');
+        if (!container) return;
+
+        var stage = document.getElementById('leitor-stage');
+        var textoContainer = document.getElementById('leitor-texto-container');
+        var inputPag = document.getElementById('leitor-input-pag');
+        var btnAnt = document.getElementById('leitor-btn-ant');
+        var btnProx = document.getElementById('leitor-btn-prox');
+        var btnModo = document.getElementById('leitor-btn-modo');
+        var rotuloModo = document.getElementById('leitor-rotulo-modo');
+        var btnFoco = document.getElementById('leitor-btn-foco');
+        var rotuloFoco = document.getElementById('leitor-rotulo-foco');
+        var btnTexto = document.getElementById('leitor-btn-texto');
+        var rotuloTexto = document.getElementById('leitor-rotulo-texto');
+        var btnSumario = document.getElementById('leitor-btn-sumario');
+        var sumarioDropdown = document.getElementById('leitor-sumario-dropdown');
+
+        var total = ${totalPaginas};
+        var paginaAtual = 1;
+        var modoContinuo = true;
+        var visualizandoTexto = false;
+
+        function irParaPagina(num, scroll) {
+          if (scroll === undefined) scroll = true;
+          num = Math.max(1, Math.min(total, num));
+          paginaAtual = num;
+          inputPag.value = num;
+
+          if (modoContinuo) {
+            if (scroll) {
+              var el = document.getElementById('pag-' + num);
+              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          } else {
+            document.querySelectorAll('.leitor-folha').forEach(function(f) {
+              var p = parseInt(f.dataset.pagina, 10);
+              f.classList.toggle('pagina-ativa', p === num);
+            });
+            if (scroll) {
+              container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }
+
+        btnAnt.addEventListener('click', function() {
+          if (paginaAtual > 1) irParaPagina(paginaAtual - 1);
+        });
+
+        btnProx.addEventListener('click', function() {
+          if (paginaAtual < total) irParaPagina(paginaAtual + 1);
+        });
+
+        inputPag.addEventListener('change', function() {
+          var val = parseInt(inputPag.value, 10);
+          if (!isNaN(val)) irParaPagina(val);
+        });
+
+        // Alternar modo contínuo / individual
+        btnModo.addEventListener('click', function() {
+          modoContinuo = !modoContinuo;
+          stage.classList.toggle('modo-pagina-individual', !modoContinuo);
+          rotuloModo.textContent = modoContinuo ? 'Contínuo' : 'Individual';
+          irParaPagina(paginaAtual, false);
+        });
+
+        // Modo Foco (Zen integrado na página)
+        var colunas = document.querySelector('.colunas');
+        btnFoco.addEventListener('click', function() {
+          if (colunas) {
+            var ativo = colunas.classList.toggle('modo-foco');
+            rotuloFoco.textContent = ativo ? 'Restaurar' : 'Foco';
+          }
+        });
+
+        // Alternar Texto / Páginas
+        btnTexto.addEventListener('click', function() {
+          visualizandoTexto = !visualizandoTexto;
+          stage.hidden = visualizandoTexto;
+          textoContainer.hidden = !visualizandoTexto;
+          rotuloTexto.textContent = visualizandoTexto ? 'Ver Páginas' : 'Ver Texto';
+        });
+
+        // Sumário Dropdown
+        btnSumario.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var aberto = !sumarioDropdown.hidden;
+          sumarioDropdown.hidden = aberto;
+          btnSumario.setAttribute('aria-expanded', String(!aberto));
+        });
+
+        document.addEventListener('click', function(e) {
+          if (!sumarioDropdown.hidden && !sumarioDropdown.contains(e.target) && e.target !== btnSumario) {
+            sumarioDropdown.hidden = true;
+            btnSumario.setAttribute('aria-expanded', 'false');
+          }
+        });
+
+        document.querySelectorAll('.sumario-item').forEach(function(item) {
+          item.addEventListener('click', function(e) {
+            e.preventDefault();
+            var p = parseInt(this.dataset.pag, 10);
+            sumarioDropdown.hidden = true;
+            btnSumario.setAttribute('aria-expanded', 'false');
+            if (visualizandoTexto) {
+              btnTexto.click();
+            }
+            irParaPagina(p);
+          });
+        });
+
+        // Auto-update da página visível no scroll (IntersectionObserver)
+        if ('IntersectionObserver' in window) {
+          var observer = new IntersectionObserver(function(entries) {
+            if (!modoContinuo || visualizandoTexto) return;
+            entries.forEach(function(entry) {
+              if (entry.isIntersecting && entry.intersectionRatio >= 0.4) {
+                var p = parseInt(entry.target.dataset.pagina, 10);
+                if (p && p !== paginaAtual) {
+                  paginaAtual = p;
+                  inputPag.value = p;
+                }
+              }
+            });
+          }, { threshold: [0.4, 0.6] });
+
+          document.querySelectorAll('.leitor-folha').forEach(function(f) {
+            observer.observe(f);
+          });
+        }
+
+        // Navegação por teclado
+        document.addEventListener('keydown', function(e) {
+          if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) return;
+          if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+            if (paginaAtual > 1) { irParaPagina(paginaAtual - 1); e.preventDefault(); }
+          } else if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+            if (paginaAtual < total) { irParaPagina(paginaAtual + 1); e.preventDefault(); }
+          } else if (e.key === 'f' || e.key === 'F') {
+            btnFoco.click();
+          } else if (e.key === 'Escape') {
+            if (!sumarioDropdown.hidden) { sumarioDropdown.hidden = true; }
+            else if (colunas && colunas.classList.contains('modo-foco')) { btnFoco.click(); }
+          }
+        });
+      })();
+      </script>
+    `;
+
+    return this.pagina({
+      titulo: 'Documento Oficial CBL',
+      subtitulo: 'Challenge 18 · Ciclo CBL · 28 páginas · Apple Pages',
+      corpo: leitorHtml,
       ativo: this.arquivoDaNota(nota.caminho),
       daPasta: 'notas',
     });
@@ -1438,6 +1824,11 @@ ${cores('escuro')}
 :root[data-theme="dark"] {
 ${cores('escuro')}
   color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+${cores('claro')}
+  color-scheme: light;
 }
 
 ${pilulas}
