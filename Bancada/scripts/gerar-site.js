@@ -270,11 +270,40 @@ class Site {
       }
     }
 
-    // Remove prefixos redundantes com travessão ou hífen
-    s = s.replace(/^(Frila|C18|Roadmap)\s*[—–-]\s*/i, '');
+    // Documentos derivados específicos: títulos limpos e humanos
+    if (tipo === 'documento-derivado') {
+      if (s === 'CBL_C18') return 'Documento Oficial CBL';
+      if (s === 'Frila_Documento_de_Requisitos') return 'Documento de Requisitos';
+      if (s === 'Frila_Documento_de_Visao') return 'Documento de Visão';
+      s = s.replace(/^Frila_/i, '').replace(/_/g, ' ');
+    }
 
-    // Remove sufixos redundantes com travessão ou hífen
-    s = s.replace(/\s*[—–-]\s*(Frila|C18)$/i, '');
+    // Seção Design: remover prefixos repetitivos e formatar datas
+    if (tipo === 'design') {
+      if (/^Revisão profunda de UI\s*[·—–-]\s*\d{4}-\d{2}-\d{2}/i.test(s)) {
+        const matchData = s.match(/\d{4}-\d{2}-\d{2}/);
+        if (matchData) {
+          const [ano, mes, dia] = matchData[0].split('-');
+          const meses = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+          return `Revisão profunda (${parseInt(dia, 10)} ${meses[parseInt(mes, 10) - 1]})`;
+        }
+      }
+      if (/^Revisão de UI da Bancada\s*[·—–-]\s*\d{4}-\d{2}-\d{2}/i.test(s)) {
+        const matchData = s.match(/\d{4}-\d{2}-\d{2}/);
+        if (matchData) {
+          const [ano, mes, dia] = matchData[0].split('-');
+          const meses = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+          return `Revisão da Bancada (${parseInt(dia, 10)} ${meses[parseInt(mes, 10) - 1]})`;
+        }
+      }
+      s = s.replace(/^Revisão profunda de UI\s*[·—–-]\s*/i, '');
+    }
+
+    // Remove prefixos redundantes com travessão, hífen ou ponto
+    s = s.replace(/^(Frila|C18|Roadmap)\s*[·—–-]\s*/i, '');
+
+    // Remove sufixos redundantes com travessão, hífen ou ponto
+    s = s.replace(/\s*[·—–-]\s*(Frila|C18)$/i, '');
 
     // Simplificações limpas sem travessões banais
     if (s === 'Challenge 18' || s === 'C18') return 'Challenge 18';
@@ -294,6 +323,11 @@ class Site {
     if (t === 'C18 — Challenge 18' || t === 'C18 - Challenge 18') {
       return 'Challenge 18';
     }
+    // Formata datas ISO nos títulos para padrão amigável
+    t = t.replace(/(\d{4})-(\d{2})-(\d{2})/g, (_, ano, mes, dia) => {
+      const meses = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+      return `${parseInt(dia, 10)} ${meses[parseInt(mes, 10) - 1]} ${ano}`;
+    });
     // Substitui travessão banal solto por separador elegante
     t = t.replace(/\s+[—–-]\s+/g, ' · ');
     return t;
@@ -557,6 +591,21 @@ ${this.avisoDeAtualizacao(base)}
         const rot = rotulosStatus[valor] || valor;
         return `<span class="etiqueta status-${escapar(valor)}"><span class="status-ponto"></span>${escapar(rot)}</span>`;
       }
+      if (chave === 'responsavel') {
+        const mapa = {
+          'cauecarneiroc': 'Cauê Carneiro',
+          'fbtostadev': 'Fabrício Tosta',
+          'joaopaulo': 'João Paulo',
+          'juliaclovandi': 'Júlia Clovandi',
+          'matheussilva': 'Matheus Silva',
+        };
+        const arr = Array.isArray(valor) ? valor : String(valor).replace(/^\[|\]$/g, '').split(',');
+        const normalizados = arr.map((p) => {
+          const limpo = String(p).trim();
+          return mapa[limpo.toLowerCase()] || limpo;
+        }).filter(Boolean);
+        return escapar(normalizados.join(', '));
+      }
       if (Array.isArray(valor)) {
         return valor.map(escapar).join(', ');
       }
@@ -604,23 +653,50 @@ ${this.avisoDeAtualizacao(base)}
     ];
     const rotulos = Object.fromEntries(colunasStatus.map((c) => [c.id, c.rotulo]));
 
+    // Mapeia logins/usernames para nomes humanos
+    const mapaNomesResponsaveis = {
+      'cauecarneiroc': 'Cauê Carneiro',
+      'fbtostadev': 'Fabrício Tosta',
+      'joaopaulo': 'João Paulo',
+      'juliaclovandi': 'Júlia Clovandi',
+      'matheussilva': 'Matheus Silva',
+    };
+
+    const normalizarNome = (nome) => {
+      const chave = nome.trim().toLowerCase();
+      return mapaNomesResponsaveis[chave] || nome.trim();
+    };
+
     // Extrai lista única de responsáveis
     const todosResponsaveis = new Set();
     tarefas.forEach((t) => {
       const resp = t.campos.responsavel;
       if (resp) {
         const limpo = resp.replace(/^\[|\]$/g, '');
-        limpo.split(',').map((s) => s.trim()).filter(Boolean).forEach((r) => todosResponsaveis.add(r));
+        limpo.split(',').map((s) => normalizarNome(s)).filter(Boolean).forEach((r) => todosResponsaveis.add(r));
       }
     });
     const listaResponsaveis = Array.from(todosResponsaveis).sort((a, b) => a.localeCompare(b, 'pt-BR'));
 
+    const formatarDataLegivel = (d) => {
+      if (!d) return '';
+      if (/^\d{4}-\d{2}-\d{2}$/.test(d)) {
+        const [ano, mes, dia] = d.split('-');
+        return `${dia}/${mes}/${ano}`;
+      }
+      return d;
+    };
+
     const itensTarefas = tarefas.map((t) => {
       const id = t.campos.id || '';
       const s = t.campos.status || 'a-fazer';
-      const resp = (t.campos.responsavel || '—').replace(/^\[|\]$/g, '').trim();
+      const respBruta = (t.campos.responsavel || '').replace(/^\[|\]$/g, '').trim();
+      const resp = respBruta
+        ? respBruta.split(',').map((p) => normalizarNome(p)).filter(Boolean).join(', ')
+        : '—';
       const desafio = t.campos.desafio || 'C18';
-      const data = t.campos.data_criacao || '';
+      const dataIso = t.campos.data_criacao || '';
+      const dataFormatada = formatarDataLegivel(dataIso);
       const href = this.arquivoDaNota(t.caminho);
       return {
         id,
@@ -628,7 +704,8 @@ ${this.avisoDeAtualizacao(base)}
         status: s,
         responsavel: resp,
         desafio,
-        data,
+        data: dataIso,
+        dataFormatada,
         href,
       };
     });
@@ -693,7 +770,7 @@ ${this.avisoDeAtualizacao(base)}
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               <span>${escapar(t.responsavel)}</span>
             </span>
-            ${t.data ? `<span class="kanban-card-data">${escapar(t.data)}</span>` : ''}
+            ${t.dataFormatada ? `<span class="kanban-card-data">${escapar(t.dataFormatada)}</span>` : ''}
           </div>
         </div>
       `).join('');
@@ -724,7 +801,7 @@ ${this.avisoDeAtualizacao(base)}
         <td><span class="etiqueta status-${escapar(t.status)}"><span class="status-ponto"></span>${escapar(rotuloStatus)}</span></td>
         <td>${escapar(t.responsavel)}</td>
         <td>${escapar(t.desafio)}</td>
-        <td class="mono">${escapar(t.data || '—')}</td>
+        <td class="mono">${escapar(t.dataFormatada || '—')}</td>
       </tr>`;
     }).join('');
 
