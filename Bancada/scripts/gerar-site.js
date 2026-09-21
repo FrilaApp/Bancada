@@ -83,12 +83,16 @@ function lerIndice(vault) {
   // `BANCADA_BIN` existe por causa do CI: o runner é Linux e compila o
   // `bancada-indice`, enquanto na máquina de quem desenvolve o binário é o
   // `./Bancada` do macOS. Os dois emitem o mesmo JSON — é o mesmo `NucleoCLI`.
-  const binario = process.env.BANCADA_BIN
-    ? path.resolve(process.env.BANCADA_BIN)
-    : path.join(RAIZ_PROJETO, 'Bancada');
-  if (!fs.existsSync(binario)) {
+  const candidatos = [
+    process.env.BANCADA_BIN ? path.resolve(process.env.BANCADA_BIN) : null,
+    path.join(RAIZ_PROJETO, '.build/release/bancada-indice'),
+    path.join(RAIZ_PROJETO, '..', '.build/release/bancada-indice'),
+    path.join(RAIZ_PROJETO, 'Bancada'),
+  ].filter(Boolean);
+  const binario = candidatos.find((c) => fs.existsSync(c));
+  if (!binario) {
     console.error(process.env.BANCADA_BIN
-      ? `✗ BANCADA_BIN aponta para um binário que não existe: ${binario}`
+      ? `✗ BANCADA_BIN aponta para um binário que não existe: ${process.env.BANCADA_BIN}`
       : '✗ O binário da Bancada não existe. Rode ./build.sh primeiro.');
     process.exit(1);
   }
@@ -252,6 +256,49 @@ class Site {
     return renderizar(this.semRodapeDoObsidian(texto), (alvo) => this.resolver(alvo, daPasta));
   }
 
+  limparRotuloSidebar(rotulo, tipo) {
+    let s = rotulo.replace(/^[\p{Extended_Pictographic}\u200d\ufe0f]+\s*/u, '').trim();
+
+    // Se for data diária ISO (2026-09-18), exibe legível sem hífens: 18 set 2026
+    if (tipo === 'atualizacao-diaria' || /^\d{4}-\d{2}-\d{2}$/.test(s)) {
+      const partes = s.split('-');
+      if (partes.length === 3) {
+        const meses = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+        const dia = parseInt(partes[2], 10);
+        const mes = meses[parseInt(partes[1], 10) - 1];
+        return `${dia} ${mes} ${partes[0]}`;
+      }
+    }
+
+    // Remove prefixos redundantes com travessão ou hífen
+    s = s.replace(/^(Frila|C18|Roadmap)\s*[—–-]\s*/i, '');
+
+    // Remove sufixos redundantes com travessão ou hífen
+    s = s.replace(/\s*[—–-]\s*(Frila|C18)$/i, '');
+
+    // Simplificações limpas sem travessões banais
+    if (s === 'Challenge 18' || s === 'C18') return 'Challenge 18';
+    if (s === 'Agenda') return 'Agenda C18';
+    if (s.startsWith('Roteiro e Protocolo de Validação de Campo')) return 'Validação de Campo no DF';
+    if (s.startsWith('Histórias de Usuário e Backlog')) return 'Histórias de Usuário e Backlog';
+    if (s.startsWith('Pendências Técnicas')) return 'Pendências Técnicas';
+
+    // Substitui travessão ou hífen banal solto por ponto central elegante
+    s = s.replace(/\s+[—–-]\s+/g, ' · ');
+
+    return s.trim();
+  }
+
+  limparTitulo(titulo) {
+    let t = titulo.replace(/^[\p{Extended_Pictographic}\u200d\ufe0f]+\s*/u, '').trim();
+    if (t === 'C18 — Challenge 18' || t === 'C18 - Challenge 18') {
+      return 'Challenge 18';
+    }
+    // Substitui travessão banal solto por separador elegante
+    t = t.replace(/\s+[—–-]\s+/g, ' · ');
+    return t;
+  }
+
   /**
    * Tira o rodapé de navegação que toda nota do vault carrega
    * (`--- ← [[…|Índice CBL]]`).
@@ -289,7 +336,7 @@ class Site {
           const href = base + this.arquivoDaNota(n.caminho);
           const classe = ativo === this.arquivoDaNota(n.caminho) ? ' class="ativo"' : '';
           const rotulo = n.tipo === 'atualizacao-diaria' ? (n.campos.data || n.titulo) : n.titulo;
-          const rotuloLimpo = rotulo.replace(/^[\p{Extended_Pictographic}\u200d\ufe0f]+\s*/u, '');
+          const rotuloLimpo = this.limparRotuloSidebar(rotulo, s.tipo);
           return `<li><a href="${href}"${classe}><span>${escapar(rotuloLimpo)}</span></a></li>`;
         })
         .join('');
@@ -465,8 +512,8 @@ ${this.avisoDeAtualizacao(base)}
     </div>`;
 
     return this.pagina({
-      titulo: ativo ? ativo.titulo : 'Challenge 18',
-      subtitulo: 'Apple Developer Academy · Ciclo CBL — Equipe BlendOps',
+      titulo: ativo ? this.limparTitulo(ativo.titulo) : 'Challenge 18',
+      subtitulo: 'Apple Developer Academy · Ciclo CBL · Equipe BlendOps',
       corpo,
       ativo: 'index.html',
       daPasta: '',
@@ -479,24 +526,57 @@ ${this.avisoDeAtualizacao(base)}
     let corpo = '';
 
     if (nota.somenteLeitura) {
-      corpo += `<p class="aviso">Documento derivado de um arquivo <code>.pages</code> — regenerado automaticamente a cada conversão.</p>`;
+      corpo += `<p class="aviso">Documento derivado de um arquivo <code>.pages</code> · regenerado automaticamente a cada conversão.</p>`;
     }
+
+    const rotulosCampos = {
+      data_inicio: 'Início',
+      data_fim: 'Término',
+      data_criacao: 'Criação',
+      data: 'Data',
+      responsavel: 'Responsável',
+      desafio: 'Desafio',
+      status: 'Status',
+      tags: 'Tags',
+    };
+
+    const formatarValorCampo = (chave, valor) => {
+      if (!valor) return '—';
+      if (/^\d{4}-\d{2}-\d{2}$/.test(String(valor))) {
+        const [ano, mes, dia] = String(valor).split('-');
+        return `${dia}/${mes}/${ano}`;
+      }
+      if (chave === 'status') {
+        const rotulosStatus = {
+          'a-fazer': 'A fazer',
+          'em-andamento': 'Em andamento',
+          revisao: 'Revisão',
+          concluida: 'Concluída',
+          ativo: 'Ativo',
+        };
+        const rot = rotulosStatus[valor] || valor;
+        return `<span class="etiqueta status-${escapar(valor)}"><span class="status-ponto"></span>${escapar(rot)}</span>`;
+      }
+      if (Array.isArray(valor)) {
+        return valor.map(escapar).join(', ');
+      }
+      return escapar(String(valor).replace(/^\[|\]$/g, ''));
+    };
 
     const campos = Object.entries(nota.campos)
       .filter(([k]) => !['tipo'].includes(k))
-      .map(([k, v]) => `<span><b>${escapar(k)}</b> ${escapar(v)}</span>`)
+      .map(([k, v]) => {
+        const rotulo = rotulosCampos[k] || escapar(k);
+        const valorFormatado = formatarValorCampo(k, v);
+        return `<div class="campo-item"><span class="campo-chave">${rotulo}</span><span class="campo-valor">${valorFormatado}</span></div>`;
+      })
       .join('');
     if (campos) corpo += `<div class="campos">${campos}</div>`;
 
-    // A voz de narrativa e o teto de 66ch vivem em `.narrativa` desde sempre,
-    // e o gerador multipágina nunca envolvia o corpo nela — só o de página
-    // única fazia. Toda narrativa do site (diário, roadmap, CBL) saía em sans,
-    // sem teto de medida, perto de 110 caracteres por linha. É o V-01 do site:
-    // a tese declarada e não entregue justamente na superfície de leitura.
     corpo += `<article class="narrativa">${this.md(corpoSemTitulo, 'notas')}</article>`;
 
     return this.pagina({
-      titulo: nota.titulo,
+      titulo: this.limparTitulo(nota.titulo),
       subtitulo: secao.titulo,
       corpo,
       ativo: this.arquivoDaNota(nota.caminho),
