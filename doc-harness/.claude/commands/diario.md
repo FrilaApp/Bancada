@@ -10,11 +10,13 @@ Escreva a **narrativa de hoje** na nota diária, a partir dos fatos já registra
 2. Leia também `git log --since=midnight --oneline` e `git status --short`, para pegar o que aconteceu antes dos hooks estarem ativos ou fora deles.
 3. Abra a nota diária correspondente em `02 - Atualizações Diárias/AAAA/MM/AAAA-MM-DD.md`. Se não existir, crie a partir de `02 - Atualizações Diárias/Template - Atualização Diária.md`.
 4. Preencha as seções fixas — `## O que foi feito`, `## Decisões`, `## Bloqueios`, `## Aprendizados`, `## Próximos passos`. Não renomeie, não crie seções novas.
+   - **Formato de '## O que foi feito'**: Muito mais resumido. Use **pequenos chunks concisos de resumo** para cada alteração em vez de parágrafos ou narrativas longas. Cada chunk deve destacar o que mudou de forma direta, clara e sucinta (ex: `- **TelaDiario**: Remoção da coluna de commits e compactação da lista de datas`).
 5. Adicione a nota ao `00 - Índice Diário.md` se ainda não estiver lá.
 
 ## Regras inegociáveis
 
 - **Cada bullet precisa vir de um fato.** Se não há fato que sustente a frase, a frase não entra. Não preencha lacuna com suposição plausível.
+- **Formato conciso em '## O que foi feito'**: Proibido escrever parágrafos longos, narrativas extensas ou sub-listas aninhadas prolixas. Use apenas pequenos chunks objetivos destacando diretamente a alteração.
 - Se o log estiver vazio, diga isso e pare. Um dia sem registro é um dado.
 - Não edite nada dentro de `05 - Registros/`. Você só lê de lá.
 - Preserve o que já estava escrito na nota — some ao conteúdo, não substitua.

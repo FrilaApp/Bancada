@@ -231,6 +231,7 @@ public struct Folha<Conteudo: View>: View {
                         .strokeBorder(cores.borda, lineWidth: DS.Traco.fio)
                 )
                 .padding(DS.Espaco.lg)
+                .frame(maxWidth: .infinity)
         }
         .background(cores.cromo)
     }

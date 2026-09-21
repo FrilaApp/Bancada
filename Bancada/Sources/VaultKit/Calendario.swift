@@ -24,7 +24,7 @@ public enum DataISO {
     }
 
     /// O locale de um calendário, ignorando o vazio que o Foundation devolve.
-    static func locale(de calendario: Calendar) -> Locale {
+    public static func locale(de calendario: Calendar) -> Locale {
         guard let l = calendario.locale, !l.identifier.isEmpty else { return .current }
         return l
     }

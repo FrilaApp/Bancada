@@ -7,7 +7,7 @@ tags: [atualizacao-diaria]
 # {{AAAA-MM-DD}}
 
 ## O que foi feito
-- 
+- **[Área/Tarefa]**: [O que mudou em chunk conciso, direto e sucinto]
 
 ## Decisões
 - 

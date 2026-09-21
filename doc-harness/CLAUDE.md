@@ -18,7 +18,7 @@ O sistema tem duas camadas, e **misturá-las corrompe o registro**:
 Consequências práticas:
 
 - **Nunca edite nada em `05 - Registros/` à mão.** É append-only, escrito por máquina. Você só lê. Desde 2026-09-10 isso não depende mais de boa vontade nem de padrão de texto: o hook `pre-commit` recusa qualquer commit que toque a pasta. Para reparo genuíno — hash órfão depois de um rebase, linha duplicada por hook — existe `PERMITIR_REPARO_DE_FATO=1 git commit`, que é para consertar, nunca para escrever fato novo.
-- **Nunca escreva narrativa sem fato correspondente.** Ao rodar `/diario`, cada bullet que você escrever tem que sair de uma linha do log do dia. Se não há fato, não há bullet — não preencha lacunas com suposição plausível.
+- **Nunca escreva narrativa sem fato correspondente.** Ao rodar `/diario`, cada bullet que você escrever tem que sair de uma linha do log do dia. Se não há fato, não há bullet — não preencha lacunas com suposição plausível. Em `## O que foi feito`, use formato ultra-resumido em pequenos chunks concisos por alteração, diretos e objetivos — nunca parágrafos longos ou narrativas extensas.
 - Se o log estiver vazio, diga que está vazio. Um dia sem registro é um dado, não um problema a esconder.
 
 ---
