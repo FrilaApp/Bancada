@@ -60,9 +60,27 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
     steps:
-      # Um checkout só, e o vault vem junto. Era aqui que morava a necessidade
-      # de um token pessoal, quando `doc-harness` era outro repositório.
+      # Checkout com histórico suficiente para diff
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      # Identifica se o commit tocou em código Swift
+      - name: Verificar alterações em código Swift
+        id: mudanca_swift
+        run: |
+          if git rev-parse HEAD~1 >/dev/null 2>&1; then
+            MUDOU_SWIFT=$(git diff --name-only HEAD~1 HEAD | grep -E '^(Bancada/(Sources|Tests)/|Bancada/Package\.swift)' || true)
+          else
+            MUDOU_SWIFT="inicial"
+          fi
+          if [ -n "$MUDOU_SWIFT" ]; then
+            echo "swift_alterado=true" >> "$GITHUB_OUTPUT"
+            echo "ℹ Código Swift alterado. Execução completa necessária."
+          else
+            echo "swift_alterado=false" >> "$GITHUB_OUTPUT"
+            echo "⚡ Nenhuma alteração em código Swift detectada."
+          fi
 
       # O gerador é Node puro, sem uma única dependência de npm — e a imagem
       # oficial do Swift não traz Node. O `npm` entra junto não por causa dele,
@@ -74,20 +92,27 @@ jobs:
           node --version && npm --version
 
       - name: Cachear o .build
+        id: cache_build
         uses: actions/cache@v4
         with:
           path: Bancada/.build
           key: ${{ runner.os }}-swift-${{ hashFiles('Bancada/Package.swift', 'Bancada/Sources/**/*.swift') }}
           restore-keys: ${{ runner.os }}-swift-
 
-      # A primeira vez que esta suíte roda fora do macOS. É o que prova que o
-      # guard de CoreServices no Observador está correto — e o que quebraria se
-      # alguém acrescentasse ao VaultKit uma dependência de framework Apple.
+      # Roda a suíte de testes apenas quando código Swift ou testes forem alterados
       - name: Rodar os testes
+        if: steps.mudanca_swift.outputs.swift_alterado == 'true' || github.event_name == 'pull_request'
         run: swift test
 
+      # Compila apenas se o binário não existir ou se o código Swift mudou
       - name: Compilar o bancada-indice
-        run: swift build -c release --product bancada-indice
+        run: |
+          if [ ! -f .build/release/bancada-indice ] || [ "${{ steps.mudanca_swift.outputs.swift_alterado }}" = "true" ]; then
+            echo "Compilando bancada-indice..."
+            swift build -c release --product bancada-indice
+          else
+            echo "⚡ Usando binário bancada-indice do cache."
+          fi
 
       # O portão. Sai com 2 se há nota fora da convenção ou linha de registro
       # fora do formato dos hooks; o build falha e o site anterior continua no
