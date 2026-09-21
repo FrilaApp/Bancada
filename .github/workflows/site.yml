@@ -69,10 +69,12 @@ jobs:
       - name: Verificar alterações em código Swift
         id: mudanca_swift
         run: |
+          git config --global --add safe.directory /__w/Bancada/Bancada || true
+          git config --global --add safe.directory "$GITHUB_WORKSPACE" || true
           if git rev-parse HEAD~1 >/dev/null 2>&1; then
             MUDOU_SWIFT=$(git diff --name-only HEAD~1 HEAD | grep -E '^(Sources/|Tests/|Package\.swift|Bancada/(Sources|Tests)/|Bancada/Package\.swift)' || true)
           else
-            MUDOU_SWIFT="inicial"
+            MUDOU_SWIFT=""
           fi
           if [ -n "$MUDOU_SWIFT" ]; then
             echo "swift_alterado=true" >> "$GITHUB_OUTPUT"
