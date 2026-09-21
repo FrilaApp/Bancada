@@ -284,10 +284,11 @@ class Site {
           const href = base + this.arquivoDaNota(n.caminho);
           const classe = ativo === this.arquivoDaNota(n.caminho) ? ' class="ativo"' : '';
           const rotulo = n.tipo === 'atualizacao-diaria' ? (n.campos.data || n.titulo) : n.titulo;
-          return `<li><a href="${href}"${classe}>${escapar(rotulo)}</a></li>`;
+          const rotuloLimpo = rotulo.replace(/^[\p{Extended_Pictographic}\u200d\ufe0f]+\s*/u, '');
+          return `<li><a href="${href}"${classe}><span>${escapar(rotuloLimpo)}</span></a></li>`;
         })
         .join('');
-      return `<div class="grupo"><h3>${s.titulo}</h3><ul>${itens}</ul></div>`;
+      return `<div class="grupo"><h3 class="grupo-titulo">${s.titulo}</h3><ul>${itens}</ul></div>`;
     }).join('');
 
     const geradoEm = new Date(this.indice.geradoEm).toLocaleString('pt-BR', {
@@ -302,27 +303,46 @@ class Site {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>${escapar(titulo)} · Challenge 18</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="${base}estilo.css">
 </head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
 <header>
-  <a class="marca" href="${base}index.html">Challenge 18</a>
+  <div class="marca-container">
+    <a class="marca" href="${base}index.html">
+      <span class="marca-simbolo">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
+      </span>
+      <span>Challenge 18</span>
+    </a>
+    <span class="marca-sub">BlendOps · CBL</span>
+  </div>
   <nav>${nav}</nav>
+  <div class="header-status">
+    <span class="status-pulsar"></span>
+    <span class="status-texto">Vault Live</span>
+  </div>
 </header>
 <div class="colunas">
-  <aside>${secoes}</aside>
+  <aside>
+    <div class="sidebar-inner">${secoes}</div>
+  </aside>
   <main id="conteudo" tabindex="-1">
-    <h1>${escapar(titulo)}</h1>
-    ${subtitulo ? `<p class="subtitulo">${escapar(subtitulo)}</p>` : ''}
+    <div class="conteudo-topo">
+      <h1>${escapar(titulo)}</h1>
+      ${subtitulo ? `<p class="subtitulo">${escapar(subtitulo)}</p>` : ''}
+    </div>
     ${corpo}
   </main>
 </div>
 <footer>
-  Gerado a partir do vault <code>doc-harness</code> em ${escapar(geradoEm)}.
-  A narrativa deste registro é escrita a partir de fatos automáticos — nada aqui é preenchido por suposição.
+  <div class="footer-inner">
+    <span>Gerado a partir do vault <code>doc-harness</code> em ${escapar(geradoEm)}.</span>
+    <span>A narrativa deste registro é escrita a partir de fatos automáticos.</span>
+  </div>
 </footer>
 ${this.avisoDeAtualizacao(base)}
 </body>
@@ -391,12 +411,12 @@ ${this.avisoDeAtualizacao(base)}
     const tarefas = this.indice.notas.filter((n) => n.tipo === 'tarefa');
 
     const numeros = [
-      ['Fatos registrados', this.indice.fatos.length],
-      ['Dias com registro', new Set(this.indice.fatos.map((f) => f.data)).size],
-      ['Tarefas', tarefas.length],
-      ['Pessoas', new Set(this.indice.fatos.map((f) => f.autor)).size],
+      ['Fatos registrados', this.indice.fatos.length, 'Git Hooks'],
+      ['Dias com registro', new Set(this.indice.fatos.map((f) => f.data)).size, 'Histórico'],
+      ['Tarefas mapeadas', tarefas.length, 'Backlog MoSCoW'],
+      ['Autores ativos', new Set(this.indice.fatos.map((f) => f.autor)).size, 'Equipe'],
     ]
-      .map(([r, v]) => `<div class="numero"><strong>${v}</strong><span>${r}</span></div>`)
+      .map(([r, v, d]) => `<div class="numero"><span class="numero-sub">${d}</span><strong>${v}</strong><span class="numero-rotulo">${r}</span></div>`)
       .join('');
 
     const ultimos = diarios
@@ -413,7 +433,10 @@ ${this.avisoDeAtualizacao(base)}
 
     if (ativo) {
       corpo += `<div class="destaque">
-        <h2>${escapar(ativo.titulo)}</h2>
+        <div class="destaque-cabecalho">
+          <span class="destaque-badge">Desafio Ativo</span>
+          <h2>${escapar(ativo.titulo)}</h2>
+        </div>
         ${this.md(ativo.corpo.split('\n').slice(1).join('\n'), '')}
       </div>`;
     }
@@ -930,11 +953,10 @@ ${this.cssPaginaUnica()}
       `  --tipo-titulo: ${t.tipografia.interface.titulo.tamanho}px;`,
       `  --galeria-card: ${t.metrica.galeria.larguraMinimaCard}px;`,
       `  --galeria-thumb: ${t.metrica.galeria.alturaThumbnail}px;`,
-      // Uma superfamília, três vozes. O token é o papel, não o arquivo de
-      // fonte: o app nativo usa SF / New York / SF Mono pela mesma regra.
-      '  --sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;',
-      '  --serif: "IBM Plex Serif", ui-serif, Georgia, serif;',
-      '  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;'
+      // Tipografia de alta precisão (Geist / Inter / Geist Mono):
+      '  --sans: "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;',
+      '  --serif: "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;',
+      '  --mono: "Geist Mono", "CommitMono", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;'
     ].join('\n');
 
     // A pílula de status usa o véu do sistema, não um percentual solto.

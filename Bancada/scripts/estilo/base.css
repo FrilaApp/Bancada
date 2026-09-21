@@ -8,44 +8,69 @@
 
 * { box-sizing: border-box; }
 
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
 body {
   margin: 0;
   background: var(--fundo);
   color: var(--texto);
   font-family: var(--sans);
-  font-size: 15px;
+  font-size: 14.5px;
   line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgba(59, 158, 255, 0.25);
+  color: #ffffff;
+}
+
+/* Custom Scrollbar (Resend / Linear style) */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--borda);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3a3f46;
 }
 
 img { max-width: 100%; }
 
-/* As três vozes ------------------------------------------------------
-   Uma superfamília, três registros: interface, narrativa e fato. A Plex foi
-   desenhada para documentação técnica, e usar serif/sans/mono da mesma
-   família faz a distinção entre narrativa e fato ler como mudança de
-   registro, não de tipografia. É a regra de ouro do vault virada forma.
+/* Tipografia de alta precisão ---------------------------------------- */
 
-   `.narrativa` é o que alguém escreveu. `.mono`, `code`, carimbo de hora,
-   tipo de fato e caminho de arquivo é o que saiu de um hook. Nenhum dos dois
-   empresta a voz do outro. */
+code, .mono {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  font-feature-settings: "liga" 0;
+}
 
-code, .mono { font-family: var(--mono); font-size: 0.88em; }
-
-.narrativa { font-family: var(--serif); max-width: 66ch; }
+.narrativa {
+  font-family: var(--sans);
+  max-width: 68ch;
+}
 
 /* Rótulo de grupo em micro-caps: hierarquia sem borda nem peso extra. */
 .rotulo {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 10.5px;
   font-weight: 500;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--textoSutil);
 }
 
 /* O nó de tipo na árvore de registros é o `MarcadorDeTipo` do app: voz mono,
-   cor da categoria. A cor de cada tipo é emitida a partir de tokens.json. */
+   cor da categoria. */
 details[data-tipo] > summary .dito,
 details[data-tipo] > summary .rotulo {
   font-family: var(--mono);
@@ -55,23 +80,23 @@ details[data-tipo] > summary .rotulo {
 /* Foco e movimento --------------------------------------------------- */
 
 :focus-visible {
-  outline: var(--traco-foco) solid var(--foco);
+  outline: 2px solid var(--acento);
   outline-offset: 2px;
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
-/* Movimento.
-   O site não declarava uma única `transition` — e declarava, logo abaixo,
-   `transition: none` para quem pede menos movimento: suprimia um movimento que
-   nunca teve. Todo `:hover` cortava seco e não havia `:active` em lugar nenhum.
-   Os dois valores são os mesmos do app (`movimento.rapido` e `.padrao`). */
-a, button, summary, .dia, .caixa {
-  transition: background-color var(--mov-rapido) ease-out,
-              color var(--mov-rapido) ease-out,
-              border-color var(--mov-rapido) ease-out,
-              opacity var(--mov-rapido) ease-out;
+/* Movimento snappier (0.15s ease) */
+a, button, summary, .dia, .caixa, .numero, .cartao {
+  transition: background-color 150ms cubic-bezier(0.16, 1, 0.3, 1),
+              color 150ms cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 150ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 150ms cubic-bezier(0.16, 1, 0.3, 1),
+              transform 150ms cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 150ms cubic-bezier(0.16, 1, 0.3, 1);
 }
-a:active, button:active, summary:active { opacity: 0.7; }
+a:active, button:active, summary:active {
+  transform: scale(0.98);
+}
 
 /* Pular para o conteúdo: só aparece no foco de teclado, que é quando serve. */
 .pular {
@@ -83,7 +108,7 @@ a:active, button:active, summary:active { opacity: 0.7; }
   color: var(--acento);
   border: 1px solid var(--borda);
   border-radius: var(--raio-sm);
-  z-index: 10;
+  z-index: 100;
 }
 .pular:focus { left: var(--espaco-sm); }
 
