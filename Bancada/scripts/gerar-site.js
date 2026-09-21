@@ -189,6 +189,10 @@ class Site {
       }
     }
 
+    for (const nota of this.notasDe('tarefa')) {
+      this.escrever(this.arquivoDaNota(nota.caminho), this.paginaDeNota(nota, { titulo: 'Tarefas' }));
+    }
+
     // O arquivo que as abas abertas consultam. Fica separado do índice de
     // propósito: o índice passa de 300 KB, e baixá-lo a cada 30 segundos só
     // para descobrir que nada mudou desperdiçaria a banda de quem está lendo.
@@ -265,7 +269,7 @@ class Site {
   pagina({ titulo, subtitulo, corpo, ativo, daPasta }) {
     const base = daPasta === 'notas' ? '../' : '';
     const nav = [
-      ['index.html', 'Visão geral'],
+      ['index.html', 'Desafio C18'],
       ['tarefas.html', 'Tarefas'],
       ['registros.html', 'Registros'],
       ['galeria.html', 'Galeria'],
@@ -279,6 +283,7 @@ class Site {
     const secoes = SECOES.map((s) => {
       const notas = this.notasDe(s.tipo);
       if (!notas.length) return '';
+      const temAtivo = notas.some((n) => ativo === this.arquivoDaNota(n.caminho));
       const itens = notas
         .map((n) => {
           const href = base + this.arquivoDaNota(n.caminho);
@@ -288,7 +293,13 @@ class Site {
           return `<li><a href="${href}"${classe}><span>${escapar(rotuloLimpo)}</span></a></li>`;
         })
         .join('');
-      return `<div class="grupo"><h3 class="grupo-titulo">${s.titulo}</h3><ul>${itens}</ul></div>`;
+      return `<details class="grupo" open data-secao="${s.tipo}">
+        <summary class="grupo-titulo">
+          <span class="grupo-rotulo">${s.titulo}</span>
+          <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-9"/></svg>
+        </summary>
+        <ul>${itens}</ul>
+      </details>`;
     }).join('');
 
     const geradoEm = new Date(this.indice.geradoEm).toLocaleString('pt-BR', {
@@ -345,6 +356,28 @@ class Site {
   </div>
 </footer>
 ${this.avisoDeAtualizacao(base)}
+<script>
+(function() {
+  var chave = 'bancada_sidebar_colapso';
+  var estado = {};
+  try { estado = JSON.parse(localStorage.getItem(chave) || '{}'); } catch(e) {}
+  document.querySelectorAll('aside details.grupo[data-secao]').forEach(function(d) {
+    var secao = d.dataset.secao;
+    var temAtivo = d.querySelector('a.ativo') !== null;
+    if (temAtivo) {
+      d.open = true;
+    } else if (estado[secao] === false) {
+      d.open = false;
+    }
+    d.addEventListener('toggle', function() {
+      if (!d.querySelector('a.ativo')) {
+        estado[secao] = d.open;
+        try { localStorage.setItem(chave, JSON.stringify(estado)); } catch(e) {}
+      }
+    });
+  });
+})();
+</script>
 </body>
 </html>`;
   }
@@ -408,16 +441,6 @@ ${this.avisoDeAtualizacao(base)}
     const desafios = this.notasDe('cbl-desafio');
     const ativo = desafios.find((d) => d.campos.status === 'ativo') || desafios[0];
     const diarios = this.notasDe('atualizacao-diaria');
-    const tarefas = this.indice.notas.filter((n) => n.tipo === 'tarefa');
-
-    const numeros = [
-      ['Fatos registrados', this.indice.fatos.length, 'Git Hooks'],
-      ['Dias com registro', new Set(this.indice.fatos.map((f) => f.data)).size, 'Histórico'],
-      ['Tarefas mapeadas', tarefas.length, 'Backlog MoSCoW'],
-      ['Autores ativos', new Set(this.indice.fatos.map((f) => f.autor)).size, 'Equipe'],
-    ]
-      .map(([r, v, d]) => `<div class="numero"><span class="numero-sub">${d}</span><strong>${v}</strong><span class="numero-rotulo">${r}</span></div>`)
-      .join('');
 
     const ultimos = diarios
       .slice(0, 5)
@@ -429,25 +452,21 @@ ${this.avisoDeAtualizacao(base)}
       })
       .join('');
 
-    let corpo = `<div class="numeros">${numeros}</div>`;
+    let corpo = '';
 
     if (ativo) {
-      corpo += `<div class="destaque">
-        <div class="destaque-cabecalho">
-          <span class="destaque-badge">Desafio Ativo</span>
-          <h2>${escapar(ativo.titulo)}</h2>
-        </div>
-        ${this.md(ativo.corpo.split('\n').slice(1).join('\n'), '')}
-      </div>`;
+      const corpoSemTitulo = ativo.corpo.replace(/^#\s+.*\n?/, '');
+      corpo += `<article class="narrativa">${this.md(corpoSemTitulo, '')}</article>`;
     }
 
-    corpo += `<h2>Últimos dias</h2>`;
-    corpo += ultimos ? `<ul class="lista-dias">${ultimos}</ul>`
-                     : `<p class="vazio">Nenhuma nota diária ainda.</p>`;
+    corpo += `<div class="secao-ultimos-dias">
+      <h2>Últimas atualizações diárias</h2>
+      ${ultimos ? `<ul class="lista-dias">${ultimos}</ul>` : `<p class="vazio">Nenhuma nota diária ainda.</p>`}
+    </div>`;
 
     return this.pagina({
-      titulo: 'Visão geral',
-      subtitulo: 'Registro compartilhado do ciclo CBL — equipe BlendOps',
+      titulo: ativo ? ativo.titulo : 'Challenge 18',
+      subtitulo: 'Apple Developer Academy · Ciclo CBL — Equipe BlendOps',
       corpo,
       ativo: 'index.html',
       daPasta: '',
@@ -490,42 +509,307 @@ ${this.avisoDeAtualizacao(base)}
     if (!tarefas.length) {
       return this.pagina({
         titulo: 'Tarefas',
+        subtitulo: 'Quadro de trabalho e backlog do ciclo CBL',
         corpo: '<p class="vazio">Nenhuma tarefa registrada ainda.</p>',
         ativo: 'tarefas.html',
         daPasta: '',
       });
     }
 
-    const ordem = ['a-fazer', 'em-andamento', 'revisao', 'concluida'];
-    const rotulos = {
-      'a-fazer': 'A fazer',
-      'em-andamento': 'Em andamento',
-      revisao: 'Revisão',
-      concluida: 'Concluída',
-    };
+    const colunasStatus = [
+      { id: 'a-fazer',      rotulo: 'A fazer',      cor: '#888d92' },
+      { id: 'em-andamento', rotulo: 'Em andamento', cor: '#3b9eff' },
+      { id: 'revisao',      rotulo: 'Revisão',      cor: '#f59e0b' },
+      { id: 'concluida',    rotulo: 'Concluída',    cor: '#3ad389' },
+    ];
+    const rotulos = Object.fromEntries(colunasStatus.map((c) => [c.id, c.rotulo]));
 
-    const linhas = tarefas
-      .slice()
-      .sort((a, b) => ordem.indexOf(a.campos.status) - ordem.indexOf(b.campos.status))
-      .map((t) => {
-        const s = t.campos.status || '';
-        return `<tr>
-          <td class="mono">${escapar(t.campos.id || '—')}</td>
-          <td>${escapar(t.titulo)}</td>
-          <td><span class="etiqueta status-${escapar(s)}">${escapar(rotulos[s] || '—')}</span></td>
-          <td>${escapar(t.campos.responsavel || '—')}</td>
-          <td>${escapar(t.campos.desafio || '—')}</td>
-          <td class="mono">${escapar(t.campos.data_criacao || '—')}</td>
-        </tr>`;
-      })
-      .join('');
+    // Extrai lista única de responsáveis
+    const todosResponsaveis = new Set();
+    tarefas.forEach((t) => {
+      const resp = t.campos.responsavel;
+      if (resp) {
+        const limpo = resp.replace(/^\[|\]$/g, '');
+        limpo.split(',').map((s) => s.trim()).filter(Boolean).forEach((r) => todosResponsaveis.add(r));
+      }
+    });
+    const listaResponsaveis = Array.from(todosResponsaveis).sort((a, b) => a.localeCompare(b, 'pt-BR'));
 
-    const corpo = `<div class="rolagem"><table>
-      <thead><tr><th>ID</th><th>Tarefa</th><th>Status</th><th>Responsável</th><th>Desafio</th><th>Criada em</th></tr></thead>
-      <tbody>${linhas}</tbody>
-    </table></div>`;
+    const itensTarefas = tarefas.map((t) => {
+      const id = t.campos.id || '';
+      const s = t.campos.status || 'a-fazer';
+      const resp = (t.campos.responsavel || '—').replace(/^\[|\]$/g, '').trim();
+      const desafio = t.campos.desafio || 'C18';
+      const data = t.campos.data_criacao || '';
+      const href = this.arquivoDaNota(t.caminho);
+      return {
+        id,
+        titulo: t.titulo,
+        status: s,
+        responsavel: resp,
+        desafio,
+        data,
+        href,
+      };
+    });
 
-    return this.pagina({ titulo: 'Tarefas', corpo, ativo: 'tarefas.html', daPasta: '' });
+    // Toolbar de controle
+    const toolbar = `<div class="tarefas-toolbar">
+      <div class="toolbar-esquerda">
+        <div class="visao-seletor" role="tablist" aria-label="Modo de visualização">
+          <button type="button" class="btn-visao ativo" id="btn-visao-quadro" role="tab" aria-selected="true" data-modo="quadro">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>
+            <span>Quadro</span>
+          </button>
+          <button type="button" class="btn-visao" id="btn-visao-tabela" role="tab" aria-selected="false" data-modo="tabela">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h18v18H3z"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/></svg>
+            <span>Tabela</span>
+          </button>
+        </div>
+        <span class="tarefas-total-badge" id="tarefas-contador-total">${itensTarefas.length} tarefas</span>
+      </div>
+
+      <div class="toolbar-direita">
+        <div class="busca-container">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="search" id="filtro-busca" placeholder="Buscar tarefa, ID ou autor..." autocomplete="off">
+        </div>
+
+        <select id="filtro-status" aria-label="Filtrar por status">
+          <option value="">Todos os status</option>
+          <option value="a-fazer">A fazer</option>
+          <option value="em-andamento">Em andamento</option>
+          <option value="revisao">Revisão</option>
+          <option value="concluida">Concluída</option>
+        </select>
+
+        <select id="filtro-responsavel" aria-label="Filtrar por responsável">
+          <option value="">Todos os responsáveis</option>
+          ${listaResponsaveis.map((r) => `<option value="${escapar(r)}">${escapar(r)}</option>`).join('')}
+        </select>
+
+        <select id="filtro-ordem" aria-label="Ordenar tarefas">
+          <option value="id-asc">ID (crescente)</option>
+          <option value="id-desc">ID (decrescente)</option>
+          <option value="data-desc">Mais recente primeiro</option>
+          <option value="data-asc">Mais antiga primeiro</option>
+          <option value="titulo-asc">Título (A → Z)</option>
+        </select>
+      </div>
+    </div>`;
+
+    // 1. Visão Kanban Board
+    const colunasHtml = colunasStatus.map((col) => {
+      const tarefasNaColuna = itensTarefas.filter((t) => t.status === col.id);
+      const cartoesHtml = tarefasNaColuna.map((t) => `
+        <div class="kanban-card" data-id="${escapar(t.id)}" data-status="${escapar(t.status)}" data-responsavel="${escapar(t.responsavel.toLowerCase())}" data-titulo="${escapar(t.titulo.toLowerCase())}" data-data="${escapar(t.data)}">
+          <div class="kanban-card-topo">
+            <a href="${t.href}" class="kanban-card-id">${escapar(t.id)}</a>
+            <span class="kanban-card-desafio">${escapar(t.desafio)}</span>
+          </div>
+          <a href="${t.href}" class="kanban-card-titulo">${escapar(t.titulo)}</a>
+          <div class="kanban-card-rodape">
+            <span class="kanban-card-responsavel" title="${escapar(t.responsavel)}">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <span>${escapar(t.responsavel)}</span>
+            </span>
+            ${t.data ? `<span class="kanban-card-data">${escapar(t.data)}</span>` : ''}
+          </div>
+        </div>
+      `).join('');
+
+      return `<div class="kanban-coluna" data-coluna-status="${col.id}">
+        <div class="kanban-coluna-cabecalho">
+          <div class="kanban-coluna-titulo">
+            <span class="status-ponto" style="background: ${col.cor};"></span>
+            <h3>${col.rotulo}</h3>
+          </div>
+          <span class="kanban-coluna-qtd" id="qtd-${col.id}">${tarefasNaColuna.length}</span>
+        </div>
+        <div class="kanban-cards-lista" data-coluna-cartoes="${col.id}">
+          ${cartoesHtml}
+          <div class="coluna-vazia" ${tarefasNaColuna.length ? 'hidden' : ''}>Nenhuma tarefa</div>
+        </div>
+      </div>`;
+    }).join('');
+
+    const quadroHtml = `<div id="quadro-container" class="kanban-quadro">${colunasHtml}</div>`;
+
+    // 2. Visão Tabela
+    const linhasTabela = itensTarefas.map((t) => {
+      const rotuloStatus = rotulos[t.status] || t.status;
+      return `<tr data-id="${escapar(t.id)}" data-status="${escapar(t.status)}" data-responsavel="${escapar(t.responsavel.toLowerCase())}" data-titulo="${escapar(t.titulo.toLowerCase())}" data-data="${escapar(t.data)}">
+        <td class="mono"><a href="${t.href}" class="link-id">${escapar(t.id)}</a></td>
+        <td><a href="${t.href}" class="link-titulo">${escapar(t.titulo)}</a></td>
+        <td><span class="etiqueta status-${escapar(t.status)}"><span class="status-ponto"></span>${escapar(rotuloStatus)}</span></td>
+        <td>${escapar(t.responsavel)}</td>
+        <td>${escapar(t.desafio)}</td>
+        <td class="mono">${escapar(t.data || '—')}</td>
+      </tr>`;
+    }).join('');
+
+    const tabelaHtml = `<div id="tabela-container" class="tabela-container" hidden>
+      <div class="rolagem">
+        <table id="tabela-tarefas">
+          <thead>
+            <tr>
+              <th data-sort="id" title="Clique para ordenar por ID">ID ↕</th>
+              <th data-sort="titulo" title="Clique para ordenar por título">Tarefa ↕</th>
+              <th data-sort="status">Status</th>
+              <th data-sort="responsavel">Responsável</th>
+              <th data-sort="desafio">Desafio</th>
+              <th data-sort="data" title="Clique para ordenar por data">Criada em ↕</th>
+            </tr>
+          </thead>
+          <tbody>${linhasTabela}</tbody>
+        </table>
+      </div>
+    </div>`;
+
+    // Estado Vazio
+    const vazioHtml = `<div id="tarefas-vazio" class="tarefas-vazio" hidden>
+      <p>Nenhuma tarefa encontrada para os filtros selecionados.</p>
+    </div>`;
+
+    // Script interativo
+    const scriptInterativo = `<script>
+(function() {
+  var modoAtual = localStorage.getItem('bancada_tarefas_modo') || 'quadro';
+  var btnQuadro = document.getElementById('btn-visao-quadro');
+  var btnTabela = document.getElementById('btn-visao-tabela');
+  var containerQuadro = document.getElementById('quadro-container');
+  var containerTabela = document.getElementById('tabela-container');
+  var contadorTotal = document.getElementById('tarefas-contador-total');
+  var estadoVazio = document.getElementById('tarefas-vazio');
+
+  var filtroBusca = document.getElementById('filtro-busca');
+  var filtroStatus = document.getElementById('filtro-status');
+  var filtroResp = document.getElementById('filtro-responsavel');
+  var filtroOrdem = document.getElementById('filtro-ordem');
+
+  function aplicarModo(modo) {
+    modoAtual = modo;
+    try { localStorage.setItem('bancada_tarefas_modo', modo); } catch(e) {}
+    var ehQuadro = modo === 'quadro';
+    btnQuadro.classList.toggle('ativo', ehQuadro);
+    btnQuadro.setAttribute('aria-selected', ehQuadro ? 'true' : 'false');
+    btnTabela.classList.toggle('ativo', !ehQuadro);
+    btnTabela.setAttribute('aria-selected', !ehQuadro ? 'true' : 'false');
+    containerQuadro.hidden = !ehQuadro;
+    containerTabela.hidden = ehQuadro;
+  }
+
+  btnQuadro.addEventListener('click', function() { aplicarModo('quadro'); });
+  btnTabela.addEventListener('click', function() { aplicarModo('tabela'); });
+  aplicarModo(modoAtual);
+
+  function atualizarFiltros() {
+    var termo = (filtroBusca.value || '').trim().toLowerCase();
+    var statusSel = filtroStatus.value;
+    var respSel = (filtroResp.value || '').toLowerCase();
+    var ordemSel = filtroOrdem.value;
+
+    var cartoes = Array.from(document.querySelectorAll('.kanban-card'));
+    var linhas = Array.from(document.querySelectorAll('#tabela-tarefas tbody tr'));
+
+    var visiveisTotal = 0;
+    var contadoresColunas = { 'a-fazer': 0, 'em-andamento': 0, 'revisao': 0, 'concluida': 0 };
+
+    function casaFiltro(el) {
+      var id = (el.dataset.id || '').toLowerCase();
+      var tit = (el.dataset.titulo || '').toLowerCase();
+      var st = el.dataset.status || '';
+      var resp = (el.dataset.responsavel || '').toLowerCase();
+
+      var bateTermo = !termo || id.indexOf(termo) !== -1 || tit.indexOf(termo) !== -1 || resp.indexOf(termo) !== -1;
+      var bateStatus = !statusSel || st === statusSel;
+      var bateResp = !respSel || resp.indexOf(respSel) !== -1;
+
+      return bateTermo && bateStatus && bateResp;
+    }
+
+    cartoes.forEach(function(card) {
+      var ok = casaFiltro(card);
+      card.hidden = !ok;
+      if (ok) {
+        visiveisTotal++;
+        var st = card.dataset.status;
+        if (contadoresColunas[st] !== undefined) contadoresColunas[st]++;
+      }
+    });
+
+    Object.keys(contadoresColunas).forEach(function(st) {
+      var badge = document.getElementById('qtd-' + st);
+      if (badge) badge.textContent = contadoresColunas[st];
+      var coluna = document.querySelector('[data-coluna-cartoes="' + st + '"]');
+      if (coluna) {
+        var vaziaEl = coluna.querySelector('.coluna-vazia');
+        if (vaziaEl) vaziaEl.hidden = contadoresColunas[st] > 0;
+      }
+    });
+
+    linhas.forEach(function(tr) {
+      tr.hidden = !casaFiltro(tr);
+    });
+
+    contadorTotal.textContent = visiveisTotal + (visiveisTotal === 1 ? ' tarefa' : ' tarefas');
+    estadoVazio.hidden = visiveisTotal > 0;
+
+    function comparar(a, b) {
+      if (ordemSel === 'id-asc') return (a.dataset.id || '').localeCompare(b.dataset.id || '');
+      if (ordemSel === 'id-desc') return (b.dataset.id || '').localeCompare(a.dataset.id || '');
+      if (ordemSel === 'data-desc') return (b.dataset.data || '').localeCompare(a.dataset.data || '');
+      if (ordemSel === 'data-asc') return (a.dataset.data || '').localeCompare(b.dataset.data || '');
+      if (ordemSel === 'titulo-asc') return (a.dataset.titulo || '').localeCompare(b.dataset.titulo || '');
+      return 0;
+    }
+
+    ['a-fazer', 'em-andamento', 'revisao', 'concluida'].forEach(function(st) {
+      var lista = document.querySelector('[data-coluna-cartoes="' + st + '"]');
+      if (!lista) return;
+      var cardsDaColuna = Array.from(lista.querySelectorAll('.kanban-card'));
+      cardsDaColuna.sort(comparar);
+      cardsDaColuna.forEach(function(c) { lista.appendChild(c); });
+    });
+
+    var tbody = document.querySelector('#tabela-tarefas tbody');
+    if (tbody) {
+      linhas.sort(comparar);
+      linhas.forEach(function(r) { tbody.appendChild(r); });
+    }
+  }
+
+  filtroBusca.addEventListener('input', atualizarFiltros);
+  filtroStatus.addEventListener('change', atualizarFiltros);
+  filtroResp.addEventListener('change', atualizarFiltros);
+  filtroOrdem.addEventListener('change', atualizarFiltros);
+
+  document.querySelectorAll('#tabela-tarefas th[data-sort]').forEach(function(th) {
+    th.style.cursor = 'pointer';
+    th.addEventListener('click', function() {
+      var campo = th.dataset.sort;
+      if (campo === 'id') {
+        filtroOrdem.value = filtroOrdem.value === 'id-asc' ? 'id-desc' : 'id-asc';
+      } else if (campo === 'titulo') {
+        filtroOrdem.value = 'titulo-asc';
+      } else if (campo === 'data') {
+        filtroOrdem.value = filtroOrdem.value === 'data-desc' ? 'data-asc' : 'data-desc';
+      }
+      atualizarFiltros();
+    });
+  });
+})();
+</script>`;
+
+    const corpo = toolbar + quadroHtml + tabelaHtml + vazioHtml + scriptInterativo;
+
+    return this.pagina({
+      titulo: 'Tarefas',
+      subtitulo: 'Backlog MoSCoW e fluxo de execução do ciclo CBL',
+      corpo,
+      ativo: 'tarefas.html',
+      daPasta: '',
+    });
   }
 
   paginaRegistros() {
