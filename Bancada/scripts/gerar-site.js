@@ -348,7 +348,7 @@ class Site {
 
   // MARK: - Molde
 
-  pagina({ titulo, subtitulo, corpo, ativo, daPasta }) {
+  pagina({ titulo, subtitulo, corpo, ativo, daPasta, semConteudoTopo = false }) {
     const base = daPasta === 'notas' ? '../' : '';
     const nav = [
       ['index.html', 'Desafio C18'],
@@ -439,10 +439,11 @@ class Site {
     <div class="sidebar-inner">${secoes}</div>
   </aside>
   <main id="conteudo" tabindex="-1">
+    ${semConteudoTopo ? '' : `
     <div class="conteudo-topo">
       <h1>${escapar(titulo)}</h1>
       ${subtitulo ? `<p class="subtitulo">${escapar(subtitulo)}</p>` : ''}
-    </div>
+    </div>`}
     ${corpo}
   </main>
 </div>
@@ -734,6 +735,7 @@ ${this.avisoDeAtualizacao(base)}
       corpo,
       ativo: this.arquivoDaNota(nota.caminho),
       daPasta: 'notas',
+      semConteudoTopo: true,
     });
   }
 

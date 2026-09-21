@@ -136,11 +136,11 @@ function renderizarDocumentoCBL(base = '../') {
       const itens = g.objetivos.map(obj => `<li>${escapar(obj)}</li>`).join('');
       return `
         <article class="cbl-goal-card" id="goal-${idx + 1}">
-          <header class="cbl-goal-header">
+          <div class="cbl-goal-header">
             <span class="cbl-goal-badge">Goal ${idx + 1}</span>
             <h4 class="cbl-goal-titulo">${escapar(g.titulo)}</h4>
             <p class="cbl-goal-descricao">${escapar(g.descricao)}</p>
-          </header>
+          </div>
           <div class="cbl-goal-objetivos">
             <div class="cbl-goal-subtitulo">Learning Objectives</div>
             <ul>${itens}</ul>
@@ -187,7 +187,7 @@ function renderizarDocumentoCBL(base = '../') {
           </div>
         </div>
 
-        <h1 class="cbl-doc-titulo">CBL — Challenge 18</h1>
+        <h1 class="cbl-doc-titulo">Documento Oficial CBL — Challenge 18</h1>
         <p class="cbl-doc-subtitulo">Framework Challenge Based Learning aplicado à concepção, pesquisa empírica de mercado e especificação técnica do produto <strong>Frila</strong>.</p>
 
         <div class="cbl-grid-metadados">
@@ -253,21 +253,19 @@ function renderizarDocumentoCBL(base = '../') {
           </div>
           <p class="cbl-paragrafo-apoio">Reflexões iniciais levantadas pela equipe para mapear os pontos de atrito entre estabelecimentos e trabalhadores:</p>
 
-          <div class="tabela-cbl-wrapper">
-            <table class="tabela-cbl tabela-cbl-perguntas">
-              <thead>
-                <tr>
-                  <th>Essential Questions (Perguntas Essenciais)</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${dados.essentialQuestions.map((q, i) => `
-                  <tr>
-                    <td><strong>${i + 1}.</strong> ${escapar(q)}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
+          <div class="cbl-caixa-perguntas-essenciais">
+            <div class="cbl-caixa-perguntas-topo">
+              <span class="cbl-caixa-perguntas-rotulo">Essential Questions (Perguntas Essenciais)</span>
+              <span class="cbl-caixa-perguntas-qtd">7 reflexões fundamentais</span>
+            </div>
+            <ol class="cbl-lista-perguntas-essenciais">
+              ${dados.essentialQuestions.map((q, i) => `
+                <li class="cbl-item-pergunta-essencial">
+                  <span class="cbl-num-pergunta">${i + 1}</span>
+                  <div class="cbl-texto-pergunta">${escapar(q)}</div>
+                </li>
+              `).join('')}
+            </ol>
           </div>
 
           ${renderizarCardMarco({
