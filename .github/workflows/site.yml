@@ -70,13 +70,13 @@ jobs:
         id: mudanca_swift
         run: |
           if git rev-parse HEAD~1 >/dev/null 2>&1; then
-            MUDOU_SWIFT=$(git diff --name-only HEAD~1 HEAD | grep -E '^(Bancada/(Sources|Tests)/|Bancada/Package\.swift)' || true)
+            MUDOU_SWIFT=$(git diff --name-only HEAD~1 HEAD | grep -E '^(Sources/|Tests/|Package\.swift|Bancada/(Sources|Tests)/|Bancada/Package\.swift)' || true)
           else
             MUDOU_SWIFT="inicial"
           fi
           if [ -n "$MUDOU_SWIFT" ]; then
             echo "swift_alterado=true" >> "$GITHUB_OUTPUT"
-            echo "ℹ Código Swift alterado. Execução completa necessária."
+            echo "ℹ Código Swift alterado ($MUDOU_SWIFT). Execução completa necessária."
           else
             echo "swift_alterado=false" >> "$GITHUB_OUTPUT"
             echo "⚡ Nenhuma alteração em código Swift detectada."
@@ -95,8 +95,10 @@ jobs:
         id: cache_build
         uses: actions/cache@v4
         with:
-          path: Bancada/.build
-          key: ${{ runner.os }}-swift-${{ hashFiles('Bancada/Package.swift', 'Bancada/Sources/**/*.swift') }}
+          path: |
+            Bancada/.build
+            .build
+          key: ${{ runner.os }}-swift-${{ hashFiles('Bancada/Package.swift', 'Bancada/Sources/**/*.swift', 'Package.swift', 'Sources/**/*.swift') }}
           restore-keys: ${{ runner.os }}-swift-
 
       # Roda a suíte de testes apenas quando código Swift ou testes forem alterados
