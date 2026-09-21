@@ -17,11 +17,35 @@ function escapar(s) {
 }
 
 function iconeLinkExterno() {
-  return `<svg class="cbl-icone-externo" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
+  return `<svg class="cbl-icone-externo" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
 }
 
 function iconeMarco() {
-  return `<svg class="cbl-icone-marco" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+  return `<svg class="cbl-icone-marco" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>`;
+}
+
+function iconeDesign() {
+  return `<svg class="cbl-cat-icone-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>`;
+}
+
+function iconeProduto() {
+  return `<svg class="cbl-cat-icone-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`;
+}
+
+function iconeIA() {
+  return `<svg class="cbl-cat-icone-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 9h6v6H9z"/><path d="M9 1v2"/><path d="M15 1v2"/><path d="M9 21v2"/><path d="M15 21v2"/><path d="M1 9h2"/><path d="M1 15h2"/><path d="M21 9h2"/><path d="M21 15h2"/></svg>`;
+}
+
+function iconeVisao() {
+  return `<svg class="cbl-doc-ref-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>`;
+}
+
+function iconeRequisitos() {
+  return `<svg class="cbl-doc-ref-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/></svg>`;
+}
+
+function iconeBacklog() {
+  return `<svg class="cbl-doc-ref-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`;
 }
 
 function renderizarTabelaPerguntas(perguntas, idTabela) {
@@ -113,17 +137,17 @@ function renderizarDocumentoCBL(base = '../') {
   const categoriasGoals = [
     {
       categoria: 'Design & Experiência',
-      icone: '🎨',
+      iconeSvg: iconeDesign(),
       indices: [0, 1, 2, 3, 4, 5] // Design System, Consistency, IA no Design, Iteração, UI Doc, Acessibilidade
     },
     {
       categoria: 'Produto, Negócios & Legal',
-      icone: '💼',
+      iconeSvg: iconeProduto(),
       indices: [6, 7, 8, 9, 10] // Business, Product Strategy, Marketing, Empreendedorismo, Legal
     },
     {
       categoria: 'Inteligência Artificial & Engenharia',
-      icone: '⚡️',
+      iconeSvg: iconeIA(),
       indices: [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21] // Fundamentos IA, Prompt, AI-Assisted, Rules, Tools, RAG, Agentes, Multi-Agent, Arquitetura IA, Avaliação, Mobile IA
     }
   ];
@@ -137,7 +161,7 @@ function renderizarDocumentoCBL(base = '../') {
       return `
         <article class="cbl-goal-card" id="goal-${idx + 1}">
           <div class="cbl-goal-header">
-            <span class="cbl-goal-badge">Goal ${idx + 1}</span>
+            <span class="cbl-goal-badge">Goal ${String(idx + 1).padStart(2, '0')}</span>
             <h4 class="cbl-goal-titulo">${escapar(g.titulo)}</h4>
             <p class="cbl-goal-descricao">${escapar(g.descricao)}</p>
           </div>
@@ -152,7 +176,7 @@ function renderizarDocumentoCBL(base = '../') {
     goalsHtml += `
       <div class="cbl-goals-categoria">
         <h3 class="cbl-goals-cat-titulo">
-          <span class="cat-icone">${cat.icone}</span>
+          <span class="cat-icone">${cat.iconeSvg}</span>
           <span>${cat.categoria}</span>
         </h3>
         <div class="cbl-goals-grade">
@@ -217,11 +241,11 @@ function renderizarDocumentoCBL(base = '../') {
 
         <!-- Barra de Navegação Discreta por Âncoras -->
         <nav class="cbl-nav-ancoras" aria-label="Navegação rápida pelas seções do CBL">
-          <span class="cbl-nav-legenda">Seções:</span>
-          <a href="#cbl-engage" class="cbl-pilula-nav pilula-engage">1. Engage</a>
-          <a href="#cbl-investigate" class="cbl-pilula-nav pilula-investigate">2. Investigate</a>
-          <a href="#cbl-act" class="cbl-pilula-nav pilula-act">3. Act</a>
-          <a href="#cbl-learning-goals" class="cbl-pilula-nav pilula-goals">4. Learning Goals</a>
+          <span class="cbl-nav-legenda">Seções</span>
+          <a href="#cbl-engage" class="cbl-link-ancora"><span class="cbl-ancora-num">01</span><span>Engage</span></a>
+          <a href="#cbl-investigate" class="cbl-link-ancora"><span class="cbl-ancora-num">02</span><span>Investigate</span></a>
+          <a href="#cbl-act" class="cbl-link-ancora"><span class="cbl-ancora-num">03</span><span>Act</span></a>
+          <a href="#cbl-learning-goals" class="cbl-link-ancora"><span class="cbl-ancora-num">04</span><span>Learning Goals</span></a>
         </nav>
       </header>
 
@@ -255,13 +279,13 @@ function renderizarDocumentoCBL(base = '../') {
 
           <div class="cbl-caixa-perguntas-essenciais">
             <div class="cbl-caixa-perguntas-topo">
-              <span class="cbl-caixa-perguntas-rotulo">Essential Questions (Perguntas Essenciais)</span>
+              <span class="cbl-caixa-perguntas-rotulo">Essential Questions</span>
               <span class="cbl-caixa-perguntas-qtd">7 reflexões fundamentais</span>
             </div>
             <ol class="cbl-lista-perguntas-essenciais">
               ${dados.essentialQuestions.map((q, i) => `
                 <li class="cbl-item-pergunta-essencial">
-                  <span class="cbl-num-pergunta">${i + 1}</span>
+                  <span class="cbl-num-pergunta">${String(i + 1).padStart(2, '0')}</span>
                   <div class="cbl-texto-pergunta">${escapar(q)}</div>
                 </li>
               `).join('')}
@@ -362,12 +386,18 @@ function renderizarDocumentoCBL(base = '../') {
             texto: `
               <div class="cbl-personas-grid">
                 <div class="cbl-persona-item">
-                  <h5>👔 Lado Contratante: O Maître sob estresse</h5>
-                  <p>Trabalha no salão, não na sala. São 16h de uma sexta, faltou um garçom e o movimento começa em duas horas. Não é o dono, mas é quem sente o problema e escolhe a ferramenta: hoje, o grupo de WhatsApp. O que ele precisa não é de um banco de currículos, é de uma pessoa confirmada. Publicar uma vaga precisa levar menos de um minuto. <em>Status: proto-persona de desk research, ainda não validada em campo.</em></p>
+                  <div class="cbl-persona-topo">
+                    <span class="cbl-persona-tag">Contratante</span>
+                    <h5 class="cbl-persona-nome">O Maître sob estresse</h5>
+                  </div>
+                  <p>Trabalha no salão, não na sala. São 16h de uma sexta, faltou um garçom e o movimento começa em duas horas. Não é o dono, mas é quem sente o problema e escolhe a ferramenta: hoje, o grupo de WhatsApp. O que ele precisa não é de um banco de currículos, é de uma pessoa confirmada. Publicar uma vaga precisa levar menos de um minuto. <span class="cbl-persona-status">Proto-persona de desk research, ainda não validada em campo.</span></p>
                 </div>
                 <div class="cbl-persona-item">
-                  <h5>📱 Lado Profissional: Quem se candidata e nunca é chamado</h5>
-                  <p>Tem experiência real, muitas vezes anos dela, mas nenhum jeito de provar isso para um estabelecimento que não o conhece. Usa Android de entrada, com plano de dados limitado, e acompanha vários grupos de WhatsApp ao mesmo tempo. Já se cadastrou em pelo menos um app do setor e desistiu, seja porque nunca foi chamado, seja porque o cadastro travou. Não está implorando por qualquer vaga: escolhe, e a diária avulsa paga melhor que o dia de CLT. <em>Status: proto-persona, ainda não validada em campo.</em></p>
+                  <div class="cbl-persona-topo">
+                    <span class="cbl-persona-tag">Profissional</span>
+                    <h5 class="cbl-persona-nome">Quem se candidata e nunca é chamado</h5>
+                  </div>
+                  <p>Tem experiência real, muitas vezes anos dela, mas nenhum jeito de provar isso para um estabelecimento que não o conhece. Usa Android de entrada, com plano de dados limitado, e acompanha vários grupos de WhatsApp ao mesmo tempo. Já se cadastrou em pelo menos um app do setor e desistiu, seja porque nunca foi chamado, seja porque o cadastro travou. Não está implorando por qualquer vaga: escolhe, e a diária avulsa paga melhor que o dia de CLT. <span class="cbl-persona-status">Proto-persona, ainda não validada em campo.</span></p>
                 </div>
               </div>
             `,
@@ -456,7 +486,7 @@ function renderizarDocumentoCBL(base = '../') {
 
           <div class="cbl-links-produtos-grid">
             <a href="01-cbl-desafios-c18-documentos-de-produto-frila-documento-de-visao.html" class="cbl-card-doc-ref">
-              <span class="cbl-doc-ref-icone">📄</span>
+              <span class="cbl-doc-ref-icone">${iconeVisao()}</span>
               <div class="cbl-doc-ref-corpo">
                 <span class="cbl-doc-ref-badge">Milestone Engenharia</span>
                 <strong>Documento de Visão</strong>
@@ -465,7 +495,7 @@ function renderizarDocumentoCBL(base = '../') {
             </a>
 
             <a href="01-cbl-desafios-c18-documentos-de-produto-frila-documento-de-requisitos.html" class="cbl-card-doc-ref">
-              <span class="cbl-doc-ref-icone">📋</span>
+              <span class="cbl-doc-ref-icone">${iconeRequisitos()}</span>
               <div class="cbl-doc-ref-corpo">
                 <span class="cbl-doc-ref-badge">Milestone Engenharia</span>
                 <strong>Documento de Requisitos</strong>
@@ -474,7 +504,7 @@ function renderizarDocumentoCBL(base = '../') {
             </a>
 
             <a href="01-cbl-desafios-c18-documentos-de-produto-frila-historias-de-usuario-e-backlog.html" class="cbl-card-doc-ref">
-              <span class="cbl-doc-ref-icone">🎯</span>
+              <span class="cbl-doc-ref-icone">${iconeBacklog()}</span>
               <div class="cbl-doc-ref-corpo">
                 <span class="cbl-doc-ref-badge">Milestone Engenharia</span>
                 <strong>Histórias de Usuário &amp; Backlog</strong>
