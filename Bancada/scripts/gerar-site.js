@@ -494,6 +494,60 @@ ${this.avisoDeAtualizacao(base)}
       atualizarBotao(proximo);
     });
   }
+
+  // Offset Dinâmico para Scroll no Documento CBL (Modo Zen)
+  var docCBL = document.querySelector('.cbl-documento');
+  if (docCBL) {
+    var ultimoScroll = Math.max(0, window.scrollY || window.pageYOffset || 0);
+    var ticking = false;
+    var LIMIAR_TOPO = 60;
+    var DELTA_MIN = 8;
+    var navegandoPorAncora = false;
+    var timeoutAncora = null;
+
+    document.addEventListener('click', function(e) {
+      var link = e.target.closest('a[href*="#"]');
+      if (link) {
+        var href = link.getAttribute('href');
+        if (href && (href.startsWith('#') || href.includes('#'))) {
+          navegandoPorAncora = true;
+          clearTimeout(timeoutAncora);
+          timeoutAncora = setTimeout(function() {
+            navegandoPorAncora = false;
+            ultimoScroll = Math.max(0, window.scrollY || window.pageYOffset || 0);
+          }, 800);
+        }
+      }
+    }, { passive: true });
+
+    function atualizarHUD() {
+      var atualScroll = Math.max(0, window.scrollY || window.pageYOffset || 0);
+      var delta = atualScroll - ultimoScroll;
+
+      if (!navegandoPorAncora) {
+        if (atualScroll <= LIMIAR_TOPO) {
+          document.documentElement.classList.remove('cbl-hud-oculta');
+          document.body.classList.remove('cbl-hud-oculta');
+        } else if (delta > DELTA_MIN && atualScroll > LIMIAR_TOPO) {
+          document.documentElement.classList.add('cbl-hud-oculta');
+          document.body.classList.add('cbl-hud-oculta');
+        } else if (delta < -DELTA_MIN) {
+          document.documentElement.classList.remove('cbl-hud-oculta');
+          document.body.classList.remove('cbl-hud-oculta');
+        }
+      }
+
+      ultimoScroll = atualScroll;
+      ticking = false;
+    }
+
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        window.requestAnimationFrame(atualizarHUD);
+        ticking = true;
+      }
+    }, { passive: true });
+  }
 })();
 </script>
 </body>
