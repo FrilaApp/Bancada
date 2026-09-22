@@ -351,6 +351,7 @@ main h1 {
   margin: 0;
   line-height: 1.5;
   text-wrap: pretty;
+  max-width: 66ch;
 }
 
 main h2 {
@@ -376,6 +377,7 @@ main p {
   font-size: 14px;
   line-height: 1.65;
   margin: 0 0 14px;
+  max-width: 66ch;
 }
 
 main ul {
@@ -1774,7 +1776,7 @@ body > footer {
   line-height: 1.62;
   color: var(--textoSutil);
   text-wrap: pretty;
-  max-width: 76ch;
+  max-width: 66ch;
 }
 
 :root[data-theme="light"] .cbl-chamada-lead {
@@ -1850,7 +1852,7 @@ body > footer {
    Inspirado em Raphael Salaja: Containerless, tipografia pura, colofão fluido.
    ========================================================================== */
 .cbl-documento {
-  max-width: min(100%, 1320px);
+  max-width: min(100%, 840px);
   margin: 0 0 80px;
   color: var(--texto);
   font-family: var(--sans);
@@ -1955,7 +1957,7 @@ body > footer {
   color: var(--textoSutil);
   margin: 0 0 28px;
   text-wrap: pretty;
-  max-width: 76ch;
+  max-width: 66ch;
 }
 
 :root[data-theme="light"] .cbl-masthead-lead {
@@ -2151,7 +2153,7 @@ body > footer {
   margin: 0;
   line-height: 1.6;
   text-wrap: pretty;
-  max-width: 76ch;
+  max-width: 66ch;
 }
 
 :root[data-theme="light"] .cbl-fase-descricao {
@@ -2200,7 +2202,7 @@ body > footer {
   margin: 0 0 20px;
   line-height: 1.6;
   text-wrap: pretty;
-  max-width: 76ch;
+  max-width: 66ch;
 }
 
 :root[data-theme="light"] .cbl-paragrafo-apoio {
@@ -2289,7 +2291,7 @@ body > footer {
   line-height: 1.6;
   color: var(--textoSutil);
   text-wrap: pretty;
-  max-width: 76ch;
+  max-width: 66ch;
 }
 
 :root[data-theme="light"] .cbl-declaracao-texto,
@@ -3043,7 +3045,7 @@ body > footer {
   color: var(--textoSutil);
   margin: 0;
   text-wrap: pretty;
-  max-width: 76ch;
+  max-width: 66ch;
 }
 
 :root[data-theme="light"] .cbl-library-item-desc,
