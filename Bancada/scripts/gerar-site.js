@@ -368,19 +368,326 @@ class Site {
     return s.trim();
   }
 
-  limparTitulo(titulo) {
-    let t = titulo.replace(/^[\p{Extended_Pictographic}\u200d\ufe0f]+\s*/u, '').trim();
-    if (t === 'C18 — Challenge 18' || t === 'C18 - Challenge 18') {
+  limparTitulo(titulo, tipo = '', nota = null) {
+    let t = String(titulo || '').replace(/^[\p{Extended_Pictographic}\u200d\ufe0f]+\s*/u, '').trim();
+    if (t === 'C18 — Challenge 18' || t === 'C18 - Challenge 18' || t === 'C18') {
       return 'Challenge 18';
     }
-    // Formata datas ISO nos títulos para padrão amigável
+
+    const mapaTitulos = {
+      'Frila_Documento_de_Requisitos': 'Documento de Requisitos de Software',
+      'Frila_Documento_de_Visao': 'Documento de Visão do Produto',
+      'Frila_Historias_de_Usuario_e_Backlog': 'Histórias de Usuário e Backlog do Produto',
+      'Frila_Roteiro_de_Validacao_de_Campo': 'Roteiro de Validação de Campo no DF',
+      '00-LEIA-PRIMEIRO': 'Leia Primeiro — Guia de Leitura',
+      '01-O-PROBLEMA': 'O Problema',
+      '02-O-NEGOCIO': 'O Negócio e Monetização',
+      '03-ESPECIFICACAO-DO-PRODUTO': 'Especificação do Produto',
+      '04-MERCADO-E-CONCORRENCIA': 'Mercado e Análise de Concorrência',
+      'EVIDENCIAS': 'Evidências e Pesquisa de Campo',
+      'Agenda - C18': 'Agenda Oficial — Challenge 18',
+      'Roadmap - Sumário de Iterações': 'Sumário de Iterações e Roadmap',
+      'Diagrama de Arquitetura': 'Diagrama de Arquitetura do Sistema',
+      'Diagrama de Casos de Uso': 'Diagrama de Casos de Uso',
+      'Diagrama de Classe': 'Diagrama de Classes',
+      'Modelagem de Banco de Dados': 'Modelagem e Esquema de Banco de Dados',
+      'Pendências Técnicas Para Codar': 'Pendências Técnicas e Débito de Engenharia',
+      'Sistema de Design': 'Sistema de Design da Bancada',
+    };
+
+    if (mapaTitulos[t]) return mapaTitulos[t];
+
+    if (tipo === 'atualizacao-diaria' || (nota && nota.tipo === 'atualizacao-diaria')) {
+      const d = (nota && nota.campos && nota.campos.data) || t;
+      if (/^\d{4}-\d{2}-\d{2}$/.test(String(d))) {
+        const [ano, mes, dia] = String(d).split('-');
+        const meses = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+        return `${parseInt(dia, 10)} ${meses[parseInt(mes, 10) - 1]} ${ano}`;
+      }
+    }
+
     t = t.replace(/(\d{4})-(\d{2})-(\d{2})/g, (_, ano, mes, dia) => {
       const meses = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
       return `${parseInt(dia, 10)} ${meses[parseInt(mes, 10) - 1]} ${ano}`;
     });
-    // Substitui travessão banal solto por separador elegante
+
+    if (nota && nota.campos && nota.campos.titulo && !nota.campos.titulo.includes('_')) {
+      t = nota.campos.titulo;
+    }
+
+    t = t.replace(/^Frila_/i, '');
+    t = t.replace(/^\d{1,3}[\s\-_]+/i, '');
+    t = t.replace(/_/g, ' ');
+
+    t = t.replace(/^(T-\d+)\s*[-—–]\s*/i, '$1 · ');
     t = t.replace(/\s+[—–-]\s+/g, ' · ');
-    return t;
+    return t.trim();
+  }
+
+  renderizarMastheadNota(nota, secao, base, corpoMarkdown, tituloLimpo) {
+    const campos = nota.campos || {};
+
+    let eyebrowSecao = (secao && secao.titulo) ? secao.titulo.toUpperCase() : 'DOCUMENTO';
+    let eyebrowSub = 'CHALLENGE 18';
+
+    if (secao && secao.id === 'produto') {
+      eyebrowSub = 'FRILA';
+    } else if (secao && secao.id === 'arquitetura') {
+      eyebrowSub = 'ARQUITETURA DO SISTEMA';
+    } else if (secao && secao.id === 'planejamento') {
+      eyebrowSub = 'CBL C18';
+    } else if (secao && secao.id === 'diario') {
+      eyebrowSub = 'DIÁRIO DE BORDO';
+    } else if (secao && secao.id === 'design') {
+      eyebrowSub = 'SISTEMA DE DESIGN';
+    } else if (nota.tipo === 'tarefa') {
+      eyebrowSecao = 'TAREFA';
+      eyebrowSub = campos.id || 'C18';
+    }
+
+    const eyebrowRotulo = `${eyebrowSecao} · ${eyebrowSub}`;
+
+    let linkOriginalHtml = '';
+    const origemRel = campos.origem || '';
+    if (origemRel) {
+      const nomeArquivo = path.basename(origemRel);
+      const ext = path.extname(nomeArquivo).toLowerCase();
+      let rotuloExt = ext.replace('.', '').toUpperCase();
+      if (rotuloExt === 'DOCX') rotuloExt = 'DOCX Original';
+      else if (rotuloExt === 'PAGES') rotuloExt = 'Pages Original';
+      else if (rotuloExt === 'PDF') rotuloExt = 'PDF Original';
+      else rotuloExt = `${rotuloExt} Original`;
+
+      let caminhoMidia = `${base}midia/${origemRel.replace(/^doc-harness\//, '')}`;
+      if (ext === '.pages' || ext === '.docx') {
+        const pdfEquivalente = origemRel.replace(/^doc-harness\//, '').replace(/\.(pages|docx)$/, '.pdf');
+        const pdfAlvoFisico = path.join(this.destino, 'midia', pdfEquivalente);
+        if (fs.existsSync(pdfAlvoFisico)) {
+          caminhoMidia = `${base}midia/${pdfEquivalente}`;
+          rotuloExt = 'PDF Original';
+        }
+      }
+
+      linkOriginalHtml = `
+        <a href="${caminhoMidia}" class="cbl-masthead-pdf" download="${path.basename(caminhoMidia)}" title="Baixar arquivo original">
+          <span>${rotuloExt}</span>
+          <span class="cbl-seta" aria-hidden="true">↗</span>
+        </a>
+      `;
+    }
+
+    let lead = campos.subtitulo || campos.descricao || campos.resumo || '';
+    if (!lead) {
+      const mapaLeads = {
+        'Documento de Requisitos': 'Especificação técnica formal de requisitos funcionais, não funcionais e regras de negócio do produto Frila.',
+        'Documento de Requisitos de Software': 'Especificação técnica formal de requisitos funcionais, não funcionais e regras de negócio do produto Frila.',
+        'Documento de Visão': 'Visão estratégica, posicionamento de mercado, personas e proposta de valor do produto Frila.',
+        'Documento de Visão do Produto': 'Visão estratégica, posicionamento de mercado, personas e proposta de valor do produto Frila.',
+        'Histórias de Usuário e Backlog': 'Tradução funcional dos requisitos em Histórias de Usuário (INVEST / BDD) priorizadas via MoSCoW.',
+        'Histórias de Usuário e Backlog do Produto': 'Tradução funcional dos requisitos em Histórias de Usuário (INVEST / BDD) priorizadas via MoSCoW.',
+        'O Problema': 'Pesquisa empírica e síntese de dados sobre os gargalos de contratação de freelancers no food service e eventos.',
+        'O Negócio e Monetização': 'Tese de valor, modelo de sustentabilidade e estratégia de monetização do Frila.',
+        'Especificação do Produto': 'Definição de escopo do MVP, jornadas de contratante e profissional e funcionalidades essenciais.',
+        'Mercado e Análise de Concorrência': 'Benchmarking e mapeamento de concorrentes diretos e indiretos de contratação avulsa.',
+        'Evidências e Pesquisa de Campo': 'Compilação de evidências públicas, dados setoriais e validações com o mercado do DF.',
+        'Roteiro de Validação de Campo no DF': 'Protocolo de entrevistas presenciais e validação empírica com estabelecimentos do DF.',
+        'Leia Primeiro — Guia de Leitura': 'Roteiro de leitura crítica e ordem recomendada para navegação nos documentos do produto.',
+        'Diagrama de Arquitetura do Sistema': 'Arquitetura técnica, serviços em nuvem e fluxos de dados do aplicativo Frila.',
+        'Diagrama de Casos de Uso': 'Mapeamento de atores, interações e fluxos operacionais de contratantes e profissionais.',
+        'Diagrama de Classes': 'Modelagem conceitual de domínio e relacionamentos de entidades em código.',
+        'Modelagem e Esquema de Banco de Dados': 'Estrutura relacional de tabelas, índices e integridade referencial do sistema.',
+        'Pendências Técnicas e Débito de Engenharia': 'Mapeamento de decisões de arquitetura e itens técnicos a codar.',
+        'Sistema de Design da Bancada': 'Especificação de design tokens, grid, tipografia e componentes canônicos da Bancada.',
+      };
+      lead = mapaLeads[tituloLimpo] || '';
+    }
+
+    if (!lead && corpoMarkdown) {
+      const matchParagrafo = corpoMarkdown.match(/(?:^|\n\n)([A-ZÁÀÂÃÉÈÊÍÏÓÔÕÖÚÇ][^\n#|]{40,250}\.)(?:\n|$)/);
+      if (matchParagrafo) {
+        lead = matchParagrafo[1].replace(/\*\*|\*/g, '').trim();
+      }
+    }
+
+    const mapaNomes = {
+      'cauecarneiroc': 'Cauê Carneiro',
+      'fbtostadev': 'Fabrício Tosta',
+      'joaopaulo': 'João Paulo',
+      'juliaclovandi': 'Júlia Clovandi',
+      'matheussilva': 'Matheus Silva',
+    };
+
+    const normalizarPessoas = (val) => {
+      if (!val) return '';
+      const arr = Array.isArray(val) ? val : String(val).replace(/^\[|\]$/g, '').split(',');
+      const nomes = arr.map((p) => {
+        const limpo = String(p).trim().replace(/<[^>]+>/g, '').trim();
+        return mapaNomes[limpo.toLowerCase()] || limpo;
+      }).filter(Boolean);
+      return nomes.join(', ');
+    };
+
+    const formatarDataHumana = (d) => {
+      if (!d) return '';
+      const s = String(d).trim();
+      if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
+        const [ano, mes, dia] = s.slice(0, 10).split('-');
+        const meses = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+        return `${parseInt(dia, 10)} ${meses[parseInt(mes, 10) - 1]} ${ano}`;
+      }
+      return s;
+    };
+
+    const itensColofao = [];
+
+    let autoresFormatados = '';
+    if (campos.autor || campos.autores) {
+      autoresFormatados = normalizarPessoas(campos.autor || campos.autores);
+    } else if (campos.responsavel && nota.tipo === 'tarefa') {
+      autoresFormatados = normalizarPessoas(campos.responsavel);
+    } else {
+      autoresFormatados = 'Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva';
+    }
+
+    const rotuloAutores = (campos.responsavel && nota.tipo === 'tarefa') ? 'Responsável' : 'Equipe BlendOps';
+    itensColofao.push(`
+      <div class="cbl-colofao-item">
+        <span class="cbl-colofao-rotulo">${rotuloAutores}</span>
+        <div class="cbl-colofao-valor">${escapar(autoresFormatados)}</div>
+      </div>
+    `);
+
+    const dataVal = campos.data || campos.data_criacao || campos.exportado_em;
+    if (dataVal) {
+      itensColofao.push(`
+        <div class="cbl-colofao-item">
+          <span class="cbl-colofao-rotulo">Data</span>
+          <div class="cbl-colofao-valor"><time>${escapar(formatarDataHumana(dataVal))}</time></div>
+        </div>
+      `);
+    } else {
+      itensColofao.push(`
+        <div class="cbl-colofao-item">
+          <span class="cbl-colofao-rotulo">Ciclo</span>
+          <div class="cbl-colofao-valor"><time datetime="2026-09-08">08/09/2026</time> — <time datetime="2026-12-04">04/12/2026</time></div>
+        </div>
+      `);
+    }
+
+    let versao = campos.versao || '';
+    if (!versao && corpoMarkdown) {
+      const versoes = [...corpoMarkdown.matchAll(/\b(v\d+\.\d+(?:\.\d+)?)\b/g)].map((m) => m[1]);
+      if (versoes.length > 0) {
+        versao = versoes.sort((a, b) => b.localeCompare(a, undefined, { numeric: true }))[0];
+      }
+    }
+    if (versao) {
+      itensColofao.push(`
+        <div class="cbl-colofao-item">
+          <span class="cbl-colofao-rotulo">Versão</span>
+          <div class="cbl-colofao-valor">${escapar(versao)}</div>
+        </div>
+      `);
+    }
+
+    if (campos.status) {
+      const rotulosStatus = {
+        'a-fazer': 'A fazer',
+        'em-andamento': 'Em andamento',
+        revisao: 'Revisão',
+        concluida: 'Concluída',
+        ativo: 'Ativo',
+        aprovado: 'Aprovado',
+      };
+      const rotStatus = rotulosStatus[campos.status] || campos.status;
+      itensColofao.push(`
+        <div class="cbl-colofao-item">
+          <span class="cbl-colofao-rotulo">Status</span>
+          <div class="cbl-colofao-valor">
+            <span class="etiqueta status-${escapar(campos.status)}"><span class="status-ponto"></span>${escapar(rotStatus)}</span>
+          </div>
+        </div>
+      `);
+    }
+
+    itensColofao.push(`
+      <div class="cbl-colofao-item">
+        <span class="cbl-colofao-rotulo">Contexto</span>
+        <div class="cbl-colofao-valor">Frila · Challenge 18 (Apple Developer Academy)</div>
+      </div>
+    `);
+
+    if (nota.somenteLeitura || campos.conversao || campos.hash_origem) {
+      const hashCurto = campos.hash_origem ? campos.hash_origem.slice(0, 8) : 'sync';
+      let auditDetalhe = `Conversão automática · ${hashCurto}`;
+      if (campos.exportado_por) {
+        const pessoa = normalizarPessoas(campos.exportado_por);
+        auditDetalhe = `${pessoa} · ${hashCurto}`;
+      }
+      itensColofao.push(`
+        <div class="cbl-colofao-item">
+          <span class="cbl-colofao-rotulo">Auditoria</span>
+          <div class="cbl-colofao-valor" style="font-family: var(--mono); font-size: 11.5px; color: var(--textoSutil);">
+            ${escapar(auditDetalhe)}
+          </div>
+        </div>
+      `);
+    }
+
+    const secoesAncoras = [];
+    if (/^Histórico de Versões/m.test(corpoMarkdown)) {
+      secoesAncoras.push({ titulo: 'Histórico de Versões', id: 'historico-de-versoes' });
+    }
+    if (/^Glossário/m.test(corpoMarkdown)) {
+      secoesAncoras.push({ titulo: 'Glossário', id: 'glossario' });
+    }
+
+    const reSecao = /^(?:##\s+|(\d+)\.\s+)([A-ZÁÀÂÃÉÈÊÍÏÓÔÕÖÚÇ][^\n#|.!?:]{2,55})$/gm;
+    let matchSecao;
+    while ((matchSecao = reSecao.exec(corpoMarkdown)) !== null) {
+      const tit = matchSecao[0].replace(/^##\s+/, '').trim();
+      if (!/^(ESPECIFICAÇÃO|DOCUMENTO DE VISÃO|PROJETO|VISÃO DO PRODUTO)/i.test(tit)) {
+        const id = tit.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        if (!secoesAncoras.some((s) => s.id === id)) {
+          secoesAncoras.push({ titulo: tit, id });
+        }
+      }
+      if (secoesAncoras.length >= 8) break;
+    }
+
+    let navAncorasHtml = '';
+    if (secoesAncoras.length >= 2) {
+      const linksAncoras = secoesAncoras.map((s, idx) => {
+        const num = String(idx + 1).padStart(2, '0');
+        const titCurto = s.titulo.length > 25 ? s.titulo.slice(0, 24) + '…' : s.titulo;
+        return `<a href="#${s.id}" class="cbl-link-ancora"><span class="cbl-ancora-num">${num}</span> ${escapar(titCurto)}</a>`;
+      }).join('<span class="cbl-ancora-sep">/</span>');
+
+      navAncorasHtml = `
+        <nav class="cbl-nav-ancoras" aria-label="Navegação rápida pelas seções">
+          <span class="cbl-nav-legenda">Seções</span>
+          ${linksAncoras}
+        </nav>
+      `;
+    }
+
+    return `
+      <header class="cbl-masthead-doc">
+        <div class="cbl-masthead-eyebrow">
+          <span class="cbl-masthead-rotulo">${escapar(eyebrowRotulo)}</span>
+          ${linkOriginalHtml}
+        </div>
+
+        <h1 class="cbl-masthead-titulo">${escapar(tituloLimpo)}</h1>
+        ${lead ? `<p class="cbl-masthead-lead">${escapar(lead)}</p>` : ''}
+
+        <div class="cbl-colofao">
+          ${itensColofao.join('')}
+        </div>
+
+        ${navAncorasHtml}
+      </header>
+    `;
   }
 
   /**
@@ -716,79 +1023,191 @@ ${this.avisoDeAtualizacao(base)}
     });
   }
 
+  formatarTabelasDesestruturadas(texto) {
+    if (!texto) return '';
+
+    // 1. Tabela de Histórico de Versões
+    texto = texto.replace(
+      /(?:^|\n)(?:##\s*)?Histórico de Versões\s*\n+Versão\s*\n+Data\s*\n+Autor\(es\)\s*\n+Descrição da Mudança\s*\n+([\s\S]*?)(?=\n+(?:(?:##\s*)?Glossário|\d+\.|##|\Z))/i,
+      (match, blocoItens) => {
+        const linhas = blocoItens.trim().split(/\n+/).map((l) => l.trim()).filter(Boolean);
+        const linhasTabela = [];
+        for (let i = 0; i + 3 < linhas.length; i += 4) {
+          const v = linhas[i];
+          const d = linhas[i + 1];
+          const a = linhas[i + 2];
+          const m = linhas[i + 3];
+          linhasTabela.push(`| **${v}** | ${d} | ${a} | ${m} |`);
+        }
+        if (linhasTabela.length > 0) {
+          return `\n## Histórico de Versões\n\n| Versão | Data | Autores | Descrição da Mudança |\n|---|---|---|---|\n${linhasTabela.join('\n')}\n\n`;
+        }
+        return match;
+      }
+    );
+
+    // 2. Tabela de Glossário
+    texto = texto.replace(
+      /(?:^|\n)(?:##\s*)?Glossário\s*\n+Termo \/ Sigla\s*\n+Definição\s*\n+Contexto de Uso\s*\n+([\s\S]*?)(?=\n+(?:\d+\.|##|\Z))/i,
+      (match, blocoItens) => {
+        const linhas = blocoItens.trim().split(/\n+/).map((l) => l.trim()).filter(Boolean);
+        const linhasTabela = [];
+        for (let i = 0; i + 2 < linhas.length; i += 3) {
+          const t = linhas[i];
+          const d = linhas[i + 1];
+          const c = linhas[i + 2];
+          linhasTabela.push(`| **${t}** | ${d} | ${c} |`);
+        }
+        if (linhasTabela.length > 0) {
+          return `\n## Glossário\n\n| Termo / Sigla | Definição | Contexto de Uso |\n|---|---|---|\n${linhasTabela.join('\n')}\n\n`;
+        }
+        return match;
+      }
+    );
+
+    // 3. Tabela de Regras de Negócio (2.1 Regras Obrigatórias)
+    texto = texto.replace(
+      /(?:^|\n)(?:#{1,3}\s*)?2\.1 Regras Obrigatórias\s*\n+#\s*\n+Regra\s*\n+Contexto \/ Justificativa\s*\n+([\s\S]*?)(?=\n+(?:\d+\.|#{1,3}|\Z))/i,
+      (match, blocoItens) => {
+        const linhas = blocoItens.trim().split(/\n+/).map((l) => l.trim()).filter(Boolean);
+        const linhasTabela = [];
+        for (let i = 0; i + 2 < linhas.length; i += 3) {
+          const id = linhas[i];
+          const regra = linhas[i + 1];
+          const contexto = linhas[i + 2];
+          linhasTabela.push(`| **${id}** | ${regra} | ${contexto} |`);
+        }
+        if (linhasTabela.length > 0) {
+          return `\n### 2.1 Regras Obrigatórias\n\n| # | Regra | Contexto / Justificativa |\n|---|---|---|\n${linhasTabela.join('\n')}\n\n`;
+        }
+        return match;
+      }
+    );
+
+    // 4. Tabela de Requisitos Funcionais (3.1 Lista de Requisitos Funcionais)
+    texto = texto.replace(
+      /(?:^|\n)(?:#{1,3}\s*)?3\.1 Lista de Requisitos Funcionais\s*\n+#\s*\n+Requisito Funcional\s*\n+Prioridade\s*\n+Critério de aceitação\s*\n+([\s\S]*?)(?=\n+(?:\d+\.|\Z))/i,
+      (match, blocoItens) => {
+        const linhas = blocoItens.trim().split(/\n+/).map((l) => l.trim()).filter(Boolean);
+        const linhasTabela = [];
+        for (let i = 0; i + 3 < linhas.length; i += 4) {
+          const id = linhas[i];
+          const req = linhas[i + 1];
+          const prio = linhas[i + 2];
+          const crit = linhas[i + 3];
+          linhasTabela.push(`| **${id}** | ${req} | ${prio} | ${crit} |`);
+        }
+        if (linhasTabela.length > 0) {
+          return `\n### 3.1 Lista de Requisitos Funcionais\n\n| # | Requisito Funcional | Prioridade | Critério de Aceitação |\n|---|---|---|---|\n${linhasTabela.join('\n')}\n\n`;
+        }
+        return match;
+      }
+    );
+
+    // 5. Tabela de Estimativa de RFs (3.2 Tempo e Custo Estimados por RF)
+    texto = texto.replace(
+      /(?:^|\n)(?:#{1,3}\s*)?3\.2 Tempo e Custo Estimados por RF\s*([\s\S]*?)\n+#\s*\n+Tempo Estimado\s*\n+Custo Estimado\s*\n+([\s\S]*?)(?=\n+(?:###?\s*3\.3|3\.3|\d+\.|\Z))/i,
+      (match, intro, blocoItens) => {
+        const linhas = blocoItens.trim().split(/\n+/).map((l) => l.trim()).filter(Boolean);
+        const linhasTabela = [];
+        for (let i = 0; i + 2 < linhas.length; i += 3) {
+          const id = linhas[i];
+          const tempo = linhas[i + 1];
+          const custo = linhas[i + 2];
+          linhasTabela.push(`| **${id}** | ${tempo} | ${custo} |`);
+        }
+        if (linhasTabela.length > 0) {
+          const introTxt = intro.trim() ? `\n\n${intro.trim()}` : '';
+          return `\n### 3.2 Tempo e Custo Estimados por RF${introTxt}\n\n| # | Tempo Estimado | Custo Estimado |\n|---|---|---|\n${linhasTabela.join('\n')}\n\n`;
+        }
+        return match;
+      }
+    );
+
+    // 6. Matriz Impacto × Esforço (3.3 Matriz Impacto × Esforço)
+    texto = texto.replace(
+      /(?:^|\n)(?:#{1,3}\s*)?3\.3 Matriz Impacto × Esforço\s*\n+Impacto ↓ Esforço →\s*\n+Esforço Baixo\s*\n+Esforço Médio\s*\n+Esforço Alto\s*\n+Impacto Alto\s*\n+Quick wins, faça primeiro\s*\n+([^\n]+)\s*\n+Planeje bem, vale o esforço\s*\n+([^\n]+)\s*\n+Grande projeto, divida em partes\s*\n+([^\n]+)\s*\n+Impacto Médio\s*\n+Secundário\s*\n+([^\n]+)\s*\n+Avalie\s*\n+([^\n]+)\s*\n+Evite por ora\s*\n+([^\n]+)\s*\n+Impacto Baixo\s*\n+Se sobrar tempo\s*\n+([^\n]+)\s*\n+Baixa prioridade\s*\n+([^\n]+)\s*\n+Descarte ou adie\s*\n+([^\n]+)/i,
+      (match, r1, r2, r3, r4, r5, r6, r7, r8, r9) => {
+        return `\n### 3.3 Matriz Impacto × Esforço\n\n| Impacto ↓ \\ Esforço → | Esforço Baixo | Esforço Médio | Esforço Alto |\n|---|---|---|---|\n| **Impacto Alto** | **Quick wins, faça primeiro**<br>${r1} | **Planeje bem, vale o esforço**<br>${r2} | **Grande projeto, divida em partes**<br>${r3} |\n| **Impacto Médio** | **Secundário**<br>${r4} | **Avalie**<br>${r5} | **Evite por ora**<br>${r6} |\n| **Impacto Baixo** | **Se sobrar tempo**<br>${r7} | **Baixa prioridade**<br>${r8} | **Descarte ou adie**<br>${r9} |\n\n`;
+      }
+    );
+
+    // 7. Tabela de Requisitos Não Funcionais (4.1 Lista de Requisitos Não Funcionais)
+    texto = texto.replace(
+      /(?:^|\n)(?:#{1,3}\s*)?4\.1 Lista de Requisitos Não Funcionais\s*\n+#\s*\n+Requisito Não Funcional\s*\n+Categoria\s*\n+Critério de Aceitação\s*\n+([\s\S]*?)(?=\n+(?:\d+\.|\Z))/i,
+      (match, blocoItens) => {
+        const linhas = blocoItens.trim().split(/\n+/).map((l) => l.trim()).filter(Boolean);
+        const linhasTabela = [];
+        for (let i = 0; i + 3 < linhas.length; i += 4) {
+          const id = linhas[i];
+          const req = linhas[i + 1];
+          const cat = linhas[i + 2];
+          const crit = linhas[i + 3];
+          linhasTabela.push(`| **${id}** | ${req} | ${cat} | ${crit} |`);
+        }
+        if (linhasTabela.length > 0) {
+          return `\n### 4.1 Lista de Requisitos Não Funcionais\n\n| # | Requisito Não Funcional | Categoria | Critério de Aceitação |\n|---|---|---|---|\n${linhasTabela.join('\n')}\n\n`;
+        }
+        return match;
+      }
+    );
+
+    // 8. Tabela de Estimativa de RNFs (4.2 Tempo e Custo Estimados por RNF)
+    texto = texto.replace(
+      /(?:^|\n)(?:#{1,3}\s*)?4\.2 Tempo e Custo Estimados por RNF\s*\n+#\s*\n+Tempo Estimado\s*\n+Custo Estimado\s*\n+([\s\S]*?)(?=\n+(?:5\.|\d+\.|##|\Z))/i,
+      (match, blocoItens) => {
+        const linhas = blocoItens.trim().split(/\n+/).map((l) => l.trim()).filter(Boolean);
+        const linhasTabela = [];
+        for (let i = 0; i + 2 < linhas.length; i += 3) {
+          const id = linhas[i];
+          const tempo = linhas[i + 1];
+          const custo = linhas[i + 2];
+          linhasTabela.push(`| **${id}** | ${tempo} | ${custo} |`);
+        }
+        if (linhasTabela.length > 0) {
+          return `\n### 4.2 Tempo e Custo Estimados por RNF\n\n| # | Tempo Estimado | Custo Estimado |\n|---|---|---|\n${linhasTabela.join('\n')}\n\n`;
+        }
+        return match;
+      }
+    );
+
+    return texto;
+  }
+
   paginaDeNota(nota, secao) {
     if (nota.caminho.includes('CBL_C18') || nota.caminho.includes('C18.md')) {
       return this.paginaDocumentoCBL(nota, secao);
     }
-    // O H1 vira o título da página; repeti-lo no corpo seria redundante.
-    const corpoSemTitulo = nota.corpo.replace(/^#\s+.*\n?/, '');
-    let corpo = '';
 
-    if (nota.somenteLeitura) {
-      corpo += `<p class="aviso">Documento derivado de um arquivo <code>.pages</code> · regenerado automaticamente a cada conversão.</p>`;
-    }
+    const tituloLimpo = this.limparTitulo(nota.titulo, nota.tipo, nota);
 
-    const rotulosCampos = {
-      data_inicio: 'Início',
-      data_fim: 'Término',
-      data_criacao: 'Criação',
-      data: 'Data',
-      responsavel: 'Responsável',
-      desafio: 'Desafio',
-      status: 'Status',
-      tags: 'Tags',
-    };
+    // 1. O H1 vira o título da página no Masthead; retira do corpo para não duplicar.
+    let corpoLimpo = nota.corpo.replace(/^#\s+[^\n]+\n+/, '');
 
-    const formatarValorCampo = (chave, valor) => {
-      if (!valor) return '—';
-      if (/^\d{4}-\d{2}-\d{2}$/.test(String(valor))) {
-        const [ano, mes, dia] = String(valor).split('-');
-        return `${dia}/${mes}/${ano}`;
-      }
-      if (chave === 'status') {
-        const rotulosStatus = {
-          'a-fazer': 'A fazer',
-          'em-andamento': 'Em andamento',
-          revisao: 'Revisão',
-          concluida: 'Concluída',
-          ativo: 'Ativo',
-        };
-        const rot = rotulosStatus[valor] || valor;
-        return `<span class="etiqueta status-${escapar(valor)}"><span class="status-ponto"></span>${escapar(rot)}</span>`;
-      }
-      if (chave === 'responsavel') {
-        const mapa = {
-          'cauecarneiroc': 'Cauê Carneiro',
-          'fbtostadev': 'Fabrício Tosta',
-          'joaopaulo': 'João Paulo',
-          'juliaclovandi': 'Júlia Clovandi',
-          'matheussilva': 'Matheus Silva',
-        };
-        const arr = Array.isArray(valor) ? valor : String(valor).replace(/^\[|\]$/g, '').split(',');
-        const normalizados = arr.map((p) => {
-          const limpo = String(p).trim();
-          return mapa[limpo.toLowerCase()] || limpo;
-        }).filter(Boolean);
-        return escapar(normalizados.join(', '));
-      }
-      if (Array.isArray(valor)) {
-        return valor.map(escapar).join(', ');
-      }
-      return escapar(String(valor).replace(/^\[|\]$/g, ''));
-    };
+    // 2. Retira o rodapé do Obsidian ("--- ← [[...]]")
+    corpoLimpo = this.semRodapeDoObsidian(corpoLimpo);
 
-    const campos = Object.entries(nota.campos)
-      .filter(([k]) => !['tipo'].includes(k))
-      .map(([k, v]) => {
-        const rotulo = rotulosCampos[k] || escapar(k);
-        const valorFormatado = formatarValorCampo(k, v);
-        return `<div class="campo-item"><span class="campo-chave">${rotulo}</span><span class="campo-valor">${valorFormatado}</span></div>`;
-      })
-      .join('');
-    if (campos) corpo += `<div class="campos">${campos}</div>`;
+    // 3. Tira avisos e callouts redundantes de geração automática
+    corpoLimpo = corpoLimpo.replace(/>\s*\[!info\]\s*Gerado automaticamente[\s\S]*?(?=\n\n|\n[A-Z0-9#]|$)\n*/gi, '');
 
+    // 4. Remove blocos de capa de documentos convertidos do Word/Pages (ex: ESPECIFICAÇÃO DE REQUISITOS... Data 18/09/2026)
+    corpoLimpo = corpoLimpo.replace(/^\s*(?:ESPECIFICAÇÃO DE REQUISITOS|DOCUMENTO DE VISÃO|DOCUMENTO DE REQUISITOS|VISÃO DO PRODUTO)[\s\S]*?(?:Data\s*\n+\d{1,2}\/\d{1,2}\/\d{4}\s*\n*)/i, '');
+
+    // 5. Remove cabeçalhos de bloco de citação repetitivos (Autores / Equipe / Desafio / Data / Versão)
+    corpoLimpo = corpoLimpo.replace(/^\s*>\s*\*\*Documento de[^\n]*\n(?:>\s*[^\n]*\n*)+(\n*---\s*\n*)?/i, '');
+
+    // 6. Limpa linhas divisórias horizontais órfãs no início do documento
+    corpoLimpo = corpoLimpo.replace(/^\s*---\s*\n+/, '');
+
+    // 7. Estrutura tabelas provenientes de conversão crua de .docx
+    corpoLimpo = this.formatarTabelasDesestruturadas(corpoLimpo);
+
+    // Renderiza o Masthead editorial canônico
+    const mastheadHtml = this.renderizarMastheadNota(nota, secao, '../', corpoLimpo, tituloLimpo);
+
+    let chamadaCBL = '';
     if (nota.caminho === '01 - CBL/Desafios/C18/C18.md') {
-      corpo += `<section class="cbl-editorial-chamada">
+      chamadaCBL = `<section class="cbl-editorial-chamada">
         <div class="cbl-chamada-eyebrow">
           <span class="cbl-chamada-tag">Documento Oficial</span>
           <span class="cbl-chamada-sep">/</span>
@@ -809,14 +1228,23 @@ ${this.avisoDeAtualizacao(base)}
       </section>`;
     }
 
-    corpo += `<article class="narrativa">${this.md(corpoSemTitulo, 'notas')}</article>`;
+    const corpo = `
+      <article class="cbl-documento pagina-conteudo-centralizado">
+        ${mastheadHtml}
+        ${chamadaCBL}
+        <div class="narrativa">
+          ${this.md(corpoLimpo, 'notas')}
+        </div>
+      </article>
+    `;
 
     return this.pagina({
-      titulo: this.limparTitulo(nota.titulo),
+      titulo: tituloLimpo,
       subtitulo: secao.titulo,
       corpo,
       ativo: this.arquivoDaNota(nota.caminho),
       daPasta: 'notas',
+      semConteudoTopo: true,
     });
   }
 
@@ -1158,14 +1586,59 @@ ${this.avisoDeAtualizacao(base)}
 })();
 </script>`;
 
-    const corpo = toolbar + quadroHtml + tabelaHtml + vazioHtml + scriptInterativo;
+    const contagemStatus = colunasStatus.map((c) => {
+      const qtd = tarefas.filter((t) => t.campos.status === c.id).length;
+      return `${qtd} ${c.rotulo.toLowerCase()}`;
+    }).join(' · ');
+
+    const mastheadTarefas = `
+      <header class="cbl-masthead-doc">
+        <div class="cbl-masthead-eyebrow">
+          <span class="cbl-masthead-rotulo">APPLE DEVELOPER ACADEMY · CICLO CBL C18</span>
+        </div>
+
+        <h1 class="cbl-masthead-titulo">Tarefas e Backlog</h1>
+        <p class="cbl-masthead-lead">Quadro de execução operacional, priorização MoSCoW e acompanhamento das entregas da equipe BlendOps para o Frila.</p>
+
+        <div class="cbl-colofao">
+          <div class="cbl-colofao-item">
+            <span class="cbl-colofao-rotulo">Total de Tarefas</span>
+            <div class="cbl-colofao-valor">${tarefas.length} tarefas catalogadas</div>
+          </div>
+          <div class="cbl-colofao-item">
+            <span class="cbl-colofao-rotulo">Equipe BlendOps</span>
+            <div class="cbl-colofao-valor">Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva</div>
+          </div>
+          <div class="cbl-colofao-item">
+            <span class="cbl-colofao-rotulo">Ciclo</span>
+            <div class="cbl-colofao-valor"><time datetime="2026-09-08">08/09/2026</time> — <time datetime="2026-12-04">04/12/2026</time></div>
+          </div>
+          <div class="cbl-colofao-item">
+            <span class="cbl-colofao-rotulo">Distribuição</span>
+            <div class="cbl-colofao-valor">${escapar(contagemStatus)}</div>
+          </div>
+        </div>
+      </header>
+    `;
+
+    const corpo = `
+      <article class="cbl-documento pagina-tarefas-canvas">
+        ${mastheadTarefas}
+        ${toolbar}
+        ${quadroHtml}
+        ${tabelaHtml}
+        ${vazioHtml}
+        ${scriptInterativo}
+      </article>
+    `;
 
     return this.pagina({
-      titulo: 'Tarefas',
-      subtitulo: 'Backlog MoSCoW e fluxo de execução do ciclo CBL',
+      titulo: 'Tarefas e Backlog',
+      subtitulo: 'Quadro operacional e backlog do ciclo CBL',
       corpo,
       ativo: 'tarefas.html',
       daPasta: '',
+      semConteudoTopo: true,
     });
   }
 
@@ -1176,35 +1649,109 @@ ${this.avisoDeAtualizacao(base)}
         corpo: '<p class="vazio">Nenhum fato registrado ainda.</p>',
         ativo: 'registros.html',
         daPasta: '',
+        semConteudoTopo: true,
       });
     }
+
+    const mapaNomes = {
+      'cauecarneiroc': 'Cauê Carneiro',
+      'fbtostadev': 'Fabrício Tosta',
+      'joaopaulo': 'João Paulo',
+      'juliaclovandi': 'Júlia Clovandi',
+      'matheussilva': 'Matheus Silva',
+    };
+
+    const normalizarTexto = (texto) => {
+      if (!texto) return '';
+      let s = String(texto);
+      for (const [login, nome] of Object.entries(mapaNomes)) {
+        s = s.replace(new RegExp(`\\b${login}\\b`, 'gi'), nome);
+      }
+      return s;
+    };
+
+    const formatarDataHumana = (d) => {
+      if (!d) return '';
+      const s = String(d).trim();
+      if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
+        const [ano, mes, dia] = s.slice(0, 10).split('-');
+        const meses = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+        return `${parseInt(dia, 10)} ${meses[parseInt(mes, 10) - 1]} ${ano}`;
+      }
+      return s;
+    };
+
+    const totalFatos = this.indice.fatos ? this.indice.fatos.length : 0;
+
+    const mastheadRegistros = `
+      <header class="cbl-masthead-doc">
+        <div class="cbl-masthead-eyebrow">
+          <span class="cbl-masthead-rotulo">AUDITORIA CONTÍNUA · GIT HOOKS &amp; AUTOMAÇÃO</span>
+        </div>
+
+        <h1 class="cbl-masthead-titulo">Linha do Tempo e Registros</h1>
+        <p class="cbl-masthead-lead">Registro cronológico imutável gerado pelos hooks do Git e da Bancada a cada commit, conversão de documento e sessão de trabalho no ciclo CBL.</p>
+
+        <div class="cbl-colofao">
+          <div class="cbl-colofao-item">
+            <span class="cbl-colofao-rotulo">Volume Auditado</span>
+            <div class="cbl-colofao-valor">${totalFatos} eventos e fatos registrados</div>
+          </div>
+          <div class="cbl-colofao-item">
+            <span class="cbl-colofao-rotulo">Contribuidores</span>
+            <div class="cbl-colofao-valor">Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva</div>
+          </div>
+          <div class="cbl-colofao-item">
+            <span class="cbl-colofao-rotulo">Ciclo</span>
+            <div class="cbl-colofao-valor"><time datetime="2026-09-08">08/09/2026</time> — <time datetime="2026-12-04">04/12/2026</time></div>
+          </div>
+          <div class="cbl-colofao-item">
+            <span class="cbl-colofao-rotulo">Origem</span>
+            <div class="cbl-colofao-valor">Hooks do Git · bancada-indice · automação local</div>
+          </div>
+        </div>
+      </header>
+    `;
 
     // `<details>` faz o colapso sem uma linha de JavaScript: o site é
     // estático de verdade, e continua funcionando sem scripts.
     const no = (n, nivel) => {
+      let rotuloExibido = n.rotulo;
+      if (nivel === 0 && /^\d{4}-\d{2}-\d{2}$/.test(n.rotulo)) {
+        rotuloExibido = formatarDataHumana(n.rotulo);
+      }
+      const detalheExibido = normalizarTexto(n.detalhe);
+
       if (!n.filhos) {
-        return `<li class="fato"><span class="rotulo">${escapar(n.rotulo)}</span>
-          <span class="apoio">${escapar(n.detalhe)}</span></li>`;
+        return `<li class="fato"><span class="rotulo">${escapar(rotuloExibido)}</span>
+          <span class="apoio">${escapar(detalheExibido)}</span></li>`;
       }
       const filhos = n.filhos.map((f) => no(f, nivel + 1)).join('');
       const aberto = nivel === 0 ? ' open' : '';
       const classe = n.ocorrencias > 1 && nivel === 2 ? ' class="grupo-repetido"' : '';
-      // O nível 1 da árvore é o tipo do fato. Marcá-lo é o que deixa o site
-      // colorir a categoria como o app faz em `MarcadorDeTipo` — antes o site
-      // pintava todo tipo com o acento, jogando fora o próprio código de cor.
       const marcaDeTipo = nivel === 1 ? ` data-tipo="${escapar(n.rotulo)}"` : '';
       return `<li><details${aberto}${classe}${marcaDeTipo}>
-        <summary><span class="rotulo">${escapar(n.rotulo)}</span>
-        <span class="apoio">${escapar(n.detalhe)}</span></summary>
+        <summary><span class="rotulo">${escapar(rotuloExibido)}</span>
+        <span class="apoio">${escapar(detalheExibido)}</span></summary>
         <ul>${filhos}</ul>
       </details></li>`;
     };
 
     const corpo = `
-      <p class="subtitulo">Log escrito automaticamente pelos hooks do Git a cada commit, conversão de documento e sessão de trabalho. Repetições aparecem agrupadas — abra um grupo para ver cada ocorrência.</p>
-      <ul class="arvore">${this.indice.arvoreDeRegistros.map((n) => no(n, 0)).join('')}</ul>`;
+      <article class="cbl-documento pagina-registros-canvas">
+        ${mastheadRegistros}
+        <ul class="arvore">${this.indice.arvoreDeRegistros.map((n) => no(n, 0)).join('')}</ul>
+      </article>
+    `;
 
-    return this.pagina({ titulo: 'Registros', corpo, ativo: 'registros.html', daPasta: '' });
+    return this.pagina({
+      titulo: 'Linha do Tempo e Registros',
+      subtitulo: 'Auditoria contínua do Challenge 18',
+      corpo,
+      ativo: 'registros.html',
+      daPasta: '',
+      semConteudoTopo: true,
+    });
   }
 
   paginaGaleria() {
@@ -1215,8 +1762,35 @@ ${this.avisoDeAtualizacao(base)}
         corpo: '<p class="vazio">Nenhuma mídia versionada no vault ainda.</p>',
         ativo: 'galeria.html',
         daPasta: '',
+        semConteudoTopo: true,
       });
     }
+
+    const mastheadGaleria = `
+      <header class="cbl-masthead-doc">
+        <div class="cbl-masthead-eyebrow">
+          <span class="cbl-masthead-rotulo">ACERVO VISUAL · RECURSOS GRÁFICOS</span>
+        </div>
+
+        <h1 class="cbl-masthead-titulo">Galeria de Mídia</h1>
+        <p class="cbl-masthead-lead">Acervo visual, capturas de tela das iterações, diagramas de engenharia e materiais de apoio do produto Frila e da Bancada.</p>
+
+        <div class="cbl-colofao">
+          <div class="cbl-colofao-item">
+            <span class="cbl-colofao-rotulo">Total de Mídias</span>
+            <div class="cbl-colofao-valor">${midias.length} arquivos catalogados</div>
+          </div>
+          <div class="cbl-colofao-item">
+            <span class="cbl-colofao-rotulo">Formatos</span>
+            <div class="cbl-colofao-valor">PNG, JPG, SVG, MP4, MOV, .pages, .docx</div>
+          </div>
+          <div class="cbl-colofao-item">
+            <span class="cbl-colofao-rotulo">Contexto</span>
+            <div class="cbl-colofao-valor">Frila · Challenge 18 (Apple Developer Academy)</div>
+          </div>
+        </div>
+      </header>
+    `;
 
     const cartoes = midias
       .map((m) => {
@@ -1247,11 +1821,20 @@ ${this.avisoDeAtualizacao(base)}
       })
       .join('');
 
+    const corpo = `
+      <article class="cbl-documento pagina-galeria-canvas">
+        ${mastheadGaleria}
+        <div class="grade">${cartoes}</div>
+      </article>
+    `;
+
     return this.pagina({
-      titulo: 'Galeria',
-      corpo: `<div class="grade">${cartoes}</div>`,
+      titulo: 'Galeria de Mídia',
+      subtitulo: 'Acervo visual e diagramas do Challenge 18',
+      corpo,
       ativo: 'galeria.html',
       daPasta: '',
+      semConteudoTopo: true,
     });
   }
 

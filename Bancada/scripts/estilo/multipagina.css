@@ -360,21 +360,38 @@ main h1 {
 }
 
 main h2 {
-  font-size: 17px;
+  font-size: 1.75rem;
   font-weight: 600;
   letter-spacing: -0.025em;
+  line-height: 1.22;
   color: #ffffff;
-  margin: 32px 0 12px;
-  padding-bottom: 8px;
+  margin: 44px 0 16px;
+  padding-bottom: 10px;
   border-bottom: 1px solid var(--divisor);
+  text-wrap: balance;
+  scroll-margin-top: 80px;
 }
 
 main h3 {
-  font-size: 14.5px;
+  font-size: 1.15rem;
   font-weight: 600;
   letter-spacing: -0.015em;
+  line-height: 1.35;
+  color: #f0f1f4;
+  margin: 32px 0 12px;
+  text-wrap: balance;
+  scroll-margin-top: 80px;
+}
+
+main h4 {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.4;
   color: #e2e4e8;
-  margin: 20px 0 8px;
+  margin: 24px 0 8px;
+  text-wrap: balance;
+  scroll-margin-top: 80px;
 }
 
 main p {
@@ -585,48 +602,73 @@ a:hover {
   padding: 0;
 }
 
-/* Callouts Refinados ----------------------------------------------------- */
-.callout {
-  margin: 20px 0;
-  padding: 16px 20px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid var(--borda);
-  border-left: 3px solid var(--acento);
+/* Callouts Refinados (Estilo Bloco de Síntese Apple — Zero Linhas Abertas) */
+.callout,
+.cbl-sintese-bloco {
+  margin: 28px 0;
+  padding: 18px 22px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   font-size: 13.5px;
   line-height: 1.6;
 }
 
-.callout > b {
+.callout > b,
+.cbl-sintese-rotulo {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-bottom: 8px;
-  color: #70b8ff;
+  margin-bottom: 10px;
+  color: var(--acento);
   font-family: var(--sans);
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  background: rgba(59, 158, 255, 0.08);
-  border: 1px solid rgba(59, 158, 255, 0.2);
-  padding: 2px 8px;
-  border-radius: 4px;
+  background: rgba(124, 149, 240, 0.12);
+  border: 1px solid rgba(124, 149, 240, 0.22);
+  padding: 3px 9px;
+  border-radius: 6px;
 }
 
 .callout > p {
   color: #c4c7cb;
-  margin: 4px 0;
+  margin: 6px 0;
+  max-width: 66ch;
 }
 
 .callout-warning, .callout-aviso {
-  border-left-color: #ffca16;
+  background: rgba(217, 168, 78, 0.03);
+  border-color: rgba(217, 168, 78, 0.22);
 }
 
 .callout-warning > b, .callout-aviso > b {
-  color: #ffca16;
-  background: rgba(255, 202, 22, 0.08);
-  border-color: rgba(255, 202, 22, 0.2);
+  color: var(--aviso);
+  background: rgba(217, 168, 78, 0.12);
+  border-color: rgba(217, 168, 78, 0.25);
+}
+
+.callout-success, .callout-sucesso {
+  background: rgba(79, 201, 138, 0.03);
+  border-color: rgba(79, 201, 138, 0.22);
+}
+
+.callout-success > b, .callout-sucesso > b {
+  color: var(--sucesso);
+  background: rgba(79, 201, 138, 0.12);
+  border-color: rgba(79, 201, 138, 0.25);
+}
+
+.callout-danger, .callout-perigo {
+  background: rgba(240, 131, 122, 0.03);
+  border-color: rgba(240, 131, 122, 0.22);
+}
+
+.callout-danger > b, .callout-perigo > b {
+  color: var(--perigo);
+  background: rgba(240, 131, 122, 0.12);
+  border-color: rgba(240, 131, 122, 0.25);
 }
 
 /* Lista de Últimos Dias (Estilo Apple) ----------------------------------- */
@@ -704,18 +746,20 @@ a:hover {
   transform: translateX(2px);
 }
 
-/* Metadados e Campos ----------------------------------------------------- */
+/* Metadados e Campos (Estilo Colofão Aberto — Zero Caixinhas Isoladas) */
 .campos {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px 20px;
-  font-size: 12px;
-  margin-bottom: 26px;
-  padding: 10px 16px;
-  background: #08090c;
-  border: 1px solid var(--borda);
-  border-radius: 8px;
+  gap: 16px 24px;
+  font-size: 13px;
+  margin-bottom: 32px;
+  padding: 14px 0;
+  background: transparent;
+  border: none;
+  border-top: 1px solid var(--divisor);
+  border-bottom: 1px solid var(--divisor);
+  border-radius: 0;
 }
 
 .campo-item {
@@ -729,26 +773,35 @@ a:hover {
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #6a717a;
+  color: var(--textoSutil);
   font-weight: 600;
 }
 
 .campo-valor {
-  color: #e6e8eb;
+  color: var(--texto);
   font-weight: 500;
+  font-size: 13px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 
 .aviso {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid var(--borda);
-  border-radius: var(--raio);
-  padding: var(--espaco-md);
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  padding: 14px 18px;
   font-size: 13px;
   color: var(--textoSutil);
-  margin-bottom: var(--espaco-lg);
+  margin-bottom: 28px;
+  line-height: 1.55;
+  max-width: 66ch;
+}
+
+:root[data-theme="light"] .aviso {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.08);
+  color: #64748b;
 }
 
 blockquote {
@@ -1643,6 +1696,7 @@ body > footer {
 :root[data-theme="light"] main h1,
 :root[data-theme="light"] main h2,
 :root[data-theme="light"] main h3,
+:root[data-theme="light"] main h4,
 :root[data-theme="light"] main strong,
 :root[data-theme="light"] main b {
   color: #111827;
@@ -1761,19 +1815,75 @@ body > footer {
   color: #111827;
 }
 
-:root[data-theme="light"] .callout {
-  background: #f9fafb;
-  border-color: var(--borda);
+:root[data-theme="light"] .callout,
+:root[data-theme="light"] .cbl-sintese-bloco {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
-:root[data-theme="light"] .callout-info {
-  background: #eff6ff;
-  border-color: #bfdbfe;
-  color: #1e40af;
+:root[data-theme="light"] .callout > b,
+:root[data-theme="light"] .cbl-sintese-rotulo {
+  background: rgba(47, 91, 216, 0.08);
+  color: #2f5bd8;
+  border-color: rgba(47, 91, 216, 0.2);
 }
 
-:root[data-theme="light"] .callout-info p {
-  color: #1e3a8a;
+:root[data-theme="light"] .callout > p {
+  color: #334155;
+}
+
+:root[data-theme="light"] .callout-warning,
+:root[data-theme="light"] .callout-aviso {
+  background: #fdfaf3;
+  border-color: rgba(138, 100, 16, 0.2);
+}
+
+:root[data-theme="light"] .callout-warning > b,
+:root[data-theme="light"] .callout-aviso > b {
+  color: #8a6410;
+  background: rgba(138, 100, 16, 0.08);
+  border-color: rgba(138, 100, 16, 0.2);
+}
+
+:root[data-theme="light"] .callout-warning p,
+:root[data-theme="light"] .callout-aviso p {
+  color: #451a03;
+}
+
+:root[data-theme="light"] .callout-success,
+:root[data-theme="light"] .callout-sucesso {
+  background: #f0fdf4;
+  border-color: rgba(30, 122, 76, 0.2);
+}
+
+:root[data-theme="light"] .callout-success > b,
+:root[data-theme="light"] .callout-sucesso > b {
+  color: #1e7a4c;
+  background: rgba(30, 122, 76, 0.08);
+  border-color: rgba(30, 122, 76, 0.2);
+}
+
+:root[data-theme="light"] .callout-success p,
+:root[data-theme="light"] .callout-sucesso p {
+  color: #064e3b;
+}
+
+:root[data-theme="light"] .callout-danger,
+:root[data-theme="light"] .callout-perigo {
+  background: #fef2f2;
+  border-color: rgba(192, 54, 43, 0.2);
+}
+
+:root[data-theme="light"] .callout-danger > b,
+:root[data-theme="light"] .callout-perigo > b {
+  color: #c0362b;
+  background: rgba(192, 54, 43, 0.08);
+  border-color: rgba(192, 54, 43, 0.2);
+}
+
+:root[data-theme="light"] .callout-danger p,
+:root[data-theme="light"] .callout-perigo p {
+  color: #7f1d1d;
 }
 
 :root[data-theme="light"] .cartao {
@@ -1928,8 +2038,19 @@ body > footer {
    Documento Oficial CBL (Challenge 18) — Editorial Minimalista
    Inspirado em Raphael Salaja: Containerless, tipografia pura, colofão fluido.
    ========================================================================== */
-.cbl-documento {
+.cbl-documento,
+.pagina-conteudo-centralizado {
   max-width: min(100%, 840px);
+  margin: 0 auto 80px;
+  color: var(--texto);
+  font-family: var(--sans);
+  line-height: 1.6;
+}
+
+.pagina-tarefas-canvas,
+.pagina-galeria-canvas,
+.pagina-registros-canvas {
+  max-width: min(100%, 1160px);
   margin: 0 auto 80px;
   color: var(--texto);
   font-family: var(--sans);
