@@ -571,31 +571,25 @@ ${this.avisoDeAtualizacao(base)}
 
     let corpo = '';
 
-    corpo += `<div class="cartao-documento-cbl">
-      <div class="cartao-cbl-conteudo">
-        <div class="cartao-cbl-icone">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
-        </div>
-        <div class="cartao-cbl-textos">
-          <div class="cartao-cbl-badges">
-            <span class="badge-destaque">Documento Oficial</span>
-            <span class="badge-apoio">Apple Developer Academy · CBL</span>
-          </div>
-          <h3>Documento Oficial CBL — Challenge 18</h3>
-          <p>Framework CBL aplicado à concepção do Frila: Big Idea, Essential Questions, Pesquisa de Campo e 22 Objetivos de Aprendizagem.</p>
-        </div>
+    corpo += `<section class="cbl-editorial-chamada">
+      <div class="cbl-chamada-eyebrow">
+        <span class="cbl-chamada-tag">Documento Oficial</span>
+        <span class="cbl-chamada-sep">/</span>
+        <span class="cbl-chamada-origem">Apple Developer Academy · CBL</span>
       </div>
-      <div class="cartao-cbl-acoes">
-        <a href="notas/01-cbl-desafios-c18-documentos-cbl-c18.html" class="btn-primario-cbl">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-          Abrir Documento
+      <h3 class="cbl-chamada-titulo">Documento Oficial CBL — Challenge 18</h3>
+      <p class="cbl-chamada-lead">Framework Challenge Based Learning aplicado à concepção do Frila: Big Idea, Essential Questions, Pesquisa de Campo e 22 Objetivos de Aprendizagem.</p>
+      <div class="cbl-chamada-acoes">
+        <a href="notas/01-cbl-desafios-c18-documentos-cbl-c18.html" class="cbl-chamada-link-primario">
+          <span>Abrir Documento Completo</span>
+          <span class="cbl-seta" aria-hidden="true">→</span>
         </a>
-        <a href="midia/01 - CBL/Desafios/C18/Documentos/CBL_C18.pdf" class="btn-secundario-cbl" download="CBL_C18.pdf" title="Baixar PDF original (9.1 MB)">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          PDF (9.1 MB)
+        <a href="midia/01 - CBL/Desafios/C18/Documentos/CBL_C18.pdf" class="cbl-chamada-link-secundario" download="CBL_C18.pdf" title="Baixar PDF original (9.1 MB)">
+          <span>PDF Original (9.1 MB)</span>
+          <span class="cbl-seta" aria-hidden="true">↗</span>
         </a>
       </div>
-    </div>`;
+    </section>`;
 
     if (ativo) {
       const corpoSemTitulo = ativo.corpo.replace(/^#\s+.*\n?/, '');
@@ -688,31 +682,25 @@ ${this.avisoDeAtualizacao(base)}
     if (campos) corpo += `<div class="campos">${campos}</div>`;
 
     if (nota.caminho === '01 - CBL/Desafios/C18/C18.md') {
-      corpo += `<div class="cartao-documento-cbl">
-        <div class="cartao-cbl-conteudo">
-          <div class="cartao-cbl-icone">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
-          </div>
-          <div class="cartao-cbl-textos">
-            <div class="cartao-cbl-badges">
-              <span class="badge-destaque">Documento Oficial</span>
-              <span class="badge-apoio">Apple Developer Academy · CBL</span>
-            </div>
-            <h3>Documento Oficial CBL — Challenge 18</h3>
-            <p>Framework CBL aplicado à concepção do Frila: Big Idea, Essential Questions, Pesquisa de Campo e 22 Objetivos de Aprendizagem.</p>
-          </div>
+      corpo += `<section class="cbl-editorial-chamada">
+        <div class="cbl-chamada-eyebrow">
+          <span class="cbl-chamada-tag">Documento Oficial</span>
+          <span class="cbl-chamada-sep">/</span>
+          <span class="cbl-chamada-origem">Apple Developer Academy · CBL</span>
         </div>
-        <div class="cartao-cbl-acoes">
-          <a href="01-cbl-desafios-c18-documentos-cbl-c18.html" class="btn-primario-cbl">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-            Abrir Documento
+        <h3 class="cbl-chamada-titulo">Documento Oficial CBL — Challenge 18</h3>
+        <p class="cbl-chamada-lead">Framework Challenge Based Learning aplicado à concepção do Frila: Big Idea, Essential Questions, Pesquisa de Campo e 22 Objetivos de Aprendizagem.</p>
+        <div class="cbl-chamada-acoes">
+          <a href="01-cbl-desafios-c18-documentos-cbl-c18.html" class="cbl-chamada-link-primario">
+            <span>Abrir Documento Completo</span>
+            <span class="cbl-seta" aria-hidden="true">→</span>
           </a>
-          <a href="../midia/01 - CBL/Desafios/C18/Documentos/CBL_C18.pdf" class="btn-secundario-cbl" download="CBL_C18.pdf" title="Baixar PDF original (9.1 MB)">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            PDF (9.1 MB)
+          <a href="../midia/01 - CBL/Desafios/C18/Documentos/CBL_C18.pdf" class="cbl-chamada-link-secundario" download="CBL_C18.pdf" title="Baixar PDF original (9.1 MB)">
+            <span>PDF Original (9.1 MB)</span>
+            <span class="cbl-seta" aria-hidden="true">↗</span>
           </a>
         </div>
-      </div>`;
+      </section>`;
     }
 
     corpo += `<article class="narrativa">${this.md(corpoSemTitulo, 'notas')}</article>`;
