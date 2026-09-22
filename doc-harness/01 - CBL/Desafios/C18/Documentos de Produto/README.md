@@ -90,15 +90,15 @@ Daí a assimetria que orienta a entrada no mercado. O evento é como se constró
 
 **Organizar equipe.** O estabelecimento reúne quem já trabalhou bem por lá, e essas pessoas recebem as vagas da casa mesmo estando longe. Para eventos, monta a escala de uma formatura ou de um casamento com semanas de antecedência, em vez de vaga por vaga.
 
-### Os dois apps
+### Um app, dois perfis
 
-São duas interfaces com necessidades diferentes o suficiente para serem tratadas separadamente, sobre uma base comum.
+O Frila é um app só, com dois perfis. Cada conta tem um perfil, escolhido no cadastro e fixo; quem quiser usar o outro lado cria outra conta, com outro e-mail. A entrada é por código enviado ao e-mail, sem senha.
 
-O **app do profissional** é usado na rua, no intervalo, em Android de entrada, com sinal ruim e plano de dados limitado. Precisa ser leve, funcionar offline para leitura e notificar com confiabilidade.
+O **perfil de profissional** é usado na rua, no intervalo, em Android de entrada, com sinal ruim e plano de dados limitado. Precisa ser leve, funcionar offline para leitura e notificar com confiabilidade.
 
-O **app do estabelecimento** tem dois contextos opostos. No celular, sob estresse: são 16h de sexta, faltou gente, o maître está no salão. No computador, planejando: o operador de buffet monta a escala de uma formatura de 40 pessoas duas semanas antes.
+O **perfil de contratante**, do estabelecimento, tem dois contextos opostos. No celular, sob estresse: são 16h de sexta, faltou gente, o maître está no salão. No computador, planejando: o operador de buffet monta a escala de uma formatura de 40 pessoas duas semanas antes.
 
-O **painel do gestor** fica na versão web do app do estabelecimento: é onde o gestor acompanha vagas, contratados, check-ins e turnos. Não existe operação manual da equipe Frila; quando um turno não preenche, o contratante recebe o alerta no celular, 3 horas antes do início.
+O **painel do gestor** fica na versão web do Frila, no perfil de contratante: é onde o gestor acompanha vagas, contratados, check-ins e turnos. Não existe operação manual da equipe Frila; quando um turno não preenche, o contratante recebe o alerta no celular, 3 horas antes do início.
 
 ### Os pilares
 
@@ -192,7 +192,7 @@ Este documento resume. Cada seção tem um documento detalhado por trás, e é l
 |---|---|
 | O problema | [`01-O-PROBLEMA.md`](01-O-PROBLEMA.md), com cada afirmação separada entre dado, relato e hipótese |
 | Para quem é, e o que o Frila não é | [`02-O-NEGOCIO.md`](02-O-NEGOCIO.md), o documento de referência para apresentar o projeto |
-| Como funciona, os dois apps, os pilares | [`03-ESPECIFICACAO-DO-PRODUTO.md`](03-ESPECIFICACAO-DO-PRODUTO.md) |
+| Como funciona, os dois perfis do app, os pilares | [`03-ESPECIFICACAO-DO-PRODUTO.md`](03-ESPECIFICACAO-DO-PRODUTO.md) |
 | O mercado, a concorrência, por que o WhatsApp vence | [`04-MERCADO-E-CONCORRENCIA.md`](04-MERCADO-E-CONCORRENCIA.md), com dossiê de cada concorrente |
 | Tese e estado do projeto | [`00-LEIA-PRIMEIRO.md`](00-LEIA-PRIMEIRO.md) |
 

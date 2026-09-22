@@ -10,25 +10,25 @@ tags: [produto, frila]
 
 **Versão 1.0 · setembro/2026**
 
-Visão de alto nível do produto: os dois apps, os fluxos principais e os pilares que orientam qualquer decisão de desenho. Este documento não detalha telas, tabelas de funcionalidade por release ou regras de negócio finas — isso é trabalho de fase de build, e ainda não sabemos quais funcionalidades avançadas realmente resolvem a dor do contratante. O objetivo aqui é alinhar o que o produto é, antes de detalhar como ele é construído.
+Visão de alto nível do produto: o app e seus dois perfis, os fluxos principais e os pilares que orientam qualquer decisão de desenho. Este documento não detalha telas, tabelas de funcionalidade por release ou regras de negócio finas — isso é trabalho de fase de build, e ainda não sabemos quais funcionalidades avançadas realmente resolvem a dor do contratante. O objetivo aqui é alinhar o que o produto é, antes de detalhar como ele é construído.
 
 O ciclo do frila em linguagem de negócio, com as personas e o que o Frila não é, está em `02-O-NEGOCIO.md`. A evidência que justifica cada escolha de desenho está em `01-O-PROBLEMA.md`, e a leitura de concorrência que sustenta o despacho ativo, em `04-MERCADO-E-CONCORRENCIA.md`.
 
 ---
 
-## Os dois apps
+## Um app, dois perfis
 
-São duas interfaces com necessidades diferentes o suficiente para serem tratadas como produtos separados sobre uma base comum.
+O Frila é um app só, com dois perfis. Cada conta tem um perfil, escolhido no cadastro e fixo: quem quiser usar o outro lado cria outra conta, com outro e-mail, e o telefone pode ser o mesmo. A entrada é por código enviado ao e-mail, sem senha. Os dois perfis têm necessidades diferentes o suficiente para que cada um veja só as próprias telas.
 
-**App do Profissional** — mobile + web. Contexto de uso: na rua, no intervalo, em Android de entrada majoritariamente, com sinal ruim e plano de dados limitado. Precisa ser leve, rápido, funcionar offline para leitura, e notificar com confiabilidade.
+**Perfil de profissional** — mobile + web. Contexto de uso: na rua, no intervalo, em Android de entrada majoritariamente, com sinal ruim e plano de dados limitado. Precisa ser leve, rápido, funcionar offline para leitura, e notificar com confiabilidade.
 
-**App do Estabelecimento** — mobile + web, com dois contextos de uso bem diferentes:
+**Perfil de contratante**, do estabelecimento — mobile + web, com dois contextos de uso bem diferentes:
 - **No celular, sob estresse.** São 16h de sexta, faltou gente, o maître está no salão. Publicar uma vaga precisa ser rápido, com poucos campos.
 - **No computador, planejando.** O operador de buffet monta a escala de uma formatura de 40 pessoas duas semanas antes — trabalho de mesa, com teclado e tela grande.
 
-**Painel do gestor** — dentro da versão web do App do Estabelecimento. É o dashboard em que o gestor acompanha vagas, candidatos, contratados, check-ins e turnos. Não é ferramenta interna do Frila: não existe operação manual nem plantão da equipe Frila. O alerta de vaga ainda vazia e a confirmação de check-in manual também chegam no app, pelo celular.
+**Painel do gestor** — na versão web do Frila, no perfil de contratante. É o dashboard em que o gestor acompanha vagas, candidatos, contratados, check-ins e turnos. Não é ferramenta interna do Frila: não existe operação manual nem plantão da equipe Frila. O alerta de vaga ainda vazia e a confirmação de check-in manual também chegam no app, pelo celular.
 
-**Plataformas:** app iOS nativo em Swift/SwiftUI, app Android nativo em Kotlin e versão web, para as duas personas — Android como prioridade de alcance, já que é a plataforma da maioria do trabalhador de base no Brasil. As regras críticas ficam no backend (Supabase), escritas uma vez para as três versões. Para a entrega na loja em 13/11, o iOS é o mínimo.
+**Plataformas:** o mesmo app em iOS nativo (Swift/SwiftUI), Android nativo (Kotlin) e versão web, com os dois perfis — Android como prioridade de alcance, já que é a plataforma da maioria do trabalhador de base no Brasil. As regras críticas ficam no backend (Supabase), escritas uma vez para as três versões. Para a entrega na loja em 13/11, o iOS é o mínimo.
 
 ---
 

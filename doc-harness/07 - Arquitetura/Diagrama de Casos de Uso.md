@@ -74,8 +74,8 @@ UC17 também é exigência da App Store: app com perfis e conteúdo de usuário 
 | UC06 | Avaliar após o turno | Profissional e Contratante | RF15, RF16 | RN07, RN08, RN22 |
 | UC07 | Acompanhar vagas e turnos pelo Painel | Contratante | RF20 | RN12, RN22 |
 | UC08 | Cancelar e reabrir posição | Profissional ou Contratante | RF14 | RN12, RN13, RN16 |
-| UC09 | Cadastrar-se e manter o perfil profissional | Profissional | RF01, RF03, RF27 | RN01, RN05, RN14, RN15, RN20 |
-| UC10 | Cadastrar o estabelecimento e gerenciar usuários | Contratante | RF02, RF21 | RN15, RN20 |
+| UC09 | Cadastrar-se e manter o perfil profissional | Profissional | RF01, RF03, RF27 | RN01, RN05, RN14, RN15, RN20, RN25 |
+| UC10 | Cadastrar o estabelecimento e gerenciar usuários | Contratante | RF02, RF21 | RN15, RN20, RN25 |
 | UC11 | Manter a equipe de confiança | Contratante | RF18 | RN05, RN06, RN16 |
 | UC12 | *Retirado em 21/09/2026* — era "Registrar aval externo" | — | RF17 (retirado) | — |
 | UC13 | Consultar e exportar o histórico de turnos | Profissional e Contratante | RF22 | RN09, RN11, RN17, RN18 |
@@ -119,10 +119,19 @@ Aplica as respostas do quadro 03 de pendências (21 e 22/09):
 | UC06 | Avaliação liberada após o fim previsto | Só com presença verificada; quem faltou não é avaliado | A10, A12 (RN07) |
 | UC07 | Intervir em turno em risco, pelo Operador do Painel | Acompanhar vagas e turnos pelo Painel, pelo Contratante, na web; o alerta de vaga vazia e a confirmação de check-in também no app | B09, B18 |
 | UC08 | O operador cancelava depois de apurar; excesso de cancelamentos ia para apuração humana | Só as partes cancelam; cancelamento nunca suspende, e só conta como falta com menos de 24 horas | D04, D03 |
-| UC09 | Raio de atuação declarado pelo profissional | Ponto base e "disponível agora"; tela "Por que recebo vagas" (RF27) | B07, C05 |
+| UC09 | Raio de atuação declarado pelo profissional | Ponto base e grade semanal de disponibilidade; tela "Por que recebo vagas" (RF27) | B07, C05 |
 | UC12 | Registrar aval externo | Retirado | A12: só avalia quem trabalhou junto pelo Frila |
 | UC14, UC15 | Chamado no Painel, com prazos em aberto | E-mail à Equipe Frila, resposta em até 5 dias úteis | D02, D03 |
 | UC17 | Não existia | Denunciar e bloquear, dos dois lados | A13 revista em 22/09; App Store, diretriz 1.2 |
+
+### Ajuste das pendências para codar (22/09)
+
+Depois do quadro 03, as respostas sobre o app e o cadastro mudaram dois casos de uso:
+
+| Onde | Antes | Agora | Por quê |
+|---|---|---|---|
+| UC09 | Telefone confirmado por código; botão "disponível agora" | Entrada por código no e-mail, sem senha e sem SMS; telefone obrigatório, só com o formato conferido; perfil de profissional fixo na conta; só a grade semanal de disponibilidade | Um app só, com um perfil por conta (RN25) |
+| UC10 | Conta de acesso qualquer; convite por telefone ou e-mail | Conta de contratante, criada com código no e-mail; convite pelo e-mail; conta de profissional não aceita convite | RN25 |
 
 ---
 

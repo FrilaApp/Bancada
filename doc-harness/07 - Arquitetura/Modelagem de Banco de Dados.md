@@ -7,10 +7,13 @@ tags: [arquitetura, frila, banco-de-dados]
 
 # Modelagem de Banco de Dados — Frila
 
-Preenche a Seção 6.2 do [[01 - CBL/Desafios/C18/Documentos de Produto/Frila_Documento_de_Requisitos|Documento de Requisitos]], que descreve as dezessete entidades em tabela mas não traz o desenho nem o esquema físico. Aqui estão o diagrama, o DDL com as restrições que transformam regra de negócio em constraint, a máquina de estados que o código vai seguir, e o plano de migração para quando o esquema mudar.
+Preenche a Seção 6.2 do [[01 - CBL/Desafios/C18/Documentos de Produto/Frila_Documento_de_Requisitos|Documento de Requisitos]], que descreve as dezoito entidades em tabela mas não traz o desenho nem o esquema físico. Aqui estão o diagrama, o DDL com as restrições que transformam regra de negócio em constraint, a máquina de estados que o código vai seguir, e o plano de migração para quando o esquema mudar.
 
 > [!info] Estado do projeto
 > TRL 2: sem código e sem validação de campo. O backend está decidido desde 21/09/2026: **Supabase**, com Postgres e PostGIS (B02, B06). Por isso o DDL daqui roda como está; [[#No Supabase]] diz o que muda de lugar. Toda premissa de comportamento de usuário carrega `[H]`.
+
+> [!info] Atualizado em 22/09/2026 (rodada 2 das pendências para codar)
+> Cada conta tem um perfil só, profissional ou contratante, fixado em `usuario.perfil` (RN25). A entrada é por código enviado ao e-mail, sem senha e sem SMS. O telefone continua obrigatório, mas sem verificação e sem unicidade. O "disponível agora" saiu: a disponibilidade é só a grade semanal. E as políticas de acesso de cada tabela estão escritas em [[#Políticas de acesso (RLS)]].
 
 ---
 
@@ -18,7 +21,7 @@ Preenche a Seção 6.2 do [[01 - CBL/Desafios/C18/Documentos de Produto/Frila_Do
 
 Um modelo de dados é bom quando as regras que não podem ser violadas moram nele, e não na aplicação que o chama. Aplicação tem bug, tem corrida entre requisições, tem deploy pela metade. O banco é o último lugar onde uma regra ainda vale — e com três clientes nativos diferentes (iOS em Swift, Android em Kotlin e web) chamando o mesmo backend, é também o único lugar onde a regra vale **uma vez só**.
 
-Oito das vinte e quatro regras de negócio são dessa natureza. Se falharem uma vez, destroem a confiança que o produto existe para construir:
+Nove das vinte e cinco regras de negócio são dessa natureza. Se falharem uma vez, destroem a confiança que o produto existe para construir:
 
 | Regra | O que exige | Onde vive no esquema |
 |---|---|---|
@@ -26,12 +29,13 @@ Oito das vinte e quatro regras de negócio são dessa natureza. Se falharem uma 
 | RN21 | Um profissional nunca com dois turnos confirmados que se sobrepõem | `EXCLUDE USING gist` em `posicao` |
 | RN18 | Dinheiro em centavos inteiros, tempo em UTC | `BIGINT` e `timestamptz` em toda coluna monetária e temporal |
 | RN20 | Cadastro só para maiores de 18 | `CHECK` sobre `nascimento` em `usuario` |
+| RN25 | Cada conta com um perfil só, escolhido no cadastro e sem troca | `usuario.perfil` travado por *trigger* + chave estrangeira composta em `profissional` e `membro_estabelecimento` |
 | RN02 | Vaga sem função, horário, endereço, valor, o que está incluso ou quem recebe no local não existe | `NOT NULL` nas colunas obrigatórias de `vaga` |
 | RN24 | Modo seleção só para vaga que começa em mais de 24 horas | `CHECK` em `vaga` |
 | RN22 | Check-in geolocalizado vale até 200 m; manual só conta confirmado | `CHECK` de coerência entre o registro e a `verificacao` em `turno` |
 | RN07 | Avaliação binária, bidirecional, só depois do fim previsto e com presença verificada | `UNIQUE (turno_id, autor_id)` + *trigger* que confere horário e presença |
 
-O teto de notificações (RN23) não é constraint: mora na função de despacho, que consulta `notificacao` antes de enviar. O resto do documento é, em boa medida, a defesa dessas oito linhas.
+O teto de notificações (RN23) não é constraint: mora na função de despacho, que consulta `notificacao` antes de enviar. O resto do documento é, em boa medida, a defesa dessas nove linhas.
 
 ---
 
@@ -45,9 +49,9 @@ Dezoito entidades num desenho só viram emaranhado. São três recortes do mesmo
 
 O eixo é uma cadeia só — **`vaga` → `posicao` → `turno` → `avaliacao`** —, o ciclo de vida de uma unidade de trabalho da publicação à reputação. `despacho`, `notificacao` e `candidatura` penduram-se nela como o registro de quem foi avisado e quem respondeu.
 
-### Uma conta, dois papéis
+### Uma conta, um perfil
 
-![[07 - Arquitetura/Anexos/banco-de-dados/identidade-e-papeis.png|Usuário, profissional, estabelecimento e a tabela de vínculo]]
+![[07 - Arquitetura/Anexos/banco-de-dados/identidade-e-papeis.png|Cada conta com um perfil: a de profissional tem o registro de profissional, a de contratante participa do estabelecimento]]
 
 ### O que decide quem recebe a notificação
 
@@ -59,17 +63,20 @@ O eixo é uma cadeia só — **`vaga` → `posicao` → `turno` → `avaliacao`*
 
 ### Identidade e perfis
 
-`usuario` é a conta de acesso; `profissional` e `membro_estabelecimento` são papéis sobre ela. A separação existe porque uma mesma pessoa pode ser garçom num fim de semana e operar o cadastro do buffet do cunhado no outro — e porque o histórico do estabelecimento precisa sobreviver à troca de responsável (RF21).
+`usuario` é a conta de acesso, e cada conta tem **um perfil só** (RN25, 22/09): profissional ou contratante, escolhido no cadastro e sem troca depois. A conta de profissional ganha uma linha em `profissional`; a de contratante opera um ou mais estabelecimentos por `membro_estabelecimento`. Quem é garçom num fim de semana e opera o cadastro do buffet do cunhado no outro tem duas contas, com dois e-mails — o telefone pode ser o mesmo. A conta continua separada do papel porque o histórico do estabelecimento precisa sobreviver à troca de responsável (RF21).
 
 ```sql
 CREATE TYPE estado_conta AS ENUM ('ativa', 'suspensa', 'anonimizada');
+CREATE TYPE perfil_conta AS ENUM ('profissional', 'contratante');
 
 CREATE TABLE usuario (
-  -- A credencial fica no Supabase Auth; usuario.id é o mesmo id de auth.users.
-  id              uuid PRIMARY KEY REFERENCES auth.users(id),
+  -- usuario.id é o id da conta no Supabase Auth, gravado por criar_conta.
+  -- Sem chave estrangeira para auth.users: ver a exclusão, abaixo.
+  id              uuid PRIMARY KEY,
+  perfil          perfil_conta NOT NULL,  -- RN25: escolhido no cadastro, nunca muda
   nome            text        NOT NULL,
-  telefone        text        NOT NULL,
-  email           citext,                 -- nulo só depois de anonimizado
+  telefone        text,                   -- contato do turno (RN10); nulo só depois de anonimizado
+  email           citext,                 -- copiado de auth.users; nulo só depois de anonimizado
   nascimento      date        NOT NULL,
   estado          estado_conta NOT NULL DEFAULT 'ativa',
   criado_em       timestamptz NOT NULL DEFAULT now(),
@@ -81,33 +88,56 @@ CREATE TABLE usuario (
   CONSTRAINT anonimizacao_coerente
     CHECK ((estado = 'anonimizada') = (anonimizado_em IS NOT NULL)),
   CONSTRAINT email_ate_anonimizar
-    CHECK (estado = 'anonimizada' OR email IS NOT NULL)
+    CHECK (estado = 'anonimizada' OR email IS NOT NULL),
+  -- Telefone obrigatório enquanto a conta existe; só o formato é conferido (E.164).
+  CONSTRAINT telefone_ate_anonimizar
+    CHECK (estado = 'anonimizada' OR telefone IS NOT NULL),
+  CONSTRAINT telefone_e164
+    CHECK (telefone ~ '^\+[1-9][0-9]{7,14}$'),
+  -- Alvo das chaves estrangeiras de profissional e membro_estabelecimento (RN25).
+  CONSTRAINT usuario_id_perfil UNIQUE (id, perfil)
 );
 
 CREATE UNIQUE INDEX usuario_email_ativo
   ON usuario (email) WHERE estado <> 'anonimizada';
-CREATE UNIQUE INDEX usuario_telefone_ativo
-  ON usuario (telefone) WHERE estado <> 'anonimizada';
+
+-- RN25: o perfil da conta não muda depois do cadastro, nem por dentro de uma função.
+CREATE FUNCTION perfil_imutavel() RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+  RAISE EXCEPTION 'o perfil da conta não muda (RN25)' USING ERRCODE = 'check_violation';
+END $$;
+
+CREATE TRIGGER usuario_perfil_imutavel
+  BEFORE UPDATE OF perfil ON usuario
+  FOR EACH ROW WHEN (NEW.perfil IS DISTINCT FROM OLD.perfil)
+  EXECUTE FUNCTION perfil_imutavel();
 ```
 
 O índice único é **parcial** de propósito. RF25 manda anonimizar em vez de apagar, para preservar o histórico da contraparte; se a unicidade fosse total, o e-mail de uma conta encerrada bloquearia para sempre quem quisesse voltar com o mesmo endereço.
 
 `nascimento` substitui o `maioridade_confirmada: boolean` da tabela original do Documento de Requisitos. Um booleano que o cliente envia não é verificação de nada — é a tela dizendo ao banco aquilo que a tela quis. Com a data, a restrição é verificável e o `CHECK` faz o trabalho.
 
-Não há `senha_hash`: com o Supabase Auth, senha e token não passam por tabela do produto, e a exclusão de conta apaga a credencial em `auth.users` enquanto `usuario` é anonimizado (ver [[#LGPD no esquema]]).
+`perfil` é RN25 escrita em SQL, em três peças. `criar_conta` grava o perfil escolhido no cadastro, e o *trigger* `usuario_perfil_imutavel` recusa qualquer mudança depois. `UNIQUE (id, perfil)` existe para servir de alvo: `profissional` e `membro_estabelecimento` repetem o perfil numa coluna constante e apontam para o par `(id, perfil)`. Com isso, uma conta de contratante não consegue ter linha em `profissional`, nem uma conta de profissional entrar num estabelecimento — nem por bug de função. As funções conferem antes e respondem `422 perfil_incompativel`: `criar_perfil_profissional` com conta de contratante, `cadastrar_estabelecimento` e o aceite de convite de membro com conta de profissional. A chave estrangeira é a última linha de defesa.
+
+O telefone é obrigatório porque é o contato que as partes veem depois da confirmação (RN10), e o app não tem chat. Mas não é verificado, porque não há SMS no Frila, e não é único: a mesma pessoa pode ter as duas contas com o mesmo número (RN25). O `CHECK telefone_e164` confere só o formato. O e-mail continua único entre as contas ativas, porque é ele que identifica a conta na entrada.
+
+Não há `senha_hash` porque não há senha. A entrada é pelo Supabase Auth, com um código de uso único enviado ao e-mail (22/09), e nenhuma credencial passa por tabela do produto. `usuario.id` é o id da conta de autenticação, gravado por `criar_conta` a partir de `auth.uid()`, mas sem chave estrangeira para `auth.users`, e isso é de propósito: a exclusão de conta apaga o registro de autenticação e mantém a linha de `usuario` anonimizada (ver [[#LGPD no esquema]]). Com a chave, o Supabase recusaria apagar o registro de uma conta que ainda tem histórico.
 
 ```sql
 CREATE TABLE profissional (
   id                  uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  usuario_id          uuid NOT NULL UNIQUE REFERENCES usuario(id),
+  usuario_id          uuid NOT NULL UNIQUE,
+  perfil              perfil_conta NOT NULL DEFAULT 'profissional'
+                        CHECK (perfil = 'profissional'),       -- RN25, com a chave abaixo
   ponto_base          geography(Point, 4326) NOT NULL,
-  disponivel_agora_ate timestamptz,                     -- botão "disponível agora"; nulo = só a grade semanal
   -- Desnormalizações de leitura. Verdade em turno/avaliacao; ver §Reputação.
   taxa_comparecimento numeric(4,3) CHECK (taxa_comparecimento BETWEEN 0 AND 1),
   turnos_realizados   integer NOT NULL DEFAULT 0,
   aval_positivas      integer NOT NULL DEFAULT 0,
   aval_total          integer NOT NULL DEFAULT 0,
-  CONSTRAINT aval_coerente CHECK (aval_positivas <= aval_total)
+  CONSTRAINT aval_coerente CHECK (aval_positivas <= aval_total),
+  CONSTRAINT so_conta_de_profissional
+    FOREIGN KEY (usuario_id, perfil) REFERENCES usuario (id, perfil)
 );
 ```
 
@@ -138,11 +168,15 @@ CREATE TABLE estabelecimento (
 
 CREATE TABLE membro_estabelecimento (
   id                 uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  usuario_id         uuid NOT NULL REFERENCES usuario(id),
+  usuario_id         uuid NOT NULL,
+  perfil             perfil_conta NOT NULL DEFAULT 'contratante'
+                       CHECK (perfil = 'contratante'),        -- RN25, com a chave abaixo
   estabelecimento_id uuid NOT NULL REFERENCES estabelecimento(id),
   papel              papel_membro NOT NULL,
   criado_em          timestamptz NOT NULL DEFAULT now(),
-  UNIQUE (usuario_id, estabelecimento_id)
+  UNIQUE (usuario_id, estabelecimento_id),
+  CONSTRAINT so_conta_de_contratante
+    FOREIGN KEY (usuario_id, perfil) REFERENCES usuario (id, perfil)
 );
 
 CREATE TABLE equipe_confianca (
@@ -205,7 +239,7 @@ CREATE TABLE disponibilidade (
 
 A restrição **não** exige `hora_fim > hora_inicio`. Um bar fecha às 2h; a janela 18:00–02:00 é a mais comum do setor, não uma exceção. Quem escreve `CHECK (hora_fim > hora_inicio)` por reflexo exclui do produto justamente o turno que ele existe para preencher.
 
-A grade semanal e o `disponivel_agora_ate` de `profissional` somam: o profissional recebe notificação nos horários da grade e, enquanto o "disponível agora" estiver valendo, em qualquer horário até o limite gravado.
+A grade semanal é a única fonte de disponibilidade: o profissional recebe notificação da vaga que começa numa das janelas dele. O botão "disponível agora", que abria uma exceção por algumas horas, saiu do produto em 22/09, e com ele a coluna `disponivel_agora_ate`.
 
 ### Vaga, posição e evento
 
@@ -358,6 +392,8 @@ RNF03 exige a notificação enviada ao provedor em **até 30 segundos** após a 
 ```sql
 -- Elegíveis para uma vaga (RN05). O teto e o agrupamento (RN23) vêm
 -- depois, na função que decide quando cada notificação sai.
+-- $dia e $hora são o dia da semana e a hora de início da vaga no fuso
+-- America/Sao_Paulo, porque a grade é hora de parede do profissional.
 SELECT p.id
   FROM profissional p
   JOIN usuario u ON u.id = p.usuario_id AND u.estado = 'ativa'
@@ -368,13 +404,14 @@ SELECT p.id
       OR EXISTS (SELECT 1 FROM equipe_confianca e              -- a equipe recebe mesmo além
                   WHERE e.estabelecimento_id = $estab AND e.profissional_id = p.id)
        )
-   AND (
-         p.disponivel_agora_ate > $inicio                      -- "disponível agora"
-      OR EXISTS (SELECT 1 FROM disponibilidade d
-                  WHERE d.profissional_id = p.id
-                    AND d.dia_semana = $dia
-                    AND $hora BETWEEN d.hora_inicio AND d.hora_fim)
-       )
+   AND EXISTS (SELECT 1 FROM disponibilidade d                 -- a grade semanal
+                WHERE d.profissional_id = p.id
+                  AND (   (d.hora_inicio < d.hora_fim          -- janela no mesmo dia
+                           AND d.dia_semana = $dia
+                           AND $hora >= d.hora_inicio AND $hora < d.hora_fim)
+                       OR (d.hora_inicio > d.hora_fim          -- janela que vira a noite
+                           AND (   (d.dia_semana = $dia AND $hora >= d.hora_inicio)
+                                OR (d.dia_semana = ($dia + 6) % 7 AND $hora < d.hora_fim)))))
    AND NOT EXISTS (SELECT 1 FROM bloqueio b                    -- RF26, nos dois sentidos
                      JOIN membro_estabelecimento m
                        ON m.usuario_id IN (b.autor_id, b.bloqueado_id)
@@ -387,6 +424,8 @@ SELECT p.id
    AND NOT EXISTS (SELECT 1 FROM despacho x
                     WHERE x.vaga_id = $vaga AND x.profissional_id = p.id);
 ```
+
+A janela que vira a noite entra pelos dois lados. Com a janela de sexta das 18:00 às 02:00, a vaga que começa às 23h de sexta cai nela, e a que começa à 1h de sábado também, pela janela que começou na sexta. Um `BETWEEN` simples perderia exatamente esse caso, que é o mais comum do setor.
 
 Três observações decidem se isso responde em 30 segundos:
 
@@ -578,17 +617,17 @@ RNF08 e RN15 têm consequência estrutural, não apenas de política.
 
 ```sql
 UPDATE usuario
-   SET nome = 'Conta encerrada', telefone = '', email = NULL,
+   SET nome = 'Conta encerrada', telefone = NULL, email = NULL,
        estado = 'anonimizada', anonimizado_em = now()
  WHERE id = $1;
--- e a credencial em auth.users é apagada pelo Supabase Auth.
+-- e o registro em auth.users é apagado no Supabase Auth.
 ```
 
 **Dado pessoal não entra em log** (RN15). Isso proíbe o *trigger* de auditoria que copia a linha inteira de `usuario` para uma tabela de histórico — padrão automático de quem implementa auditoria sem pensar. `ocorrencia` guarda `usuario_id` e motivo: referência e razão, não cópia do titular.
 
-**Finalidade por campo.** `ponto_base` existe para calcular a distância de elegibilidade (RN05) e nada mais. O check-in guarda a distância medida no toque, não a coordenada. O esquema não tem — e não deve ganhar — tabela de posições sucessivas do profissional: rastreamento contínuo está no escopo não contemplado com a marca mais dura do documento, *"nunca na forma contínua"*, e tensiona RN16.
+**Finalidade por campo.** `ponto_base` existe para calcular a distância de elegibilidade (RN05) e nada mais, e nenhuma leitura o mostra a outra pessoa. O check-in guarda a distância medida no toque, não a coordenada. O esquema não tem — e não deve ganhar — tabela de posições sucessivas do profissional: rastreamento contínuo está no escopo não contemplado com a marca mais dura do documento, *"nunca na forma contínua"*, e tensiona RN16.
 
-**O contato tem prazo.** RN10 libera telefone e WhatsApp das partes só depois da confirmação e só até 7 dias depois do fim do turno. A base legal é a execução do contrato (LGPD, art. 7º, V). No banco, isso é política de acesso, e não tela: a leitura do telefone da contraparte passa por uma regra que confere a confirmação e o prazo ([[#No Supabase]]).
+**O contato tem prazo.** RN10 libera telefone e WhatsApp das partes só depois da confirmação e só até 7 dias depois do fim do turno. A base legal é a execução do contrato (LGPD, art. 7º, V). No banco, isso é regra de acesso, e não de tela: nenhuma política deixa ler a linha de `usuario` de outra pessoa, e o telefone da contraparte só sai pela função `contato_do_turno`, que confere a confirmação, o prazo e o bloqueio ([[#Políticas de acesso (RLS)]]).
 
 ---
 
@@ -652,10 +691,307 @@ O backend foi decidido em 21/09 (B02): Supabase, que é Postgres de verdade. Por
 
 **Muda de lugar:**
 
-- **Acesso por política.** Os clientes falam com o banco pela API do Supabase, sob *Row Level Security*: cada tabela tem política dizendo quem lê e quem escreve o quê. RN10 — telefone da contraparte só depois da confirmação e até 7 dias depois do fim — é política de leitura, não regra de tela.
-- **Regra crítica em função RPC.** Tudo o que precisa valer igual para iOS, Android e web vira função no banco, chamada pelos três: confirmar (RN19), candidatar e retirar candidatura (RN24), check-in e check-out (RN22), cancelar e marcar falta, avaliar (RN07), denunciar e bloquear (RF26). A regra é escrita uma vez, e não três.
+- **Acesso por política.** Os clientes falam com o banco pela API do Supabase, sob *Row Level Security*. Escrita só por função; leitura, cada um do que é seu; e o que é da outra parte, como o telefone de RN10, sai por função que confere a regra. As políticas de cada tabela estão em [[#Políticas de acesso (RLS)]].
+- **Regra crítica em função RPC.** Tudo o que precisa valer igual para iOS, Android e web vira função no banco, chamada pelos três: criar a conta e o perfil certo (RN25), confirmar (RN19), candidatar e retirar candidatura (RN24), check-in e check-out (RN22), cancelar e marcar falta, avaliar (RN07), denunciar e bloquear (RF26). A regra é escrita uma vez, e não três.
 - **Despacho e agendamento fora da requisição.** Publicar só grava e responde. Uma Edge Function, puxada pela fila `pgmq` e pelo `pg_cron`, faz o resto: elegíveis e teto de notificações (RN05, RN23), push pelo FCM, lembretes 24 h e 3 h antes, alerta de atraso aos 15 minutos, alerta de vaga vazia na janela crítica, fechamento do modo seleção 24 h antes (RN24) e aviso de fim de turno.
-- **Credencial no Supabase Auth.** Senha e token não passam por tabela do produto; `usuario` referencia `auth.users`.
+- **Entrada pelo Supabase Auth.** Código de uso único no e-mail, sem senha e sem SMS; nenhuma credencial passa por tabela do produto. `usuario.id` é o id de `auth.users`, gravado por `criar_conta`.
+
+---
+
+## Políticas de acesso (RLS)
+
+Os clientes falam com o banco pela API do Supabase, com o token de quem está logado. Toda tabela do produto tem *Row Level Security* ligado, e a regra cabe em três frases:
+
+1. **Escrita só por função.** Nenhuma tabela tem política de `insert`, `update` ou `delete` para `authenticated`. Toda escrita passa por uma função RPC `security definer`, que confere quem chama, o perfil e a regra de negócio antes de gravar. Sem política de escrita, o RLS recusa a escrita direta pela API; o `revoke` abaixo deixa isso explícito.
+2. **Cada um lê o que é seu.** As políticas de `select` abrem a linha para quem tem direito a ela: a própria conta, o próprio perfil, as próprias candidaturas, turnos, aparelhos, notificações e ocorrências. O membro de um estabelecimento lê o que é do estabelecimento.
+3. **O que é da outra parte sai por função.** RLS filtra linha, não coluna. `usuario` mistura o que a outra parte pode ver (o nome), o que só o dono vê (e-mail e nascimento) e o que tem prazo (o telefone, RN10); `profissional` guarda o `ponto_base`, que é quase o endereço de alguém. Por isso nenhuma política abre a linha de `usuario` ou de `profissional` para outra pessoa: o que a contraparte vê sai por funções `security definer` que devolvem só as colunas permitidas ([[#O que a outra parte vê]]).
+
+`anon` não lê nem escreve nada: toda rota exige login. O agendador (Edge Function) e a Equipe Frila usam a chave de serviço, que fica fora do RLS e nunca vai para um app.
+
+### As funções auxiliares
+
+As políticas fazem sempre as mesmas perguntas: qual é o perfil da conta, qual é o meu `profissional`, sou membro deste estabelecimento, há bloqueio entre nós. Cada pergunta vira uma função, num schema que a API não expõe:
+
+```sql
+-- Fora da API: o PostgREST só expõe public, então ninguém chama estas
+-- funções por /rpc. São security definer para ler as tabelas sem cair em
+-- recursão de política, e stable para o planejador reaproveitar o resultado.
+CREATE SCHEMA privado;
+
+CREATE FUNCTION privado.perfil_da_conta() RETURNS perfil_conta
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = '' AS $$
+  SELECT u.perfil FROM public.usuario u WHERE u.id = (SELECT auth.uid())
+$$;
+
+CREATE FUNCTION privado.meu_profissional_id() RETURNS uuid
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = '' AS $$
+  SELECT p.id FROM public.profissional p WHERE p.usuario_id = (SELECT auth.uid())
+$$;
+
+CREATE FUNCTION privado.eh_membro(estab uuid) RETURNS boolean
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = '' AS $$
+  SELECT EXISTS (SELECT 1 FROM public.membro_estabelecimento m
+                  WHERE m.estabelecimento_id = estab
+                    AND m.usuario_id = (SELECT auth.uid()))
+$$;
+
+CREATE FUNCTION privado.eh_administrador(estab uuid) RETURNS boolean
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = '' AS $$
+  SELECT EXISTS (SELECT 1 FROM public.membro_estabelecimento m
+                  WHERE m.estabelecimento_id = estab
+                    AND m.usuario_id = (SELECT auth.uid())
+                    AND m.papel = 'administrador')
+$$;
+
+-- RF26: bloqueio nos dois sentidos, entre uma conta e qualquer membro do estabelecimento.
+CREATE FUNCTION privado.bloqueado_com_estabelecimento(conta uuid, estab uuid)
+RETURNS boolean
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = '' AS $$
+  SELECT EXISTS (SELECT 1 FROM public.bloqueio b
+                   JOIN public.membro_estabelecimento m
+                     ON m.usuario_id IN (b.autor_id, b.bloqueado_id)
+                  WHERE m.estabelecimento_id = estab
+                    AND conta IN (b.autor_id, b.bloqueado_id))
+$$;
+
+CREATE FUNCTION privado.estabelecimento_da_vaga(v uuid) RETURNS uuid
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = '' AS $$
+  SELECT estabelecimento_id FROM public.vaga WHERE id = v
+$$;
+
+CREATE FUNCTION privado.estabelecimento_da_posicao(pos uuid) RETURNS uuid
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = '' AS $$
+  SELECT v.estabelecimento_id
+    FROM public.posicao p JOIN public.vaga v ON v.id = p.vaga_id
+   WHERE p.id = pos
+$$;
+
+CREATE FUNCTION privado.usuario_do_profissional(prof uuid) RETURNS uuid
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = '' AS $$
+  SELECT usuario_id FROM public.profissional WHERE id = prof
+$$;
+
+-- O profissional ocupa ou ocupou uma posição desta vaga: é o turno dele.
+CREATE FUNCTION privado.ocupa_posicao_na_vaga(v uuid) RETURNS boolean
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = '' AS $$
+  SELECT EXISTS (SELECT 1 FROM public.posicao p
+                  WHERE p.vaga_id = v
+                    AND p.profissional_id = privado.meu_profissional_id())
+$$;
+
+-- O profissional se candidatou a uma posição desta vaga.
+CREATE FUNCTION privado.candidatou_na_vaga(v uuid) RETURNS boolean
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = '' AS $$
+  SELECT EXISTS (SELECT 1 FROM public.candidatura c
+                   JOIN public.posicao p ON p.id = c.posicao_id
+                  WHERE p.vaga_id = v
+                    AND c.profissional_id = privado.meu_profissional_id())
+$$;
+
+-- Um dos dois lados da posição: quem a ocupa, ou um membro do estabelecimento.
+CREATE FUNCTION privado.lado_da_posicao(pos uuid) RETURNS boolean
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = '' AS $$
+  SELECT EXISTS (SELECT 1 FROM public.posicao p
+                  WHERE p.id = pos
+                    AND p.profissional_id = privado.meu_profissional_id())
+      OR privado.eh_membro(privado.estabelecimento_da_posicao(pos))
+$$;
+
+-- Primeira linha de toda função RPC que é de um perfil só (RN25).
+CREATE FUNCTION privado.exigir_perfil(esperado perfil_conta) RETURNS void
+LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = '' AS $$
+BEGIN
+  IF privado.perfil_da_conta() IS DISTINCT FROM esperado THEN
+    PERFORM public.erro(422, 'perfil_incompativel');
+  END IF;
+END $$;
+
+REVOKE ALL ON SCHEMA privado FROM PUBLIC;
+GRANT USAGE ON SCHEMA privado TO authenticated;
+REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA privado FROM PUBLIC;
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA privado TO authenticated;
+```
+
+Nas políticas, `auth.uid()` e as auxiliares sem argumento vão dentro de `(SELECT …)`: assim o Postgres calcula o valor uma vez por consulta, e não uma vez por linha. `eh_administrador` não aparece nas políticas de leitura; serve às funções que só o administrador chama, como convidar membro e remover o estabelecimento. `exigir_perfil` usa o auxiliar `erro()` do contrato (`Frila/Documentos/API/openapi.yaml`).
+
+### Ligar o RLS e fechar a escrita
+
+```sql
+ALTER TABLE usuario                ENABLE ROW LEVEL SECURITY;
+ALTER TABLE profissional           ENABLE ROW LEVEL SECURITY;
+ALTER TABLE estabelecimento        ENABLE ROW LEVEL SECURITY;
+ALTER TABLE membro_estabelecimento ENABLE ROW LEVEL SECURITY;
+ALTER TABLE equipe_confianca       ENABLE ROW LEVEL SECURITY;
+ALTER TABLE funcao                 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE profissional_funcao    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE disponibilidade        ENABLE ROW LEVEL SECURITY;
+ALTER TABLE evento                 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE vaga                   ENABLE ROW LEVEL SECURITY;
+ALTER TABLE posicao                ENABLE ROW LEVEL SECURITY;
+ALTER TABLE dispositivo            ENABLE ROW LEVEL SECURITY;
+ALTER TABLE notificacao            ENABLE ROW LEVEL SECURITY;
+ALTER TABLE despacho               ENABLE ROW LEVEL SECURITY;
+ALTER TABLE candidatura            ENABLE ROW LEVEL SECURITY;
+ALTER TABLE turno                  ENABLE ROW LEVEL SECURITY;
+ALTER TABLE avaliacao              ENABLE ROW LEVEL SECURITY;
+ALTER TABLE bloqueio               ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ocorrencia             ENABLE ROW LEVEL SECURITY;
+
+-- Escrita só por função (frase 1). Sem política de escrita o RLS já recusa;
+-- o revoke deixa isso explícito, e o default privileges cobre a tabela nova.
+REVOKE ALL ON ALL TABLES IN SCHEMA public FROM anon;
+REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON ALL TABLES IN SCHEMA public FROM authenticated;
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO authenticated;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON TABLES FROM anon;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public
+  REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON TABLES FROM authenticated;
+
+-- Função nova nasce sem execute para anon; authenticated continua chamando as RPCs.
+ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC, anon;
+```
+
+### As políticas de leitura
+
+Uma política por tabela, todas de `select` e todas para `authenticated`. São dezenove tabelas e dezenove políticas:
+
+```sql
+-- Identidade: cada um lê a própria linha, e só ela.
+CREATE POLICY usuario_leitura ON usuario FOR SELECT TO authenticated
+  USING (id = (SELECT auth.uid()));
+
+CREATE POLICY profissional_leitura ON profissional FOR SELECT TO authenticated
+  USING (usuario_id = (SELECT auth.uid()));
+
+-- Estabelecimento: o membro lê o seu. A equipe de confiança, os dois lados.
+CREATE POLICY estabelecimento_leitura ON estabelecimento FOR SELECT TO authenticated
+  USING (privado.eh_membro(id));
+
+CREATE POLICY membro_estabelecimento_leitura ON membro_estabelecimento
+  FOR SELECT TO authenticated
+  USING (privado.eh_membro(estabelecimento_id));
+
+CREATE POLICY equipe_confianca_leitura ON equipe_confianca FOR SELECT TO authenticated
+  USING (privado.eh_membro(estabelecimento_id)
+         OR profissional_id = (SELECT privado.meu_profissional_id()));
+
+-- Catálogo aberto a quem está logado. Funções declaradas e grade, só o dono.
+CREATE POLICY funcao_leitura ON funcao FOR SELECT TO authenticated
+  USING (true);
+
+CREATE POLICY profissional_funcao_leitura ON profissional_funcao
+  FOR SELECT TO authenticated
+  USING (profissional_id = (SELECT privado.meu_profissional_id()));
+
+CREATE POLICY disponibilidade_leitura ON disponibilidade FOR SELECT TO authenticated
+  USING (profissional_id = (SELECT privado.meu_profissional_id()));
+
+-- Vaga: o membro vê todas as do estabelecimento. O profissional vê as publicadas
+-- e as que tem candidatura, menos as de quem tem bloqueio com ele (RF26), e vê
+-- sempre as que ocupou, porque o turno é histórico dele.
+CREATE POLICY evento_leitura ON evento FOR SELECT TO authenticated
+  USING (privado.eh_membro(estabelecimento_id));
+
+CREATE POLICY vaga_leitura ON vaga FOR SELECT TO authenticated
+  USING (
+        privado.eh_membro(estabelecimento_id)
+     OR ((SELECT privado.perfil_da_conta()) = 'profissional'
+         AND (   privado.ocupa_posicao_na_vaga(id)
+              OR (NOT privado.bloqueado_com_estabelecimento(
+                        (SELECT auth.uid()), estabelecimento_id)
+                  AND (estado = 'publicada' OR privado.candidatou_na_vaga(id))))));
+
+CREATE POLICY posicao_leitura ON posicao FOR SELECT TO authenticated
+  USING (profissional_id = (SELECT privado.meu_profissional_id())
+         OR privado.eh_membro(privado.estabelecimento_da_vaga(vaga_id)));
+
+-- Candidatura: a própria, ou as das vagas do estabelecimento, menos as de quem
+-- tem bloqueio com ele, mesmo que o bloqueio tenha vindo depois.
+CREATE POLICY candidatura_leitura ON candidatura FOR SELECT TO authenticated
+  USING (
+        profissional_id = (SELECT privado.meu_profissional_id())
+     OR (privado.eh_membro(privado.estabelecimento_da_posicao(posicao_id))
+         AND NOT privado.bloqueado_com_estabelecimento(
+                   privado.usuario_do_profissional(profissional_id),
+                   privado.estabelecimento_da_posicao(posicao_id))));
+
+-- Turno: os dois lados da posição.
+CREATE POLICY turno_leitura ON turno FOR SELECT TO authenticated
+  USING (privado.lado_da_posicao(posicao_id));
+
+-- Avaliação e bloqueio: só quem escreveu.
+CREATE POLICY avaliacao_leitura ON avaliacao FOR SELECT TO authenticated
+  USING (autor_id = (SELECT auth.uid()));
+
+CREATE POLICY bloqueio_leitura ON bloqueio FOR SELECT TO authenticated
+  USING (autor_id = (SELECT auth.uid()));
+
+-- Só do dono: o que foi despachado para ele, os pushes e os aparelhos.
+CREATE POLICY despacho_leitura ON despacho FOR SELECT TO authenticated
+  USING (profissional_id = (SELECT privado.meu_profissional_id()));
+
+CREATE POLICY notificacao_leitura ON notificacao FOR SELECT TO authenticated
+  USING (profissional_id = (SELECT privado.meu_profissional_id()));
+
+CREATE POLICY dispositivo_leitura ON dispositivo FOR SELECT TO authenticated
+  USING (usuario_id = (SELECT auth.uid()));
+
+-- Ocorrência: o que a pessoa abriu, e o que foi decidido sobre ela.
+CREATE POLICY ocorrencia_leitura ON ocorrencia FOR SELECT TO authenticated
+  USING (autor_id = (SELECT auth.uid())
+         OR (usuario_id = (SELECT auth.uid())
+             AND tipo IN ('suspensao', 'cancelamento')));
+```
+
+Algumas escolhas pedem explicação:
+
+- **A avaliação só o autor lê.** Quem foi avaliado vê o agregado — "7 de 7 chamariam de novo" — pela função de perfil, com o denominador (RN08), e não quem respondeu o quê. A resposta individual à vista convidaria à retaliação, e a pergunta binária só funciona se a pessoa responde sem medo.
+- **O bloqueio só quem bloqueou vê.** Quem foi bloqueado apenas deixa de cruzar com a outra parte (RF26). Saber quem o bloqueou é informação que pode pôr alguém em risco.
+- **A denúncia não aparece para o denunciado.** A ocorrência de denúncia é lida só por quem denunciou. O denunciado vê a suspensão, se houver, com o motivo e o caminho para contestar (RN13).
+- **O estabelecimento não vê o despacho.** Saber quem foi notificado de uma vaga revelaria quem está perto e disponível naquele horário. O contratante vê quem se candidatou, e só.
+- **O turno fica para os dois lados, mesmo depois de um bloqueio.** É histórico de cada um e entra na exportação (RF22). O bloqueio corta o contato e tudo o que vem depois.
+- **A exclusão tira a pessoa das leituras sozinha** (RF25). A conta anonimizada não tem mais registro em `auth.users`, então nenhum token casa com ela; o despacho já filtra `estado = 'ativa'`; e, no histórico da contraparte, as funções de perfil mostram "Conta encerrada".
+
+### O que a outra parte vê
+
+As leituras que só tocam no que é do próprio usuário podem rodar com a identidade de quem chama, sob as políticas acima. As que juntam dado da outra parte — o nome do estabelecimento no turno, o perfil do candidato, o contato — são `security definer` e devolvem só isto:
+
+| Função | O que devolve | Regra |
+|---|---|---|
+| `perfil_publico` | Nome, funções, turnos realizados, taxa de comparecimento e o par `aval_positivas` / `aval_total` | RN08: sempre com o denominador, nunca só o percentual. `ponto_base`, telefone, e-mail e nascimento não saem |
+| `vagas_abertas`, `detalhe_vaga` | A vaga e, do estabelecimento, nome, tipo e reputação | RF26: some a vaga de quem tem bloqueio com o profissional. O documento (CNPJ ou CPF) não sai |
+| `candidatos_da_vaga` | Para o membro do estabelecimento, quem se candidatou, com o perfil público de cada um | RF26: quem tem bloqueio some da lista |
+| `contato_do_turno` | Nome, telefone e link do WhatsApp da outra parte | RN10: só com a posição confirmada ou cumprida, até 7 dias depois do fim, e sem bloqueio |
+| `painel_estabelecimento` | Vagas, posições, candidatos e turnos do estabelecimento | Só para membro |
+
+Toda função de escrita segue o mesmo molde: `security definer`, `set search_path = ''` com nomes qualificados, `auth.uid()` conferido antes de tudo e, quando a função é de um perfil só, `privado.exigir_perfil(…)` na primeira linha. `criar_perfil_profissional` exige `'profissional'`; `cadastrar_estabelecimento` e o aceite de convite de membro exigem `'contratante'` (RN25).
+
+Cada política ganha teste antes de ir para produção: entrar como profissional, como contratante de outro estabelecimento e como conta bloqueada, e conferir o que cada um lê (`supabase test db`, com pgTAP).
+
+### Resumo
+
+| Tabela | Quem lê | Quem escreve, sempre por função |
+|---|---|---|
+| `usuario` | A própria conta | `criar_conta`; `excluir-conta` anonimiza |
+| `profissional` | O próprio profissional | `criar_perfil_profissional`, `atualizar_perfil_profissional` |
+| `estabelecimento` | Os membros | `cadastrar_estabelecimento` |
+| `membro_estabelecimento` | Os membros do mesmo estabelecimento | `cadastrar_estabelecimento` (primeiro administrador) e o convite de membro (RF21) |
+| `equipe_confianca` | Os membros e o profissional incluído | `incluir_na_equipe`, `remover_da_equipe` |
+| `funcao` | Qualquer conta logada | Só migração: é catálogo |
+| `profissional_funcao` | O próprio profissional | `criar_perfil_profissional`, `atualizar_perfil_profissional` |
+| `disponibilidade` | O próprio profissional | `criar_perfil_profissional`, `atualizar_perfil_profissional` |
+| `evento` | Os membros | A escala em lote (RF19), depois do MVP |
+| `vaga` | Os membros; o profissional, as publicadas e as que tem candidatura, sem bloqueio, e as que ocupou | `publicar_vaga`, `republicar_vaga`, `cancelar_vaga`; o agendador fecha o modo seleção |
+| `posicao` | Os membros e quem ocupa | `publicar_vaga`, `candidatar` (no modo urgência), `escolher_candidato`, `cancelar_posicao`, `reabrir_por_atraso` |
+| `candidatura` | O próprio profissional; os membros, menos quem tem bloqueio | `candidatar`, `retirar_candidatura`, `escolher_candidato`; o agendador expira |
+| `turno` | Os dois lados da posição | A confirmação cria; `fazer_checkin`, `confirmar_checkin_manual`, `fazer_checkout`; o agendador marca "não verificado" |
+| `avaliacao` | Só o autor | `avaliar` |
+| `bloqueio` | Só o autor | `bloquear` |
+| `despacho` | O próprio profissional | O agendador |
+| `notificacao` | O próprio profissional | O agendador |
+| `dispositivo` | O dono | `registrar_dispositivo`; `excluir-conta` apaga |
+| `ocorrencia` | O autor; o alvo, na suspensão e no cancelamento | `denunciar`, `contestar_suspensao`, `pedir_revisao_despacho` e os cancelamentos; a Equipe Frila, com a chave de serviço |
+
+`anon` não aparece na tabela porque não tem nada: nenhuma leitura e nenhuma escrita.
 
 ---
 

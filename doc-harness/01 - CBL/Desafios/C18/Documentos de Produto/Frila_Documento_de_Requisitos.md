@@ -1,8 +1,8 @@
 ---
 tipo: documento-derivado
 origem: "doc-harness/01 - CBL/Desafios/C18/Documentos de Produto/Frila_Documento_de_Requisitos.docx"
-hash_origem: e37a259fd41ac18c92fe869534e55d17cd13125855a039921fa842fd32f3b935
-exportado_em: 2026-09-22T03:09
+hash_origem: 6f2f1bfe9843755e87bdfc4f6e4bdb2799a28d5af505ade97138451864bf1853
+exportado_em: 2026-09-22T03:52
 exportado_por: Cauê Carneiro <cauecarneiroc@gmail.com>
 conversao: ok
 tags: [documento]
@@ -32,7 +32,7 @@ Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva
 
 Versão
 
-v1.2.0
+v1.3.0
 
 Data
 
@@ -71,6 +71,14 @@ v1.2.0
 Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva
 
 Aplica as respostas do quadro 03 de pendências (21 e 22/09): plataforma horizontal e sem campanha política; despacho por proximidade (até 15 km), sem raio configurável e sem levas, com teto de notificações (RN23); check-in geolocalizado a 200 m com confirmação manual (RN22); avaliação só com presença verificada e nova definição de taxa de comparecimento; aval herdado retirado (RF17 e UC12); Painel como feature web do gestor e Equipe Frila só por e-mail; denúncia e bloqueio (RF26 e UC17); explicação do despacho (RF27); turnos sobrepostos (RN21) e modo seleção (RN24) viram regra; stack decidida (Swift/SwiftUI, Kotlin, Supabase, FCM, SwiftData); entidade Dispositivo e contrato da API em Documentos/API/openapi.yaml; metas de tempo de publicação e de número de toques retiradas até haver medição no piloto.
+
+v1.3.0
+
+22/09/2026
+
+Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva
+
+Aplica as respostas das pendências para codar (22/09): um app só, com um perfil por conta (RN25); entrada por código no e-mail, sem senha e sem SMS, com telefone obrigatório e sem verificação (RF01, UC09 e UC10); botão “disponível agora” retirado (RF03 e UC09); entidade Usuario com o perfil da conta e SessaoUsuario sem troca de perfil.
 
 Glossário
 
@@ -190,9 +198,15 @@ Seções 2, 3 e 6
 
 Painel
 
-Feature da versão web do app do estabelecimento: dashboard do gestor para acompanhar vagas, contratados e turnos. Não é ferramenta interna do Frila.
+Feature da versão web do Frila, no perfil de contratante: dashboard do gestor para acompanhar vagas, contratados e turnos. Não é ferramenta interna do Frila.
 
 Seções 3 e 6
+
+Perfil
+
+Tipo da conta: profissional, para quem trabalha no turno, ou contratante, para quem publica pelo estabelecimento. É escolhido no cadastro e não muda (RN25).
+
+Seções 1, 2 e 3
 
 Equipe Frila
 
@@ -210,7 +224,7 @@ Todo o documento
 
 1.1 Propósito do Documento
 
-Este documento especifica os requisitos funcionais, os requisitos não funcionais, as regras de negócio e os casos de uso do sistema Frila, servindo de referência para o time de desenvolvimento, para os testes e para a validação com as partes interessadas. O posicionamento de mercado, as personas e a justificativa de cada escolha estão no Documento de Visão v1.1.0, que este documento complementa e não repete.
+Este documento especifica os requisitos funcionais, os requisitos não funcionais, as regras de negócio e os casos de uso do sistema Frila, servindo de referência para o time de desenvolvimento, para os testes e para a validação com as partes interessadas. O posicionamento de mercado, as personas e a justificativa de cada escolha estão no Documento de Visão v1.2.0, que este documento complementa e não repete.
 
 Uma ressalva de leitura, herdada da documentação de pesquisa do projeto: o Frila está em TRL 2, sem código escrito e sem validação de campo. As regras e os requisitos aqui derivam de evidência pública sobre o mercado e das falhas observadas nos concorrentes, mas as premissas de comportamento do usuário no Distrito Federal permanecem hipóteses, marcadas com [H]. Requisitos que dependem diretamente de uma hipótese trazem a marca no próprio texto, para que a revisão posterior saiba onde mexer.
 
@@ -226,7 +240,7 @@ Qualquer negócio que precise cobrir um turno avulso, de qualquer setor: bares, 
 
 Plataformas
 
-Dois aplicativos, o do Profissional e o do Estabelecimento, cada um em iOS nativo (Swift e SwiftUI), Android nativo (Kotlin) e versão web. O Painel é uma feature da versão web do app do estabelecimento, usada pelo gestor. O backend é o Supabase, onde ficam as regras que precisam valer igual nos três clientes. Para a entrega na loja em 13/11, o iOS é o mínimo; Android e web são a meta.
+Um aplicativo só, com dois perfis, o do profissional e o do contratante, que publica pelo estabelecimento, em iOS nativo (Swift e SwiftUI), Android nativo (Kotlin) e versão web. Cada conta tem um perfil só (RN25). O Painel é uma feature da versão web, no perfil de contratante, usada pelo gestor. O backend é o Supabase, onde ficam as regras que precisam valer igual nos três clientes. Para a entrega na loja em 13/11, o iOS é o mínimo; Android e web são a meta.
 
 Fora do Escopo
 
@@ -390,6 +404,12 @@ O modo seleção SÓ PODE ser escolhido para vaga que começa em mais de 24 hora
 
 Sem prazo, a posição fica presa esperando uma escolha que pode não vir, e o profissional deixa de aceitar outras vagas. Vaga para menos de 24 horas é urgência por natureza.
 
+RN25
+
+Cada conta DEVE ter um único perfil, profissional ou contratante, escolhido no cadastro e sem troca depois. Para usar o outro perfil, a pessoa cria outra conta, com outro e-mail; o mesmo telefone pode aparecer nas duas.
+
+Mantém separados a reputação, o histórico e as permissões de cada lado, e cada conta vê só as telas do próprio perfil. A regra é garantida no banco, que grava o perfil no cadastro e recusa a troca.
+
 3. Requisitos Funcionais
 
 3.1 Lista de Requisitos Funcionais
@@ -404,11 +424,11 @@ Critério de aceitação
 
 RF01
 
-O sistema deve permitir que o profissional se cadastre e autentique com dados mínimos: nome, telefone, e-mail e confirmação de maioridade.
+O sistema deve permitir que o profissional se cadastre e entre com um código de uso único enviado ao e-mail, sem senha e sem SMS, informando dados mínimos: nome, telefone com WhatsApp e confirmação de maioridade.
 
 Alta
 
-Um profissional conclui o cadastro e fica apto a receber notificações de vaga sem enviar documento.
+Um profissional conclui o cadastro e fica apto a receber notificações de vaga sem enviar documento; o telefone é obrigatório, porque é o contato do turno (RN10), e o app confere só o formato, sem verificação por SMS.
 
 RF02
 
@@ -416,11 +436,11 @@ O sistema deve permitir que o contratante cadastre o estabelecimento com razão 
 
 Alta
 
-Um contratante conclui o cadastro e publica a primeira vaga na mesma sessão, sem onboarding assistido.
+Um contratante conclui o cadastro e publica a primeira vaga na mesma sessão, sem onboarding assistido; a conta dele é criada como em RF01, com código no e-mail, e tem o perfil de contratante (RN25).
 
 RF03
 
-O sistema deve permitir que o profissional declare suas funções, seu ponto base e sua disponibilidade por dia e faixa de horário, e marque que está disponível agora.
+O sistema deve permitir que o profissional declare suas funções, seu ponto base e sua disponibilidade por dia e faixa de horário.
 
 Alta
 
@@ -568,7 +588,7 @@ O sistema deve permitir múltiplos usuários por estabelecimento, com papéis di
 
 Média
 
-Um novo usuário é incluído sem compartilhamento de senha; o histórico do estabelecimento permanece ao trocar de responsável.
+Um novo usuário entra com a própria conta de contratante, sem compartilhar acesso; o histórico do estabelecimento permanece ao trocar de responsável.
 
 RF22
 
@@ -596,7 +616,7 @@ O motivo da suspensão é exibido ao titular; o botão “Contestar” envia a c
 
 RF25
 
-O sistema deve permitir que o usuário exporte seus dados pessoais e exclua a conta de dentro do aplicativo, nos dois apps.
+O sistema deve permitir que o usuário exporte seus dados pessoais e exclua a conta de dentro do aplicativo, nos dois perfis.
 
 Alta
 
@@ -1514,7 +1534,7 @@ O contratante está autenticado, e o estabelecimento tem vagas publicadas ou tur
 
 Fluxo Principal
 
-1. O gestor abre o Painel na versão web do app do estabelecimento.
+1. O gestor abre o Painel na versão web do Frila, com a conta de contratante.
 
 2. O sistema mostra as vagas abertas, os candidatos, os profissionais confirmados, os check-ins do dia e os turnos não verificados.
 
@@ -1590,23 +1610,25 @@ Profissional
 
 Pré-condição
 
-Não existe conta ativa com o mesmo telefone ou e-mail.
+Não existe conta com o mesmo e-mail. O telefone pode se repetir em outra conta (RN25).
 
 Fluxo Principal
 
-1. O profissional informa nome, telefone e e-mail e confirma ter 18 anos ou mais.
+1. O profissional informa o e-mail e digita o código de uso único que chega nele. Não há senha nem SMS.
 
-2. O sistema confirma o telefone por código.
+2. O profissional escolhe o perfil de profissional, que fica fixo na conta (RN25), informa nome, telefone com WhatsApp e data de nascimento e confirma ter 18 anos ou mais. O sistema confere só o formato do telefone.
 
 3. O profissional declara suas funções, o ponto base e a disponibilidade por dia e faixa de horário. Não há distância para configurar: a notificação vai para quem está a até 15 km do local (RN05).
 
 4. O sistema ativa o perfil, que passa a receber notificações de vaga.
 
-5. A qualquer momento, o profissional altera funções, ponto base ou disponibilidade, ou marca que está disponível agora, e a mudança vale na notificação seguinte, sem novo login.
+5. A qualquer momento, o profissional altera funções, ponto base ou disponibilidade, e a mudança vale na notificação seguinte, sem novo login.
 
 Fluxo Alternativo
 
-1a. A pessoa declara ter menos de 18 anos: o cadastro é recusado, e nada além do necessário para registrar a recusa é guardado (RN20).
+2a. A pessoa declara ter menos de 18 anos: o cadastro é recusado, e nada além do necessário para registrar a recusa é guardado (RN20).
+
+2b. A pessoa já tem conta de contratante: para trabalhar em turnos, cria outra conta, com outro e-mail; o telefone pode ser o mesmo (RN25).
 
 3a. O profissional sai antes de declarar funções e ponto base: o cadastro fica salvo, mas o perfil não recebe notificação até completá-los.
 
@@ -1620,11 +1642,11 @@ Perfil ativo e apto a receber notificações de vaga, sem nenhuma cobrança no c
 
 Regras Relacionadas
 
-RN01, RN05, RN14, RN15, RN20
+RN01, RN05, RN14, RN15, RN20, RN25
 
 Critério de Aceito (BDD)
 
-Dado que tenho 18 anos ou mais, quando informo nome, telefone, e-mail, funções, ponto base e disponibilidade, então fico apto a receber notificações de vaga sem enviar documento e sem pagar nada.
+Dado que tenho 18 anos ou mais, quando entro com o código enviado ao meu e-mail e informo nome, telefone, funções, ponto base e disponibilidade, então fico apto a receber notificações de vaga sem enviar documento e sem pagar nada.
 
 UC10: Cadastrar o estabelecimento e gerenciar seus usuários
 
@@ -1634,7 +1656,7 @@ Contratante com papel de administrador do estabelecimento
 
 Pré-condição
 
-O responsável tem 18 anos ou mais e uma conta de acesso.
+O responsável tem 18 anos ou mais e uma conta de contratante (RN25), criada com código no e-mail.
 
 Fluxo Principal
 
@@ -1644,9 +1666,9 @@ Fluxo Principal
 
 3. O sistema cria o estabelecimento, com o responsável como administrador.
 
-4. O administrador convida outros usuários por telefone ou e-mail e atribui a cada um o papel de administrador ou de operador do estabelecimento.
+4. O administrador convida outros usuários pelo e-mail e atribui a cada um o papel de administrador ou de operador do estabelecimento.
 
-5. O convidado aceita com a própria conta, sem compartilhar senha.
+5. O convidado aceita com a própria conta de contratante, sem compartilhar acesso. Uma conta de profissional não pode aceitar o convite (RN25).
 
 Fluxo Alternativo
 
@@ -1662,11 +1684,11 @@ Estabelecimento apto a publicar vagas (UC01), com usuários e papéis registrado
 
 Regras Relacionadas
 
-RN15, RN20
+RN15, RN20, RN25
 
 Critério de Aceito (BDD)
 
-Dado que cadastrei o estabelecimento, quando convido um gerente como operador, então ele passa a publicar e acompanhar vagas com a própria conta, sem compartilhamento de senha, e o histórico permanece com o estabelecimento se eu sair.
+Dado que cadastrei o estabelecimento, quando convido um gerente como operador, então ele passa a publicar e acompanhar vagas com a própria conta, sem compartilhar acesso, e o histórico permanece com o estabelecimento se eu sair.
 
 UC11: Manter a equipe de confiança
 
@@ -1922,7 +1944,7 @@ O eixo do modelo é uma cadeia só — vaga → posição → turno → avaliaç
 
 *Figura 4 — O ciclo de uma vaga: da publicação à avaliação*
 
-*Figura 5 — Uma conta de acesso, dois papéis*
+*Figura 5 — Cada conta com um perfil só (RN25)*
 
 *Figura 6 — O que decide quem recebe o despacho*
 
@@ -1940,17 +1962,17 @@ Relacionamentos
 
 Usuario
 
-Conta de acesso, comum a todos os perfis. A credencial fica no Supabase Auth, e o id é o mesmo da conta de autenticação.
+Conta de acesso, com um perfil só, profissional ou contratante (RN25). A entrada é por código no e-mail, a credencial fica no Supabase Auth e o id é o mesmo da conta de autenticação. O e-mail é único; o telefone, não.
 
-id, nome, telefone, email, nascimento, estado, criado_em, anonimizado_em
+id, perfil, nome, telefone, email, nascimento, estado, criado_em, anonimizado_em
 
-1:1 com Profissional; N:N com Estabelecimento via MembroEstabelecimento
+1:1 com Profissional, na conta de profissional; N:N com Estabelecimento via MembroEstabelecimento, na conta de contratante
 
 Profissional
 
 Perfil de quem executa turnos.
 
-id, usuario_id, ponto_base, disponivel_agora_ate, taxa_comparecimento, turnos_realizados, estado
+id, usuario_id, ponto_base, taxa_comparecimento, turnos_realizados, estado
 
 1:1 com Usuario; N:N com Funcao; 1:N com Disponibilidade, Candidatura e Avaliacao
 
@@ -2124,7 +2146,7 @@ Profissional
 
 Guardar perfil, elegibilidade e reputação de quem executa.
 
-id: UUID, funcoes: [Funcao], pontoBase: Coordenada, disponibilidades: [Disponibilidade], disponivelAgoraAte: Date?, taxaComparecimento: Double?
+id: UUID, funcoes: [Funcao], pontoBase: Coordenada, disponibilidades: [Disponibilidade], taxaComparecimento: Double?
 
 estaElegivel(para: Vaga): Bool, atualizarComparecimento(_: Turno): Void
 
@@ -2210,7 +2232,7 @@ carregar() async, candidatar(a: Posicao) async
 
 AcompanhamentoViewModel
 
-Orquestrar, no app do estabelecimento, as vagas em alerta e a confirmação de check-in manual. O Painel do gestor é web.
+Orquestrar, no perfil de contratante, as vagas em alerta e a confirmação de check-in manual. O Painel do gestor é web.
 
 emAlerta: [Posicao], checkinsPendentes: [Turno]
 
@@ -2218,11 +2240,11 @@ carregar() async, confirmarCheckin(_: Turno) async
 
 SessaoUsuario
 
-Guardar identidade, perfil ativo e permissões.
+Guardar identidade, o perfil da conta, que é fixo (RN25), e as permissões. O token fica no Keychain, nunca no objeto.
 
-usuario: Usuario, perfilAtivo: Perfil, token: Token
+usuario: Usuario, perfil: PerfilConta, idCredencial: String
 
-trocarPerfil(_: Perfil): Void, encerrar(): Void
+encerrar(): Void
 
 6.4 Arquitetura
 
@@ -2270,7 +2292,7 @@ Recebimento e apresentação das notificações de vaga
 
 Supabase Swift
 
-Autenticação, acesso às tabelas e chamada das funções RPC do backend
+Entrada por código no e-mail, acesso às tabelas e chamada das funções RPC do backend
 
 Keychain Services
 
@@ -2360,9 +2382,9 @@ UC(s) Relacionadas
 
 RF01
 
-Cadastro e autenticação do profissional
+Cadastro e entrada do profissional por código no e-mail
 
-RN14, RN15, RN20
+RN14, RN15, RN20, RN25
 
 RNF07, RNF08, RNF09
 
@@ -2372,7 +2394,7 @@ RF02
 
 Cadastro do estabelecimento
 
-RN15, RN20
+RN15, RN20, RN25
 
 RNF07, RNF08
 
@@ -2562,7 +2584,7 @@ RF21
 
 Múltiplos usuários por estabelecimento
 
-RN15
+RN15, RN25
 
 RNF07
 

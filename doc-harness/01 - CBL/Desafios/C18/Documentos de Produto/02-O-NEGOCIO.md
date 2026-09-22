@@ -172,7 +172,7 @@ Buffet, produtora, empresa de staff. Formatura, casamento, corporativo.
 
 ## 5. Como funciona — o ciclo de um frila
 
-O mesmo ciclo, do ponto de vista de produto, com os dois apps e os pilares da experiência, está em `03-ESPECIFICACAO-DO-PRODUTO.md`.
+O mesmo ciclo, do ponto de vista de produto, com os dois perfis do app e os pilares da experiência, está em `03-ESPECIFICACAO-DO-PRODUTO.md`.
 
 ### 5.1. Publicação
 

@@ -1,13 +1,13 @@
 ---
 tipo: documento-produto
 titulo: "Histórias de Usuário e Backlog do Produto (Frila)"
-versao: "v1.1.0"
+versao: "v1.2.0"
 autor: "Júlia Clovandi (Product Owner) & Fabrício Tosta"
 desafio: C18
 data: 2026-09-22
 status: revisao
 origem: "01 - CBL/Desafios/C18/Documentos de Produto/Frila_Historias_de_Usuario_e_Backlog.pages"
-hash_origem: bae0fe61db1231ecaeb4cb0d516e3058b20fa2725fe2b2f193659bb4fc1425a3
+hash_origem: 6d4ac0ff6d370c22eb5565821dba9e7ac2fb31e37c4b0c6947c33b7a458ba4c2
 tags: [documento, user-stories, backlog, moscow, produto, frila]
 ---
 
@@ -17,7 +17,7 @@ tags: [documento, user-stories, backlog, moscow, produto, frila]
 > **Autores**: Júlia Clovandi (Product Owner) e Fabrício Tosta (Product Designer)
 > **Equipe BlendOps**: Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva
 > **Desafio**: CBL C18 — Apple Developer Academy (UCB)
-> **Data**: 22 de setembro de 2026 | **Versão**: v1.1.0
+> **Data**: 22 de setembro de 2026 | **Versão**: v1.2.0
 
 ---
 
@@ -27,6 +27,7 @@ tags: [documento, user-stories, backlog, moscow, produto, frila]
 |---|---|---|---|
 | v1.0.0 | 17/09/2026 | Júlia Clovandi & Fabrício Tosta | Criação do Backlog do Produto com 25 Histórias de Usuário priorizadas via MoSCoW e especificadas em formato BDD (INVEST), derivadas da Especificação de Requisitos v1.0.0 e do Documento de Visão v1.0.0 para orientar o protótipo de baixa fidelidade e o MVP. |
 | v1.1.0 | 22/09/2026 | Cauê Carneiro | Aplica as respostas do quadro 03 de pendências (21 e 22/09), alinhado à Especificação de Requisitos v1.2.0 e ao Documento de Visão v1.1.0: despacho por proximidade (até 15 km), sem raio configurável e sem levas, com teto de notificações; check-in geolocalizado a 200 m com confirmação manual; avaliação só com presença verificada; aval herdado retirado (US19); persona interna retirada, com Painel do gestor na web e Equipe Frila só por e-mail; modo seleção com fechamento automático; novas US26 (denúncia e bloqueio) e US27 (explicação do despacho); referências de RF e RN corrigidas; metas de tempo de publicação e de número de toques retiradas até haver medição no piloto. |
+| v1.2.0 | 22/09/2026 | Cauê Carneiro | Aplica as respostas das pendências para codar (22/09), alinhado à Especificação de Requisitos v1.3.0 e ao Documento de Visão v1.2.0: um app só, com um perfil por conta (RN25, em US01, US03 e US24); entrada por código no e-mail, sem senha e sem SMS (US01); cenário “Disponível agora” retirado (US02); US15 reestimada de 5 para 8 pontos. |
 
 ## Glossário e Metodologia
 
@@ -108,16 +109,16 @@ A US19 foi retirada na v1.1.0 e o número fica reservado. As US26 e US27 entrara
 
 #### US01: Cadastro Simples do Profissional com Declaração de Maioridade
 - **Persona**: Lucas (Profissional Freelancer)
-- **RF / RN**: RF01, RN14, RN15, RN20 | **Prioridade**: MUST HAVE | **Pontos**: 3
+- **RF / RN**: RF01, RN14, RN15, RN20, RN25 | **Prioridade**: MUST HAVE | **Pontos**: 3
 - **Narrativa**:
   > **Como** profissional freelancer operacional,  
-  > **quero** me cadastrar no aplicativo informando apenas meu nome, telefone, e-mail e confirmando ter 18 anos ou mais,  
+  > **quero** me cadastrar no aplicativo com meu e-mail, sem senha, informando apenas meu nome e telefone e confirmando ter 18 anos ou mais,  
   > **para que** eu possa começar a receber convites de trabalho sem atritos burocráticos e sem expor fotos de documentos desnecessariamente.  
 - **Critérios de Aceitação (BDD)**:
   - **Cenário 1: Cadastro realizado com sucesso**  
-    *Dado que* o profissional faz o primeiro acesso ao Frila iOS,  
-    *quando* ele informa nome completo, telefone válido, e-mail, senha e marca o checkbox de confirmação de maioridade (≥ 18 anos),  
-    *então* a conta é criada no estado ativo, o token de sessão é salvo no Keychain e ele é encaminhado para a definição de funções operacionais.
+    *Dado que* o profissional faz o primeiro acesso ao Frila iOS e escolhe o perfil de profissional,  
+    *quando* ele digita o código de uso único que chegou no e-mail, informa nome completo e telefone com WhatsApp e marca o checkbox de confirmação de maioridade (≥ 18 anos),  
+    *então* a conta é criada no estado ativo, com o perfil de profissional fixo (RN25), o token de sessão é salvo no Keychain e ele é encaminhado para a definição de funções operacionais.
   - **Cenário 2: Tentativa de cadastro de menor de idade**  
     *Dado que* um usuário tenta avançar sem confirmar o checkbox de maioridade legal (RN20),  
     *quando* ele toca em 'Continuar',  
@@ -126,6 +127,10 @@ A US19 foi retirada na v1.1.0 e o número fica reservado. As US26 e US27 entrara
     *Dado que* o fluxo de cadastro do profissional é apresentado,  
     *quando* o formulário é renderizado na tela,  
     *então* nenhuma foto de documento (RG/CNH) ou selfie com documento é solicitada, em estrito cumprimento da RN14.
+  - **Cenário 4: Outro perfil com o mesmo telefone**  
+    *Dado que* a pessoa já tem uma conta de contratante no Frila,  
+    *quando* cria uma conta de profissional com outro e-mail e o mesmo telefone,  
+    *então* o cadastro é aceito, e as duas contas seguem separadas, cada uma com o próprio perfil e a própria reputação (RN25).
 
 ---
 
@@ -134,18 +139,14 @@ A US19 foi retirada na v1.1.0 e o número fica reservado. As US26 e US27 entrara
 - **RF / RN**: RF03, RN05 | **Prioridade**: MUST HAVE | **Pontos**: 3
 - **Narrativa**:
   > **Como** profissional freelancer,  
-  > **quero** selecionar as funções que sei desempenhar, meu ponto base e os dias/turnos em que tenho disponibilidade, e marcar quando estou disponível agora,  
+  > **quero** selecionar as funções que sei desempenhar, meu ponto base e os dias/turnos em que tenho disponibilidade,  
   > **para que** eu só seja notificado sobre vagas pertinentes ao meu trabalho, no meu horário e perto de onde estou.  
 - **Critérios de Aceitação (BDD)**:
   - **Cenário 1: Seleção de funções operacionais**  
     *Dado que* o profissional está na tela de configuração de perfil,  
     *quando* seleciona pelo menos uma função do catálogo oficial (ex: Garçom, Bartender), informa o ponto base e marca a grade semanal de disponibilidade,  
     *então* os critérios de elegibilidade daquele perfil passam a valer na próxima notificação, sem novo login; a distância até a vaga (até 15 km) é calculada a partir do ponto base, e não há raio a configurar.
-  - **Cenário 2: Disponível agora**  
-    *Dado que* o profissional está livre fora da grade semanal,  
-    *quando* toca em 'Disponível agora',  
-    *então* ele passa a receber notificações de vagas da sua função perto do ponto base até desligar a opção.
-  - **Cenário 3: Perfil sem funções selecionadas**  
+  - **Cenário 2: Perfil sem funções selecionadas**  
     *Dado que* o profissional desmarca todas as funções operacionais,  
     *quando* tenta salvar o perfil,  
     *então* o sistema alerta que é obrigatório manter ao menos uma função ativa para receber despachos.
@@ -154,7 +155,7 @@ A US19 foi retirada na v1.1.0 e o número fica reservado. As US26 e US27 entrara
 
 #### US03: Cadastro Ágil do Estabelecimento Contratante
 - **Persona**: Marcos (Gerente de Salão) / Carla (Produtora)
-- **RF / RN**: RF02, RN15, RN20 | **Prioridade**: MUST HAVE | **Pontos**: 5
+- **RF / RN**: RF02, RN15, RN20, RN25 | **Prioridade**: MUST HAVE | **Pontos**: 5
 - **Narrativa**:
   > **Como** gestor de estabelecimento ou produtor de eventos,  
   > **quero** cadastrar meu restaurante ou negócio, de qualquer setor, com CNPJ (ou CPF, quando for pessoa física), Razão Social, Nome Fantasia, endereço completo e contato do responsável,  
@@ -164,6 +165,10 @@ A US19 foi retirada na v1.1.0 e o número fica reservado. As US26 e US27 entrara
     *Dado que* o gestor informa CNPJ válido e dados do estabelecimento,  
     *quando* o sistema valida o CNPJ e obtém as coordenadas geográficas exatas via MapKit,  
     *então* o perfil corporativo é criado e habilitado a publicar turnos avulsos.
+  - **Cenário 2: Conta com o perfil de contratante**  
+    *Dado que* o gestor entra pela primeira vez com o código enviado ao e-mail e escolhe o perfil de contratante,  
+    *quando* conclui o cadastro do estabelecimento,  
+    *então* a conta fica com o perfil de contratante fixo (RN25) e ele pode publicar a primeira vaga na mesma sessão.
 
 ---
 
@@ -405,7 +410,7 @@ A US19 foi retirada na v1.1.0 e o número fica reservado. As US26 e US27 entrara
 
 #### US15: Check-in e Check-out Geolocalizados
 - **Persona**: Lucas (Profissional) e Marcos (Contratante)
-- **RF / RN**: RF13, RN11, RN22 | **Prioridade**: MUST HAVE | **Pontos**: 5
+- **RF / RN**: RF13, RN11, RN22 | **Prioridade**: MUST HAVE | **Pontos**: 8
 - **Narrativa**:
   > **Como** contratante e profissional,  
   > **quero** que o aplicativo registre o início e o término do turno com a localização lida no momento do toque, a até 200 m do endereço da vaga,  
@@ -527,7 +532,7 @@ A US19 (aval de quem trabalhou com o profissional fora da plataforma) saiu do pr
     *quando* a janela crítica começa,  
     *então* o contratante recebe uma notificação no app e pode, por exemplo, ajustar a vaga ou procurar por fora; o Frila não intervém.
   - **Cenário 2: Acompanhamento no Painel web**  
-    *Dado que* o gestor abre o Painel na versão web do app do estabelecimento,  
+    *Dado que* o gestor abre o Painel na versão web do Frila, com a conta de contratante,  
     *quando* a tela carrega,  
     *então* ele vê as vagas abertas e em alerta, os candidatos, os confirmados, os check-ins feitos e os turnos não verificados.
   - **Cenário 3: Confirmação de check-in manual**  
@@ -577,7 +582,7 @@ A US19 (aval de quem trabalhou com o profissional fora da plataforma) saiu do pr
 
 #### US24: Múltiplos Membros por Estabelecimento com Controle de Acesso
 - **Persona**: Marcos (Proprietário)
-- **RF / RN**: RF21, RN15 | **Prioridade**: COULD HAVE | **Pontos**: 3
+- **RF / RN**: RF21, RN15, RN25 | **Prioridade**: COULD HAVE | **Pontos**: 3
 - **Narrativa**:
   > **Como** dono de restaurante,  
   > **quero** convidar meus gerentes e maîtres para publicar e gerenciar turnos vinculados ao meu estabelecimento,  
@@ -587,6 +592,10 @@ A US19 (aval de quem trabalhou com o profissional fora da plataforma) saiu do pr
     *Dado que* o administrador envia convite via e-mail para um colaborador,  
     *quando* o colaborador aceita,  
     *então* ele pode publicar e confirmar turnos em nome daquele estabelecimento.
+  - **Cenário 2: Convite aberto numa conta de profissional**  
+    *Dado que* o colaborador abre o convite numa conta de profissional,  
+    *quando* tenta aceitar,  
+    *então* o sistema recusa e explica que é preciso entrar com uma conta de contratante (RN25).
 
 ---
 
@@ -594,7 +603,7 @@ A US19 (aval de quem trabalhou com o profissional fora da plataforma) saiu do pr
 - **Persona**: Lucas (Profissional) / Qualquer Usuário
 - **RF / RN**: RF25, RN15 | **Prioridade**: MUST HAVE | **Pontos**: 3
 - **Narrativa**:
-  > **Como** usuário cadastrado, em qualquer um dos dois apps,  
+  > **Como** usuário cadastrado, em qualquer um dos dois perfis,  
   > **quero** solicitar o download ou a exclusão definitiva dos meus dados pessoais a qualquer momento, de dentro do app,  
   > **para que** minha privacidade seja respeitada em total conformidade com a LGPD e com a diretriz 5.1.1(v) da App Store.  
 - **Critérios de Aceitação (BDD)**:
@@ -630,7 +639,7 @@ A priorização MoSCoW estabelece o cronograma de engenharia e design para as en
 
 | Prioridade MoSCoW | Critério Estratégico | Histórias de Usuário Incluídas |
 |---|---|---|
-| **MUST HAVE<br>(MVP / 28/09)** | Indispensável para viabilizar a jornada ponta a ponta: publicação com poucos campos, notificação por proximidade com teto, candidatura sem formulário, check-in geolocalizado, avaliação binária, alerta de vaga vazia e as exigências da App Store (denúncia e bloqueio, exclusão de conta). A contestação entra junto porque a RN13 a exige sempre que houver suspensão. | US01, US02, US03, US04, US05, US07, US08, US10, US11, US13, US14, US15, US16, US17, US18, US21, US23, US25, US26<br>(19 Histórias · 87 Pontos) |
+| **MUST HAVE<br>(MVP / 28/09)** | Indispensável para viabilizar a jornada ponta a ponta: publicação com poucos campos, notificação por proximidade com teto, candidatura sem formulário, check-in geolocalizado, avaliação binária, alerta de vaga vazia e as exigências da App Store (denúncia e bloqueio, exclusão de conta). A contestação entra junto porque a RN13 a exige sempre que houver suspensão. | US01, US02, US03, US04, US05, US07, US08, US10, US11, US13, US14, US15, US16, US17, US18, US21, US23, US25, US26<br>(19 Histórias · 90 Pontos) |
 | **SHOULD HAVE<br>(Versão 1.1)** | Alto valor operacional para escala e retenção, implementadas logo após a estabilização do fluxo principal. | US06 (Escala em lote), US09 (Equipe de confiança), US12 (Modo seleção), US20 (Relatório consolidado), US22 (Suporte por e-mail), US27 (Explicação do despacho)<br>(6 Histórias · 31 Pontos) |
 | **COULD HAVE<br>(Versão 1.2)** | Melhorias de conveniência que agregam valor contínuo sem bloquear a validação da tese inicial. | US24 (Múltiplos membros do estabelecimento)<br>(1 História · 3 Pontos) |
 | **WON'T HAVE<br>(Fora de Escopo)** | Recursos rejeitados deliberadamente para mitigar riscos trabalhistas, fiscais e fricção operacional. | • Custódia/processamento in-app de pagamento (RN09)<br>• Desconto de comissão sobre o valor do turno (RN01)<br>• Chat interno (substituído por WhatsApp)<br>• Avaliação de 1 a 5 estrelas<br>• Contratação CLT ou processo seletivo formal<br>• Aval de quem trabalhou fora da plataforma (US19 retirada)<br>• Plantão, atendimento ao vivo ou operação manual de turnos pelo Frila<br>• Vaga remota no MVP (entra depois do MVP) |
@@ -647,8 +656,8 @@ Mapeamento direto entre as Histórias de Usuário e os componentes arquiteturais
 | **TurnoManager / LocationService** | Check-in/out geolocalizado a até 200 m com check-in manual confirmado, lembretes 24 h e 3 h antes, alertas de atraso e de fim de turno, e reabertura. | US14, US15, US16 |
 | **ReputacaoService** | Cálculo da taxa de comparecimento (presença ÷ confirmados) e razão binária ('Chamaria de novo?'), só com presença verificada. | US17, US18 |
 | **RelatorioService** | Compilação e exportação de dados consolidados auditáveis (RN17). | US20 |
-| **AcompanhamentoViewModel** | No app do estabelecimento: vagas em alerta e confirmação de check-in manual. | US21 |
-| **Painel do gestor (web)** | Acompanhamento de vagas, candidatos, contratados, check-ins e turnos na versão web do app do estabelecimento. | US21 |
+| **AcompanhamentoViewModel** | No perfil de contratante: vagas em alerta e confirmação de check-in manual. | US21 |
+| **Painel do gestor (web)** | Acompanhamento de vagas, candidatos, contratados, check-ins e turnos na versão web do Frila, no perfil de contratante. | US21 |
 | **Canal de e-mail da Equipe Frila** | Suporte, denúncias, contestações e pedidos de revisão do despacho, com resposta em até 5 dias úteis. | US22, US23, US26, US27 |
 
 ## 6. Próximos Passos de Execução

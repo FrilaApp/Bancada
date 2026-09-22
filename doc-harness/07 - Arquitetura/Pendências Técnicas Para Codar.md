@@ -13,6 +13,7 @@ Extraído dos documentos de arquitetura (T-0024): [[07 - Arquitetura/Diagrama de
 
 > [!info] Atualizado em 22/09/2026
 > As treze decisões foram respondidas no quadro 03 de pendências do FigJam, em 21/09/2026, com um ajuste na D8 em 22/09. Este arquivo passa a registrar as respostas; o código de resposta de cada uma (B01, D07…) é o da pergunta no quadro.
+> Também em 22/09, o Cauê respondeu as pendências que ainda faltavam para começar o código (seção “Respondidas em 22/09/2026”, logo abaixo).
 
 ---
 
@@ -36,6 +37,25 @@ Extraído dos documentos de arquitetura (T-0024): [[07 - Arquitetura/Diagrama de
 
 ---
 
+## ✅ Respondidas em 22/09/2026 — para começar o código
+
+| Pendência | Resposta |
+|---|---|
+| Um app ou dois | Um app só, com dois perfis, o do profissional e o do contratante, e uma ficha em cada loja |
+| Uma conta pode ter os dois perfis | Não. Cada conta tem um perfil, escolhido no cadastro e fixo (RN25). Para o outro lado, a pessoa cria outra conta, com outro e-mail; o telefone pode se repetir |
+| Login | Código de uso único enviado ao e-mail, sem senha e sem SMS. O envio embutido do Supabase só serve para teste; antes do piloto entra um provedor de e-mail próprio (SMTP) |
+| Telefone | Obrigatório, porque é o contato do turno (RN10), e sem verificação: o app confere só o formato |
+| Duração do "disponível agora" | A feature saiu. Vale só a grade semanal de disponibilidade |
+| Onde fica o código | No repositório do Frila: `supabase/` e `ios/` primeiro; `android/` e `web/` depois |
+| Políticas de acesso (RLS) | Escritas na [[07 - Arquitetura/Modelagem de Banco de Dados|Modelagem de Banco de Dados]], uma por tabela e operação; entram nas migrações quando o código começar |
+| Estimativa da US15 | 8 pontos. O MUST do Backlog passa a somar 90 |
+| Tecnologia da web | Escolhida depois do iOS |
+| Identificador do app (bundle ID) | Decidido ao criar o projeto iOS |
+| Wireframes (T-0011) | Protótipo clicável, gerado pelo Claude |
+| Estrutura inicial do código | Criada só quando o Cauê pedir |
+
+---
+
 ## ✅ Continua valendo
 
 - **Domínio isolado:** nenhuma seta sai da camada de domínio (Clean Architecture/MVVM). Permite testar em milissegundos, sem tela, rede ou banco, o que o app decide sozinho.
@@ -46,9 +66,11 @@ Extraído dos documentos de arquitetura (T-0024): [[07 - Arquitetura/Diagrama de
 
 ## ⚙️ Processo — não é decisão técnica, é etapa que falta acontecer
 
-- [ ] Revisão pelos desenvolvedores (Cauê, João Paulo, Matheus) dos quatro documentos técnicos — Classe, Banco de Dados, Arquitetura e Casos de Uso. Até 21/09, ninguém tinha revisado (B05).
+- [x] Revisão pelos desenvolvedores (Cauê, João Paulo, Matheus) dos quatro documentos técnicos — Classe, Banco de Dados, Arquitetura e Casos de Uso (B05), feita em 22/09.
 - [ ] Curadoria e padronização visual pela Júlia Clovandi, conforme [[04 - Tarefas/T-0012 - Coletar decisões técnicas e gerar diagramas de engenharia|T-0012]].
-- [x] Escrever a especificação das rotas centrais como funções RPC do Supabase (D11): `Frila/Documentos/API/openapi.yaml`, 22/09/2026.
+- [x] Escrever a especificação das rotas centrais como funções RPC do Supabase (D11): `Frila/Documentos/API/openapi.yaml`, 22/09/2026; versão 0.2.0 no mesmo dia, com a entrada por e-mail e o perfil por conta.
+- [ ] Escolher o provedor de e-mail (SMTP) do código de entrada, antes do piloto. O custo, se houver, entra no C09.
+- [ ] Decidir quem paga a infraestrutura (C09), em debate no time.
 - [ ] Atualizar a seção "Arquitetura Técnica · Frila" do FigJam (board Challenge 18): as decisões D1 a D13 passam para a coluna "Decisões Fechadas", com as respostas acima.
 
 ---

@@ -1,8 +1,8 @@
 ---
 tipo: documento-derivado
 origem: "doc-harness/01 - CBL/Desafios/C18/Documentos de Produto/Frila_Documento_de_Visao.docx"
-hash_origem: 817744ec7bb4faed4682ba3ec1054517e3a906d4642b79583a1f467c373190ee
-exportado_em: 2026-09-22T03:09
+hash_origem: b4b2c386a241e5d9c65f489c334d55935d0d32517fac13e111ed7cb2a1c7beb8
+exportado_em: 2026-09-22T03:52
 exportado_por: Cauê Carneiro <cauecarneiroc@gmail.com>
 conversao: ok
 tags: [documento]
@@ -32,7 +32,7 @@ Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva
 
 Versão
 
-v1.1.0
+v1.2.0
 
 Data
 
@@ -63,6 +63,14 @@ v1.1.0
 Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva
 
 Aplica as respostas do quadro 03 de pendências (21 e 22/09): plataforma horizontal e sem campanha política; despacho por proximidade (até 15 km), sem raio configurável e sem levas, com teto de notificações; check-in geolocalizado a 200 m com confirmação manual; avaliação só com presença verificada e nova definição de taxa de comparecimento; aval herdado retirado; Painel como feature web do gestor e Equipe Frila só por e-mail; denúncia e bloqueio; stack decidida (Swift/SwiftUI, Kotlin, Supabase, FCM, SwiftData); metas de tempo de publicação e de número de toques retiradas até haver medição no piloto.
+
+v1.2.0
+
+22/09/2026
+
+Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva
+
+Aplica as respostas das pendências para codar (22/09): um app só, com um perfil por conta e uma ficha em cada loja; entrada por código no e-mail, sem senha e sem SMS; botão “disponível agora” retirado; referências ao Documento de Requisitos v1.3.0 e ao Backlog v1.2.0.
 
 Glossário
 
@@ -116,9 +124,15 @@ Seções 2 e 4
 
 Painel
 
-Feature da versão web do app do estabelecimento: um painel para o gestor acompanhar vagas, candidatos, contratados, check-ins e turnos. Não é produto separado nem ferramenta interna do Frila.
+Feature da versão web do Frila, no perfil de contratante: um painel para o gestor acompanhar vagas, candidatos, contratados, check-ins e turnos. Não é produto separado nem ferramenta interna do Frila.
 
 Seções 3, 4 e 5
+
+Perfil
+
+Tipo da conta: profissional, para quem trabalha no turno, ou contratante, para quem publica pelo estabelecimento. É escolhido no cadastro e não muda.
+
+Seções 3 e 4
 
 Janela crítica
 
@@ -184,11 +198,11 @@ Está dentro do escopo do produto:
 
 • Organização de equipe de confiança e montagem de escala de evento em lote.
 
-• Alerta de vaga vazia ao contratante e Painel do gestor na versão web do app do estabelecimento.
+• Alerta de vaga vazia ao contratante e Painel do gestor na versão web do Frila, no perfil de contratante.
 
 • Denúncia e bloqueio entre usuários, com resposta da Equipe Frila por e-mail.
 
-• Aplicativo iOS nativo, em Swift e SwiftUI, aplicativo Android nativo, em Kotlin, e versão web, com todos os perfis de usuário atendidos nas duas vias e proposta de valor distinta por perfil.
+• Um aplicativo só, com os perfis de profissional e de contratante, em iOS nativo (Swift e SwiftUI), Android nativo (Kotlin) e versão web, com proposta de valor distinta por perfil.
 
 Está explicitamente fora do escopo:
 
@@ -254,13 +268,13 @@ Documentos/MD/EVIDENCIAS.md
 
 Documento de Especificação de Requisitos
 
-v1.2.0
+v1.3.0
 
 Documentos/Diagramas:Documentos/Frila_Documento_de_Requisitos.docx
 
 Histórias de Usuário e Backlog
 
-v1.1.0
+v1.2.0
 
 Documentos/Diagramas:Documentos/Frila_Historias_de_Usuario_e_Backlog.docx
 
@@ -784,7 +798,7 @@ Usuário primário
 
 Responsabilidades
 
-Manter função, ponto base e disponibilidade atualizados, e marcar quando está disponível agora; aceitar, comparecer e executar; fazer check-in e check-out no local; avaliar o estabelecimento.
+Manter função, ponto base e disponibilidade atualizados; aceitar, comparecer e executar; fazer check-in e check-out no local; avaliar o estabelecimento.
 
 Critérios de sucesso
 
@@ -964,15 +978,15 @@ Alerta ao contratante quando a vaga segue vazia a 3 horas do início, com antece
 
 O Frila é um sistema novo e independente. Não é módulo, extensão nem substituição de um sistema existente do cliente: não depende de PDV, de sistema de ponto, de folha de pagamento ou de software de escala já instalado no estabelecimento. Essa independência é deliberada, porque o público-alvo primário são operações pequenas, cuja infraestrutura de software costuma resumir-se ao celular de quem está no salão.
 
-O produto se organiza em dois aplicativos sobre uma base comum, com necessidades diferentes o bastante para serem tratados como produtos distintos:
+O produto é um aplicativo só, com dois perfis. Cada conta tem um perfil, escolhido no cadastro e fixo: quem quiser usar o outro lado cria outra conta, com outro e-mail. As necessidades dos dois perfis são diferentes o bastante para que cada um veja só as próprias telas:
 
-• Aplicativo do Profissional, em iOS, Android e web. Leve, tolerante a sinal ruim, com leitura offline dos turnos confirmados e notificação confiável.
+• Perfil de profissional, em iOS, Android e web. Leve, tolerante a sinal ruim, com leitura offline dos turnos confirmados e notificação confiável.
 
-• Aplicativo do Estabelecimento, em iOS, Android e web, cobrindo os dois contextos: publicação sob estresse no celular e planejamento de escala no computador. Na versão web fica o Painel do gestor, para acompanhar vagas, contratados e turnos; o alerta de vaga vazia e a confirmação de check-in manual também existem no celular.
+• Perfil de contratante, em iOS, Android e web, cobrindo os dois contextos: publicação sob estresse no celular e planejamento de escala no computador. Na versão web fica o Painel do gestor, para acompanhar vagas, contratados e turnos; o alerta de vaga vazia e a confirmação de check-in manual também existem no celular.
 
 Em relação ao ecossistema existente, o Frila não tenta eliminar o WhatsApp do fluxo: depois da confirmação, o contato entre as partes pode acontecer por WhatsApp ou e-mail, porque é onde as pessoas já estão. O que o produto substitui é a etapa anterior, a de encontrar alguém e decidir confiar nele, que hoje acontece sem nenhum registro e sem nenhum sinal verificável.
 
-As dependências externas previstas são o Supabase como backend (Postgres com PostGIS, autenticação e funções de servidor), o FCM para notificação push nos dois sistemas (no iOS, a entrega passa pelo APNs) e serviços de geolocalização e mapa. Os aplicativos são nativos: Swift e SwiftUI no iOS, Kotlin no Android. As regras que precisam valer igual nas três plataformas, como quem recebe a vaga, a confirmação sem duplicidade e o check-in, ficam no backend e são escritas uma vez. O pagamento fica fora do sistema por decisão de escopo, e não por limitação técnica.
+As dependências externas previstas são o Supabase como backend (Postgres com PostGIS, autenticação por código no e-mail e funções de servidor), o FCM para notificação push nos dois sistemas (no iOS, a entrega passa pelo APNs) e serviços de geolocalização e mapa. Os aplicativos são nativos: Swift e SwiftUI no iOS, Kotlin no Android. As regras que precisam valer igual nas três plataformas, como quem recebe a vaga, a confirmação sem duplicidade e o check-in, ficam no backend e são escritas uma vez. O pagamento fica fora do sistema por decisão de escopo, e não por limitação técnica.
 
 4.2 Resumo das Capacidades
 
@@ -1352,7 +1366,7 @@ REC11
 
 Alerta de vaga vazia e Painel do gestor
 
-O contratante recebe um alerta quando a vaga segue vazia a 3 horas do início, com antecedência ajustável na publicação. Na versão web do app do estabelecimento, o gestor acompanha vagas, contratados e turnos, e confirma check-ins manuais.
+O contratante recebe um alerta quando a vaga segue vazia a 3 horas do início, com antecedência ajustável na publicação. Na versão web, no perfil de contratante, o gestor acompanha vagas, contratados e turnos, e confirma check-ins manuais.
 
 Alta
 
@@ -1526,9 +1540,9 @@ Status
 
 Nome de exibição (App Store / Play)
 
-“Frila”. O nome nomeia a unidade de trabalho, o turno avulso, e não o setor, o que o mantém válido em qualquer expansão de escopo ou de país. Convenção prevista para diferenciar os dois públicos nas lojas: “Frila Profissionais” e “Frila Estabelecimentos”.
+“Frila”. O nome nomeia a unidade de trabalho, o turno avulso, e não o setor, o que o mantém válido em qualquer expansão de escopo ou de país. É um app só, com uma ficha em cada loja; o perfil, de profissional ou de contratante, é escolhido dentro do app, no cadastro.
 
-Definido para a marca; separação por público pendente
+Definido: um app só, com uma ficha por loja
 
 Ícone do app
 

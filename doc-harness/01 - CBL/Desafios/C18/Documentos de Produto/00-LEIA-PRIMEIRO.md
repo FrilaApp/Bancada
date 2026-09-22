@@ -44,7 +44,7 @@ O conjunto tem duas camadas. Os cinco arquivos numerados são a fonte detalhada,
 | `00-LEIA-PRIMEIRO.md` | A tese e o estado do projeto |
 | `01-O-PROBLEMA.md` | O problema do contratante e do profissional, separando dado de hipótese |
 | `02-O-NEGOCIO.md` | O que é o Frila, para quem, e como funciona ponta a ponta |
-| `03-ESPECIFICACAO-DO-PRODUTO.md` | Os dois apps, os fluxos principais e os pilares da experiência |
+| `03-ESPECIFICACAO-DO-PRODUTO.md` | O app e seus dois perfis, os fluxos principais e os pilares da experiência |
 | `04-MERCADO-E-CONCORRENCIA.md` | Tamanho de mercado, concorrentes e por que o WhatsApp ainda domina |
 
 As duas camadas dizem a mesma coisa. Quando divergirem, a camada detalhada é a fonte da verdade, porque é onde cada número carrega sua marca de origem.

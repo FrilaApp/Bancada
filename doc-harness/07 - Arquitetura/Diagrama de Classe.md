@@ -82,6 +82,7 @@ enum EstadoVaga: String, Codable, Sendable { case publicada, preenchida, encerra
 enum EstadoPosicao: String, Codable, Sendable { case aberta, confirmada, cumprida, cancelada }
 enum EstadoCandidatura: String, Codable, Sendable { case pendente, aceita, recusada, retirada, expirada }
 enum EstadoEntrega: String, Codable, Sendable { case pendente, enviada, entregue, falhou }
+enum PerfilConta: String, Codable, Sendable { case profissional, contratante }
 enum PapelMembro: String, Codable, Sendable { case administrador, operador }
 enum TipoRegistro: String, Codable, Sendable { case geolocalizado, manual }
 enum Verificacao: String, Codable, Sendable { case pendente, verificado, naoVerificado = "nao_verificado" }
@@ -219,9 +220,11 @@ Uma nota sobre o check-in carregar a data e a distância: o que vale é o **mome
 
 `validar()` em `PublicarVagaViewModel` é RN02 no ponto mais barato: a tela recusa antes da rede, inclusive o modo seleção para vaga que começa em menos de 24 horas — `Vaga.aceitaModoSelecao()` (RN24). Mas a mesma regra é reafirmada no domínio e no `NOT NULL` do banco — três camadas, de propósito. A da tela existe para dar mensagem boa; a do banco existe para estar certa.
 
-`AcompanhamentoViewModel` substitui o antigo `PainelOperacaoViewModel`: orquestra, no app do Estabelecimento, as vagas em alerta (`emAlerta: [Posicao]`) e a confirmação de check-in manual (`checkinsPendentes: [Turno]`), com `carregar() async` e `confirmarCheckin(_: Turno) async`. O Painel do gestor, com vagas, contratados e turnos, é da versão web (B09); não existe painel de operação do Frila.
+`AcompanhamentoViewModel` substitui o antigo `PainelOperacaoViewModel`: orquestra, no perfil de contratante, as vagas em alerta (`emAlerta: [Posicao]`) e a confirmação de check-in manual (`checkinsPendentes: [Turno]`), com `carregar() async` e `confirmarCheckin(_: Turno) async`. O Painel do gestor, com vagas, contratados e turnos, é da versão web (B09); não existe painel de operação do Frila.
 
 `SessaoUsuario` guarda o token **fora de si**: a referência vai para o Keychain (RNF07) e o objeto carrega só o identificador da credencial. Declarar `token: Token` como propriedade convida o token a aparecer em log de depuração e em dump de estado — e RN15 proíbe dado sensível em log.
+
+O perfil da sessão também é fixo: `perfil: PerfilConta`, com `profissional` ou `contratante`, gravado no cadastro (RN25, 22/09). Não existe `trocarPerfil`: quem quiser o outro lado entra com outra conta, de outro e-mail, e cada conta vê só as telas do próprio perfil.
 
 ---
 
@@ -255,8 +258,8 @@ Os casos que precisam existir desde o começo, porque cobrem regra cuja violaç�
 
 | Requisito | Classe responsável |
 |---|---|
-| RF03 funções, ponto base e disponibilidade | `Profissional` (com `disponivelAgoraAte`), `Disponibilidade` |
-| RF04 publicar vaga em 60s | `PublicarVagaViewModel`, `Estabelecimento.publicar`, `Inclusos` |
+| RF03 funções, ponto base e disponibilidade | `Profissional`, `Disponibilidade` (grade semanal) |
+| RF04 publicar vaga com poucos campos | `PublicarVagaViewModel`, `Estabelecimento.publicar`, `Inclusos` |
 | RF06 notificação com teto e agrupamento | `DespachoService`, `NotificacaoService.agrupar(_:para:)`, `ElegibilidadeSpec` — especificação do que roda no backend |
 | RF07 lista de vagas do DF | `FeedVagasViewModel`, `VagaRepositorio.abertas(ordenadasPorDistanciaDe:filtro:)` |
 | RF08 candidatura sem formulário | `FeedVagasViewModel.candidatar` |
