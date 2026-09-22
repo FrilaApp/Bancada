@@ -7,7 +7,7 @@ desafio: C18
 data: 2026-09-22
 status: revisao
 origem: "01 - CBL/Desafios/C18/Documentos de Produto/Frila_Historias_de_Usuario_e_Backlog.pages"
-hash_origem: 04c2acb5ec310a7cc2e21e8b2aed9ef3fb4bb6ceaf37a4a348957cd32f950286
+hash_origem: bae0fe61db1231ecaeb4cb0d516e3058b20fa2725fe2b2f193659bb4fc1425a3
 tags: [documento, user-stories, backlog, moscow, produto, frila]
 ---
 
@@ -26,7 +26,7 @@ tags: [documento, user-stories, backlog, moscow, produto, frila]
 | Versão | Data | Autor(es) | Descrição da Mudança |
 |---|---|---|---|
 | v1.0.0 | 17/09/2026 | Júlia Clovandi & Fabrício Tosta | Criação do Backlog do Produto com 25 Histórias de Usuário priorizadas via MoSCoW e especificadas em formato BDD (INVEST), derivadas da Especificação de Requisitos v1.0.0 e do Documento de Visão v1.0.0 para orientar o protótipo de baixa fidelidade e o MVP. |
-| v1.1.0 | 22/09/2026 | Cauê Carneiro | Aplica as respostas do quadro 03 de pendências (21 e 22/09), alinhado à Especificação de Requisitos v1.2.0 e ao Documento de Visão v1.1.0: despacho por proximidade (até 15 km), sem raio configurável e sem levas, com teto de notificações; check-in geolocalizado a 200 m com confirmação manual; avaliação só com presença verificada; aval herdado retirado (US19); persona interna retirada, com Painel do gestor na web e Equipe Frila só por e-mail; modo seleção com fechamento automático; novas US26 (denúncia e bloqueio) e US27 (explicação do despacho); referências de RF e RN corrigidas. |
+| v1.1.0 | 22/09/2026 | Cauê Carneiro | Aplica as respostas do quadro 03 de pendências (21 e 22/09), alinhado à Especificação de Requisitos v1.2.0 e ao Documento de Visão v1.1.0: despacho por proximidade (até 15 km), sem raio configurável e sem levas, com teto de notificações; check-in geolocalizado a 200 m com confirmação manual; avaliação só com presença verificada; aval herdado retirado (US19); persona interna retirada, com Painel do gestor na web e Equipe Frila só por e-mail; modo seleção com fechamento automático; novas US26 (denúncia e bloqueio) e US27 (explicação do despacho); referências de RF e RN corrigidas; metas de tempo de publicação e de número de toques retiradas até haver medição no piloto. |
 
 ## Glossário e Metodologia
 
@@ -61,9 +61,9 @@ Todas as histórias de usuário foram estruturadas segundo o acrônimo INVEST:
 
 | Persona | Perfil Operacional | Dor Central | Ganho Esperado no Frila |
 |---|---|---|---|
-| **Marcos<br>(Gerente de Salão)** | Contratante de Food Service em bar/restaurante de alto giro (40 turnos/mês). | Garçom faltou na sexta às 18h; WhatsApp é caótico e grupos não dão garantia de comparecimento. | Publicar turno em < 60s, saber antes de confirmar se a pessoa costuma aparecer e ser avisado se a vaga seguir vazia perto do horário. |
+| **Marcos<br>(Gerente de Salão)** | Contratante de Food Service em bar/restaurante de alto giro (40 turnos/mês). | Garçom faltou na sexta às 18h; WhatsApp é caótico e grupos não dão garantia de comparecimento. | Publicar turno com poucos campos, saber antes de confirmar se a pessoa costuma aparecer e ser avisado se a vaga seguir vazia perto do horário. |
 | **Carla<br>(Produtora de Eventos)** | Contratante de Eventos / Staff em Lote para congressos e festas. | Precisa fechar equipe de 15 pessoas para montagem/bar e prestar contas sem risco fiscal. | Escala em lote e relatório consolidado auditável de presença e valores combinados. |
-| **Lucas<br>(Garçom Freelancer)** | Profissional Operacional Avulso com experiência em salão. | Não fica sabendo das vagas a tempo; cansa de preencher cadastros longos e de levar calote ou pagar taxas. | Notificação direta no bolso com vaga perto de casa, candidatura em 1 toque e o valor integral da diária, sem comissão. |
+| **Lucas<br>(Garçom Freelancer)** | Profissional Operacional Avulso com experiência em salão. | Não fica sabendo das vagas a tempo; cansa de preencher cadastros longos e de levar calote ou pagar taxas. | Notificação direta no bolso com vaga perto de casa, candidatura sem formulário e o valor integral da diária, sem comissão. |
 
 > A persona interna de operação saiu na v1.1.0: o Frila não tem plantão nem operação manual de turnos. Quem acompanha vagas e turnos é o gestor do estabelecimento (Marcos ou Carla), pelo Painel na versão web; a Equipe Frila só responde e-mail.
 
@@ -74,9 +74,9 @@ O backlog do Frila divide-se em 7 Épicos centrais que cobrem a jornada completa
 | Épico | Nome do Épico | Objetivo Primário | Requisitos Atendidos |
 |---|---|---|---|
 | **ÉPICO 1** | Onboarding e Perfil Operacional Enxuto | Garantir entrada atrito zero para o profissional e validação cadastral expressa. | RF01, RF02, RF03, RF21, RF25 |
-| **ÉPICO 2** | Publicação e Gestão de Vagas Expressas | Permitir que o contratante lance uma vaga em menos de 60 segundos ou reutilize templates. | RF04, RF05, RF19 |
+| **ÉPICO 2** | Publicação e Gestão de Vagas Expressas | Permitir que o contratante lance uma vaga com poucos campos ou reutilize vagas anteriores. | RF04, RF05, RF19 |
 | **ÉPICO 3** | Motor de Despacho Ativo e Matching | Notificar a vaga, de uma vez, a quem tem a função, está disponível e está a até 15 km, com teto de notificações, listar todas as vagas do DF e explicar o critério ao profissional. | RF06, RF07, RF18, RF27 |
-| **ÉPICO 4** | Candidatura e Confirmação Instantânea | Possibilitar aceite em 1 toque no modo urgência e liberação imediata de contato direto. | RF08, RF09, RF10, RF11 |
+| **ÉPICO 4** | Candidatura e Confirmação Instantânea | Possibilitar candidatura sem formulário, confirmação automática no modo urgência e liberação imediata de contato direto. | RF08, RF09, RF10, RF11 |
 | **ÉPICO 5** | Execução do Turno, Check-in e Contingência | Mitigar no-show com lembretes pré-turno, check-in geolocalizado e reabertura rápida. | RF12, RF13, RF14 |
 | **ÉPICO 6** | Confiança e Reputação Binária | Gerar reputação justa pós-turno ('Chamaria de novo?') com denominador visível, só entre quem trabalhou junto e com presença verificada. | RF15, RF16 |
 | **ÉPICO 7** | Auditoria, Prestação de Contas e Suporte | Oferecer relatório consolidado auditável, alerta de vaga vazia e Painel do gestor, suporte por e-mail, denúncia e bloqueio, e respeito total à LGPD. | RF20, RF22, RF23, RF24, RF26 |
@@ -169,13 +169,13 @@ A US19 foi retirada na v1.1.0 e o número fica reservado. As US26 e US27 entrara
 
 ### ÉPICO 2: Publicação e Gestão de Vagas Expressas
 
-#### US04: Publicação de Turno Avulso em Menos de 60 Segundos
+#### US04: Publicação de Turno Avulso com Poucos Campos
 - **Persona**: Marcos (Gerente de Bar/Restaurante)
 - **RF / RN**: RF04, RN02, RN03, RN04, RN24 | **Prioridade**: MUST HAVE | **Pontos**: 5
 - **Narrativa**:
   > **Como** gerente com equipe desfalcada na hora do pico,  
   > **quero** publicar um turno avulso preenchendo só função, data, horário de início/fim, endereço, valor líquido da diária, número de posições, o que está incluso (refeição, transporte e material próprio) e quem recebe o profissional no local,  
-  > **para que** a vaga entre em despacho imediatamente sem exigir mais de 60 segundos de digitação no celular.  
+  > **para que** a vaga entre em despacho imediatamente, sem digitação longa no celular.  
 - **Critérios de Aceitação (BDD)**:
   - **Cenário 1: Publicação expressa com parâmetros válidos**  
     *Dado que* o contratante preenche data, horário, endereço, função 'Garçom', valor de R$ 140,00, o que está incluso e o nome de quem recebe no local,  
@@ -192,7 +192,7 @@ A US19 foi retirada na v1.1.0 e o número fica reservado. As US26 e US27 entrara
 
 ---
 
-#### US05: Republicação de Vaga Anterior em 1 Toque
+#### US05: Republicação de Vaga Anterior
 - **Persona**: Marcos (Gerente de Bar/Restaurante)
 - **RF / RN**: RF05 | **Prioridade**: MUST HAVE | **Pontos**: 3
 - **Narrativa**:
@@ -310,12 +310,12 @@ A US19 foi retirada na v1.1.0 e o número fica reservado. As US26 e US27 entrara
 
 ### ÉPICO 4: Candidatura e Confirmação Instantânea
 
-#### US10: Candidatura em Um Toque (Sem Currículo nem Chat)
+#### US10: Candidatura Direta (Sem Currículo nem Chat)
 - **Persona**: Lucas (Profissional Freelancer)
 - **RF / RN**: RF08, RN03 | **Prioridade**: MUST HAVE | **Pontos**: 3
 - **Narrativa**:
   > **Como** profissional com o tempo corrido no celular,  
-  > **quero** me candidatar tocando em apenas um botão na notificação ou no feed,  
+  > **quero** me candidatar direto da notificação ou do feed, sem formulário,  
   > para assegurar a oportunidade sem precisar digitar mensagens ou enviar currículo em PDF.  
 - **Critérios de Aceitação (BDD)**:
   - **Cenário 1: Aceite instantâneo via notificação push**  
@@ -630,7 +630,7 @@ A priorização MoSCoW estabelece o cronograma de engenharia e design para as en
 
 | Prioridade MoSCoW | Critério Estratégico | Histórias de Usuário Incluídas |
 |---|---|---|
-| **MUST HAVE<br>(MVP / 28/09)** | Indispensável para viabilizar a jornada ponta a ponta: publicação < 60s, notificação por proximidade com teto, aceite 1 toque, check-in geolocalizado, avaliação binária, alerta de vaga vazia e as exigências da App Store (denúncia e bloqueio, exclusão de conta). A contestação entra junto porque a RN13 a exige sempre que houver suspensão. | US01, US02, US03, US04, US05, US07, US08, US10, US11, US13, US14, US15, US16, US17, US18, US21, US23, US25, US26<br>(19 Histórias · 87 Pontos) |
+| **MUST HAVE<br>(MVP / 28/09)** | Indispensável para viabilizar a jornada ponta a ponta: publicação com poucos campos, notificação por proximidade com teto, candidatura sem formulário, check-in geolocalizado, avaliação binária, alerta de vaga vazia e as exigências da App Store (denúncia e bloqueio, exclusão de conta). A contestação entra junto porque a RN13 a exige sempre que houver suspensão. | US01, US02, US03, US04, US05, US07, US08, US10, US11, US13, US14, US15, US16, US17, US18, US21, US23, US25, US26<br>(19 Histórias · 87 Pontos) |
 | **SHOULD HAVE<br>(Versão 1.1)** | Alto valor operacional para escala e retenção, implementadas logo após a estabilização do fluxo principal. | US06 (Escala em lote), US09 (Equipe de confiança), US12 (Modo seleção), US20 (Relatório consolidado), US22 (Suporte por e-mail), US27 (Explicação do despacho)<br>(6 Histórias · 31 Pontos) |
 | **COULD HAVE<br>(Versão 1.2)** | Melhorias de conveniência que agregam valor contínuo sem bloquear a validação da tese inicial. | US24 (Múltiplos membros do estabelecimento)<br>(1 História · 3 Pontos) |
 | **WON'T HAVE<br>(Fora de Escopo)** | Recursos rejeitados deliberadamente para mitigar riscos trabalhistas, fiscais e fricção operacional. | • Custódia/processamento in-app de pagamento (RN09)<br>• Desconto de comissão sobre o valor do turno (RN01)<br>• Chat interno (substituído por WhatsApp)<br>• Avaliação de 1 a 5 estrelas<br>• Contratação CLT ou processo seletivo formal<br>• Aval de quem trabalhou fora da plataforma (US19 retirada)<br>• Plantão, atendimento ao vivo ou operação manual de turnos pelo Frila<br>• Vaga remota no MVP (entra depois do MVP) |
@@ -643,7 +643,7 @@ Mapeamento direto entre as Histórias de Usuário e os componentes arquiteturais
 |---|---|---|
 | **PublicarVagaViewModel** | Orquestra tela de publicação, validação RN02 e templates de repetição rápida. | US04, US05, US06 |
 | **DespachoService / ElegibilidadeSpec** | Seleção por função, disponibilidade e distância de até 15 km, mais a equipe de confiança, com teto e agrupamento de notificações (RN23). A regra roda no backend e vale igual para iOS, Android e web. | US02, US07, US09, US27 |
-| **FeedVagasViewModel** | Lista de todas as vagas do DF ordenada por distância, com filtros, e submissão de aceite atômico com 1 toque. | US08, US10, US11 |
+| **FeedVagasViewModel** | Lista de todas as vagas do DF ordenada por distância, com filtros, e envio da candidatura, confirmada de forma atômica no modo urgência. | US08, US10, US11 |
 | **TurnoManager / LocationService** | Check-in/out geolocalizado a até 200 m com check-in manual confirmado, lembretes 24 h e 3 h antes, alertas de atraso e de fim de turno, e reabertura. | US14, US15, US16 |
 | **ReputacaoService** | Cálculo da taxa de comparecimento (presença ÷ confirmados) e razão binária ('Chamaria de novo?'), só com presença verificada. | US17, US18 |
 | **RelatorioService** | Compilação e exportação de dados consolidados auditáveis (RN17). | US20 |

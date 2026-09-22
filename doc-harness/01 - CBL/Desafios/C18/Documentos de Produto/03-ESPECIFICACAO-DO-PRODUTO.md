@@ -23,7 +23,7 @@ São duas interfaces com necessidades diferentes o suficiente para serem tratada
 **App do Profissional** — mobile + web. Contexto de uso: na rua, no intervalo, em Android de entrada majoritariamente, com sinal ruim e plano de dados limitado. Precisa ser leve, rápido, funcionar offline para leitura, e notificar com confiabilidade.
 
 **App do Estabelecimento** — mobile + web, com dois contextos de uso bem diferentes:
-- **No celular, sob estresse.** São 16h de sexta, faltou gente, o maître está no salão. Publicar uma vaga precisa levar menos de 60 segundos.
+- **No celular, sob estresse.** São 16h de sexta, faltou gente, o maître está no salão. Publicar uma vaga precisa ser rápido, com poucos campos.
 - **No computador, planejando.** O operador de buffet monta a escala de uma formatura de 40 pessoas duas semanas antes — trabalho de mesa, com teclado e tela grande.
 
 **Painel do gestor** — dentro da versão web do App do Estabelecimento. É o dashboard em que o gestor acompanha vagas, candidatos, contratados, check-ins e turnos. Não é ferramenta interna do Frila: não existe operação manual nem plantão da equipe Frila. O alerta de vaga ainda vazia e a confirmação de check-in manual também chegam no app, pelo celular.
@@ -34,13 +34,13 @@ São duas interfaces com necessidades diferentes o suficiente para serem tratada
 
 ## Fluxos principais
 
-**Publicar vaga.** O estabelecimento publica um turno — função, data, janela, endereço, valor, número de posições, o que está incluso (refeição, transporte, material próprio) e quem recebe no local — em menos de 60 segundos. Traje, rateio dos 10% e observações são opcionais. Poucos campos, porque quem publica está no meio de um problema, não sentado num computador.
+**Publicar vaga.** O estabelecimento publica um turno — função, data, janela, endereço, valor, número de posições, o que está incluso (refeição, transporte, material próprio) e quem recebe no local — com poucos campos. Traje, rateio dos 10% e observações são opcionais. Poucos campos, porque quem publica está no meio de um problema, não sentado num computador.
 
 **Despacho ativo e busca de vagas.** A vaga não fica num mural esperando ser encontrada — ela é notificada ativamente, de uma vez, aos profissionais elegíveis: têm a função, estão disponíveis no horário e estão a até 15 km do local (a equipe de confiança do estabelecimento recebe mesmo mais longe). Cada profissional recebe no máximo uma notificação a cada 30 minutos, com vagas próximas no tempo agrupadas. O profissional também pode navegar pela lista com todas as vagas do DF, das mais próximas para as mais distantes, mas no caso urgente quem só procura chega tarde — o despacho ativo decide a maioria dos casos. É o núcleo do produto: um marketplace que manda tudo para todo mundo treina o usuário a ignorar notificação, e aí morre. No perfil, a tela "Por que recebo vagas" explica esses critérios e permite pedir revisão.
 
 É também a aposta que separa o Frila dos concorrentes. O padrão que mais se repete em `04-MERCADO-E-CONCORRENCIA.md` é a distância entre cadastro e liquidez: a Freela Serviços declara 198 mil profissionais cadastrados e 203 contratações concluídas. Esperar que a pessoa certa encontre a vaga sozinha é o que produz esse número.
 
-**Candidatura.** Um toque. Sem carta de apresentação, sem processo seletivo longo, sem negociação de valor — o valor já está no anúncio. No modo urgência, o primeiro aprovado leva; para eventos com mais de 24 horas de antecedência, o estabelecimento escolhe entre candidatos, e a vaga fecha sozinha 24 horas antes se ninguém for escolhido.
+**Candidatura.** Direta, sem formulário. Sem carta de apresentação, sem processo seletivo longo, sem negociação de valor — o valor já está no anúncio. No modo urgência, o primeiro aprovado leva; para eventos com mais de 24 horas de antecedência, o estabelecimento escolhe entre candidatos, e a vaga fecha sozinha 24 horas antes se ninguém for escolhido.
 
 **Confirmação.** Os dois lados recebem local, horário, função, valor e um contato, visível até 7 dias depois do fim do turno — a partir daqui existe compromisso registrado.
 
@@ -54,7 +54,7 @@ São duas interfaces com necessidades diferentes o suficiente para serem tratada
 
 ## Pilares da experiência
 
-**Simplicidade.** Vaga publicada em menos de 60 segundos, poucos campos, candidatura em um toque. Cada fricção a mais é um turno que não vai ser preenchido a tempo.
+**Simplicidade.** Vaga publicada com poucos campos e candidatura sem formulário. Cada fricção a mais é um turno que não vai ser preenchido a tempo.
 
 **Confiança.** Reputação binária ("chamaria de novo?"), taxa de comparecimento como sinal objetivo, e avaliação nos dois sentidos — o profissional também avalia o estabelecimento. É o que substitui o "eu já conheço essa pessoa" do WhatsApp por algo que funciona entre desconhecidos.
 

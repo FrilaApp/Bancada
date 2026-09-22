@@ -1,8 +1,8 @@
 ---
 tipo: documento-derivado
 origem: "doc-harness/01 - CBL/Desafios/C18/Documentos de Produto/Frila_Documento_de_Requisitos.docx"
-hash_origem: ac3fa424e992f911944f2371ec8086942b78fcd0a665a16d62d3b71741c5f803
-exportado_em: 2026-09-22T02:47
+hash_origem: e37a259fd41ac18c92fe869534e55d17cd13125855a039921fa842fd32f3b935
+exportado_em: 2026-09-22T03:09
 exportado_por: Cauê Carneiro <cauecarneiroc@gmail.com>
 conversao: ok
 tags: [documento]
@@ -70,7 +70,7 @@ v1.2.0
 
 Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva
 
-Aplica as respostas do quadro 03 de pendências (21 e 22/09): plataforma horizontal e sem campanha política; despacho por proximidade (até 15 km), sem raio configurável e sem levas, com teto de notificações (RN23); check-in geolocalizado a 200 m com confirmação manual (RN22); avaliação só com presença verificada e nova definição de taxa de comparecimento; aval herdado retirado (RF17 e UC12); Painel como feature web do gestor e Equipe Frila só por e-mail; denúncia e bloqueio (RF26 e UC17); explicação do despacho (RF27); turnos sobrepostos (RN21) e modo seleção (RN24) viram regra; stack decidida (Swift/SwiftUI, Kotlin, Supabase, FCM, SwiftData); entidade Dispositivo e contrato da API em Documentos/API/openapi.yaml.
+Aplica as respostas do quadro 03 de pendências (21 e 22/09): plataforma horizontal e sem campanha política; despacho por proximidade (até 15 km), sem raio configurável e sem levas, com teto de notificações (RN23); check-in geolocalizado a 200 m com confirmação manual (RN22); avaliação só com presença verificada e nova definição de taxa de comparecimento; aval herdado retirado (RF17 e UC12); Painel como feature web do gestor e Equipe Frila só por e-mail; denúncia e bloqueio (RF26 e UC17); explicação do despacho (RF27); turnos sobrepostos (RN21) e modo seleção (RN24) viram regra; stack decidida (Swift/SwiftUI, Kotlin, Supabase, FCM, SwiftData); entidade Dispositivo e contrato da API em Documentos/API/openapi.yaml; metas de tempo de publicação e de número de toques retiradas até haver medição no piloto.
 
 Glossário
 
@@ -262,7 +262,7 @@ RN03
 
 O valor NÃO DEVE ser negociável dentro do fluxo de candidatura: o que está no anúncio é o que vale.
 
-Candidatura em um toque é o que torna possível preencher um turno em minutos. Negociação reintroduz o funil que o produto existe para eliminar.
+Candidatura sem formulário e sem negociação é o que torna possível preencher um turno a tempo. Negociação reintroduz o funil que o produto existe para eliminar.
 
 RN04
 
@@ -408,7 +408,7 @@ O sistema deve permitir que o profissional se cadastre e autentique com dados m�
 
 Alta
 
-Um profissional conclui o cadastro e fica apto a receber despacho em menos de 3 minutos, sem envio de documento.
+Um profissional conclui o cadastro e fica apto a receber notificações de vaga sem enviar documento.
 
 RF02
 
@@ -432,7 +432,7 @@ O sistema deve permitir que o contratante publique uma vaga com os campos obriga
 
 Alta
 
-O fluxo completo de publicação é concluído em menos de 60 segundos no celular; o modo de preenchimento e a antecedência do alerta de vaga vazia (padrão de 3 horas) são escolhidos na publicação; a vaga é rejeitada com mensagem clara se algum campo obrigatório de RN02 faltar.
+A publicação pede só os campos de RN02, com o local pré-preenchido pelo endereço do estabelecimento; o modo de preenchimento e a antecedência do alerta de vaga vazia (padrão de 3 horas) são escolhidos na publicação; a vaga é rejeitada com mensagem clara se algum campo obrigatório de RN02 faltar.
 
 RF05
 
@@ -440,7 +440,7 @@ O sistema deve permitir republicar uma vaga a partir de outra já publicada, alt
 
 Média
 
-A republicação de uma vaga recorrente é concluída em menos de 20 segundos.
+A republicação copia todos os campos da vaga de origem e pede só a nova data e o novo horário.
 
 RF06
 
@@ -460,11 +460,11 @@ A lista traz todas as vagas abertas, das mais próximas para as mais distantes; 
 
 RF08
 
-O sistema deve permitir que o profissional se candidate a uma posição em um único toque a partir da notificação ou da lista.
+O sistema deve permitir que o profissional se candidate a uma vaga direto da notificação ou da lista, sem formulário.
 
 Alta
 
-A candidatura é concluída em no máximo 3 toques contados desde a notificação, sem formulário e sem negociação de valor.
+A candidatura sai da notificação ou da lista sem formulário, sem carta de apresentação e sem negociação de valor.
 
 RF09
 
@@ -480,7 +480,7 @@ O sistema deve confirmar a posição e notificar os dois lados com função, loc
 
 Alta
 
-Ambos recebem a confirmação em até 60 segundos; a posição some das vagas abertas; nenhuma posição é confirmada para dois profissionais (RN19).
+A confirmação é enviada aos dois lados pelo provedor de push, na meta de RNF02; a posição some das vagas abertas; nenhuma posição é confirmada para dois profissionais (RN19).
 
 RF11
 
@@ -858,7 +858,7 @@ Critério de Aceitação
 
 RNF01
 
-As telas principais devem carregar em menos de 2 segundos em conexão 4G, e o fluxo completo de publicação de vaga deve ser concluído em menos de 60 segundos.
+As telas principais devem carregar em menos de 2 segundos em conexão 4G.
 
 Desempenho
 
@@ -926,7 +926,7 @@ O produto deve ser utilizável sem treinamento por público não familiarizado c
 
 Usabilidade
 
-Em teste com usuários reais, um profissional de primeira viagem conclui uma candidatura em até 3 toques a partir da notificação, sem ajuda, em pelo menos 8 de 10 tentativas.
+Em teste com usuários reais, um profissional de primeira viagem conclui uma candidatura e um contratante publica uma vaga, os dois sem ajuda. Metas de tempo e de número de toques só serão definidas depois de medidas no piloto.
 
 RNF10
 
@@ -1284,7 +1284,7 @@ RN02, RN03, RN04, RN18, RN24
 
 Critério de Aceito (BDD)
 
-Dado que sou um contratante autenticado com estabelecimento cadastrado, quando preencho os campos obrigatórios e confirmo, então a vaga é publicada em menos de 60 segundos e a notificação aos profissionais elegíveis é disparada.
+Dado que sou um contratante autenticado com estabelecimento cadastrado, quando preencho os campos obrigatórios e confirmo, então a vaga é publicada e a notificação aos profissionais elegíveis é disparada.
 
 UC02: Despachar vaga aos profissionais elegíveis
 
@@ -1348,7 +1348,7 @@ Fluxo Principal
 
 2. O sistema exibe função, endereço, data, horário, valor, o que está incluso e o perfil do contratante com reputação e denominador.
 
-3. O profissional se candidata com um toque. A tela avisa que, se ele for confirmado, telefone e WhatsApp serão mostrados ao estabelecimento (RN10).
+3. O profissional se candidata, sem formulário. A tela avisa que, se ele for confirmado, telefone e WhatsApp serão mostrados ao estabelecimento (RN10).
 
 4. O sistema registra a candidatura e a submete a UC04.
 
@@ -1372,7 +1372,7 @@ RN03, RN05, RN08, RN10, RN21
 
 Critério de Aceito (BDD)
 
-Dado que recebi a notificação de uma vaga elegível, quando toco em candidatar-me, então a candidatura é registrada em no máximo 3 toques contados desde a notificação, sem formulário e sem negociação de valor.
+Dado que recebi a notificação de uma vaga elegível, quando toco em candidatar-me, então a candidatura é registrada sem formulário e sem negociação de valor.
 
 UC04: Confirmar profissional na posição
 
@@ -1414,7 +1414,7 @@ RN08, RN10, RN19, RN24
 
 Critério de Aceito (BDD)
 
-Dado que há candidaturas para uma posição, quando a confirmação ocorre, então os dois lados recebem a notificação com os dados completos do turno em até 60 segundos, o contato é liberado e a posição deixa de aparecer entre as vagas abertas.
+Dado que há candidaturas para uma posição, quando a confirmação ocorre, então os dois lados recebem a notificação com os dados completos do turno, o contato é liberado e a posição deixa de aparecer entre as vagas abertas.
 
 UC05: Registrar a execução do turno
 
@@ -1624,7 +1624,7 @@ RN01, RN05, RN14, RN15, RN20
 
 Critério de Aceito (BDD)
 
-Dado que tenho 18 anos ou mais, quando informo nome, telefone, e-mail, funções, ponto base e disponibilidade, então fico apto a receber notificações de vaga em menos de 3 minutos, sem enviar documento e sem pagar nada.
+Dado que tenho 18 anos ou mais, quando informo nome, telefone, e-mail, funções, ponto base e disponibilidade, então fico apto a receber notificações de vaga sem enviar documento e sem pagar nada.
 
 UC10: Cadastrar o estabelecimento e gerenciar seus usuários
 
@@ -2430,7 +2430,7 @@ UC03
 
 RF08
 
-Candidatura em um toque
+Candidatura sem formulário
 
 RN03, RN21
 

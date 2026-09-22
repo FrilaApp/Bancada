@@ -10,7 +10,7 @@ tags: [produto, frila]
 
 **Versão 1.0 · setembro/2026**
 
-Frila é uma plataforma para contratar gente por turno avulso. O estabelecimento publica o turno que precisa cobrir, a vaga é enviada para quem está perto e pode aceitar, e a pessoa se candidata com um toque. Depois do turno, os dois respondem se chamariam o outro de novo.
+Frila é uma plataforma para contratar gente por turno avulso. O estabelecimento publica o turno que precisa cobrir, a vaga é enviada para quem está perto e pode aceitar, e a pessoa se candidata sem formulário. Depois do turno, os dois respondem se chamariam o outro de novo.
 
 A estratégia é territorial. Nascer no Distrito Federal e dominar aqui antes de abrir qualquer outra praça: restaurantes, bares, buffets, casas de evento, festas, eventos sociais, serviços domésticos. A plataforma é horizontal: aceita vaga de turno avulso de qualquer setor, e food service e eventos são só o foco da divulgação inicial. Consolidado o DF, o passo seguinte é o resto do Brasil, e só então outros países.
 
@@ -74,11 +74,11 @@ Daí a assimetria que orienta a entrada no mercado. O evento é como se constró
 
 ## Como funciona
 
-**Publicar.** O estabelecimento publica um turno com função, data, hora de início e fim, endereço, valor, número de posições, o que está incluso (refeição, transporte, material próprio) e quem recebe no local. Traje, rateio dos 10% e observações são opcionais. Formato padronizado, poucos campos, publicável em menos de um minuto pelo celular, porque quem publica está no meio de um problema e não sentado num computador.
+**Publicar.** O estabelecimento publica um turno com função, data, hora de início e fim, endereço, valor, número de posições, o que está incluso (refeição, transporte, material próprio) e quem recebe no local. Traje, rateio dos 10% e observações são opcionais. Formato padronizado, poucos campos, publicável pelo celular, porque quem publica está no meio de um problema e não sentado num computador.
 
 **Despacho ativo.** A vaga não fica num mural esperando ser encontrada. Ela é notificada, de uma vez, a quem atende os critérios: tem a função, está disponível naquele horário e está a até 15 km do local. A equipe de confiança do estabelecimento recebe mesmo mais longe. Não há ordem de envio, a notificação não pode ser comprada, e cada profissional recebe no máximo uma a cada 30 minutos, com vagas próximas no tempo agrupadas. O profissional também pode navegar pela lista com todas as vagas do DF, das mais próximas para as mais distantes, mas em urgência quem só procura chega tarde.
 
-**Candidatura.** Um toque. Sem carta de apresentação, sem processo seletivo, sem negociação: o valor já está no anúncio. No modo de urgência, o primeiro aprovado leva. Para eventos com mais de 24 horas de antecedência, o estabelecimento vê quem se candidatou e escolhe; se não escolher até 24 horas antes, a vaga fecha sozinha.
+**Candidatura.** Direta, sem formulário. Sem carta de apresentação, sem processo seletivo, sem negociação: o valor já está no anúncio. No modo de urgência, o primeiro aprovado leva. Para eventos com mais de 24 horas de antecedência, o estabelecimento vê quem se candidatou e escolhe; se não escolher até 24 horas antes, a vaga fecha sozinha.
 
 **Confirmação.** Os dois lados recebem local, horário, função, valor e um contato, visível até 7 dias depois do fim do turno. A partir daqui existe compromisso registrado, e eles podem falar por e-mail ou WhatsApp.
 
@@ -102,7 +102,7 @@ O **painel do gestor** fica na versão web do app do estabelecimento: é onde o 
 
 ### Os pilares
 
-**Simplicidade.** Vaga publicada em menos de 60 segundos, poucos campos, candidatura em um toque. Cada fricção a mais é um turno que não é preenchido a tempo.
+**Simplicidade.** Vaga publicada com poucos campos e candidatura sem formulário. Cada fricção a mais é um turno que não é preenchido a tempo.
 
 **Confiança.** Reputação binária, taxa de comparecimento como sinal objetivo, avaliação nos dois sentidos, denúncia e bloqueio. É o que substitui o "eu já conheço essa pessoa" por algo que funciona entre desconhecidos.
 

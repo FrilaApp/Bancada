@@ -281,7 +281,7 @@ CREATE TABLE posicao (
 
 As colunas `NOT NULL` de `vaga` — função, início, fim, endereço, valor, número de posições, o que está incluso, quem recebe no local, e o estabelecimento que publica — são RN02 escrita em SQL. `posicoes` é o número pedido na publicação; a função que publica cria uma linha de `posicao` por unidade. O Documento de Requisitos justifica a regra com avaliações de concorrentes em que o profissional chega ao local "sem muita informação"; aqui, uma vaga incompleta simplesmente não entra. Traje, rateio e observações são opcionais, e a lista pode ser ajustada depois.
 
-Os três campos do que está incluso são `boolean NOT NULL`, e não texto: marcar sim ou não é um toque cada, cabe nos 60 segundos da publicação e deixa duas vagas do mesmo valor comparáveis — com e sem refeição não são a mesma diária.
+Os três campos do que está incluso são `boolean NOT NULL`, e não texto: marcar sim ou não é um toque cada, mantém a publicação curta e deixa duas vagas do mesmo valor comparáveis — com e sem refeição não são a mesma diária.
 
 `alerta_antecedencia` é a janela crítica de cada vaga: quanto tempo antes do início, com a posição ainda vaga, o contratante recebe o alerta por notificação. O padrão é 3 horas, e o contratante muda na publicação (B18).
 

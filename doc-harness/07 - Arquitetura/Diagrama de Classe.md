@@ -259,7 +259,7 @@ Os casos que precisam existir desde o começo, porque cobrem regra cuja violaç�
 | RF04 publicar vaga em 60s | `PublicarVagaViewModel`, `Estabelecimento.publicar`, `Inclusos` |
 | RF06 notificação com teto e agrupamento | `DespachoService`, `NotificacaoService.agrupar(_:para:)`, `ElegibilidadeSpec` — especificação do que roda no backend |
 | RF07 lista de vagas do DF | `FeedVagasViewModel`, `VagaRepositorio.abertas(ordenadasPorDistanciaDe:filtro:)` |
-| RF08 candidatura em um toque | `FeedVagasViewModel.candidatar` |
+| RF08 candidatura sem formulário | `FeedVagasViewModel.candidatar` |
 | RF09 urgência e seleção | `ModoPreenchimento`, `Vaga.aceitaModoSelecao`, `Posicao.confirmar` |
 | RF10 confirmação sem duplicidade | `ResultadoConfirmacao`, `VagaRepositorio.confirmar` |
 | RF13 check-in e check-out | `Turno.registrarCheckin`, `Turno.registrarCheckout`, `Turno.confirmarCheckinManual`, `RegistroDePresenca` |

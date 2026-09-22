@@ -1,8 +1,8 @@
 ---
 tipo: documento-derivado
 origem: "doc-harness/01 - CBL/Desafios/C18/Documentos de Produto/Frila_Documento_de_Visao.docx"
-hash_origem: d20ca77cfdb1848db6d251e36d0ce59baec6f3c7b5667377f8c6546358171218
-exportado_em: 2026-09-22T02:33
+hash_origem: 817744ec7bb4faed4682ba3ec1054517e3a906d4642b79583a1f467c373190ee
+exportado_em: 2026-09-22T03:09
 exportado_por: Cauê Carneiro <cauecarneiroc@gmail.com>
 conversao: ok
 tags: [documento]
@@ -62,7 +62,7 @@ v1.1.0
 
 Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva
 
-Aplica as respostas do quadro 03 de pendências (21 e 22/09): plataforma horizontal e sem campanha política; despacho por proximidade (até 15 km), sem raio configurável e sem levas, com teto de notificações; check-in geolocalizado a 200 m com confirmação manual; avaliação só com presença verificada e nova definição de taxa de comparecimento; aval herdado retirado; Painel como feature web do gestor e Equipe Frila só por e-mail; denúncia e bloqueio; stack decidida (Swift/SwiftUI, Kotlin, Supabase, FCM, SwiftData).
+Aplica as respostas do quadro 03 de pendências (21 e 22/09): plataforma horizontal e sem campanha política; despacho por proximidade (até 15 km), sem raio configurável e sem levas, com teto de notificações; check-in geolocalizado a 200 m com confirmação manual; avaliação só com presença verificada e nova definição de taxa de comparecimento; aval herdado retirado; Painel como feature web do gestor e Equipe Frila só por e-mail; denúncia e bloqueio; stack decidida (Swift/SwiftUI, Kotlin, Supabase, FCM, SwiftData); metas de tempo de publicação e de número de toques retiradas até haver medição no piloto.
 
 Glossário
 
@@ -168,15 +168,15 @@ Uma ressalva de leitura vale para o documento inteiro. O Frila está em TRL 2: c
 
 1.2 Escopo
 
-Frila é uma plataforma horizontal de contratação por turno avulso, para qualquer setor. O contratante publica o turno que precisa cobrir, com função, data, janela de horário, local e valor, e a vaga é enviada ativamente para os profissionais próximos que podem aceitá-la, em vez de ficar num mural esperando ser encontrada. O profissional se candidata com um toque, a confirmação chega para os dois lados com todos os dados do turno, e depois da execução cada um responde se chamaria o outro de novo.
+Frila é uma plataforma horizontal de contratação por turno avulso, para qualquer setor. O contratante publica o turno que precisa cobrir, com função, data, janela de horário, local e valor, e a vaga é enviada ativamente para os profissionais próximos que podem aceitá-la, em vez de ficar num mural esperando ser encontrada. O profissional se candidata sem formulário, a confirmação chega para os dois lados com todos os dados do turno, e depois da execução cada um responde se chamaria o outro de novo.
 
 Está dentro do escopo do produto:
 
-• Publicação de turno avulso de qualquer setor, como bares, restaurantes, eventos, varejo, logística e serviços domésticos, em menos de 60 segundos. Food service e eventos são só o foco da divulgação inicial.
+• Publicação de turno avulso de qualquer setor, como bares, restaurantes, eventos, varejo, logística e serviços domésticos, com poucos campos. Food service e eventos são só o foco da divulgação inicial.
 
 • Despacho ativo por proximidade: a vaga é notificada, de uma vez, a quem tem a função, está disponível e está a até 15 km do local, com no máximo uma notificação a cada 30 minutos por profissional.
 
-• Candidatura em um toque, confirmação e liberação de contato entre as partes.
+• Candidatura sem formulário, confirmação e liberação de contato entre as partes.
 
 • Check-in e check-out geolocalizados, com registro de início, fim e valor acordado do turno.
 
@@ -602,7 +602,7 @@ O produto é usado majoritariamente em mobilidade e sob pressão de tempo, e iss
 
 O profissional acessa da rua, do intervalo e do transporte, em aparelho Android de entrada, com sinal instável e plano de dados limitado. Sessões são curtas: consultar uma vaga, aceitar, conferir endereço e horário. A confiabilidade da notificação é a parte mais crítica do ambiente dele: nas avaliações públicas dos concorrentes, a segunda queixa mais repetida é o aviso que não chega, relatada tanto por quem elogia o produto quanto por quem o detesta. Um aviso que não chega equivale a uma vaga que não existiu.
 
-O contratante tem dois ambientes opostos. No celular, sob estresse: são 16h de uma sexta, faltou gente, o movimento começa em duas horas e quem publica está no salão, não sentado à mesa. Nesse contexto, publicar precisa levar menos de 60 segundos e exigir poucos campos. No computador, planejando: o operador de buffet monta a escala de uma formatura de 40 pessoas duas semanas antes. É trabalho de mesa, com teclado e tela grande, onde a densidade de informação ajuda em vez de atrapalhar. É também no computador que o gestor usa o Painel do estabelecimento. Por isso todos os perfis têm acesso tanto ao aplicativo quanto à web.
+O contratante tem dois ambientes opostos. No celular, sob estresse: são 16h de uma sexta, faltou gente, o movimento começa em duas horas e quem publica está no salão, não sentado à mesa. Nesse contexto, publicar precisa ser rápido e exigir poucos campos. No computador, planejando: o operador de buffet monta a escala de uma formatura de 40 pessoas duas semanas antes. É trabalho de mesa, com teclado e tela grande, onde a densidade de informação ajuda em vez de atrapalhar. É também no computador que o gestor usa o Painel do estabelecimento. Por isso todos os perfis têm acesso tanto ao aplicativo quanto à web.
 
 A concentração temporal de uso é conhecida: picos de quinta a domingo, na virada da tarde para a noite, além de datas sazonais como Black Friday, Natal, Dia das Mães e temporada de formaturas. O horário de pico do sistema é quinta a domingo, entre 16h e 02h.
 
@@ -762,7 +762,7 @@ Episódico e concentrado: picos de quinta a domingo e em datas sazonais, com uso
 
 Principais necessidades
 
-Saber, antes de confirmar, se a pessoa costuma aparecer. Publicar em menos de um minuto, com poucos campos. Ter um plano B quando ninguém aceita. Não assumir risco trabalhista ao contratar avulso.
+Saber, antes de confirmar, se a pessoa costuma aparecer. Publicar rápido, com poucos campos. Ter um plano B quando ninguém aceita. Não assumir risco trabalhista ao contratar avulso.
 
 Comentários
 
@@ -986,11 +986,11 @@ Despacho ativo por proximidade, com elegibilidade por função, disponibilidade 
 
 Publicar não interrompe o serviço de quem está no salão
 
-Publicação de turno em menos de 60 segundos, com poucos campos e reaproveitamento de vagas anteriores (REC01, REC05)
+Publicação de turno com poucos campos e reaproveitamento de vagas anteriores (REC01, REC05)
 
 Aceitar um trabalho não exige preencher formulário nem negociar
 
-Candidatura em um toque, com valor já definido no anúncio (REC03)
+Candidatura sem formulário, com valor já definido no anúncio (REC03)
 
 Os dois lados sabem exatamente o que foi combinado
 
@@ -1272,7 +1272,7 @@ REC01
 
 Publicação de turno
 
-O contratante publica um turno com função, data, horário de início e fim, endereço, valor, número de posições, o que está incluso (refeição, transporte e material próprio) e quem recebe no local, em menos de 60 segundos, pelo celular. Traje, rateio dos 10% da taxa de serviço e observações são opcionais.
+O contratante publica um turno com função, data, horário de início e fim, endereço, valor, número de posições, o que está incluso (refeição, transporte e material próprio) e quem recebe no local, com poucos campos, pelo celular. Traje, rateio dos 10% da taxa de serviço e observações são opcionais.
 
 Alta
 
@@ -1286,7 +1286,7 @@ Alta
 
 REC03
 
-Candidatura em um toque
+Candidatura sem formulário
 
 O profissional aceita sem carta de apresentação, sem processo seletivo e sem negociação de valor, porque o valor já está no anúncio.
 
@@ -1416,7 +1416,7 @@ Desempenho
 
 O produto responde sem atraso perceptível, inclusive em aparelho de entrada e conexão móvel instável.
 
-Telas principais carregam em menos de 2 segundos em 4G; o fluxo completo de publicação de vaga é concluído em menos de 60 segundos.
+Telas principais carregam em menos de 2 segundos em 4G. Metas de tempo para publicar e para se candidatar só serão definidas depois de medidas no piloto.
 
 Confiabilidade de notificação
 
@@ -1446,7 +1446,7 @@ Usabilidade
 
 O produto é usado sob pressão, por público sem treinamento e sem paciência para tutorial.
 
-Um profissional de primeira viagem conclui uma candidatura em até 3 toques a partir da notificação, sem ajuda; um contratante publica a primeira vaga sem onboarding assistido.
+Um profissional de primeira viagem conclui uma candidatura sem ajuda; um contratante publica a primeira vaga sem onboarding assistido.
 
 Alcance e compatibilidade
 

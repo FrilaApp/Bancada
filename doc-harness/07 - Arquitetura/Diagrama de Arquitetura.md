@@ -39,7 +39,7 @@ Poderia ser uma função chamada dentro da publicação. Não é (B15): publicar
 
 **É trabalho agendado.** Quase tudo o que o despacho faz acontece minutos ou horas depois da requisição que o originou: agrupar vagas próximas no tempo e respeitar o teto de uma notificação a cada 30 minutos por profissional (RN23); lembrar o turno 24 horas e 3 horas antes; alertar o contratante aos 15 minutos sem check-in e quando a vaga segue vazia na janela crítica; fechar o modo seleção 24 horas antes do início (RN24); avisar os dois lados quando o horário de fim passa. Amarrar isso ao ciclo de vida de uma requisição HTTP é perdê-lo quando ela termina.
 
-**Tem orçamento de tempo próprio.** RNF03 exige a notificação enviada ao provedor em até 30 segundos após a publicação; RF04 exige que a publicação termine em menos de 60. São dois relógios: a publicação devolve a tela rápido, a notificação acontece logo, mas não *dentro* dela.
+**Tem orçamento de tempo próprio.** RNF03 exige a notificação enviada ao provedor em até 30 segundos após a publicação; e a publicação precisa devolver a tela na hora, sem esperar o despacho. São dois relógios: a publicação devolve a tela rápido, a notificação acontece logo, mas não *dentro* dela.
 
 **É o que mais vai mudar.** O produto está em TRL 2: os 15 km, os 30 minutos do teto e as 3 horas do alerta são valores iniciais, para ajustar com o dado do piloto `[H]`. Isolar o motor permite trocar esses números sem mexer no que serve tela.
 

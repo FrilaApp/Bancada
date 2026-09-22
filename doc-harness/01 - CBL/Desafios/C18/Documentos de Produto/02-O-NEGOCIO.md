@@ -176,7 +176,7 @@ O mesmo ciclo, do ponto de vista de produto, com os dois apps e os pilares da ex
 
 ### 5.1. Publicação
 
-O estabelecimento publica uma vaga: **um turno, com função, data, hora de início e fim, endereço, valor, número de posições, o que está incluso (refeição, transporte e material próprio) e quem recebe o profissional no local**. Traje exigido, participação no rateio dos 10% e observações são opcionais. Formato padronizado, poucos campos, publicável em menos de um minuto de celular — porque quem publica está no meio de um problema, não sentado num computador.
+O estabelecimento publica uma vaga: **um turno, com função, data, hora de início e fim, endereço, valor, número de posições, o que está incluso (refeição, transporte e material próprio) e quem recebe o profissional no local**. Traje exigido, participação no rateio dos 10% e observações são opcionais. Formato padronizado, poucos campos, publicável pelo celular — porque quem publica está no meio de um problema, não sentado num computador.
 
 ### 5.2. Despacho ativo
 
@@ -188,7 +188,7 @@ O profissional também pode navegar pelas vagas abertas — a lista mostra todo 
 
 ### 5.3. Candidatura
 
-Um toque. Sem carta de apresentação, sem processo seletivo longo, sem negociação de valor. O valor já está no anúncio.
+Direta, sem formulário. Sem carta de apresentação, sem processo seletivo longo, sem negociação de valor. O valor já está no anúncio.
 
 O primeiro que se candidata e é aprovado leva, no modo padrão de urgência. Quando o estabelecimento quiser escolher entre candidatos — o que faz sentido para eventos com antecedência, e só vale para vaga que começa em mais de 24 horas — ele vê quem se candidatou e decide. Se não escolher até 24 horas antes do turno, a vaga fecha sozinha e os candidatos ficam livres.
 
