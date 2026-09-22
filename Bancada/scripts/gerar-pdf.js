@@ -128,7 +128,7 @@ function montar(md, arquivo, raizVault) {
   <dl>
     <dt>Documento</dt><dd>${escapar(titulo)}</dd>
     <dt>Projeto</dt><dd>Frila — contratação por turno avulso</dd>
-    <dt>Equipe</dt><dd>Cauê Carneiro · Fabrício Tosta · João Paulo · Júlia Clovandi · Matheus Silva</dd>
+    <dt>Equipe</dt><dd>Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva</dd>
     <dt>Desafio</dt><dd>${escapar(meta.desafio || 'C18')} · Apple Developer Academy</dd>
     <dt>Criado em</dt><dd>${escapar(meta.data_criacao || '')}</dd>
     <dt>Gerado em</dt><dd>${new Date().toISOString().slice(0, 10)}</dd>

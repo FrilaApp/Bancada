@@ -183,12 +183,12 @@ function renderizarDocumentoCBL(base = '../') {
           <div class="cbl-colofao-item">
             <span class="cbl-colofao-rotulo">Equipe BlendOps</span>
             <div class="cbl-colofao-valor">
-              <span>Cauê Carneiro</span> · <span>Fabrício Tosta</span> · <span>João Paulo</span> · <span>Júlia Clovandi</span> · <span>Matheus Silva</span>
+              <span>Cauê Carneiro</span>, <span>Fabrício Tosta</span>, <span>João Paulo</span>, <span>Júlia Clovandi</span>, <span>Matheus Silva</span>
             </div>
           </div>
           <div class="cbl-colofao-item">
             <span class="cbl-colofao-rotulo">Mentores</span>
-            <div class="cbl-colofao-valor">Felipe Carvalho · Victor Zerefos</div>
+            <div class="cbl-colofao-valor">Felipe Carvalho, Victor Zerefos</div>
           </div>
           <div class="cbl-colofao-item">
             <span class="cbl-colofao-rotulo">Ciclo</span>

@@ -108,40 +108,28 @@ function lerIndice(vault) {
   }
 }
 
-// Ordem de leitura para um mentor: o desafio primeiro, o log por último.
+// Ordem de leitura essencial: Produto primeiro, seguido pela arquitetura técnica,
+// planejamento do ciclo, registro diário e sistema de design.
 const SECOES = [
-  { tipo: 'cbl-desafio',       titulo: 'Desafio' },
-  // Logo depois do desafio porque responde a pergunta seguinte de quem acabou
-  // de ler o que o time se propôs a fazer: até quando.
-  { tipo: 'agenda',            titulo: 'Agenda' },
-  // O que o time está construindo, antes do que já construiu: primeiro a
-  // estratégia do produto, depois as decisões técnicas que ela impõe.
-  { tipo: 'documento-produto', titulo: 'Produto' },
-  { tipo: 'arquitetura',       titulo: 'Arquitetura' },
-  { tipo: 'roadmap',           titulo: 'Roadmap' },
-  { tipo: 'atualizacao-diaria', titulo: 'Diário' },
-  { tipo: 'documento-derivado', titulo: 'Documentos' },
-  { tipo: 'design',            titulo: 'Design' },
+  { id: 'produto',      titulo: 'Produto',      tipos: ['documento-produto', 'documento-derivado'] },
+  { id: 'arquitetura',  titulo: 'Arquitetura',  tipos: ['arquitetura'] },
+  { id: 'planejamento', titulo: 'Planejamento', tipos: ['agenda', 'roadmap'] },
+  { id: 'diario',       titulo: 'Diário',       tipos: ['atualizacao-diaria'] },
+  { id: 'design',       titulo: 'Design',       tipos: ['design'] },
 ];
 
 /// Avisa quando um tipo de nota existe no vault mas não chega ao site.
-///
-/// Escrito depois de a `Agenda - C18.md` ficar quatro dias fora do site sem
-/// ninguém notar: o tipo `agenda` foi criado no vault, `SECOES` não mudou, e a
-/// nota simplesmente não apareceu. Nenhum erro, nenhuma página vazia — some.
-///
-/// Esse é o modo de falha ruim num site cuja premissa é que o registro está
-/// completo. Um mentor não tem como saber que falta alguma coisa.
 function avisarSobreTiposNaoPublicados(indice) {
   // Tipos que não entram em SECOES por decisão, e não por esquecimento.
   const tratadosEmOutroLugar = new Set([
-    'tarefa',    // tem página própria (tarefas.html)
-    'registro',  // idem (registros.html)
-    'indice',    // listas de wikilinks que só fazem sentido no Obsidian
-    'home',      // a capa do site cumpre esse papel
+    'tarefa',      // tem página própria (tarefas.html)
+    'registro',    // idem (registros.html)
+    'indice',      // listas de wikilinks que só fazem sentido no Obsidian
+    'home',        // a capa do site cumpre esse papel
+    'cbl-desafio', // a capa do site cumpre esse papel (Desafio na navbar / index.html)
   ]);
 
-  const publicados = new Set(SECOES.map((s) => s.tipo));
+  const publicados = new Set(SECOES.flatMap((s) => s.tipos));
   const orfaos = [...new Set(indice.notas.map((n) => n.tipo))]
     .filter((t) => !publicados.has(t) && !tratadosEmOutroLugar.has(t));
 
@@ -188,10 +176,18 @@ class Site {
     this.escrever('tarefas.html', this.paginaTarefas());
     this.escrever('galeria.html', this.paginaGaleria());
 
+    const jaEscritas = new Set();
     for (const secao of SECOES) {
-      for (const nota of this.notasDe(secao.tipo)) {
+      for (const nota of this.notasDaSecao(secao)) {
         this.escrever(this.arquivoDaNota(nota.caminho), this.paginaDeNota(nota, secao));
+        jaEscritas.add(nota.caminho);
       }
+    }
+
+    // Gera todas as notas restantes do vault para garantir integridade de wikilinks
+    for (const nota of this.notas) {
+      if (['tarefa', 'registro', 'indice', 'home'].includes(nota.tipo) || jaEscritas.has(nota.caminho)) continue;
+      this.escrever(this.arquivoDaNota(nota.caminho), this.paginaDeNota(nota, { titulo: '' }));
     }
 
     for (const nota of this.notasDe('tarefa')) {
@@ -222,6 +218,57 @@ class Site {
     const notas = this.notas.filter((n) => n.tipo === tipo);
     if (tipo === 'atualizacao-diaria') {
       return notas.sort((a, b) => (b.campos.data || '').localeCompare(a.campos.data || ''));
+    }
+    return notas.sort((a, b) => a.titulo.localeCompare(b.titulo, 'pt-BR'));
+  }
+
+  notasDaSecao(secao) {
+    let notas = this.notas.filter((n) => secao.tipos.includes(n.tipo));
+    if (secao.id === 'produto') {
+      // Exclui CBL_C18 porque ele é o documento do desafio na capa
+      notas = notas.filter((n) => !n.caminho.includes('CBL_C18'));
+    }
+    if (secao.id === 'design') {
+      // Exclui anexos internos de revisão para manter a barra lateral limpa
+      notas = notas.filter((n) => !n.caminho.toLowerCase().includes('anexos/'));
+    }
+    if (secao.id === 'diario') {
+      return notas.sort((a, b) => (b.campos.data || '').localeCompare(a.campos.data || ''));
+    }
+    if (secao.id === 'planejamento') {
+      return notas.sort((a, b) => {
+        if (a.tipo === 'agenda') return -1;
+        if (b.tipo === 'agenda') return 1;
+        return a.titulo.localeCompare(b.titulo, 'pt-BR');
+      });
+    }
+    if (secao.id === 'produto') {
+      const ordem = [
+        'visao',
+        'requisitos',
+        'especificacao',
+        'historias',
+        'problema',
+        'negocio',
+        'mercado',
+        'validacao',
+        'evidencias',
+        'leia-primeiro',
+        'readme',
+      ];
+      const pontuacao = (nota) => {
+        const slug = nota.caminho.toLowerCase();
+        for (let i = 0; i < ordem.length; i++) {
+          if (slug.includes(ordem[i])) return i;
+        }
+        return 99;
+      };
+      return notas.sort((a, b) => {
+        const pA = pontuacao(a);
+        const pB = pontuacao(b);
+        if (pA !== pB) return pA - pB;
+        return a.titulo.localeCompare(b.titulo, 'pt-BR');
+      });
     }
     return notas.sort((a, b) => a.titulo.localeCompare(b.titulo, 'pt-BR'));
   }
@@ -309,9 +356,11 @@ class Site {
     // Simplificações limpas sem travessões banais
     if (s === 'Challenge 18' || s === 'C18') return 'Challenge 18';
     if (s === 'Agenda') return 'Agenda C18';
+    if (s === 'Frila') return 'Visão geral';
     if (s.startsWith('Roteiro e Protocolo de Validação de Campo')) return 'Validação de Campo no DF';
     if (s.startsWith('Histórias de Usuário e Backlog')) return 'Histórias de Usuário e Backlog';
     if (s.startsWith('Pendências Técnicas')) return 'Pendências Técnicas';
+    if (s === 'Roadmap - Sumário de Iterações' || s === 'Sumário de Iterações') return 'Sumário de Iterações';
 
     // Substitui travessão ou hífen banal solto por ponto central elegante
     s = s.replace(/\s+[—–-]\s+/g, ' · ');
@@ -351,7 +400,7 @@ class Site {
   pagina({ titulo, subtitulo, corpo, ativo, daPasta, semConteudoTopo = false }) {
     const base = daPasta === 'notas' ? '../' : '';
     const nav = [
-      ['index.html', 'Desafio C18'],
+      ['index.html', 'Desafio'],
       ['tarefas.html', 'Tarefas'],
       ['registros.html', 'Registros'],
       ['galeria.html', 'Galeria'],
@@ -364,7 +413,7 @@ class Site {
       .join('');
 
     const secoes = SECOES.map((s) => {
-      const notas = this.notasDe(s.tipo);
+      const notas = this.notasDaSecao(s);
       if (!notas.length) return '';
       const temAtivo = notas.some((n) => ativo === this.arquivoDaNota(n.caminho));
       const itens = notas
@@ -372,14 +421,14 @@ class Site {
           const href = base + this.arquivoDaNota(n.caminho);
           const classe = ativo === this.arquivoDaNota(n.caminho) ? ' class="ativo"' : '';
           const rotulo = n.tipo === 'atualizacao-diaria' ? (n.campos.data || n.titulo) : n.titulo;
-          const rotuloLimpo = this.limparRotuloSidebar(rotulo, s.tipo);
+          const rotuloLimpo = this.limparRotuloSidebar(rotulo, n.tipo);
           return `<li><a href="${href}"${classe}><span>${escapar(rotuloLimpo)}</span></a></li>`;
         })
         .join('');
-      return `<details class="grupo" open data-secao="${s.tipo}">
+      return `<details class="grupo" open data-secao="${s.id}">
         <summary class="grupo-titulo">
+          <svg class="chevron" width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 4 4 4-4 4"/></svg>
           <span class="grupo-rotulo">${s.titulo}</span>
-          <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-9"/></svg>
         </summary>
         <ul>${itens}</ul>
       </details>`;
@@ -423,18 +472,16 @@ class Site {
       </span>
       <span>Challenge 18</span>
     </a>
-    <span class="marca-sub">BlendOps · CBL</span>
   </div>
   <nav>${nav}</nav>
   <div class="header-direita">
     <button type="button" class="btn-tema" id="btn-tema" aria-label="Alternar modo claro/escuro" title="Alternar modo claro/escuro">
       <svg class="icone-sol" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
       <svg class="icone-lua" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-      <span class="btn-tema-rotulo">Claro</span>
     </button>
     <div class="header-status">
       <span class="status-pulsar"></span>
-      <span class="status-texto">Vault Live</span>
+      <span class="status-texto">Live</span>
     </div>
   </div>
 </header>
@@ -646,8 +693,9 @@ ${this.avisoDeAtualizacao(base)}
       .map((n) => {
         const href = this.arquivoDaNota(n.caminho);
         const n_fatos = this.indice.fatos.filter((f) => f.data === n.campos.data).length;
-        return `<li><a href="${href}">${escapar(n.campos.data || n.titulo)}</a>
-          <span class="apoio">${n_fatos} fato(s)</span></li>`;
+        const rotuloData = this.limparRotuloSidebar(n.campos.data || n.titulo, 'atualizacao-diaria');
+        const fatosRotulo = n_fatos === 1 ? '1 fato' : `${n_fatos} fatos`;
+        return `<li><a href="${href}" class="link-dia-card"><span class="dia-data">${escapar(rotuloData)}</span><div class="dia-meta"><span class="apoio">${fatosRotulo}</span><svg class="seta-dia" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></div></a></li>`;
       })
       .join('');
 
@@ -1246,11 +1294,11 @@ ${this.avisoDeAtualizacao(base)}
     registrar('visao-geral', 'Visão geral', 'Início', this.telaVisaoGeral(), true);
 
     for (const s of SECOES) {
-      for (const nota of this.notasDe(s.tipo)) {
-        const rotulo = s.tipo === 'atualizacao-diaria'
+      for (const nota of this.notasDaSecao(s)) {
+        const rotulo = nota.tipo === 'atualizacao-diaria'
           ? (nota.campos.data || nota.titulo)
           : nota.titulo;
-        registrar(this.ancora(nota.caminho), rotulo, s.titulo, this.telaDeNota(nota));
+        registrar(this.ancora(nota.caminho), this.limparRotuloSidebar(rotulo, nota.tipo), s.titulo, this.telaDeNota(nota));
       }
     }
 
