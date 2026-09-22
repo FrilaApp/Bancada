@@ -48,6 +48,7 @@ Para criar uma tarefa, use `/tarefa` no Claude Code — ele cuida do id sequenci
 - [[04 - Tarefas/T-0022 - Consolidação final e apresentação de encerramento do CBL (04-12)|T-0022 — Consolidação final e apresentação de encerramento do CBL (04-12)]] · `a-fazer`
 - [[04 - Tarefas/T-0023 - Estruturar Histórias de Usuário e Backlog do Produto (Frila)|T-0023 — Estruturar Histórias de Usuário e Backlog do Produto (Frila)]] · `revisao`
 - [[04 - Tarefas/T-0024 - Diagramas de classe, banco de dados e arquitetura|T-0024 — Diagramas de classe, banco de dados e arquitetura]] · `revisao`
+- [[04 - Tarefas/T-0025 - Backend do Frila: fundação, ciclo e despacho|T-0025 — Backend do Frila: fundação, ciclo e despacho]] · `em-andamento`
 
 ---
 ← [[🏠 Início]]
