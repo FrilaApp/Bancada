@@ -1203,6 +1203,12 @@ tbody tr:hover td {
   margin-bottom: 16px;
 }
 
+.secao-ultimos-dias-home {
+  max-width: min(100%, 840px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /* Árvore de Registros --------------------------------------------------- */
 .arvore, .arvore ul {
   list-style: none;
@@ -1853,7 +1859,7 @@ body > footer {
    ========================================================================== */
 .cbl-documento {
   max-width: min(100%, 840px);
-  margin: 0 0 80px;
+  margin: 0 auto 80px;
   color: var(--texto);
   font-family: var(--sans);
   line-height: 1.6;
