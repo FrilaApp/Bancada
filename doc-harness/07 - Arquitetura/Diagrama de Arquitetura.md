@@ -7,11 +7,11 @@ tags: [arquitetura, frila, sistema]
 
 # Diagrama de Arquitetura — Frila
 
-Preenche a Seção 6.4 do [[01 - CBL/Desafios/C18/Documentos de Produto/Frila_Documento_de_Requisitos|Documento de Requisitos]], que descreve quatro camadas e uma lista de pacotes, mas não desenha o sistema, não enfrenta o que está em aberto e não define o contrato entre cliente e servidor — sem o qual três clientes não conseguem ser construídos em paralelo. As classes destas camadas estão em [[07 - Arquitetura/Diagrama de Classe|Diagrama de Classe]]; o esquema que elas persistem, em [[07 - Arquitetura/Modelagem de Banco de Dados|Modelagem de Banco de Dados]].
+Preenche a Seção 6.4 do [[01 - CBL/Desafios/C18/Documentos de Produto/Frila_Documento_de_Requisitos|Documento de Requisitos]], que descreve quatro camadas e uma lista de pacotes, mas não desenha o sistema nem define o contrato entre cliente e servidor — sem o qual três clientes não conseguem ser construídos em paralelo. As classes destas camadas estão em [[07 - Arquitetura/Diagrama de Classe|Diagrama de Classe]]; o esquema que elas persistem, em [[07 - Arquitetura/Modelagem de Banco de Dados|Modelagem de Banco de Dados]].
 
-> [!warning] O que está decidido e o que não está
-> **Decidido:** existem **três clientes** — app iOS nativo, app Android e versão web —, todos no escopo comprometido do produto. O Documento de Visão os lista na declaração de posição e é explícito: *"Android não pode ficar para depois, por ser a plataforma da maioria esmagadora do trabalhador de base no Brasil"*. Todos os perfis têm acesso ao aplicativo **e** à web.
-> **Em aberto:** a stack do backend, e a estratégia de implementação dos clientes — nativo em cada plataforma ou núcleo compartilhado. Propostas levam `[H]`.
+> [!info] O que está decidido
+> **Decidido em 21/09/2026**, nas respostas do quadro 03 de pendências: **três clientes nativos** — app iOS em Swift e SwiftUI, app Android em Kotlin e versão web —, cada um com os dois apps, do Profissional e do Estabelecimento. Para a entrega na loja em 13/11, o iOS é o mínimo; Android e web são a meta, e o Android continua sendo prioridade de alcance, por ser a plataforma de cerca de 75% do uso de celular no Brasil (75,45%, StatCounter, ago/2026). O backend é o **Supabase** (Postgres com PostGIS), e as regras que precisam valer igual nos três clientes moram nele, escritas uma vez.
+> **Ainda em aberto:** a stack da versão web. Premissas de volume e de comportamento levam `[H]`.
 
 ---
 
@@ -19,47 +19,48 @@ Preenche a Seção 6.4 do [[01 - CBL/Desafios/C18/Documentos de Produto/Frila_Do
 
 ![[07 - Arquitetura/Anexos/arquitetura/contexto.png|Atores, o sistema e as dependências externas]]
 
-A seta tracejada é decisão de produto, não detalhe de integração: RN10 proíbe liberar contato antes da confirmação, porque *"antes da confirmação não há compromisso, e liberar contato transforma a plataforma em lista de telefones"*. O sistema conhece o contato o tempo todo e o entrega num único momento.
+A seta tracejada é decisão de produto, não detalhe de integração: RN10 proíbe liberar contato antes da confirmação, porque *"antes da confirmação não há compromisso, e liberar contato transforma a plataforma em lista de telefones"*. O sistema conhece o contato o tempo todo, entrega-o num único momento e deixa de mostrá-lo 7 dias depois do fim do turno.
 
 Não há caixa de gateway de pagamento, e isso é RN09: o valor é registrado, nunca custodiado. O efeito arquitetural vale ser nomeado — sem fluxo financeiro, o sistema sai inteiro do escopo de PCI-DSS e de boa parte do risco regulatório, o que é um ganho de simplicidade grande para cinco pessoas em TRL 2.
+
+Também não há operador do Frila acompanhando turno. O sistema é automático (D01): quem acompanha as vagas e os turnos é o gestor do estabelecimento, e a Equipe Frila só responde e-mail — suporte, denúncia, contestação e pedido de revisão do despacho, em até 5 dias úteis.
 
 ---
 
 ## Nível 2 — Contêineres
 
-![[07 - Arquitetura/Anexos/arquitetura/conteineres.png|Quatro clientes, uma API, e o motor de despacho puxado por fila]]
+![[07 - Arquitetura/Anexos/arquitetura/conteineres.png|Três clientes, o Supabase e o despacho puxado por fila]]
 
-Os três produtos do Documento de Requisitos — app do Profissional, app do Estabelecimento e Painel de Operação — compartilham uma API só. O Painel não é sistema à parte: é a mesma base vista pela pergunta *"o que está prestes a falhar?"*.
+Os dois apps — do Profissional e do Estabelecimento — existem em iOS, Android e web, e falam com um backend só, no Supabase: Postgres com PostGIS, autenticação, Edge Functions, `pg_cron` e a fila `pgmq`. O Painel não é sistema à parte nem ferramenta interna: é uma tela da versão web do app do Estabelecimento, em que o gestor acompanha vagas, candidatos, contratados, check-ins e turnos (B09). O alerta de vaga vazia e a confirmação de check-in manual também existem no app do Estabelecimento no celular.
 
-### Por que o despacho é um contêiner separado
+### Por que o despacho roda fora da requisição
 
-Poderia ser uma função dentro da API. Não deve ser, por três motivos que vêm dos requisitos:
+Poderia ser uma função chamada dentro da publicação. Não é (B15): publicar a vaga só grava no banco e responde, e um job separado — Edge Function puxada pela fila `pgmq` e pelo `pg_cron` — faz o resto, por três motivos que vêm dos requisitos:
 
-**É assíncrono por natureza.** RF06 manda disparar a leva seguinte "esgotado o intervalo da leva com a posição ainda aberta" — trabalho agendado que acontece minutos depois da requisição que o originou. Amarrá-lo ao ciclo de vida de uma requisição HTTP significa perdê-lo quando ela termina.
+**É trabalho agendado.** Quase tudo o que o despacho faz acontece minutos ou horas depois da requisição que o originou: agrupar vagas próximas no tempo e respeitar o teto de uma notificação a cada 30 minutos por profissional (RN23); lembrar o turno 24 horas e 3 horas antes; alertar o contratante aos 15 minutos sem check-in e quando a vaga segue vazia na janela crítica; fechar o modo seleção 24 horas antes do início (RN24); avisar os dois lados quando o horário de fim passa. Amarrar isso ao ciclo de vida de uma requisição HTTP é perdê-lo quando ela termina.
 
-**Tem orçamento de tempo próprio.** RNF03 exige a primeira leva em até 30 segundos; RF04 exige que a publicação responda em menos de 60. São dois relógios: a publicação precisa devolver a tela rápido, o despacho precisa acontecer logo, mas não *dentro* dela.
+**Tem orçamento de tempo próprio.** RNF03 exige a notificação enviada ao provedor em até 30 segundos após a publicação; RF04 exige que a publicação termine em menos de 60. São dois relógios: a publicação devolve a tela rápido, a notificação acontece logo, mas não *dentro* dela.
 
-**É o que mais vai mudar.** O produto está em TRL 2 e a ordenação por taxa de comparecimento é hipótese declarada. Isolar o motor permite trocar a regra sem *redeploy* de tudo o que serve tela.
+**É o que mais vai mudar.** O produto está em TRL 2: os 15 km, os 30 minutos do teto e as 3 horas do alerta são valores iniciais, para ajustar com o dado do piloto `[H]`. Isolar o motor permite trocar esses números sem mexer no que serve tela.
 
 ---
 
 ## As três plataformas
 
-![[07 - Arquitetura/Anexos/arquitetura/multiplataforma.png|Nativo em cada plataforma contra núcleo compartilhado]]
+![[07 - Arquitetura/Anexos/arquitetura/multiplataforma.png|Nativo em cada plataforma, com as regras críticas no backend]]
 
-Esta é a decisão de maior alcance do projeto, e a que mais se beneficia de ser tomada cedo — trocar depois custa reescrever o que já funciona.
+Decidido em 21/09/2026 (B01): **nativo em cada plataforma** — Swift e SwiftUI no iOS, Kotlin no Android. O risco que pesava contra essa opção era a regra escrita três vezes, divergindo em silêncio: o Android passando a notificar alguém que o iOS considera inelegível, e ninguém percebendo até um profissional reclamar.
 
-O critério não é preferência de stack: é **quantas vezes a regra vai mudar**. A elegibilidade (RN04, RN05) e a ordenação (RN06) são hipóteses que a validação de campo existe para corrigir. Cada correção custa uma implementação na opção B e três na opção A — com o risco de as três divergirem em silêncio, que é o modo de falha caro: o Android passa a despachar para alguém que o iOS considera inelegível, e ninguém percebe até um profissional reclamar.
+A resposta a esse risco (B20, ajustada em 22/09) é tirar a regra dos clientes. Não existe pacote de código comum entre Swift e Kotlin; o que precisa valer igual para todos mora no backend, em funções e restrições do Supabase, escrito uma vez só. Cada app mantém o próprio domínio para a tela e para os testes.
 
-Contra o núcleo compartilhado pesa o requisito fechado de **app iOS nativo**, que precisa ser lido com cuidado. "Nativo" se refere à interface e à distribuição — SwiftUI de verdade, na App Store, com push da Apple. Um núcleo de regras compartilhado não impede nada disso. Vale confirmar essa leitura com a Academy antes de decidir, porque a interpretação oposta elimina a opção B inteira.
-
-| Camada | Compartilhável | Por quê |
+| Camada | Onde mora | Por quê |
 |---|---|---|
-| Regras de domínio | **Sim** | Elegibilidade, reputação e máquina de estados são idênticas nas três plataformas |
-| Contrato de API e modelos | **Sim** | Um só esquema, gerado a partir da especificação |
-| Cache e fila offline | Parcial | A política é a mesma; o armazenamento é de cada plataforma |
-| Interface | **Não** | SwiftUI, Compose e web têm idioma próprio — e o público usa Android de entrada, onde camada de abstração custa caro |
-| Push, geolocalização, keychain | **Não** | API de sistema, diferente em cada plataforma |
+| Regras críticas: elegibilidade e teto (RN05, RN23), confirmação (RN19), turno sobreposto (RN21), check-in de 200 m (RN22), fechamento do modo seleção (RN24) | **Backend**, uma vez | Os três clientes chamam as mesmas funções; não há três versões para divergir |
+| Contrato: tabelas e funções RPC | **Backend**, documentado antes do código | Um só esquema para iOS, Android e web (B16) |
+| Domínio local | Cada app | Validação que dá mensagem boa antes da rede; quem está certo continua sendo o backend |
+| Cache e fila offline | Cada app | A política é a mesma; o armazenamento é de cada plataforma — SwiftData no iOS |
+| Interface | Cada app | SwiftUI, Compose e web têm idioma próprio — e o público usa Android de entrada, onde camada de abstração custa caro |
+| Push, geolocalização, keychain | Cada app | API de sistema, diferente em cada plataforma; o push sai pelo FCM nos dois |
 
 ---
 
@@ -67,7 +68,7 @@ Contra o núcleo compartilhado pesa o requisito fechado de **app iOS nativo**, q
 
 ![[07 - Arquitetura/Anexos/arquitetura/camadas-do-app.png|Apresentação, domínio, dados e infraestrutura]]
 
-Nenhuma seta sai do domínio. É isso que permite trocar a regra de elegibilidade sem tocar em tela, rede ou banco — e testá-la em milissegundos, sem simulador.
+Nenhuma seta sai do domínio. É isso que permite testar em milissegundos, sem simulador, o que o app decide sozinho — a validação da publicação, os estados da tela, a reputação exibida —, enquanto a regra que vale para todos está no backend.
 
 A camada de apresentação usa `@Observable`, alinhada ao que a equipe já pratica na Bancada, onde `EstadoDaBancada` é um store único e não há `ObservableObject` em lugar nenhum. Reaproveitar o padrão que o time domina vale mais que o MVVM canônico de livro.
 
@@ -75,85 +76,69 @@ A camada de apresentação usa `@Observable`, alinhada ao que a equipe já prati
 
 ## O contrato entre cliente e servidor
 
-Três clientes construídos em paralelo por cinco pessoas só funcionam se o contrato for definido antes do código. Esta seção é o que permite alguém começar o app Android sem esperar o iOS ficar pronto.
+Três clientes construídos em paralelo por cinco pessoas só funcionam se o contrato for definido antes do código. Decidido em 21/09 (B16): a especificação é escrita **antes** do backend, pelo menos das rotas centrais — publicar vaga, candidatar-se, confirmar, check-in e avaliar. É o que permite alguém começar o app Android sem esperar o iOS ficar pronto.
 
-**A especificação é o artefato, não a documentação dele.** Um arquivo OpenAPI versionado no repositório, de onde saem os modelos de cada cliente por geração de código. Modelo escrito à mão em três linguagens diverge — e diverge em silêncio, que é o que RN19 não pode tolerar.
+**A especificação é o artefato, não a documentação dele.** Com o Supabase, o contrato são as tabelas expostas e as funções RPC, documentadas num arquivo versionado no repositório, de onde saem os modelos de cada cliente. Modelo escrito à mão em três linguagens diverge — e diverge em silêncio, que é o que RN19 não pode tolerar.
 
 ### Princípios
 
 | Princípio | Regra | Motivo |
 |---|---|---|
-| Versão no caminho | `/v1/vagas` | O app na loja demora dias para atualizar; a web atualiza no *refresh*. As duas versões convivem |
+| Versão explícita | Função nova (`publicar_vaga_v2`) em vez de mudar a assinatura da antiga, em RPC e em Edge Function | O app na loja demora dias para atualizar; a web atualiza no *refresh*. As duas versões convivem |
 | Dinheiro em centavos | `"valor_centavos": 12000` | RN18. Nunca `120.00` em JSON — ponto flutuante é como o centavo se perde |
 | Tempo em UTC ISO-8601 | `"inicio_em": "2026-09-19T21:00:00Z"` | RN18. O fuso é problema da tela, não do contrato |
-| Idempotência na escrita | Cabeçalho `Idempotency-Key` | Rede ruim é o ambiente do usuário. Reenviar candidatura não pode criar duas |
-| Erro é tipado | `{"erro": "posicao_ja_preenchida"}` | O cliente precisa distinguir "alguém chegou antes" de "servidor caiu" |
+| Idempotência na escrita | Reenviar devolve o mesmo resultado: pela chave natural (candidatura, check-in, avaliação, bloqueio) ou pela `chave` que o app gera (publicar vaga, denunciar) | Rede ruim é o ambiente do usuário. Reenviar candidatura não pode criar duas |
+| Erro é tipado | `{"code": "posicao_ja_preenchida", …}` no envelope do PostgREST | O cliente precisa distinguir "alguém chegou antes" de "servidor caiu" |
 
 ### Autenticação
 
-Token de acesso curto (15 min) e token de renovação longo (30 dias), guardados no Keychain no iOS, Keystore no Android e cookie `HttpOnly` na web. RNF07 exige credencial protegida; `UserDefaults` e `localStorage` não atendem.
+O Supabase Auth emite um token de acesso curto e um token de renovação longo, guardados no Keychain no iOS, no Keystore no Android e em cookie `HttpOnly` na web. RNF07 exige credencial protegida; `UserDefaults` e `localStorage` não atendem.
 
-O cadastro do profissional é **progressivo** por RN14: nome, telefone, e-mail e data de nascimento bastam para receber o primeiro despacho. Verificação de identidade é passo posterior, e a ausência dela nunca bloqueia o cadastro — a barreira antes do primeiro trabalho é documentada como falha dos concorrentes.
+O cadastro do profissional é **progressivo** por RN14: nome, telefone, e-mail e data de nascimento bastam para receber a primeira notificação. Verificação de identidade é passo posterior, e a ausência dela nunca bloqueia o cadastro — a barreira antes do primeiro trabalho é documentada como falha dos concorrentes.
 
 ### Os recursos do MVP
 
-```http
-POST   /v1/sessoes                      # login → par de tokens
-POST   /v1/sessoes/renovar              # troca refresh por access
-POST   /v1/usuarios                     # cadastro (RF01, RN20 no servidor)
+A especificação está em `Frila/Documentos/API/openapi.yaml` (OpenAPI 3.1, versão 0.1.0, de 22/09), validada com o Redocly. Ela substitui a lista de rotas `/v1` da época em que o backend seria próprio. São três portas do Supabase:
 
-GET    /v1/profissionais/me             # perfil, reputação, taxa
-PATCH  /v1/profissionais/me             # funções, raio, disponibilidade (RF03)
+| Porta | O que passa por ela |
+|---|---|
+| `auth/v1` | Código por SMS, sessão e renovação — pelo SDK de cada plataforma |
+| `rest/v1/rpc/…` | Toda operação com regra de negócio, como função no Postgres: `criar_conta`, `criar_perfil_profissional`, `marcar_disponivel_agora`, `criterios_de_notificacao`, `cadastrar_estabelecimento`, `publicar_vaga`, `vagas_abertas`, `candidatar`, `retirar_candidatura`, `escolher_candidato`, `contato_do_turno`, `fazer_checkin`, `confirmar_checkin_manual`, `fazer_checkout`, `cancelar_posicao`, `reabrir_por_atraso`, `avaliar`, `perfil_publico`, `painel_estabelecimento`, `denunciar`, `bloquear`, `contestar_suspensao`, `registrar_dispositivo` e as demais |
+| `functions/v1` | Só onde o Postgres não basta: `exportar-turnos` (CSV ou PDF), `exportar-meus-dados` e `excluir-conta`, que apaga a credencial no Supabase Auth |
 
-POST   /v1/vagas                        # publicar (RF04, valida RN02)
-POST   /v1/vagas/{id}/republicar        # RF05, só data e horário mudam
-GET    /v1/vagas?lat=&lng=&funcao=&data=  # busca na região (RF07)
-GET    /v1/vagas/{id}
-
-POST   /v1/posicoes/{id}/candidaturas   # candidatar-se (RF08, idempotente)
-POST   /v1/posicoes/{id}/confirmar      # confirmar (RF10, resolve RN19)
-POST   /v1/posicoes/{id}/cancelar       # cancelar (RF14, motivo obrigatório)
-
-POST   /v1/turnos/{id}/inicio           # registrar início (RF13)
-POST   /v1/turnos/{id}/fim              # registrar fim
-POST   /v1/turnos/{id}/avaliacao        # avaliação binária (RF15)
-
-GET    /v1/operacao/em-risco            # painel, janela crítica (RF20)
-POST   /v1/operacao/ocorrencias         # registrar intervenção
-
-POST   /v1/dispositivos                 # registrar token de push
-GET    /v1/exportacoes/turnos?formato=csv   # RF22, RN17
-DELETE /v1/usuarios/me                  # exclusão → anonimização (RF25)
-```
+Os apps não escrevem direto nas tabelas; a única leitura direta é o catálogo de funções. O despacho não aparece no contrato: notificar, agrupar, respeitar o teto, lembrar, alertar e fechar o modo seleção é trabalho do agendador, e os apps só registram o dispositivo e recebem o push.
 
 ### A resposta que define o produto
 
-`POST /v1/posicoes/{id}/confirmar` é o ponto onde RN19 vive. As três respostas possíveis são todas normais:
+Confirmar a posição é o ponto onde RN19 vive. As três respostas possíveis são todas normais:
 
 ```jsonc
 // 200 — ganhou a corrida
 { "estado": "confirmada", "turno_id": "…",
-  "contato": { "telefone": "+5561…" } }   // RN10: liberado só agora
+  "contato": { "telefone": "+5561…" } }   // RN10: liberado só agora, até 7 dias após o fim
 
 // 409 — alguém chegou antes. Não é erro de sistema.
-{ "erro": "posicao_ja_preenchida" }
+{ "code": "posicao_ja_preenchida", "message": "posicao_ja_preenchida",
+  "details": null, "hint": null }
 
-// 422 — deixou de ser elegível entre o despacho e o toque
-{ "erro": "inelegivel", "motivo": "fora_do_raio" }
+// 422 — deixou de ser elegível entre a notificação e o toque
+{ "code": "inelegivel", "message": "inelegivel",
+  "details": "turno_sobreposto", "hint": null }
 ```
 
 O `409` merece ênfase: no modo urgência, **todo mundo menos um recebe essa resposta, toda vez**. É o funcionamento normal, não uma exceção — e a tela precisa dizer "que pena, foi rápido", não "algo deu errado". Tratar isso como falha genérica é como o produto ganha fama de quebrado fazendo exatamente o que deveria.
 
 ### Erros
 
-Um envelope só, com código estável em `snake_case` que o cliente pode comparar sem traduzir. A mensagem legível vem junto para *log*, nunca para a tela — texto de interface é do cliente, que conhece o contexto e o idioma.
+Um envelope só, com código estável em `snake_case` que o cliente pode comparar sem traduzir. A mensagem legível vem junto para *log*, nunca para a tela — texto de interface é do cliente, que conhece o contexto e o idioma. O envelope é o do PostgREST (`code`, `message`, `details`, `hint`): nas recusas de regra, `code` é o código estável e `details` o motivo complementar, levantados por um auxiliar único com `raise sqlstate 'PGRST'`. O catálogo completo dos códigos está na descrição do `openapi.yaml`.
 
 | HTTP | Quando |
 |---|---|
 | `401` | Token ausente, expirado ou inválido |
-| `403` | Autenticado, mas sem papel para a ação (RF21) |
-| `409` | Conflito legítimo de estado: posição já preenchida, candidatura repetida |
-| `422` | Regra de negócio recusou: campo faltando (RN02), menor de idade (RN20) |
+| `403` | Autenticado, mas sem papel para a ação (RF21), ou contato pedido depois dos 7 dias (RN10) |
+| `404` | Não existe, ou não é visível para quem pede — inclui o que o bloqueio esconde (RF26) |
+| `409` | Conflito legítimo de estado: posição já preenchida, vaga encerrada, candidatura indisponível, avaliação já registrada com outra resposta. Reenviar a mesma escrita não é conflito: devolve o mesmo resultado |
+| `422` | Regra de negócio recusou: campo faltando (RN02), menor de idade (RN20), modo seleção com menos de 24 horas (RN24), check-in a mais de 200 m (RN22), turno sobreposto (RN21) |
 | `429` | Limite de requisições |
 
 ---
@@ -166,14 +151,14 @@ Um envelope só, com código estável em `snake_case` que o cliente pode compara
 
 ## Entrega de notificação
 
-RNF02 pede 99% das notificações entregues em até 60 segundos, com reenvio automático. É o requisito não funcional mais exigente do documento, e com razão: se a notificação não chega, não existe produto — só um mural passivo com passos extras. A segunda queixa mais repetida nas avaliações dos concorrentes é exatamente o aviso que não chega.
+RNF02 pede 99% das notificações aceitas pelo provedor — APNs ou FCM — em até 60 segundos após o despacho, com reenvio automático. A meta é medida no servidor de propósito: o app não usa notificação *Time Sensitive* nem pede isenção de economia de bateria (B08), então a entrega dentro do aparelho não está sob controle do Frila. Isso não diminui o requisito: se a notificação não chega, não existe produto — só um mural passivo com passos extras. A segunda queixa mais repetida nas avaliações dos concorrentes é exatamente o aviso que não chega.
 
 O que a arquitetura precisa ter:
 
-- **Estado de entrega por despacho.** `despacho` guarda `estado_entrega`, `entregue_em` e `motivo_falha`. Sem isso não há como medir os 99%, e requisito que não se mede não vale.
+- **Estado de entrega por notificação.** `notificacao` guarda `estado_entrega`, `entregue_em` e `motivo_falha`. Sem isso não há como medir os 99%, e requisito que não se mede não vale.
 - **Reenvio com recuo exponencial**, limitado pelo início do turno. Insistir numa notificação de turno que já começou é ruído.
-- **Confirmação de leitura pelo cliente.** APNs e FCM confirmam entrega ao aparelho, não ao usuário. A distinção importa para o Painel decidir se liga para alguém.
-- **Degradação declarada.** Push negado nas permissões é caso comum, não exceção. Quem recusou notificação precisa aparecer para o motor como inelegível de fato — despachar para quem não vai ver gasta uma posição na leva e atrasa o preenchimento.
+- **Teto e agrupamento no servidor.** No máximo uma notificação de vaga a cada 30 minutos por profissional, com as vagas próximas no tempo juntas numa só; a vaga do modo urgência que começa em menos de 2 horas fura o agrupamento e conta no teto (RN23). É o que impede o canal de virar ruído quando vários estabelecimentos publicam ao mesmo tempo.
+- **Degradação declarada.** Push negado nas permissões é caso comum, não exceção. Quem recusou notificação continua vendo todas as vagas na lista, mas não conta como avisado — despachar para quem não vai ver só infla o número de alcançados.
 
 ---
 
@@ -183,41 +168,51 @@ O que a arquitetura precisa ter:
 |---|---|
 | RNF07 · HTTPS e credencial protegida | TLS obrigatório; token no Keychain/Keystore/cookie `HttpOnly` |
 | RN15 · dado pessoal fora de log | Telemetria registra identificadores e eventos, nunca nome, telefone ou documento |
+| RN10 · contato só depois da confirmação, até 7 dias após o fim | Política de acesso no banco: o telefone só é legível pelas partes do turno, dentro do prazo |
+| RN22 · localização só no toque | O app lê a localização no check-in e no check-out, nunca em segundo plano; só a distância vai para o servidor |
 | RNF08 · exclusão em 15 dias | Anonimização preservando turno e avaliação da contraparte |
-| RNF13 · auditabilidade | `ocorrencia` e `despacho` são append-only na prática |
-| RN13 · suspensão com contestação | Suspensão é `ocorrencia` com motivo obrigatório; contestação é outra, vinculada |
+| RNF13 · auditabilidade | `ocorrencia`, `despacho` e `notificacao` são append-only na prática |
+| RN13 · suspensão com contestação | Suspensão só por denúncia grave confirmada, sempre como `ocorrencia` com motivo; a contestação é outra, vinculada, respondida em até 5 dias úteis |
+| RF26 · denúncia e bloqueio | Denúncia é `ocorrencia`; bloqueio é tabela própria, lida pela elegibilidade, pela lista e pela candidatura |
 | RN17 · auditoria e prestação de contas | Exportação por período, com data, função, horário e valor |
 
 ---
 
 ## Escala e disponibilidade
 
-RNF11 dimensiona o alvo em cerca de **30 mil estabelecimentos do DF** `[H]`; RNF12 pede 99,5% de disponibilidade **sem manutenção de quinta a domingo, entre 16h e 02h**.
+RNF11 dimensiona o alvo em cerca de **30 mil estabelecimentos do DF** `[H]`; RNF12 pede 99,5% de disponibilidade **sem manutenção no horário de pico — quinta a domingo, das 16h às 2h**.
 
-Essa janela é a informação arquitetural mais útil do documento inteiro, e é fácil passar batido por ela. Ela diz que o pico de uso é exatamente o pico do setor — o turno de bar e evento de fim de semana. Consequências diretas:
+Esse horário é a informação arquitetural mais útil do documento inteiro, e é fácil passar batido por ela. Ele diz que o pico de uso é exatamente o pico do setor — o turno de bar e evento de fim de semana. Consequências diretas:
 
 - Migração e *deploy* acontecem de segunda a quarta, ou pela manhã. A arquitetura precisa suportar **migração sem downtime** desde cedo, porque a janela de parada é estreita — ver o padrão de duas fases em [[07 - Arquitetura/Modelagem de Banco de Dados#Migração e versionamento|Migração e versionamento]].
 - O dimensionamento não pode ser pela média. Um sistema que aguenta a carga média do DF e cai às 17h de sexta falhou no único momento que importa.
-- Latência e entrega precisam ser medidas **segmentadas por essa janela**. Um p99 mensal saudável esconde um p99 de sexta à noite terrível.
+- Latência e entrega precisam ser medidas **segmentadas pelo horário de pico**. Um p99 mensal saudável esconde um p99 de sexta à noite terrível.
 
-Na escala de uma praça só, isso é modesto em termos absolutos — uma instância de banco bem indexada e uma fila dão conta `[H]`. O risco não é volume, é concentração.
+Na escala de uma praça só, isso é modesto em termos absolutos: o plano gratuito do Supabase atende até 50 mil usuários ativos por mês, e a migração para backend próprio só volta à mesa a partir de certa rentabilidade (B02). O risco não é volume, é concentração — e, no plano gratuito, o projeto que fica 7 dias sem uso é pausado, o que pesa no piloto enquanto quem paga a infraestrutura não estiver decidido (C09).
 
 ---
 
-## As decisões em aberto
+## Decisões de stack
 
-### Backend próprio ou gerenciado
+Tomadas em 21/09/2026, nas respostas do quadro 03.
 
-| Caminho | A favor | Contra |
-|---|---|---|
-| **Próprio** (PostgreSQL + PostGIS) | Restrições declarativas de RN19 e RN02; consulta geográfica real; controle do motor | Mais infraestrutura para cinco pessoas operarem |
-| **Gerenciado** (Supabase, Firebase) | Autenticação e push prontos; menos operação | Parte das garantias vira código de aplicação; sem transação multi-chave, RN19 deixa de ser garantia |
+### Backend: Supabase
 
-O critério não deveria ser preço nem familiaridade, e sim: **onde RN19 continua sendo uma garantia?** Confirmação dupla é o erro que "destrói confiança de uma vez só", e é a única regra cuja violação é irreversível.
+Supabase, com Postgres e PostGIS, autenticação, Edge Functions, `pg_cron` e `pgmq` (B02, B06). Começa no plano gratuito; a migração para backend próprio é reavaliada a partir de certa rentabilidade.
 
-### Cache local no cliente
+O critério que este documento propunha era *onde RN19 continua sendo uma garantia?* — e a resposta favorece o Supabase: é Postgres de verdade, então o `UPDATE` condicional da confirmação e o `EXCLUDE` de turnos sobrepostos continuam declarativos, dentro de funções que os três clientes chamam. O que muda de lugar está em [[07 - Arquitetura/Modelagem de Banco de Dados#No Supabase|No Supabase]].
 
-O Documento de Requisitos deixa "SwiftData ou Core Data" em aberto. Para o uso previsto — cache de turnos confirmados por 24h (RNF06) e fila de ações — os dois servem. SwiftData é mais direto e combina com `@Observable`; Core Data tem migração mais madura. Como o protocolo `CacheLocal` isola a escolha, ela pode ser adiada até o primeiro cache real, mas não além.
+### Cache local: SwiftData
+
+SwiftData (B19). Para o uso previsto — cache de turnos confirmados por 24 horas (RNF06) e fila de ações —, basta, e combina com `@Observable`. Exige iOS 17 ou superior, e por isso RNF04 sobe de iOS 16 para iOS 17. O protocolo `CacheLocal` continua isolando a escolha.
+
+### Push: FCM
+
+FCM nos dois sistemas (B17); no iOS, o FCM entrega pela APNs. Um provedor só, disparado pela mesma Edge Function do despacho.
+
+### Testes
+
+Swift Testing para a lógica e XCTest só para os testes de interface, com XCUITest (B21). Os dois convivem no mesmo projeto — ver [[07 - Arquitetura/Diagrama de Classe#Como isso é testado|Como isso é testado]].
 
 ---
 
@@ -225,30 +220,30 @@ O Documento de Requisitos deixa "SwiftData ou Core Data" em aberto. Para o uso p
 
 Em ordem de dependência, não de esforço:
 
-1. **Banco com as nove tabelas do MVP** e as restrições de RN19, RN02, RN18 e RN20.
-2. **Especificação OpenAPI dos recursos acima**, antes do primeiro cliente — é o que permite iOS, Android e web avançarem em paralelo.
-3. **API de autenticação, vaga, candidatura e confirmação**, suficiente para o ciclo fechar.
-4. **Motor de despacho com uma leva só.** Levas sucessivas são refinamento; despachar para os elegíveis certos é a tese.
-5. **Push no iOS e no Android.** Sem notificação o produto não existe.
-6. **App iOS com os quatro fluxos**: publicar, receber e candidatar, registrar turno, avaliar.
-7. **Painel de Operação, ainda que uma lista.** É "o que impede o negócio de quebrar no primeiro mês".
+1. **Projeto Supabase com as tabelas do MVP** e as restrições de RN19, RN02, RN18, RN20, RN21, RN22 e RN24.
+2. **Especificação das tabelas e funções RPC das rotas centrais**, antes do primeiro cliente — é o que permite iOS, Android e web avançarem em paralelo.
+3. **Funções de autenticação, vaga, candidatura, confirmação e check-in**, suficientes para o ciclo fechar.
+4. **Motor de despacho** com elegibilidade, teto e agrupamento (RN05, RN23), e os jobs de lembrete, alerta e fechamento. Não há levas: notificar os elegíveis certos, sem inundar ninguém, é a tese.
+5. **Push pelo FCM no iOS e no Android.** Sem notificação o produto não existe.
+6. **App iOS com os quatro fluxos** — publicar, receber e candidatar, registrar turno, avaliar —, mais excluir a conta (RF25) e denunciar e bloquear (RF26), que a App Store exige.
+7. **Alerta de vaga vazia e confirmação de check-in manual no app do Estabelecimento**, e o Painel na web quando a web entrar. É o que impede o turno de falhar em silêncio.
 
-Fica para depois sem prejuízo do ciclo: escala em lote (RF19), aval externo (RF17), exportação (RF22), suporte durante o turno (RF23).
+Fica para depois sem prejuízo do ciclo: escala em lote (RF19), exportação (RF22) e o atalho de suporte por e-mail (RF23). Para 13/11, o iOS é o mínimo; Android e web entram assim que couberem (B03).
 
 ---
 
-## Decisões que este documento abre
+## Decisões respondidas em 21/09/2026
 
-| # | Decisão | Quando precisa estar respondida |
+| # | Decisão | Resposta |
 |---|---|---|
-| D6 | O despacho roda como serviço próprio ou dentro da API | Antes da primeira leva real; afeta o orçamento de 30s de RNF03 |
-| D7 | Cache local: SwiftData ou Core Data | Antes do primeiro cache; o protocolo isola até lá |
-| D9 | Backend próprio ou gerenciado | Antes da primeira linha de backend — muda o significado de metade das restrições |
-| D10 | Nativo nas três plataformas ou núcleo compartilhado | Antes de começar o Android. Confirmar antes com a Academy o que "iOS nativo" exige |
-| D11 | A especificação OpenAPI é escrita antes ou junto do backend | Antes, se os três clientes forem construídos em paralelo |
-| D13 | Provedor de push no Android (FCM ou alternativa) | Quando o Android entrar |
+| D6 | O despacho roda como serviço próprio ou dentro da API | Fora da requisição: publicar só grava e responde; um job separado (Edge Function, `pg_cron` e `pgmq`) faz notificações, agrupamento, teto, lembretes, alertas e fechamentos (B15) |
+| D7 | Cache local: SwiftData ou Core Data | SwiftData, com iOS 17 como mínimo (B19) |
+| D9 | Backend próprio ou gerenciado | Supabase (Postgres com PostGIS); a migração é reavaliada a partir de certa rentabilidade. É a mesma decisão da D5 (B02, B06) |
+| D10 | Nativo nas três plataformas ou núcleo compartilhado | Nativo: Swift e SwiftUI no iOS, Kotlin no Android. As regras críticas moram no backend, escritas uma vez (B01, B20) |
+| D11 | A especificação é escrita antes ou junto do backend | Antes, pelo menos das rotas centrais; com o Supabase, funções RPC documentadas (B16). Escrita em 22/09: `Frila/Documentos/API/openapi.yaml` |
+| D13 | Provedor de push no Android | FCM, que também entrega no iOS pela APNs (B17) |
 
-Nenhuma bloqueia o protótipo de baixa fidelidade de 28/09. Todas bloqueiam a primeira versão que alguém use de verdade.
+Com as seis respondidas, nada de arquitetura trava a primeira versão que alguém use de verdade. A especificação (D11) foi escrita em 22/09; o que falta é escolher a stack da web.
 
 ---
 ← [[🏠 Início|Início]]

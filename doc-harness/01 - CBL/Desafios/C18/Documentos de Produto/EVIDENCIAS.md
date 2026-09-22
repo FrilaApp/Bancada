@@ -68,6 +68,8 @@ Se a escolha pelo avulso for do trabalhador, e não só uma emergência do empre
 
 ### 1.4. Campanha política
 
+> **Campanha política saiu do radar do produto em 21/09/2026.** A evidência fica registrada como oportunidade futura.
+
 **Dado.** A Portaria TSE nº 444/2026 fixa os limites de contratação, direta ou terceirizada, de pessoal para militância e mobilização de rua nas Eleições Gerais de 2026. Em municípios com até 30 mil eleitores, o limite é 1% do eleitorado. Em cidades maiores e no Distrito Federal, começa em 300 pessoas e sobe uma contratação a cada mil eleitores adicionais. O limite vale para a chapa inteira: candidato, vice e suplentes. Estourar o teto pode configurar corrupção eleitoral e abuso de poder econômico, com risco de perda de registro ou diploma. ([TSE](https://www.tse.jus.br/comunicacao/noticias/2026/Julho/tse-divulga-limites-de-contratacao-de-pessoal-para-as-eleicoes-gerais-2026) · [Gazeta do Povo](https://www.gazetadopovo.com.br/eleicoes/2026/tse-divulga-limites-de-contratacao-de-pessoal-para-eleicoes-2026/)) A página do TSE bloqueia acesso automatizado; os números vieram do resumo de busca e da cobertura de imprensa, e **devem ser conferidos na fonte antes de virar decisão**.
 
 O que se pode ler disso, com cuidado: existe volume, porque uma chapa no DF pode contratar centenas de pessoas legalmente, e existe obrigação de registro, porque campanha presta contas e pagamento de pessoal é despesa declarável. Um registro auditável de quem trabalhou, quando e por quanto tem valor específico aqui. `[H]`
@@ -233,7 +235,7 @@ Marketplace de bicos para eventos e hospitalidade, fundado em outubro de 2022 em
 
 ### Freela Serviços
 
-Marketplace nacional que cobre bares, restaurantes, eventos, buffets e campanhas eleitorais (panfletagem, bandeirista, motorista, coordenação), o único overlap direto com o segmento político do Frila. Contratante paga taxa percentual decrescente por volume: Grátis (R$ 0, 20%, 4 vagas/mês), Básico (R$ 49,90/mês, 20%, 30 vagas), VIP (R$ 299,90/mês, 15%, ilimitado), Grandes Redes (R$ 499/mês, 10%, ilimitado). Seguro de acidentes pessoais incluso em toda contratação.
+Marketplace nacional que cobre bares, restaurantes, eventos, buffets e campanhas eleitorais (panfletagem, bandeirista, motorista, coordenação), o único overlap direto com o segmento político, que saiu do radar do produto em 21/09/2026. Contratante paga taxa percentual decrescente por volume: Grátis (R$ 0, 20%, 4 vagas/mês), Básico (R$ 49,90/mês, 20%, 30 vagas), VIP (R$ 299,90/mês, 15%, ilimitado), Grandes Redes (R$ 499/mês, 10%, ilimitado). Seguro de acidentes pessoais incluso em toda contratação.
 
 **Tração declarada, com o maior hiato de todo o grupo.** O contador ao vivo do site mostra 198.232 profissionais cadastrados, mas só **392 contratantes e 203 contratações concluídas**. No Google Play o app tem 1.000+ instalações e 1 avaliação. Não há nenhuma matéria de imprensa independente sobre a empresa, todos os números são autodeclarados, e ela não está registrada no Reclame Aqui.
 
@@ -341,10 +343,10 @@ Perguntas em ordem de importância, as mesmas da seção 6 de [`01-O-PROBLEMA.md
 11. O que faz você aceitar um chamado de alguém que não conhece?
 12. Quanto da sua renda do mês vem de trabalho avulso?
 
-**Sobre os três segmentos**
+**Sobre os segmentos**
 
 13. A dor do produtor de evento é a mesma do dono de bar? Se não for, o nicho aberto se quebra.
-14. Como uma campanha política recruta e paga quem vai para a rua?
+14. Como uma campanha política recruta e paga quem vai para a rua? (fora do radar do produto desde 21/09/2026; fica como oportunidade futura)
 15. Alguma plataforma já chegou ao DF, de fato?
 
 **O que se pode medir sem entrevistar ninguém**

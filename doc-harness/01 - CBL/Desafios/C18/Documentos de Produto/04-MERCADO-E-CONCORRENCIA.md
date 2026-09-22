@@ -12,6 +12,8 @@ tags: [produto, frila]
 
 Como o mercado de trabalho avulso em food service, eventos e campanha política funciona hoje, quem já compete nele, e por que grupo de WhatsApp ainda é o canal dominante apesar dos concorrentes existirem.
 
+> **Campanha política saiu do radar do produto em 21/09/2026.** A evidência fica registrada como oportunidade futura.
+
 Convenções: `[H]` = hipótese ou estimativa, nunca confirmada em campo. Números de tração de concorrentes são **o que cada empresa declara** — nenhum foi auditado, salvo quando sinalizado o contrário. Pesquisa original feita em 2026-09-10, aprofundada em setembro/2026.
 
 Este é o documento de origem da pesquisa de mercado e concorrência. As avaliações de quem trabalha nesses aplicativos estão transcritas em `01-O-PROBLEMA.md` §3.1, o que o Frila propõe em resposta está em `02-O-NEGOCIO.md` e `03-ESPECIFICACAO-DO-PRODUTO.md`, e a versão resumida de tudo, em `README.md`.
@@ -151,7 +153,7 @@ Marketplace de bicos para eventos e hospitalidade, fundada em outubro/2022 em Go
 
 ### Freela Serviços
 
-Marketplace nacional que cobre bares, restaurantes, eventos, buffets e — overlap direto com um dos três segmentos do Frila — **campanhas eleitorais** (panfletagem, bandeirista, motorista, coordenação). Contratante paga taxa percentual decrescente por volume: Grátis (R$0, 20%, 4 vagas/mês) · Básico (R$49,90/mês, 20%, 30 vagas) · VIP (R$299,90/mês, 15%, ilimitado) · Grandes Redes (R$499/mês, 10%, ilimitado). Seguro de acidentes pessoais incluso em toda contratação. Estrutura confirmada em 14/09/2026.
+Marketplace nacional que cobre bares, restaurantes, eventos, buffets e — overlap direto com o segmento de **campanhas eleitorais**, hoje fora do radar do produto — (panfletagem, bandeirista, motorista, coordenação). Contratante paga taxa percentual decrescente por volume: Grátis (R$0, 20%, 4 vagas/mês) · Básico (R$49,90/mês, 20%, 30 vagas) · VIP (R$299,90/mês, 15%, ilimitado) · Grandes Redes (R$499/mês, 10%, ilimitado). Seguro de acidentes pessoais incluso em toda contratação. Estrutura confirmada em 14/09/2026.
 
 **Tração declarada, com o maior hiato de todo o grupo pesquisado:** contador ao vivo do site mostra 198.232 profissionais cadastrados, mas só **392 contratantes e 203 contratações concluídas**. No Google Play, o app tem apenas 1.000+ instalações e 1 avaliação. Não há nenhuma matéria de imprensa independente sobre a empresa — todos os números são autodeclarados, e a empresa não está registrada no Reclame Aqui (sem histórico de confiança).
 
@@ -249,7 +251,7 @@ Fora do Brasil, os players de staffing sob demanda para hospitality cobram marku
 
 **O mercado é mais instável do que a lista de concorrentes sugere à primeira vista.** A Toopa parece ter saído de operação; a Worc publica três números de tração contraditórios na própria home e tem reputação "Não Recomendada"; o controlador do GetNinjas está sob investigação por infiltração do crime organizado no mercado de capitais e não publica balanço desde 2024; a Qwick (referência internacional) tem indícios de processo de falência. Vários concorrentes "estabelecidos" carregam problemas sérios de execução ou de saúde institucional — o que é mais oportunidade do que ameaça para um entrante regional com densidade real.
 
-**A Freela Serviços já atende campanha política** — é o único concorrente com overlap direto nesse segmento do Frila, o que vale investigar mais de perto se a campanha política avançar como prioridade de produto.
+**A Freela Serviços já atende campanha política** — é o único concorrente com overlap direto nesse segmento, que saiu do radar do produto em 21/09/2026. Vale investigar mais de perto se a campanha política voltar a ser prioridade.
 
 ---
 

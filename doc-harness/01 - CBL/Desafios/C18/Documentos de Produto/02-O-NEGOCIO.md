@@ -20,7 +20,7 @@ A evidência que sustenta o problema descrito aqui está em `01-O-PROBLEMA.md`. 
 
 **Frila é uma plataforma onde o contratante publica a vaga — o turno avulso, o "frila", o bico, o job — e o profissional se candidata, com despacho ativo por geolocalização levando a vaga até quem pode aceitá-la, em vez de esperar que alguém a encontre.**
 
-A estratégia é nascer e dominar o Distrito Federal antes de qualquer outra coisa: restaurantes, bares, buffets, casas de evento, festas, eventos sociais, eventos políticos, serviços domésticos, etc. Depois de consolidado aqui, o passo seguinte é o resto do Brasil, e só então outros países.
+A estratégia é nascer e dominar o Distrito Federal antes de qualquer outra coisa: restaurantes, bares, buffets, casas de evento, festas, eventos sociais, serviços domésticos, etc. A plataforma é horizontal: aceita vaga de turno avulso de qualquer setor, e food service e eventos são só o foco da divulgação inicial. Depois de consolidado aqui, o passo seguinte é o resto do Brasil, e só então outros países.
 
 ---
 
@@ -45,9 +45,9 @@ O quanto disso está verificado e o quanto é suposição está em `01-O-PROBLEM
 
 O Frila substitui a incerteza do boca a boca por três garantias operacionais que canais informais não conseguem oferecer:
 
-1. **Despacho ativo:** A vaga vai até o trabalhador certo por geolocalização e disponibilidade em minutos, resolvendo emergências sem que o gestor precise parar o salão.
+1. **Despacho ativo:** A vaga vai até quem tem a função, está perto e está disponível, resolvendo emergências sem que o gestor precise parar o salão.
 2. **Confiança verificável:** A reputação binária mútua ("chamaria de novo?") e a taxa objetiva de comparecimento eliminam o risco de contratar desconhecidos.
-3. **Custo zero e transparência para o trabalhador:** O profissional recebe 100% do valor acordado diretamente do contratante, sem desconto de comissões, sem taxas de intermediação e sem fotos invasivas de documentos.
+3. **Valor integral e transparência para o trabalhador:** O profissional recebe 100% do valor acordado diretamente do contratante, sem comissão descontada do turno e sem fotos invasivas de documentos.
 
 ---
 
@@ -104,7 +104,7 @@ Chapa (Carga e Descarga): Descarga pesada de caminhões e carretas (pago estrita
 Separador de pedidos (Picker / Packer): Montagem de caixas e pacotes de e-commerce durante campanhas ou madrugadas.
 Etiquetador / Conferente auxiliar: Conferência de notas e etiquetagem de volumes.
 5. Limpeza Especializada & Facilities
-A limpeza convencional de residências já possui seus próprios canais, mas a limpeza comercial e pós-evento paga por diária imediata.
+A limpeza comercial e pós-evento paga por diária imediata, e a faxina residencial avulsa também pode ser publicada no Frila.
 
 Limpeza Pré e Pós-Evento: Equipes de faxina pesada para entregar o espaço limpo na manhã seguinte ao show/festa.
 Limpeza Pós-Obra: Diárias com valor mais alto para deixar imóveis recém-reformados prontos para entrega.
@@ -172,33 +172,33 @@ Buffet, produtora, empresa de staff. Formatura, casamento, corporativo.
 
 ## 5. Como funciona — o ciclo de um frila
 
-O mesmo ciclo, do ponto de vista de produto, com os três apps e os pilares da experiência, está em `03-ESPECIFICACAO-DO-PRODUTO.md`.
+O mesmo ciclo, do ponto de vista de produto, com os dois apps e os pilares da experiência, está em `03-ESPECIFICACAO-DO-PRODUTO.md`.
 
 ### 5.1. Publicação
 
-O estabelecimento publica uma vaga: **um turno, com data, hora de início e fim, função, local e valor**. Formato padronizado, poucos campos, publicável em menos de um minuto de celular — porque quem publica está no meio de um problema, não sentado num computador.
+O estabelecimento publica uma vaga: **um turno, com função, data, hora de início e fim, endereço, valor, número de posições, o que está incluso (refeição, transporte e material próprio) e quem recebe o profissional no local**. Traje exigido, participação no rateio dos 10% e observações são opcionais. Formato padronizado, poucos campos, publicável em menos de um minuto de celular — porque quem publica está no meio de um problema, não sentado num computador.
 
 ### 5.2. Despacho ativo
 
-A vaga não fica só num mural esperando ser encontrada. Ela é **notificada ativamente** aos profissionais que atendem os critérios: função compatível, dentro do raio, disponíveis naquela janela, e com histórico aceitável — por geolocalização, então quem está mais perto e mais qualificado sabe primeiro.
+A vaga não fica só num mural esperando ser encontrada. Ela é **notificada ativamente**, de uma vez, aos profissionais que atendem os critérios: têm a função, estão disponíveis naquele horário e estão a até 15 km do local. A equipe de confiança do estabelecimento recebe mesmo estando mais longe.
 
-Prioridade de envio depende de histórico e de taxa de comparecimento. Quem aparece sempre vê primeiro. Isso é o principal incentivo do sistema e não custa dinheiro.
+Não há ordem de envio, e a notificação não pode ser comprada. Para ninguém ser inundado de avisos, cada profissional recebe no máximo uma notificação a cada 30 minutos, e vagas próximas no tempo chegam agrupadas. A taxa de comparecimento aparece no perfil, para o contratante decidir, mas não muda quem é avisado.
 
-O profissional também pode navegar pelas vagas abertas na região — a busca existe — mas no caso urgente, quem só procura chega tarde. O despacho ativo é o que decide a maioria dos casos.
+O profissional também pode navegar pelas vagas abertas — a lista mostra todo o DF, das mais próximas para as mais distantes, com filtros —, mas no caso urgente, quem só procura chega tarde. O despacho ativo é o que decide a maioria dos casos.
 
 ### 5.3. Candidatura
 
 Um toque. Sem carta de apresentação, sem processo seletivo longo, sem negociação de valor. O valor já está no anúncio.
 
-O primeiro que se candidata e é aprovado leva, no modo padrão de urgência. Quando o estabelecimento quiser escolher entre candidatos — o que faz sentido para eventos com antecedência — ele vê quem se candidatou e decide.
+O primeiro que se candidata e é aprovado leva, no modo padrão de urgência. Quando o estabelecimento quiser escolher entre candidatos — o que faz sentido para eventos com antecedência, e só vale para vaga que começa em mais de 24 horas — ele vê quem se candidatou e decide. Se não escolher até 24 horas antes do turno, a vaga fecha sozinha e os candidatos ficam livres.
 
 ### 5.4. Confirmação
 
-Os dois lados recebem a confirmação com local, horário, função, valor e o canal de contato direto liberado (WhatsApp e telefone). A partir daqui existe compromisso formal registrado no sistema.
+Os dois lados recebem a confirmação com local, horário, função, valor e o canal de contato direto liberado (WhatsApp e telefone), que fica visível até 7 dias depois do fim do turno. A tela de aceite avisa que o contato será mostrado à outra parte. A partir daqui existe compromisso formal registrado no sistema.
 
 ### 5.5. Execução do turno e check-in
 
-O sistema envia lembrete inteligente pré-turno duas horas antes do início. No local, o profissional realiza o check-in geolocalizado confirmando sua presença e o check-out ao término da jornada, gerando rastro auditável de horas trabalhadas.
+O sistema envia lembrete pré-turno 24 horas e 3 horas antes do início. No local, o profissional faz o check-in geolocalizado, a até 200 metros do endereço, e o check-out ao término da jornada, gerando rastro auditável de horas trabalhadas. A localização é lida só no toque, nunca em segundo plano. Se o GPS falhar, o check-in manual vale depois que o contratante confirma; sem confirmação, o turno fica "não verificado". Quinze minutos depois do início sem check-in, o contratante é avisado e decide se espera ou reabre a vaga. Se o turno passa do horário previsto, os dois recebem um aviso.
 
 ### 5.6. Pagamento
 
@@ -211,7 +211,7 @@ Os dois avaliam. E a pergunta principal não é uma nota de 1 a 5 — é binári
 
 > **"Você chamaria essa pessoa de novo? ou você trabalharia nesse local de novo?"**
 
-Nota média com poucas avaliações não informa nada. "Sete de sete chamariam de novo" informa. É também a pergunta que o maître já faz de cabeça, e — o detalhe que importa mais — é **herdável do mundo informal**: um profissional pode chegar ao Frila com avais de quem já trabalhou com ele fora do app, em vez de começar em zero.
+Nota média com poucas avaliações não informa nada. "Sete de sete chamariam de novo" informa. É também a pergunta que o maître já faz de cabeça. Só avalia quem trabalhou junto pelo Frila, e só depois de um turno com presença verificada: quem não compareceu não é avaliado, e a falta aparece na taxa de comparecimento.
 
 ---
 
@@ -223,7 +223,7 @@ Três coisas, em ordem de força:
 
 A pesquisa em `04-MERCADO-E-CONCORRENCIA.md` reforça essa aposta: dos 11 concorrentes brasileiros mapeados, o único com presença comprovada no DF é o GetNinjas, que é marketplace geral e não especializado neste nicho. A janela existe, mas é janela, não vantagem permanente.
 
-**A certeza, não a velocidade.** O grupo de WhatsApp responde em cinco minutos e é grátis. Não dá para ganhar dele em velocidade nem em preço. Dá para ganhar em **saber quem vem** — histórico verificável, substituição garantida se a pessoa furar, horas registradas.
+**A certeza, não a velocidade.** O grupo de WhatsApp responde em cinco minutos e é grátis. Não dá para ganhar dele em velocidade nem em preço. Dá para ganhar em **saber quem vem** — histórico verificável, reabertura automática da vaga se a pessoa furar, horas registradas.
 
 **A reputação portátil, no médio prazo.** Quando o negócio expandir para fora do DF, o profissional que construiu histórico aqui carrega esse histórico para o próximo mercado. Um app de staffing puramente local nunca acumula isso.
 ---
@@ -236,15 +236,15 @@ Esta lista existe para impedir que o escopo volte a inchar.
 |---|---|
 | **Um mural de vagas passivo** | A vaga existe, mas quem resolve a urgência é o despacho ativo — currículo e processo seletivo longo não têm lugar num turno que começa em duas horas |
 | **Uma plataforma de emprego CLT** | Contratação efetiva é outro negócio, com outro ciclo e outro comprador |
-| **Um marketplace genérico de trabalho** | Confiança não transfere entre setores, e a diluição mata a densidade |
+| **Uma plataforma de trabalho remoto, no MVP** | O MVP é só presencial: sem presença não há check-in nem notificação por distância. O remoto entra depois |
 | **Uma rede social profissional** | Não há feed, não há seguidores, não há conteúdo |
 ---
 
 ## 8. Plataformas
 
-O aplicativo terá **iOS e Android e versão web**, com Android como prioridade de alcance: é a plataforma da maioria esmagadora do trabalhador de base no Brasil. Lançar só em iOS excluiria a maior parte do lado da oferta — e sem oferta densa no DF não há produto, mesmo que gente não seja o recurso escasso (§4.1).
+O aplicativo terá **iOS e Android e versão web**, com Android como prioridade de alcance: é a plataforma de cerca de 75% do uso de celular no Brasil (75,45%, StatCounter, ago/2026). Lançar só em iOS excluiria a maior parte do lado da oferta — e sem oferta densa no DF não há produto, mesmo que gente não seja o recurso escasso (§4.1).
 
-A decisão entre nativo nas duas plataformas ou uma base compartilhada ainda não foi tomada. A restrição de negócio é uma só: **Android não pode ficar para depois.**
+Os apps são nativos: Swift/SwiftUI no iOS e Kotlin no Android, com as regras críticas no backend (Supabase), escritas uma vez para as três versões. Para a entrega na loja em 13/11, o iOS é o mínimo; Android e web são a meta. A restrição de negócio continua: **Android não pode ficar para depois.**
 
 ---
 

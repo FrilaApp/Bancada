@@ -7,61 +7,49 @@ tags: [arquitetura, engenharia, pendencias, frila]
 
 # Pendências Técnicas — Antes de Colocar a Mão no Código
 
-Extraído dos três documentos de arquitetura (T-0024): `Diagrama de Classe`, `Modelagem de Banco de Dados` e `Diagrama de Arquitetura`, em `doc-harness/07 - Arquitetura/`. PDFs correspondentes em `Documentos/PDF/`.
+Extraído dos documentos de arquitetura (T-0024): [[07 - Arquitetura/Diagrama de Classe|Diagrama de Classe]], [[07 - Arquitetura/Modelagem de Banco de Dados|Modelagem de Banco de Dados]] e [[07 - Arquitetura/Diagrama de Arquitetura|Diagrama de Arquitetura]], em `doc-harness/07 - Arquitetura/`. Os PDFs correspondentes ficam no repositório do Frila, em `Documentos/Diagramas:Documentos/`.
 
-**Objetivo deste arquivo:** listar toda decisão em aberto que a equipe precisa fechar antes do backend e do Android começarem. Serve de fonte para atualizar o FigJam (board Challenge 18 → seção "Arquitetura Técnica · Frila") — quem tiver limite de API livre pode puxar os itens abaixo e colar nos cartões correspondentes.
+**Objetivo deste arquivo:** listar toda decisão técnica que a equipe precisava fechar antes do backend e do Android começarem. Gerado em 17/09/2026.
 
-Gerado em 17/09/2026.
+> [!info] Atualizado em 22/09/2026
+> As treze decisões foram respondidas no quadro 03 de pendências do FigJam, em 21/09/2026, com um ajuste na D8 em 22/09. Este arquivo passa a registrar as respostas; o código de resposta de cada uma (B01, D07…) é o da pergunta no quadro.
 
 ---
 
-## 🔴 Bloqueiam a v1 — precisam de resposta antes da primeira linha de código
+## ✅ Respondidas em 21/09/2026
 
-Nenhuma delas trava o protótipo de baixa-fidelidade. Todas travam a primeira versão que alguém use de verdade.
-
-| # | Decisão | Pergunta direta | Por que importa |
+| # | Decisão | Resposta | Pergunta no quadro |
 |---|---|---|---|
-| D9 | Backend | Próprio (PostgreSQL + PostGIS) ou gerenciado (Supabase, Firebase)? | Muda o significado de metade das restrições do banco — sem transação multi-chave, RN19 (confirmação dupla) deixa de ser garantia do banco e vira código de aplicação. |
-| D10 | Plataforma | iOS nativo com núcleo de regras compartilhado, ou nativo puro nas 3 plataformas (iOS, Android, Web)? | Confirmar **antes com a Academy** o que "iOS nativo" exige — a leitura errada elimina a opção de núcleo compartilhado por completo. Trocar depois custa reescrever o que já funciona. |
-| D6 | Despacho | O motor de despacho roda como serviço próprio ou dentro da API? | Afeta o orçamento de 30 segundos da primeira leva (RNF03). |
-| D11 | Contrato | A especificação OpenAPI é escrita antes do backend, ou junto com ele? | Importa se os 3 clientes (iOS, Android, Web) forem construídos em paralelo — sem contrato fechado antes, cada um implementa uma leitura diferente. |
-| D13 | Push Android | Provedor de push no Android: FCM ou alternativa? | Precisa de resposta assim que o Android entrar em desenvolvimento. |
+| D1 | Turnos sobrepostos | Aprovada: virou RN21, garantida no banco por `EXCLUDE USING gist`. O profissional não pode aceitar dois turnos que se cruzam | B04 |
+| D2 | Tamanho da leva e intervalo entre levas | Não há levas: a notificação sai de uma vez para quem tem a função, está disponível e a até 15 km do local, e a equipe de confiança recebe mesmo além. Teto de uma notificação a cada 30 minutos por profissional, com agrupamento (RN23) | D07 |
+| D3 | Prazo até a candidatura expirar | A candidatura vale até a vaga fechar. Modo seleção só para vaga que começa em mais de 24 horas; sem escolha até 24 horas antes, a vaga fecha sozinha e os candidatos são liberados (RN24) | D05 |
+| D4 | Janela crítica fixa ou por tipo de vaga | Um padrão igual para todas — 3 horas antes do início —, que o contratante ajusta ao publicar. O alerta chega ao contratante por notificação | B18 |
+| D5 | PostgreSQL com PostGIS, ou backend gerenciado | É a mesma decisão da D9: Supabase, que é Postgres com PostGIS | B06 |
+| D6 | O despacho roda como serviço próprio ou dentro da API | Fora da requisição: publicar só grava e responde; um job separado (Edge Function, `pg_cron` e fila `pgmq`) faz notificações, agrupamento, teto, lembretes, alertas e fechamentos | B15 |
+| D7 | Cache local | SwiftData, com iOS 17 como mínimo (RNF04 sobe de iOS 16 para iOS 17) | B19 |
+| D8 | Domínio compartilhado entre plataformas | Não há pacote de código comum entre Swift e Kotlin. As regras críticas moram no backend, em funções do Supabase, escritas uma vez; cada app tem o próprio domínio para a tela e os testes (ajustada em 22/09) | B20 |
+| D9 | Backend | Supabase (Postgres + PostGIS, autenticação, Edge Functions, `pg_cron`, `pgmq`). Começa no plano gratuito, que atende até 50 mil usuários ativos por mês; a migração é reavaliada a partir de certa rentabilidade | B02 |
+| D10 | Plataforma | Nativo em cada plataforma: Swift e SwiftUI no iOS, Kotlin no Android. Para a loja em 13/11, o iOS é o mínimo; Android e web são a meta | B01, B03 |
+| D11 | Contrato | A especificação é escrita antes do backend, pelo menos das rotas centrais (publicar vaga, candidatar-se, confirmar, check-in, avaliar). Com o Supabase, o contrato são as funções RPC documentadas. Escrita em 22/09: `Frila/Documentos/API/openapi.yaml` (OpenAPI 3.1, v0.1.0) | B16 |
+| D12 | Testes | Swift Testing para a lógica e XCTest só para a interface, com XCUITest. Os dois convivem no mesmo projeto; os 195 testes XCTest da Bancada ficam como estão | B21 |
+| D13 | Push | FCM nos dois sistemas; no iOS, o FCM entrega pela APNs | B17 |
 
 ---
 
-## 🟡 Pendências menores — não travam o protótipo, mas precisam de dono e prazo
+## ✅ Continua valendo
 
-| # | Decisão | Pergunta direta |
-|---|---|---|
-| D2 | Despacho | Qual o tamanho da leva e o intervalo entre levas? |
-| D3 | Candidatura | Qual o prazo até a candidatura expirar? Sem prazo, o modo seleção (RF09) trava a posição indefinidamente. |
-| D4 | Urgência | A janela crítica é fixa ou varia por tipo de vaga? (buffet de formatura ≠ bar de sexta) |
-| D7 | Cache local | SwiftData ou Core Data? A escolha pode esperar o primeiro cache real — está isolada atrás do protocolo `CacheLocal`. |
-| D8 | Domínio compartilhado | O domínio vira pacote compartilhável entre plataformas? **Depende da resposta de D10.** |
-| D12 | Testes | Manter XCTest (195 testes já escritos na Bancada) ou migrar para Swift Testing? Recomendação dos documentos: manter. |
-
----
-
-## ✅ Já decidido — não precisa de confirmação, só de leitura
-
-Para não gerar retrabalho perguntando algo que os documentos já fecharam:
-
-- **D1 — Turnos sobrepostos:** vira restrição de banco (`EXCLUDE USING gist`). Nada nos requisitos originais impedia o mesmo profissional aceitar dois turnos que se cruzam — o que derrubaria a taxa de comparecimento dele por falha do sistema.
-- **Domínio isolado:** nenhuma seta sai da camada de domínio (Clean Architecture/MVVM). Permite trocar a regra de elegibilidade sem tocar em tela, rede ou banco.
-- **Android e Web não são hipótese:** o Documento de Visão fecha os dois como escopo confirmado — não `[H]`. (Os 3 documentos técnicos foram corrigidos nesta revisão; se algum outro material do projeto ainda marcar Android/Web como hipótese, está desatualizado.)
-- **Confirmação dupla:** tratada como corrida entre requisições. A API responde `200` (confirmado), `409` (já ocupado por outra corrida) ou `422` (regra de negócio violada).
+- **Domínio isolado:** nenhuma seta sai da camada de domínio (Clean Architecture/MVVM). Permite testar em milissegundos, sem tela, rede ou banco, o que o app decide sozinho.
+- **Android e web continuam no escopo:** para a entrega na loja em 13/11, o iOS é o mínimo, e Android e web entram assim que couberem (B03). O Android segue como prioridade de alcance.
+- **Confirmação dupla:** tratada como corrida entre requisições. A resposta é `200` (confirmado), `409` (já ocupado por outra corrida) ou `422` (regra de negócio violada). Com o Supabase, é o `UPDATE` condicional dentro de uma função RPC.
 
 ---
 
 ## ⚙️ Processo — não é decisão técnica, é etapa que falta acontecer
 
-- [ ] Revisão pelos desenvolvedores (Cauê, João Paulo, Matheus) dos três documentos técnicos.
+- [ ] Revisão pelos desenvolvedores (Cauê, João Paulo, Matheus) dos quatro documentos técnicos — Classe, Banco de Dados, Arquitetura e Casos de Uso. Até 21/09, ninguém tinha revisado (B05).
 - [ ] Curadoria e padronização visual pela Júlia Clovandi, conforme [[04 - Tarefas/T-0012 - Coletar decisões técnicas e gerar diagramas de engenharia|T-0012]].
-- [ ] Atualizar o FigJam do board (Challenge 18) com os itens deste arquivo — a seção "Arquitetura Técnica · Frila" já existe com as colunas "Decisões Fechadas" e "Bloqueiam a v1" preenchidas; falta a coluna **"Pendências Menores"** (os 6 itens D2/D3/D4/D7/D8/D12 acima) e a nota de processo.
-- [ ] Corrigir um cartão desatualizado que já existia na seção "Dúvidas" do FigJam: ele pergunta sobre "duas plataformas" (iOS/Android); hoje são três (iOS, Android e Web), com Web e Android como escopo confirmado, não hipótese. Sugestão de texto novo:
-  > iOS nativo puro ou núcleo de regras compartilhado com Android e Web?
-  >
-  > Decisão D10 ainda aberta — Android e Web já são escopo confirmado, não hipótese.
+- [x] Escrever a especificação das rotas centrais como funções RPC do Supabase (D11): `Frila/Documentos/API/openapi.yaml`, 22/09/2026.
+- [ ] Atualizar a seção "Arquitetura Técnica · Frila" do FigJam (board Challenge 18): as decisões D1 a D13 passam para a coluna "Decisões Fechadas", com as respostas acima.
 
 ---
 
@@ -69,7 +57,11 @@ Para não gerar retrabalho perguntando algo que os documentos já fecharam:
 
 | Documento | Onde |
 |---|---|
-| Diagrama de Classe | `doc-harness/07 - Arquitetura/Diagrama de Classe.md` · `Documentos/PDF/Diagrama de Classe.pdf` |
-| Modelagem de Banco de Dados | `doc-harness/07 - Arquitetura/Modelagem de Banco de Dados.md` · `Documentos/PDF/Modelagem de Banco de Dados.pdf` |
-| Diagrama de Arquitetura | `doc-harness/07 - Arquitetura/Diagrama de Arquitetura.md` · `Documentos/PDF/Diagrama de Arquitetura.pdf` |
-| Tarefa que originou os 3 documentos | `doc-harness/04 - Tarefas/T-0024 - Diagramas de classe, banco de dados e arquitetura.md` |
+| Diagrama de Classe | `doc-harness/07 - Arquitetura/Diagrama de Classe.md` · `Documentos/Diagramas:Documentos/classes/Diagrama de Classe.pdf` |
+| Modelagem de Banco de Dados | `doc-harness/07 - Arquitetura/Modelagem de Banco de Dados.md` · `Documentos/Diagramas:Documentos/banco-de-dados/Modelagem de Banco de Dados.pdf` |
+| Diagrama de Arquitetura | `doc-harness/07 - Arquitetura/Diagrama de Arquitetura.md` · `Documentos/Diagramas:Documentos/arquitetura/Diagrama de Arquitetura.pdf` |
+| Diagrama de Casos de Uso | `doc-harness/07 - Arquitetura/Diagrama de Casos de Uso.md` · `Documentos/Diagramas:Documentos/casos-de-uso/Diagrama de Casos de Uso.pdf` |
+| Tarefa que originou os documentos | `doc-harness/04 - Tarefas/T-0024 - Diagramas de classe, banco de dados e arquitetura.md` |
+
+---
+← [[🏠 Início|Início]]

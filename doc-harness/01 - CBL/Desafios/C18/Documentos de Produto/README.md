@@ -12,7 +12,7 @@ tags: [produto, frila]
 
 Frila é uma plataforma para contratar gente por turno avulso. O estabelecimento publica o turno que precisa cobrir, a vaga é enviada para quem está perto e pode aceitar, e a pessoa se candidata com um toque. Depois do turno, os dois respondem se chamariam o outro de novo.
 
-A estratégia é territorial. Nascer no Distrito Federal e dominar aqui antes de abrir qualquer outra praça: restaurantes, bares, buffets, casas de evento, festas, eventos sociais, eventos políticos, serviços domésticos. Consolidado o DF, o passo seguinte é o resto do Brasil, e só então outros países.
+A estratégia é territorial. Nascer no Distrito Federal e dominar aqui antes de abrir qualquer outra praça: restaurantes, bares, buffets, casas de evento, festas, eventos sociais, serviços domésticos. A plataforma é horizontal: aceita vaga de turno avulso de qualquer setor, e food service e eventos são só o foco da divulgação inicial. Consolidado o DF, o passo seguinte é o resto do Brasil, e só então outros países.
 
 Este documento é a visão geral. Ele reúne, em texto corrido, o que está espalhado pelos cinco documentos numerados do projeto, e o lastro de cada número está em [EVIDENCIAS.md](EVIDENCIAS.md), com fonte, data e o que não foi possível verificar. Quando alguma seção aqui não bastar, o rodapé indica qual documento abrir.
 
@@ -48,7 +48,7 @@ Os tipos de trabalho que cabem num turno avulso, por setor.
 
 **Logística, e-commerce e galpões.** Chapa para carga e descarga, pago estritamente por diária ou por caminhão. Separador de pedidos, etiquetador, conferente auxiliar, muitas vezes em campanhas ou madrugadas.
 
-**Limpeza especializada e facilities.** Faxina pesada pré e pós-evento, para entregar o espaço limpo na manhã seguinte ao show. Limpeza pós-obra, de diária mais alta. Cobertura de portaria e zeladoria em folgas e faltas imprevistas. A limpeza convencional de residências já tem seus próprios canais e fica de fora.
+**Limpeza especializada e facilities.** Faxina pesada pré e pós-evento, para entregar o espaço limpo na manhã seguinte ao show. Limpeza pós-obra, de diária mais alta. Cobertura de portaria e zeladoria em folgas e faltas imprevistas. A faxina residencial avulsa também pode ser publicada.
 
 **Beleza, bem-estar e pets.** Escovista e auxiliar de cabeleireiro, manicure extra, massoterapeuta para ativações corporativas e SIPATs, auxiliar de banho e tosa, dog walker de reforço. Picos de quinta a sábado e em vésperas de feriado.
 
@@ -74,41 +74,41 @@ Daí a assimetria que orienta a entrada no mercado. O evento é como se constró
 
 ## Como funciona
 
-**Publicar.** O estabelecimento publica um turno com data, hora de início e fim, função, local e valor. Formato padronizado, poucos campos, publicável em menos de um minuto pelo celular, porque quem publica está no meio de um problema e não sentado num computador.
+**Publicar.** O estabelecimento publica um turno com função, data, hora de início e fim, endereço, valor, número de posições, o que está incluso (refeição, transporte, material próprio) e quem recebe no local. Traje, rateio dos 10% e observações são opcionais. Formato padronizado, poucos campos, publicável em menos de um minuto pelo celular, porque quem publica está no meio de um problema e não sentado num computador.
 
-**Despacho ativo.** A vaga não fica num mural esperando ser encontrada. Ela é notificada a quem atende os critérios: função compatível, dentro do raio, disponível naquela janela, com histórico aceitável. A prioridade de envio depende da taxa de comparecimento, então quem aparece sempre vê primeiro. Esse é o principal incentivo do sistema e não custa dinheiro a ninguém. O profissional também pode navegar pelas vagas abertas na região, mas em urgência quem só procura chega tarde.
+**Despacho ativo.** A vaga não fica num mural esperando ser encontrada. Ela é notificada, de uma vez, a quem atende os critérios: tem a função, está disponível naquele horário e está a até 15 km do local. A equipe de confiança do estabelecimento recebe mesmo mais longe. Não há ordem de envio, a notificação não pode ser comprada, e cada profissional recebe no máximo uma a cada 30 minutos, com vagas próximas no tempo agrupadas. O profissional também pode navegar pela lista com todas as vagas do DF, das mais próximas para as mais distantes, mas em urgência quem só procura chega tarde.
 
-**Candidatura.** Um toque. Sem carta de apresentação, sem processo seletivo, sem negociação: o valor já está no anúncio. No modo de urgência, o primeiro aprovado leva. Para eventos com antecedência, o estabelecimento vê quem se candidatou e escolhe.
+**Candidatura.** Um toque. Sem carta de apresentação, sem processo seletivo, sem negociação: o valor já está no anúncio. No modo de urgência, o primeiro aprovado leva. Para eventos com mais de 24 horas de antecedência, o estabelecimento vê quem se candidatou e escolhe; se não escolher até 24 horas antes, a vaga fecha sozinha.
 
-**Confirmação.** Os dois lados recebem local, horário, função, valor e um contato. A partir daqui existe compromisso registrado, e eles podem falar por e-mail ou WhatsApp.
+**Confirmação.** Os dois lados recebem local, horário, função, valor e um contato, visível até 7 dias depois do fim do turno. A partir daqui existe compromisso registrado, e eles podem falar por e-mail ou WhatsApp.
 
-**O turno.** Lembrete antes de começar e um canal de suporte aberto enquanto o turno acontece.
+**O turno.** Lembrete 24 horas e 3 horas antes, check-in e check-out geolocalizados a até 200 metros do endereço, alerta ao contratante se o profissional não chegar em 15 minutos, e suporte por e-mail com prazo de resposta declarado. Os dois lados podem denunciar e bloquear.
 
 **Pagamento.** Combinado diretamente entre as duas partes. O Frila não processa pagamento.
 
-**Reputação.** Depois do turno, os dois avaliam, e a pergunta não é uma nota de 1 a 5. É binária: você chamaria essa pessoa de novo, você trabalharia nesse local de novo. Nota média com poucas avaliações não informa nada; "sete de sete chamariam de novo" informa. É a pergunta que o maître já faz de cabeça. E ela é herdável do mundo informal: quem já trabalhou com alguém fora do app pode atestar por essa pessoa, em vez de deixar todo mundo começar em zero.
+**Reputação.** Depois do turno, os dois avaliam, e a pergunta não é uma nota de 1 a 5. É binária: você chamaria essa pessoa de novo, você trabalharia nesse local de novo. Nota média com poucas avaliações não informa nada; "sete de sete chamariam de novo" informa. É a pergunta que o maître já faz de cabeça. Só avalia quem trabalhou junto pelo Frila, e só depois de um turno com presença verificada.
 
-**Organizar equipe.** O estabelecimento reúne quem já trabalhou bem por lá e chama essas pessoas primeiro. Para eventos, monta a escala de uma formatura ou de um casamento com semanas de antecedência, em vez de vaga por vaga.
+**Organizar equipe.** O estabelecimento reúne quem já trabalhou bem por lá, e essas pessoas recebem as vagas da casa mesmo estando longe. Para eventos, monta a escala de uma formatura ou de um casamento com semanas de antecedência, em vez de vaga por vaga.
 
-### Os três produtos
+### Os dois apps
 
-São três interfaces com necessidades diferentes o suficiente para serem tratadas separadamente, sobre uma base comum.
+São duas interfaces com necessidades diferentes o suficiente para serem tratadas separadamente, sobre uma base comum.
 
 O **app do profissional** é usado na rua, no intervalo, em Android de entrada, com sinal ruim e plano de dados limitado. Precisa ser leve, funcionar offline para leitura e notificar com confiabilidade.
 
 O **app do estabelecimento** tem dois contextos opostos. No celular, sob estresse: são 16h de sexta, faltou gente, o maître está no salão. No computador, planejando: o operador de buffet monta a escala de uma formatura de 40 pessoas duas semanas antes.
 
-O **painel de operação** é interno e web. Costuma ser esquecido, e é o que impede o negócio de quebrar no primeiro mês. Quando um turno não preenche às 17h30 de sexta, alguém da operação precisa ver, ligar para três pessoas e resolver na mão.
+O **painel do gestor** fica na versão web do app do estabelecimento: é onde o gestor acompanha vagas, contratados, check-ins e turnos. Não existe operação manual da equipe Frila; quando um turno não preenche, o contratante recebe o alerta no celular, 3 horas antes do início.
 
 ### Os pilares
 
 **Simplicidade.** Vaga publicada em menos de 60 segundos, poucos campos, candidatura em um toque. Cada fricção a mais é um turno que não é preenchido a tempo.
 
-**Confiança.** Reputação binária, taxa de comparecimento como sinal objetivo, aval herdado do mundo informal, avaliação nos dois sentidos. É o que substitui o "eu já conheço essa pessoa" por algo que funciona entre desconhecidos.
+**Confiança.** Reputação binária, taxa de comparecimento como sinal objetivo, avaliação nos dois sentidos, denúncia e bloqueio. É o que substitui o "eu já conheço essa pessoa" por algo que funciona entre desconhecidos.
 
-**Rapidez.** Despacho ativo por geolocalização resolve uma urgência em minutos. A vaga vai até quem é elegível.
+**Rapidez.** Despacho ativo por proximidade. A vaga vai até quem é elegível, em vez de esperar ser encontrada.
 
-**Organização.** Painel de operação, múltiplos usuários por estabelecimento, escala de evento em lote. É o que tira a contratação avulsa da memória e da conversa solta.
+**Organização.** Painel do gestor, múltiplos usuários por estabelecimento, escala de evento em lote. É o que tira a contratação avulsa da memória e da conversa solta.
 
 ---
 
@@ -120,7 +120,7 @@ Esta lista existe para impedir que o escopo volte a inchar.
 |---|---|
 | Um mural de vagas passivo | A vaga existe, mas quem resolve a urgência é o despacho ativo. Currículo e processo seletivo longo não cabem num turno que começa em duas horas |
 | Uma plataforma de emprego CLT | Contratação efetiva é outro negócio, com outro ciclo e outro comprador |
-| Um marketplace genérico de trabalho | Confiança não transfere entre setores, e a diluição mata a densidade |
+| Uma plataforma de trabalho remoto, no MVP | O MVP é só presencial: sem presença não há check-in nem notificação por distância. O remoto entra depois |
 | Uma rede social profissional | Não há feed, não há seguidores, não há conteúdo |
 
 ---
@@ -137,11 +137,11 @@ Três padrões se repetem entre os concorrentes, e cada um deles diz algo sobre 
 
 **Cadastro não é liquidez.** A Freela Serviços declara 198 mil profissionais cadastrados e 203 contratações concluídas. A eFreela alega 300 mil usuários contra pouco mais de 100 mil instalações mensuráveis no Android. A Worc anunciou mais de 1.400 vagas abertas numa página que, na mesma sessão de navegação, mostrou zero vagas no próprio quadro ao vivo. É o hiato que o despacho ativo tenta fechar, notificando quem é elegível em vez de esperar alguém procurar.
 
-**As piores avaliações vêm de quem trabalha, qualquer que seja o modelo de cobrança.** Pagamento atrasado ou retido na Switch, na Closeer e na eFreela. Bloqueio de cadastro sem processo justo na estaff. Moeda gasta sem retorno no GetNinjas, onde o profissional paga para desbloquear o contato de um cliente que pode nem responder. A aposta do Frila em reputação binária e custo zero para o profissional mira esse ponto.
+**As piores avaliações vêm de quem trabalha, qualquer que seja o modelo de cobrança.** Pagamento atrasado ou retido na Switch, na Closeer e na eFreela. Bloqueio de cadastro sem processo justo na estaff. Moeda gasta sem retorno no GetNinjas, onde o profissional paga para desbloquear o contato de um cliente que pode nem responder. A aposta do Frila em reputação binária e no valor integral do turno para o profissional, sem comissão descontada, mira esse ponto.
 
 **O setor é mais instável do que a lista sugere.** A Toopa parece ter saído de operação: domínio fora do ar, ficha na App Store retornando 404, nenhuma cobertura de imprensa desde agosto de 2021. A Worc publica três números de tração contraditórios na própria home e tem reputação "Não Recomendada" no Reclame Aqui. A controladora do GetNinjas está sob investigação por infiltração do crime organizado no mercado de capitais e não publica balanço desde 2024. Lá fora, a Qwick tem indícios de processo de falência. Vários concorrentes "estabelecidos" carregam problema sério de execução ou de saúde institucional, o que é mais oportunidade do que ameaça para um entrante regional.
 
-Vale uma nota sobre campanha política: a Freela Serviços já atende esse segmento, com panfletagem, bandeirista, motorista e coordenação. É o único overlap direto que encontramos, e merece um olhar mais de perto se a campanha política avançar como prioridade.
+Vale uma nota sobre campanha política: a Freela Serviços já atende esse segmento, com panfletagem, bandeirista, motorista e coordenação. O segmento saiu do radar do produto em 21/09/2026, e a evidência fica registrada como oportunidade futura.
 
 ---
 
@@ -159,11 +159,11 @@ Se a ausência de garantia incomoda o suficiente para alguém trocar de ferramen
 
 ## Decidido, e em aberto
 
-**Já decidido.** Brasília é o primeiro mercado, e não um laboratório: o objetivo não é só validar, é dominar o DF antes de sair dele. O app iOS nativo é requisito fechado. Android não pode ficar para depois, porque é a plataforma da maioria esmagadora do trabalhador de base no Brasil, e lançar só em iOS excluiria a maior parte do lado da oferta. Haverá também versão web para as duas personas.
+**Já decidido.** Brasília é o primeiro mercado, e não um laboratório: o objetivo não é só validar, é dominar o DF antes de sair dele. O app iOS nativo, em Swift/SwiftUI, é requisito fechado, e o Android também será nativo, em Kotlin, com as regras críticas no backend (Supabase), escritas uma vez para as três versões. Para a entrega na loja em 13/11, o iOS é o mínimo. Android não pode ficar para depois, porque é a plataforma de cerca de 75% do uso de celular no Brasil (75,45%, StatCounter, ago/2026), e lançar só em iOS excluiria a maior parte do lado da oferta. Haverá também versão web para as duas personas.
 
 O nome também é uma decisão. "Frila" nomeia a unidade de trabalho, o turno avulso, e não o setor. Isso não trava o produto em nenhum nicho e sobrevive a qualquer expansão de escopo ou de país.
 
-**Em aberto.** O modelo de monetização não está decidido. A escolha entre nativo nas duas plataformas ou uma base compartilhada também não. E fica registrado o que o projeto afirma sem prova:
+**Em aberto.** O modelo de monetização não está decidido. E fica registrado o que o projeto afirma sem prova:
 
 - Que a falta acontece com frequência suficiente para sustentar um negócio
 - Que há profissional disponível numa sexta à noite, no bairro certo, com duas horas de antecedência
@@ -192,7 +192,7 @@ Este documento resume. Cada seção tem um documento detalhado por trás, e é l
 |---|---|
 | O problema | [`01-O-PROBLEMA.md`](01-O-PROBLEMA.md), com cada afirmação separada entre dado, relato e hipótese |
 | Para quem é, e o que o Frila não é | [`02-O-NEGOCIO.md`](02-O-NEGOCIO.md), o documento de referência para apresentar o projeto |
-| Como funciona, os três produtos, os pilares | [`03-ESPECIFICACAO-DO-PRODUTO.md`](03-ESPECIFICACAO-DO-PRODUTO.md) |
+| Como funciona, os dois apps, os pilares | [`03-ESPECIFICACAO-DO-PRODUTO.md`](03-ESPECIFICACAO-DO-PRODUTO.md) |
 | O mercado, a concorrência, por que o WhatsApp vence | [`04-MERCADO-E-CONCORRENCIA.md`](04-MERCADO-E-CONCORRENCIA.md), com dossiê de cada concorrente |
 | Tese e estado do projeto | [`00-LEIA-PRIMEIRO.md`](00-LEIA-PRIMEIRO.md) |
 

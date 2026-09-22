@@ -18,11 +18,11 @@ Ponto de entrada do projeto. Se for ler um arquivo só, leia este.
 
 **Frila é uma plataforma onde o contratante publica a vaga (o bico, o frila), a pessoa se candidata, e despacho ativo por geolocalização, registro de horas e reputação binária tornam esse processo rápido e confiável.**
 
-A estratégia de mercado é territorial e sequencial: nascer no Distrito Federal e dominar aqui — restaurantes, bares, buffets, casas de evento, festas, cafeterias, eventos itinerantes, eventos sociais, eventos políticos, serviços domésticos, etc — antes de expandir para o resto do Brasil, e só depois para fora do país. Não é uma tese sobre estar em todo lugar ao mesmo tempo; é sobre ganhar um mercado por vez, começando pelo que se conhece.
+A estratégia de mercado é territorial e sequencial: nascer no Distrito Federal e dominar aqui — restaurantes, bares, buffets, casas de evento, festas, cafeterias, eventos itinerantes, eventos sociais, serviços domésticos, etc — antes de expandir para o resto do Brasil, e só depois para fora do país. Não é uma tese sobre estar em todo lugar ao mesmo tempo; é sobre ganhar um mercado por vez, começando pelo que se conhece. A plataforma é horizontal: aceita vaga de turno avulso de qualquer setor, e food service e eventos são só o foco da divulgação inicial.
 
-**O que isso NÃO é:** um mural passivo de vagas onde o contratante posta e espera. A candidatura existe, mas quem faz o trabalho pesado é o despacho — a vaga é notificada ativamente aos profissionais elegíveis por raio geográfico, função e disponibilidade, em vez de esperar alguém encontrar o anúncio.
+**O que isso NÃO é:** um mural passivo de vagas onde o contratante posta e espera. A candidatura existe, mas quem faz o trabalho pesado é o despacho — a vaga é notificada ativamente aos profissionais elegíveis por proximidade (até 15 km do local), função e disponibilidade, em vez de esperar alguém encontrar o anúncio.
 
-**Em aberto, deliberadamente:** o modelo de precificação final e a validação da disposição a pagar aguardam a pesquisa de campo. A estrutura de monetização está desenhada como B2B SaaS / taxa de conexão no contratante com custo zero ao trabalhador ([[04 - Tarefas/T-0010 - Estruturar o modelo de negócio e monetização do Frila|T-0010]]), e a arquitetura técnica está estruturada em MVVM com domínio isolado em Swift/SwiftUI ([[04 - Tarefas/T-0024 - Diagramas de classe, banco de dados e arquitetura|T-0024]]).
+**Em aberto, deliberadamente:** o modelo de precificação final e a validação da disposição a pagar aguardam a pesquisa de campo. A estrutura de monetização está desenhada como B2B SaaS / taxa de conexão no contratante, sem comissão descontada do valor do turno do trabalhador ([[04 - Tarefas/T-0010 - Estruturar o modelo de negócio e monetização do Frila|T-0010]]), e a arquitetura técnica está decidida: apps nativos (Swift/SwiftUI no iOS, Kotlin no Android), backend no Supabase e, no iOS, MVVM com domínio isolado ([[04 - Tarefas/T-0024 - Diagramas de classe, banco de dados e arquitetura|T-0024]]).
 
 ---
 
@@ -44,7 +44,7 @@ O conjunto tem duas camadas. Os cinco arquivos numerados são a fonte detalhada,
 | `00-LEIA-PRIMEIRO.md` | A tese e o estado do projeto |
 | `01-O-PROBLEMA.md` | O problema do contratante e do profissional, separando dado de hipótese |
 | `02-O-NEGOCIO.md` | O que é o Frila, para quem, e como funciona ponta a ponta |
-| `03-ESPECIFICACAO-DO-PRODUTO.md` | Os três produtos, os fluxos principais e os pilares da experiência |
+| `03-ESPECIFICACAO-DO-PRODUTO.md` | Os dois apps, os fluxos principais e os pilares da experiência |
 | `04-MERCADO-E-CONCORRENCIA.md` | Tamanho de mercado, concorrentes e por que o WhatsApp ainda domina |
 
 As duas camadas dizem a mesma coisa. Quando divergirem, a camada detalhada é a fonte da verdade, porque é onde cada número carrega sua marca de origem.
@@ -67,9 +67,9 @@ As duas camadas dizem a mesma coisa. Quando divergirem, a camada detalhada é a 
 ## Prioridades atuais
 
 1. **Validação de campo.** 50 conversas. Sem isso, todo número deste conjunto de documentos é hipótese. As perguntas já estão formuladas e em ordem de importância em `01-O-PROBLEMA.md`, seção 6, e repetidas em `EVIDENCIAS.md`.
-2. **Refinar a precificação de campo e fechar pendências técnicas de infraestrutura** (D9 a D13), apoiando-se na modelagem B2B SaaS estruturada em [[04 - Tarefas/T-0010 - Estruturar o modelo de negócio e monetização do Frila|T-0010]] e na lista de [[07 - Arquitetura/Pendências Técnicas Para Codar|Pendências Técnicas]].
+2. **Refinar a precificação com a pesquisa de campo**, apoiando-se na modelagem B2B SaaS estruturada em [[04 - Tarefas/T-0010 - Estruturar o modelo de negócio e monetização do Frila|T-0010]]. As pendências técnicas D1 a D13 foram respondidas em 21/09/2026 e estão em [[07 - Arquitetura/Pendências Técnicas Para Codar|Pendências Técnicas]].
 
-**Já decidido:** Brasília é o primeiro mercado, não um laboratório. O objetivo aqui não é só validar — é dominar o DF antes de sair dele. Validado e consolidado no DF, o próximo passo é o resto do Brasil, depois outros países.
+**Já decidido:** Brasília é o primeiro mercado, não um laboratório. O objetivo aqui não é só validar — é dominar o DF antes de sair dele. Validado e consolidado no DF, o próximo passo é o resto do Brasil, depois outros países. Também estão decididos a plataforma horizontal, sem campanha política, e a stack: iOS em Swift/SwiftUI, Android em Kotlin e backend no Supabase. Para a entrega na loja em 13/11, o iOS é o mínimo.
 
 ---
 
