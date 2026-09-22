@@ -414,6 +414,9 @@ class Site {
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
 <header>
   <div class="marca-container">
+    <button type="button" class="btn-sidebar-toggle" id="btn-sidebar-toggle" aria-label="Recolher barra lateral" title="Recolher barra lateral (⌘B)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg>
+    </button>
     <a class="marca" href="${base}index.html">
       <span class="marca-simbolo">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
@@ -492,6 +495,32 @@ ${this.avisoDeAtualizacao(base)}
       document.documentElement.setAttribute('data-theme', proximo);
       try { localStorage.setItem('bancada_theme', proximo); } catch(e) {}
       atualizarBotao(proximo);
+    });
+  }
+
+  // Alternância e Recolhimento da Barra Lateral para a Margem
+  var btnSidebar = document.getElementById('btn-sidebar-toggle');
+  if (btnSidebar) {
+    var recolhida = localStorage.getItem('bancada_sidebar_recolhida') === 'true';
+    if (recolhida) {
+      document.body.classList.add('sidebar-colapsada');
+      btnSidebar.setAttribute('aria-label', 'Expandir barra lateral');
+      btnSidebar.setAttribute('title', 'Expandir barra lateral (⌘B)');
+    }
+    function alternarSidebar() {
+      var ativa = document.body.classList.toggle('sidebar-colapsada');
+      try { localStorage.setItem('bancada_sidebar_recolhida', String(ativa)); } catch(e) {}
+      btnSidebar.setAttribute('aria-label', ativa ? 'Expandir barra lateral' : 'Recolher barra lateral');
+      btnSidebar.setAttribute('title', (ativa ? 'Expandir barra lateral' : 'Recolher barra lateral') + ' (⌘B)');
+    }
+    btnSidebar.addEventListener('click', alternarSidebar);
+    document.addEventListener('keydown', function(e) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'b') {
+        if (!['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+          e.preventDefault();
+          alternarSidebar();
+        }
+      }
     });
   }
 

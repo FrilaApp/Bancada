@@ -74,6 +74,39 @@ body.cbl-hud-oculta > header {
   gap: 12px;
 }
 
+.btn-sidebar-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--borda);
+  color: #888d92;
+  cursor: pointer;
+  padding: 0;
+  transition: color 140ms ease, background-color 140ms ease, border-color 140ms ease;
+  flex-shrink: 0;
+}
+
+.btn-sidebar-toggle:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+:root[data-theme="light"] .btn-sidebar-toggle {
+  background: #ffffff;
+  border-color: var(--borda);
+  color: #64748b;
+}
+
+:root[data-theme="light"] .btn-sidebar-toggle:hover {
+  color: #0f172a;
+  background: #f1f5f9;
+}
+
 .marca {
   display: flex;
   align-items: center;
@@ -158,12 +191,18 @@ body > header nav a.ativo {
 /* Estrutura de Colunas e Layout ----------------------------------------- */
 .colunas {
   display: grid;
-  grid-template-columns: 232px minmax(0, 1fr);
-  gap: 52px;
-  max-width: min(94vw, 1560px);
-  margin: 0 auto;
-  padding: 28px 32px 72px;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: 32px;
+  max-width: 100%;
+  margin: 0;
+  padding: 24px 32px 72px;
   align-items: start;
+  transition: grid-template-columns 240ms cubic-bezier(0.16, 1, 0.3, 1), gap 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body.sidebar-colapsada .colunas {
+  grid-template-columns: 0px minmax(0, 1fr);
+  gap: 0;
 }
 
 /* Barra Lateral (Tree Navigation) --------------------------------------- */
@@ -174,7 +213,15 @@ aside {
   max-height: calc(100vh - 104px);
   overflow-y: auto;
   padding-right: 8px;
-  transition: top 280ms cubic-bezier(0.16, 1, 0.3, 1), max-height 280ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: top 280ms cubic-bezier(0.16, 1, 0.3, 1), max-height 280ms cubic-bezier(0.16, 1, 0.3, 1), opacity 200ms ease, width 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body.sidebar-colapsada aside {
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+  width: 0;
+  padding-right: 0;
 }
 
 body.cbl-hud-oculta aside {
@@ -1803,8 +1850,8 @@ body > footer {
    Inspirado em Raphael Salaja: Containerless, tipografia pura, colofão fluido.
    ========================================================================== */
 .cbl-documento {
-  max-width: 1140px;
-  margin: 0 auto 80px;
+  max-width: min(100%, 1320px);
+  margin: 0 0 80px;
   color: var(--texto);
   font-family: var(--sans);
   line-height: 1.6;
