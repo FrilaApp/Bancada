@@ -69,7 +69,27 @@ function inline(texto, resolverWikilink) {
     return `<a href="${escapar(href)}"${extra}>${rotulo}</a>`;
   });
 
-  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  // Prefixos de evidência e taxonomia do ciclo CBL (Dado, Relato, Hipótese, Lacuna)
+  s = s.replace(/\*\*([^*]+)\*\*/g, (_, conteudo) => {
+    const matchEvidencia = conteudo.match(/^(Dado|Relato|Hipótese|Hipotese|Lacuna)(?:(\s+[—–-]\s+)(.*)|(\s+central\.?)|[:.]\s*(.*)|$)/i);
+    if (matchEvidencia) {
+      const tipoOriginal = matchEvidencia[1];
+      const tipoSlug = tipoOriginal.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const rotuloExibido = tipoSlug === 'hipotese' ? 'Hipótese' : (tipoSlug.charAt(0).toUpperCase() + tipoSlug.slice(1));
+      const titulo = (matchEvidencia[3] || matchEvidencia[4] || matchEvidencia[5] || '').trim();
+      if (titulo) {
+        return `<span class="cbl-evidencia-prefixo"><span class="cbl-badge-evidencia tag-${tipoSlug}">${rotuloExibido}</span> <strong class="cbl-evidencia-titulo">${titulo}</strong></span>`;
+      }
+      return `<span class="cbl-evidencia-prefixo"><span class="cbl-badge-evidencia tag-${tipoSlug}">${rotuloExibido}</span></span>`;
+    }
+    return `<strong>${conteudo}</strong>`;
+  });
+
+  // Travessão de oração intercalada na prosa (ex.: "um turno — função..."):
+  // Substitui espaços regulares por thin spaces não-quebráveis com classe semântica,
+  // impedindo travessões órfãos no início de linha e eliminando rasgos óticos de 1.5em.
+  s = s.replace(/(\S)\s+[—–]\s+(\S)/g, '$1<span class="cbl-travessao">&thinsp;—&thinsp;</span>$2');
+
   s = s.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1<em>$2</em>');
   s = s.replace(/~~([^~]+)~~/g, '<del>$1</del>');
 

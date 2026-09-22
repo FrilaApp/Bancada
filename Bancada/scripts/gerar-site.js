@@ -445,7 +445,7 @@ class Site {
       eyebrowSub = campos.id || 'C18';
     }
 
-    const eyebrowRotulo = `${eyebrowSecao} · ${eyebrowSub}`;
+    const eyebrowHtml = `<span class="cbl-eyebrow-item">${escapar(eyebrowSecao)}</span><span class="cbl-ponto-sep" aria-hidden="true"></span><span class="cbl-eyebrow-item">${escapar(eyebrowSub)}</span>`;
 
     let linkOriginalHtml = '';
     const origemRel = campos.origem || '';
@@ -613,22 +613,21 @@ class Site {
     itensColofao.push(`
       <div class="cbl-colofao-item">
         <span class="cbl-colofao-rotulo">Contexto</span>
-        <div class="cbl-colofao-valor">Frila · Challenge 18 (Apple Developer Academy)</div>
+        <div class="cbl-colofao-valor">Frila<span class="cbl-ponto-sep" aria-hidden="true"></span>Challenge 18 (Apple Developer Academy)</div>
       </div>
     `);
 
     if (nota.somenteLeitura || campos.conversao || campos.hash_origem) {
       const hashCurto = campos.hash_origem ? campos.hash_origem.slice(0, 8) : 'sync';
-      let auditDetalhe = `Conversão automática · ${hashCurto}`;
+      let autorOuOrigem = 'Conversão automática';
       if (campos.exportado_por) {
-        const pessoa = normalizarPessoas(campos.exportado_por);
-        auditDetalhe = `${pessoa} · ${hashCurto}`;
+        autorOuOrigem = normalizarPessoas(campos.exportado_por);
       }
       itensColofao.push(`
         <div class="cbl-colofao-item">
           <span class="cbl-colofao-rotulo">Auditoria</span>
-          <div class="cbl-colofao-valor" style="font-family: var(--mono); font-size: 11.5px; color: var(--textoSutil);">
-            ${escapar(auditDetalhe)}
+          <div class="cbl-colofao-valor cbl-colofao-auditoria">
+            <span class="cbl-colofao-autor">${escapar(autorOuOrigem)}</span><span class="cbl-ponto-sep" aria-hidden="true"></span><code class="cbl-colofao-hash">${escapar(hashCurto)}</code>
           </div>
         </div>
       `);
@@ -674,7 +673,7 @@ class Site {
     return `
       <header class="cbl-masthead-doc">
         <div class="cbl-masthead-eyebrow">
-          <span class="cbl-masthead-rotulo">${escapar(eyebrowRotulo)}</span>
+          <span class="cbl-masthead-rotulo">${eyebrowHtml}</span>
           ${linkOriginalHtml}
         </div>
 
@@ -1455,7 +1454,7 @@ ${this.avisoDeAtualizacao(base)}
         <div class="cbl-chamada-eyebrow">
           <span class="cbl-chamada-tag">Documento Oficial</span>
           <span class="cbl-chamada-sep">/</span>
-          <span class="cbl-chamada-origem">Apple Developer Academy · CBL</span>
+          <span class="cbl-chamada-origem">Apple Developer Academy<span class="cbl-ponto-sep" aria-hidden="true"></span>CBL</span>
         </div>
         <h3 class="cbl-chamada-titulo">Documento Oficial CBL — Challenge 18</h3>
         <p class="cbl-chamada-lead">Framework Challenge Based Learning aplicado à concepção do Frila: Big Idea, Essential Questions, Pesquisa de Campo e 22 Objetivos de Aprendizagem.</p>
@@ -1832,13 +1831,13 @@ ${this.avisoDeAtualizacao(base)}
 
     const contagemStatus = colunasStatus.map((c) => {
       const qtd = tarefas.filter((t) => t.campos.status === c.id).length;
-      return `${qtd} ${c.rotulo.toLowerCase()}`;
-    }).join(' · ');
+      return `${qtd} ${escapar(c.rotulo.toLowerCase())}`;
+    }).join('<span class="cbl-ponto-sep" aria-hidden="true"></span>');
 
     const mastheadTarefas = `
       <header class="cbl-masthead-doc">
         <div class="cbl-masthead-eyebrow">
-          <span class="cbl-masthead-rotulo">APPLE DEVELOPER ACADEMY · CICLO CBL C18</span>
+          <span class="cbl-masthead-rotulo"><span class="cbl-eyebrow-item">APPLE DEVELOPER ACADEMY</span><span class="cbl-ponto-sep" aria-hidden="true"></span><span class="cbl-eyebrow-item">CICLO CBL C18</span></span>
         </div>
 
         <h1 class="cbl-masthead-titulo">Tarefas e Backlog</h1>
@@ -1859,7 +1858,7 @@ ${this.avisoDeAtualizacao(base)}
           </div>
           <div class="cbl-colofao-item">
             <span class="cbl-colofao-rotulo">Distribuição</span>
-            <div class="cbl-colofao-valor">${escapar(contagemStatus)}</div>
+            <div class="cbl-colofao-valor">${contagemStatus}</div>
           </div>
         </div>
       </header>
@@ -1930,7 +1929,7 @@ ${this.avisoDeAtualizacao(base)}
     const mastheadRegistros = `
       <header class="cbl-masthead-doc">
         <div class="cbl-masthead-eyebrow">
-          <span class="cbl-masthead-rotulo">AUDITORIA CONTÍNUA · GIT HOOKS &amp; AUTOMAÇÃO</span>
+          <span class="cbl-masthead-rotulo"><span class="cbl-eyebrow-item">AUDITORIA CONTÍNUA</span><span class="cbl-ponto-sep" aria-hidden="true"></span><span class="cbl-eyebrow-item">GIT HOOKS &amp; AUTOMAÇÃO</span></span>
         </div>
 
         <h1 class="cbl-masthead-titulo">Linha do Tempo e Registros</h1>
@@ -1951,7 +1950,7 @@ ${this.avisoDeAtualizacao(base)}
           </div>
           <div class="cbl-colofao-item">
             <span class="cbl-colofao-rotulo">Origem</span>
-            <div class="cbl-colofao-valor">Hooks do Git · bancada-indice · automação local</div>
+            <div class="cbl-colofao-valor">Hooks do Git<span class="cbl-ponto-sep" aria-hidden="true"></span>bancada-indice<span class="cbl-ponto-sep" aria-hidden="true"></span>automação local</div>
           </div>
         </div>
       </header>
@@ -2013,7 +2012,7 @@ ${this.avisoDeAtualizacao(base)}
     const mastheadGaleria = `
       <header class="cbl-masthead-doc">
         <div class="cbl-masthead-eyebrow">
-          <span class="cbl-masthead-rotulo">ACERVO VISUAL · RECURSOS GRÁFICOS</span>
+          <span class="cbl-masthead-rotulo"><span class="cbl-eyebrow-item">ACERVO VISUAL</span><span class="cbl-ponto-sep" aria-hidden="true"></span><span class="cbl-eyebrow-item">RECURSOS GRÁFICOS</span></span>
         </div>
 
         <h1 class="cbl-masthead-titulo">Galeria de Mídia</h1>
@@ -2030,7 +2029,7 @@ ${this.avisoDeAtualizacao(base)}
           </div>
           <div class="cbl-colofao-item">
             <span class="cbl-colofao-rotulo">Contexto</span>
-            <div class="cbl-colofao-valor">Frila · Challenge 18 (Apple Developer Academy)</div>
+            <div class="cbl-colofao-valor">Frila<span class="cbl-ponto-sep" aria-hidden="true"></span>Challenge 18 (Apple Developer Academy)</div>
           </div>
         </div>
       </header>

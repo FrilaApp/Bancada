@@ -168,9 +168,9 @@ function renderizarDocumentoCBL(base = '../') {
       <!-- Masthead / Colofão Editorial do Documento (Inspirado em Raphael Salaja) -->
       <header class="cbl-masthead-doc">
         <div class="cbl-masthead-eyebrow">
-          <span class="cbl-masthead-rotulo">Documento Oficial · Apple Developer Academy · CBL</span>
+          <span class="cbl-masthead-rotulo"><span class="cbl-eyebrow-item">Documento Oficial</span><span class="cbl-ponto-sep" aria-hidden="true"></span><span class="cbl-eyebrow-item">Apple Developer Academy</span><span class="cbl-ponto-sep" aria-hidden="true"></span><span class="cbl-eyebrow-item">CBL</span></span>
           <a href="${pdfHref}" class="cbl-masthead-pdf" download="CBL_C18.pdf" title="Baixar PDF original de 28 páginas (9.1 MB)">
-            <span>PDF Original (28p · 9.1 MB)</span>
+            <span>PDF Original (28p<span class="cbl-ponto-sep" aria-hidden="true"></span>9.1 MB)</span>
             <span class="cbl-seta" aria-hidden="true">↗</span>
           </a>
         </div>
@@ -357,7 +357,7 @@ function renderizarDocumentoCBL(base = '../') {
           ${renderizarDeclaracaoMarco({
             rotulo: 'Milestone CBL',
             titulo: 'Personas Primárias',
-            destaque: 'Lado Contratante: O Maître sob Estresse · Lado Trabalhador: Quem se Candidata e Nunca é Chamado',
+            destaque: 'Lado Contratante: O Maître sob Estresse <span class="cbl-ponto-sep" aria-hidden="true"></span> Lado Trabalhador: Quem se Candidata e Nunca é Chamado',
             texto: `
               <div class="cbl-personas-container">
                 <div class="cbl-persona-coluna">

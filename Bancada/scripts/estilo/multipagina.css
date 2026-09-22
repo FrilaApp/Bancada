@@ -2094,12 +2094,33 @@ body > footer {
 }
 
 .cbl-masthead-rotulo {
+  display: inline-flex;
+  align-items: center;
   font-family: var(--sans);
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--textoSutil);
+  flex-wrap: wrap;
+}
+
+.cbl-eyebrow-item {
+  display: inline;
+}
+
+/* Micro-ponto geométrico de separação de metadados */
+.cbl-ponto-sep {
+  display: inline-block;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background-color: currentColor;
+  opacity: 0.35;
+  margin: 0 7.5px;
+  vertical-align: middle;
+  letter-spacing: normal;
+  flex-shrink: 0;
 }
 
 .cbl-masthead-pdf {
@@ -2241,6 +2262,37 @@ body > footer {
 .cbl-colofao-sep {
   color: var(--textoSutil);
   opacity: 0.35;
+}
+
+.cbl-colofao-auditoria {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.cbl-colofao-autor {
+  font-family: var(--sans);
+  font-weight: 500;
+  color: var(--texto);
+  letter-spacing: normal;
+}
+
+.cbl-colofao-hash {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--textoSutil);
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  letter-spacing: 0.02em;
+}
+
+:root[data-theme="light"] .cbl-colofao-autor {
+  color: #0f172a;
+}
+
+:root[data-theme="light"] .cbl-colofao-hash {
+  color: #64748b;
 }
 
 /* Navegação por Âncoras Minimalista (Zero Pill Buttons) */
@@ -2870,6 +2922,100 @@ body > footer {
   font-family: var(--sans);
   font-size: 12px;
   color: var(--textoSutil);
+}
+
+/* ==========================================================================
+   Taxonomia de Evidências CBL e Pontuação Editorial
+   ========================================================================== */
+.cbl-travessao {
+  display: inline;
+  white-space: nowrap;
+  color: var(--textoSutil);
+  font-weight: normal;
+  padding: 0 1px;
+}
+
+:root[data-theme="light"] .cbl-travessao {
+  color: #64748b;
+}
+
+.cbl-evidencia-prefixo {
+  display: inline;
+  margin-right: 4px;
+}
+
+.cbl-badge-evidencia {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--sans);
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 1.5px 6.5px;
+  border-radius: 4px;
+  line-height: 1.35;
+  vertical-align: 1px;
+  margin-right: 6px;
+  border: 1px solid transparent;
+  user-select: text;
+}
+
+.cbl-badge-evidencia.tag-dado {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.08);
+  border-color: rgba(56, 189, 248, 0.22);
+}
+
+.cbl-badge-evidencia.tag-relato {
+  color: #c084fc;
+  background: rgba(192, 132, 252, 0.08);
+  border-color: rgba(192, 132, 252, 0.22);
+}
+
+.cbl-badge-evidencia.tag-hipotese {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.08);
+  border-color: rgba(251, 191, 36, 0.22);
+}
+
+.cbl-badge-evidencia.tag-lacuna {
+  color: #fb7185;
+  background: rgba(251, 113, 133, 0.08);
+  border-color: rgba(251, 113, 133, 0.22);
+}
+
+:root[data-theme="light"] .cbl-badge-evidencia.tag-dado {
+  color: #0284c7;
+  background: rgba(2, 132, 199, 0.08);
+  border-color: rgba(2, 132, 199, 0.2);
+}
+
+:root[data-theme="light"] .cbl-badge-evidencia.tag-relato {
+  color: #7c3aed;
+  background: rgba(124, 58, 237, 0.08);
+  border-color: rgba(124, 58, 237, 0.2);
+}
+
+:root[data-theme="light"] .cbl-badge-evidencia.tag-hipotese {
+  color: #d97706;
+  background: rgba(217, 119, 6, 0.08);
+  border-color: rgba(217, 119, 6, 0.2);
+}
+
+:root[data-theme="light"] .cbl-badge-evidencia.tag-lacuna {
+  color: #e11d48;
+  background: rgba(225, 29, 72, 0.08);
+  border-color: rgba(225, 29, 72, 0.2);
+}
+
+.cbl-evidencia-titulo {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+:root[data-theme="light"] .cbl-evidencia-titulo {
+  color: #0f172a;
 }
 
 /* ==========================================================================
