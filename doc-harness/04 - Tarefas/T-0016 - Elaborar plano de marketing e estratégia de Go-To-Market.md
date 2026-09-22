@@ -19,13 +19,14 @@ Esta tarefa estabelece o plano formal de Marketing e Go-To-Market (GTM) focado n
 - [ ] Estratégia de resolução de liquidez inicial definida (ex: captar primeiros 10-20 estabelecimentos parceiros antes de abrir o app para os profissionais da região).
 - [ ] Mapeamento de canais de aquisição de baixo custo: abordagem direta, parcerias com entidades de classe (Abrasel-DF, sindicatos), grupos locais de vagas no WhatsApp/Telegram.
 - [ ] Posicionamento e mensagem-chave de marketing desenhados para cada persona:
-  - Para o restaurante: "Cubra sua falta de salão em 20 minutos com profissionais confiáveis".
-  - Para o freelancer: "Bicos na sua região com remuneração transparente e sem taxas abusivas".
+  - Para o restaurante: "Cubra sua falta de salão com profissionais confiáveis".
+  - Para o freelancer: "Bicos na sua região com o valor integral da diária, sem comissão".
 - [ ] Cronograma tático de ativação para a fase de testes e lançamento do produto.
 - [ ] Documento formal do Plano de Marketing integrado ao vault do C18.
 
 ## Notas
 - 2026-09-15 — Tarefa aberta como entrega de PM para o ciclo de Go-To-Market do Frila.
+- 2026-09-22 — Mensagens ajustadas às respostas do quadro 03: sem promessa pública de tempo, porque o tempo médio de aceite só será divulgado depois de medido com o produto rodando (A03); e sem comissão descontada do valor do turno (RN01, C11).
 
 ---
 ← [[04 - Tarefas/00 - Índice Tarefas|Índice de Tarefas]]
