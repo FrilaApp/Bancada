@@ -44,8 +44,11 @@ contrato. O `openapi.yaml` é espelhado em `contrato/`, e a CI recusa o espelho 
 - [x] **Bloco A · Fundação** — migrações iniciais: 19 tabelas, enums, PostGIS, os índices
       do caminho quente e as restrições que codificam RN02, RN07, RN18, RN20, RN21, RN22,
       RN24 e RN25. Catálogo de 32 funções na semente.
+- [x] **Ambiente compartilhado** — `frila-dev` no Supabase (`jcobftbhbqdikratzizz`,
+      `sa-east-1`, Postgres 17.6), com as migrações aplicadas e o advisor de segurança
+      sem nenhum alerta.
 - [ ] Políticas de acesso (RLS): o schema `privado`, as funções auxiliares e uma política
-      de leitura por tabela, com teste por identidade.
+      de leitura por tabela, com teste por identidade. *Em revisão no PR #2.*
 - [ ] Entrada por código no e-mail e `criar_conta` com o perfil fixo da conta (RN25).
 - [ ] **Bloco B · Ciclo principal** — as RPCs de `publicar_vaga` a `avaliar`, com a
       confirmação sem duplicidade de RN19 provada sob concorrência.
@@ -77,9 +80,25 @@ contrato. O `openapi.yaml` é espelhado em `contrato/`, e a CI recusa o espelho 
   `agents/`, iguais nas quatro máquinas: criação de cartão, auditoria do quadro,
   investigação por medição, implementação e revisão de código. O cartão sai do Trello,
   vira branch, vira PR revisado contra a checklist de aceite, e volta ao quadro.
-- 2026-09-22 — Pendência que trava o resto: o projeto `frila-dev` no Supabase ainda não
-  existe (cartão `S0 · Infra · Criar o projeto no Supabase`, prazo 25/09, do Cauê). Tudo
-  acima foi verificado no ambiente local; nada foi aplicado em ambiente compartilhado.
+- 2026-09-22 — Cada PR passa por um agente de revisão antes do merge. Não é cerimônia:
+  na primeira rodada do PR #1 ele mediu que o RLS estava **desligado** nas dezenove
+  tabelas e que a chave publicável do app tinha `INSERT`, `UPDATE` e `DELETE` em todas
+  — um buraco que teria ido para o `frila-dev` e ficado aberto até alguém olhar.
+- 2026-09-22 — Daí saiu `scripts/mutacao.sh`, que derruba cada restrição, trigger e
+  política, uma por vez, e exige que o pgTAP fique vermelho. Ele achou o buraco
+  seguinte: **10 das 19 políticas de leitura sobreviviam** aos testes. Derrubar uma
+  política *fecha* dado em vez de abrir, então uma suíte só com asserções do tipo
+  "fulano não lê" segue verde sem ela. Hoje são 53 de 53 regras cobertas, e o portão
+  está na integração contínua.
+- 2026-09-22 — O `frila-dev` não precisou ser criado: já existia um projeto vazio na
+  org, criado no mesmo dia e ainda com o nome padrão. Renomeado e usado, porque o plano
+  gratuito dá dois projetos ativos por organização e o outro é do `frila-prod`.
+- 2026-09-22 — O advisor de segurança do Supabase apontou uma função que ninguém do
+  time escreveu: um *event trigger* que liga RLS sozinho em toda tabela nova, vindo do
+  painel e existente **só no `frila-dev`**. Trazido para migração. É o caso que a
+  Modelagem nomeia: mudança feita pelo painel e não versionada é mudança que o próximo
+  ambiente não tem — e o ambiente onde a falha aparece não é o ambiente onde ela foi
+  escrita.
 
 ---
 ← [[04 - Tarefas/00 - Índice Tarefas|Índice de Tarefas]]
