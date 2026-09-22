@@ -1171,11 +1171,252 @@ ${this.avisoDeAtualizacao(base)}
       }
     );
 
+    // 9. Tabela de 1.3 Referências (Frila_Documento_de_Visao)
+    texto = texto.replace(
+      /(?:^|\n)(?:#{1,3}\s*)?1\.3 Referências\s*\n+Documento\s*\n+Versão\s*\n+Link \/ Localização\s*\n+([\s\S]*?)(?=\n+(?:1\.4[ \t]+[A-ZÀ-Ú]|##|\Z))/i,
+      (match, blocoItens) => {
+        const linhas = blocoItens.trim().split(/\n+/).map((l) => l.trim()).filter(Boolean);
+        const linhasTabela = [];
+        for (let i = 0; i + 2 < linhas.length; i += 3) {
+          const doc = linhas[i];
+          const ver = linhas[i + 1];
+          const link = linhas[i + 2];
+          linhasTabela.push(`| **${doc}** | ${ver} | ${link} |`);
+        }
+        if (linhasTabela.length > 0) {
+          return `\n### 1.3 Referências\n\n| Documento | Versão | Link / Localização |\n|---|---|---|\n${linhasTabela.join('\n')}\n\n`;
+        }
+        return match;
+      }
+    );
+
+    // 10. Tabela RUP 2.2 Instrução do Problema (Frila_Documento_de_Visao)
+    texto = texto.replace(
+      /(?:^|\n)(?:#{1,3}\s*)?2\.2 Instrução do Problema\s*\n+([\s\S]*?)(?=\n+(?:2\.3[ \t]+[A-ZÀ-Ú]|##|\Z))/i,
+      (match, blocoItens) => {
+        const linhas = blocoItens.trim().split(/\n+/).map((l) => l.trim()).filter(Boolean);
+        const linhasTabela = [];
+        for (let i = 0; i + 1 < linhas.length; i += 2) {
+          linhasTabela.push(`| **${linhas[i]}** | ${linhas[i + 1]} |`);
+        }
+        if (linhasTabela.length > 0) {
+          return `\n### 2.2 Instrução do Problema\n\n| Elemento | Descrição |\n|---|---|\n${linhasTabela.join('\n')}\n\n`;
+        }
+        return match;
+      }
+    );
+
+    // 11. Tabela RUP 2.3 Instrução de Posição do Produto (Frila_Documento_de_Visao)
+    texto = texto.replace(
+      /(?:^|\n)(?:#{1,3}\s*)?2\.3 Instrução de Posição do Produto\s*\n+([\s\S]*?)(?=\n+(?:3\.[ \t]+[A-ZÀ-Ú]|3\.1|##|\Z))/i,
+      (match, blocoItens) => {
+        const linhas = blocoItens.trim().split(/\n+/).map((l) => l.trim()).filter(Boolean);
+        const linhasTabela = [];
+        for (let i = 0; i + 1 < linhas.length; i += 2) {
+          linhasTabela.push(`| **${linhas[i]}** | ${linhas[i + 1]} |`);
+        }
+        if (linhasTabela.length > 0) {
+          return `\n### 2.3 Instrução de Posição do Produto\n\n| Elemento | Declaração |\n|---|---|\n${linhasTabela.join('\n')}\n\n`;
+        }
+        return match;
+      }
+    );
+
+    // 12. Tabela 3.2 Resumo das Partes Interessadas (Frila_Documento_de_Visao)
+    texto = texto.replace(
+      /(?:^|\n)(?:#{1,3}\s*)?3\.2 Resumo das Partes Interessadas\s*\n+Nome \/ Grupo\s*\n+Descrição\s*\n+Responsabilidades\s*\n+([\s\S]*?)(?=\n+(?:3\.3[ \t]+[A-ZÀ-Ú]|##|\Z))/i,
+      (match, blocoItens) => {
+        const linhas = blocoItens.trim().split(/\n+/).map((l) => l.trim()).filter(Boolean);
+        const linhasTabela = [];
+        for (let i = 0; i + 2 < linhas.length; i += 3) {
+          linhasTabela.push(`| **${linhas[i]}** | ${linhas[i + 1]} | ${linhas[i + 2]} |`);
+        }
+        if (linhasTabela.length > 0) {
+          return `\n### 3.2 Resumo das Partes Interessadas\n\n| Nome / Grupo | Descrição | Responsabilidades |\n|---|---|---|\n${linhasTabela.join('\n')}\n\n`;
+        }
+        return match;
+      }
+    );
+
+    // 13. Tabela 3.3 Resumo dos Usuários (Frila_Documento_de_Visao)
+    texto = texto.replace(
+      /(?:^|\n)(?:#{1,3}\s*)?3\.3 Resumo dos Usuários\s*\n+Nome \/ Perfil\s*\n+Descrição\s*\n+Stakeholder responsável\s*\n+([\s\S]*?)(?=\n+(?:3\.4[ \t]+[A-ZÀ-Ú]|##|\Z))/i,
+      (match, blocoItens) => {
+        const linhas = blocoItens.trim().split(/\n+/).map((l) => l.trim()).filter(Boolean);
+        const linhasTabela = [];
+        for (let i = 0; i + 2 < linhas.length; i += 3) {
+          linhasTabela.push(`| **${linhas[i]}** | ${linhas[i + 1]} | ${linhas[i + 2]} |`);
+        }
+        if (linhasTabela.length > 0) {
+          return `\n### 3.3 Resumo dos Usuários\n\n| Nome / Perfil | Descrição | Stakeholder Responsável |\n|---|---|---|\n${linhasTabela.join('\n')}\n\n`;
+        }
+        return match;
+      }
+    );
+
+    // 14. Perfis detalhados de Stakeholder e Usuário (3.5 e 3.6 de Frila_Documento_de_Visao)
+    texto = texto.replace(
+      /(?:^|\n)(?:#{1,4}\s*)?(Stakeholder \d+:[^\n]+)\s*\n+([\s\S]*?)(?=(?:\n+Stakeholder \d+|\n+#{1,3}|\Z))/g,
+      (match, cabecalho, corpoPerfil) => {
+        const linhas = corpoPerfil.trim().split(/\n+/).map((l) => l.trim()).filter(Boolean);
+        const linhasTabela = [];
+        for (let i = 0; i + 1 < linhas.length; i += 2) {
+          linhasTabela.push(`| **${linhas[i]}** | ${linhas[i + 1]} |`);
+        }
+        if (linhasTabela.length > 0) {
+          return `\n#### ${cabecalho.trim()}\n\n| Campo | Descrição |\n|---|---|\n${linhasTabela.join('\n')}\n\n`;
+        }
+        return match;
+      }
+    );
+    texto = texto.replace(
+      /(?:^|\n)(?:#{1,4}\s*)?(Usuário \d+:[^\n]+)\s*\n+([\s\S]*?)(?=(?:\n+Usuário \d+|\n+#{1,3}|\Z))/g,
+      (match, cabecalho, corpoPerfil) => {
+        const linhas = corpoPerfil.trim().split(/\n+/).map((l) => l.trim()).filter(Boolean);
+        const linhasTabela = [];
+        for (let i = 0; i + 1 < linhas.length; i += 2) {
+          linhasTabela.push(`| **${linhas[i]}** | ${linhas[i + 1]} |`);
+        }
+        if (linhasTabela.length > 0) {
+          return `\n#### ${cabecalho.trim()}\n\n| Campo | Descrição |\n|---|---|\n${linhasTabela.join('\n')}\n\n`;
+        }
+        return match;
+      }
+    );
+
+    // 15. Tabela 3.7 Principais Necessidades (Frila_Documento_de_Visao)
+    texto = texto.replace(
+      /(?:^|\n)(?:#{1,3}\s*)?3\.7 Principais Necessidades[^\n]*\s*\n+Necessidade\s*\n+Prioridade\s*\n+Solução Atual\s*\n+Solução Proposta\s*\n+([\s\S]*?)(?=\n+(?:4\.[ \t]+[A-ZÀ-Ú]|4\.1|##|\Z))/i,
+      (match, blocoItens) => {
+        const linhas = blocoItens.trim().split(/\n+/).map((l) => l.trim()).filter(Boolean);
+        const linhasTabela = [];
+        for (let i = 0; i + 3 < linhas.length; i += 4) {
+          linhasTabela.push(`| **${linhas[i]}** | ${linhas[i + 1]} | ${linhas[i + 2]} | ${linhas[i + 3]} |`);
+        }
+        if (linhasTabela.length > 0) {
+          return `\n### 3.7 Principais Necessidades das Partes Interessadas e Usuários\n\n| Necessidade | Prioridade | Solução Atual | Solução Proposta |\n|---|---|---|---|\n${linhasTabela.join('\n')}\n\n`;
+        }
+        return match;
+      }
+    );
+
+    // 16. Tabela 4.2 Resumo das Capacidades (Frila_Documento_de_Visao)
+    texto = texto.replace(
+      /(?:^|\n)(?:#{1,3}\s*)?4\.2 Resumo das Capacidades\s*\n+Benefício para o Cliente \/ Usuário\s*\n+Recurso que o Suporta\s*\n+([\s\S]*?)(?=\n+(?:4\.3[ \t]+[A-ZÀ-Ú]|##|\Z))/i,
+      (match, blocoItens) => {
+        const linhas = blocoItens.trim().split(/\n+/).map((l) => l.trim()).filter(Boolean);
+        const linhasTabela = [];
+        for (let i = 0; i + 1 < linhas.length; i += 2) {
+          linhasTabela.push(`| ${linhas[i]} | **${linhas[i + 1]}** |`);
+        }
+        if (linhasTabela.length > 0) {
+          return `\n### 4.2 Resumo das Capacidades\n\n| Benefício para o Cliente / Usuário | Recurso que o Suporta |\n|---|---|\n${linhasTabela.join('\n')}\n\n`;
+        }
+        return match;
+      }
+    );
+
+    // 17. Tabela 4.3 Suposições e Dependências (Frila_Documento_de_Visao)
+    texto = texto.replace(
+      /(?:^|\n)(?:#{1,3}\s*)?4\.3 Suposições e Dependências\s*\n+Tipo\s*\n+Descrição\s*\n+Impacto se não atendido\s*\n+([\s\S]*?)(?=\n+(?:4\.4[ \t]+[A-ZÀ-Ú]|##|\Z))/i,
+      (match, blocoItens) => {
+        const linhas = blocoItens.trim().split(/\n+/).map((l) => l.trim()).filter(Boolean);
+        const linhasTabela = [];
+        for (let i = 0; i + 2 < linhas.length; i += 3) {
+          linhasTabela.push(`| **${linhas[i]}** | ${linhas[i + 1]} | ${linhas[i + 2]} |`);
+        }
+        if (linhasTabela.length > 0) {
+          return `\n### 4.3 Suposições e Dependências\n\n| Tipo | Descrição | Impacto se não atendido |\n|---|---|---|\n${linhasTabela.join('\n')}\n\n`;
+        }
+        return match;
+      }
+    );
+
+    // 18. Tabelas de 4.4 Custo e Precificação (Concorrentes e Custos)
+    texto = texto.replace(
+      /Concorrente\s*\n+Modelo de cobrança\s*\n+Quem paga\s*\n+([\s\S]*?)(?=\n+(?:Também não há base|Item|##|\Z))/i,
+      (match, blocoItens) => {
+        const linhas = blocoItens.trim().split(/\n+/).map((l) => l.trim()).filter(Boolean);
+        const linhasTabela = [];
+        for (let i = 0; i + 2 < linhas.length; i += 3) {
+          linhasTabela.push(`| **${linhas[i]}** | ${linhas[i + 1]} | ${linhas[i + 2]} |`);
+        }
+        if (linhasTabela.length > 0) {
+          return `\n| Concorrente | Modelo de Cobrança | Quem Paga |\n|---|---|---|\n${linhasTabela.join('\n')}\n\n`;
+        }
+        return match;
+      }
+    );
+    texto = texto.replace(
+      /Item\s*\n+Natureza\s*\n+Custo estimado\s*\n+([\s\S]*?)(?=\n+(?:5\.[ \t]+[A-ZÀ-Ú]|##|\Z))/i,
+      (match, blocoItens) => {
+        const linhas = blocoItens.trim().split(/\n+/).map((l) => l.trim()).filter(Boolean);
+        const linhasTabela = [];
+        for (let i = 0; i + 2 < linhas.length; i += 3) {
+          linhasTabela.push(`| **${linhas[i]}** | ${linhas[i + 1]} | ${linhas[i + 2]} |`);
+        }
+        if (linhasTabela.length > 0) {
+          return `\n| Item | Natureza | Custo Estimado |\n|---|---|---|\n${linhasTabela.join('\n')}\n\n`;
+        }
+        return match;
+      }
+    );
+
+    // 19. Tabela 5. Recursos do Produto (Frila_Documento_de_Visao)
+    texto = texto.replace(
+      /(?:^|\n)(?:#{1,3}\s*)?5\. Recursos do Produto\s*([\s\S]*?)\n+ID\s*\n+Recurso\s*\n+Descrição\s*\n+Prioridade\s*\n+([\s\S]*?)(?=\n+(?:6\.[ \t]+[A-ZÀ-Ú]|##|\Z))/i,
+      (match, intro, blocoItens) => {
+        const linhas = blocoItens.trim().split(/\n+/).map((l) => l.trim()).filter(Boolean);
+        const linhasTabela = [];
+        for (let i = 0; i + 3 < linhas.length; i += 4) {
+          linhasTabela.push(`| **${linhas[i]}** | ${linhas[i + 1]} | ${linhas[i + 2]} | ${linhas[i + 3]} |`);
+        }
+        if (linhasTabela.length > 0) {
+          const introTxt = intro.trim() ? `\n\n${intro.trim()}` : '';
+          return `\n### 5. Recursos do Produto${introTxt}\n\n| ID | Recurso | Descrição | Prioridade |\n|---|---|---|---|\n${linhasTabela.join('\n')}\n\n`;
+        }
+        return match;
+      }
+    );
+
+    // 20. Tabela 6. Faixas de Qualidade (Frila_Documento_de_Visao)
+    texto = texto.replace(
+      /(?:^|\n)(?:#{1,3}\s*)?6\. Faixas de Qualidade\s*\n+Atributo\s*\n+Definição \/ Expectativa\s*\n+Critério de Aceitação\s*\n+([\s\S]*?)(?=\n+(?:7\.[ \t]+[A-ZÀ-Ú]|##|\Z))/i,
+      (match, blocoItens) => {
+        const linhas = blocoItens.trim().split(/\n+/).map((l) => l.trim()).filter(Boolean);
+        const linhasTabela = [];
+        for (let i = 0; i + 2 < linhas.length; i += 3) {
+          linhasTabela.push(`| **${linhas[i]}** | ${linhas[i + 1]} | ${linhas[i + 2]} |`);
+        }
+        if (linhasTabela.length > 0) {
+          return `\n### 6. Faixas de Qualidade\n\n| Atributo | Definição / Expectativa | Critério de Aceitação |\n|---|---|---|\n${linhasTabela.join('\n')}\n\n`;
+        }
+        return match;
+      }
+    );
+
+    // 21. Tabela 7.4 Rótulo e Embalagem (Frila_Documento_de_Visao)
+    texto = texto.replace(
+      /(?:^|\n)(?:#{1,3}\s*)?7\.4 Rótulo e Embalagem\s*\n+Item\s*\n+Descrição\s*\n+Status\s*\n+([\s\S]*?)(?=\n+(?:8\.[ \t]+[A-ZÀ-Ú]|##|\Z))/i,
+      (match, blocoItens) => {
+        const linhas = blocoItens.trim().split(/\n+/).map((l) => l.trim()).filter(Boolean);
+        const linhasTabela = [];
+        for (let i = 0; i + 2 < linhas.length; i += 3) {
+          linhasTabela.push(`| **${linhas[i]}** | ${linhas[i + 1]} | ${linhas[i + 2]} |`);
+        }
+        if (linhasTabela.length > 0) {
+          return `\n### 7.4 Rótulo e Embalagem\n\n| Item | Descrição | Status |\n|---|---|---|\n${linhasTabela.join('\n')}\n\n`;
+        }
+        return match;
+      }
+    );
+
     return texto;
   }
 
   paginaDeNota(nota, secao) {
-    if (nota.caminho.includes('CBL_C18') || nota.caminho.includes('C18.md')) {
+    const ehDocumentoCBL = (nota.caminho.endsWith('/C18.md') || nota.caminho.endsWith('C18.md')) && !nota.caminho.includes('Agenda') || nota.caminho.includes('CBL_C18');
+    if (ehDocumentoCBL) {
       return this.paginaDocumentoCBL(nota, secao);
     }
 
@@ -1201,6 +1442,9 @@ ${this.avisoDeAtualizacao(base)}
 
     // 7. Estrutura tabelas provenientes de conversão crua de .docx
     corpoLimpo = this.formatarTabelasDesestruturadas(corpoLimpo);
+
+    // 8. Rebaixa qualquer H1 remanescente no corpo para H2 para manter a hierarquia canônica de DESIGN.md (único H1 no Masthead)
+    corpoLimpo = corpoLimpo.replace(/^#\s+([^\n]+)/gm, '## $1');
 
     // Renderiza o Masthead editorial canônico
     const mastheadHtml = this.renderizarMastheadNota(nota, secao, '../', corpoLimpo, tituloLimpo);
