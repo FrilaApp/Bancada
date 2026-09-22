@@ -1,8 +1,8 @@
 ---
 tipo: documento-derivado
 origem: "doc-harness/01 - CBL/Desafios/C18/Documentos de Produto/Frila_Documento_de_Visao.docx"
-hash_origem: 98388cc1f30c0ecc8acd876ba3dc90783022d16546d9a9836821958b52747754
-exportado_em: 2026-09-15T11:44
+hash_origem: b4b2c386a241e5d9c65f489c334d55935d0d32517fac13e111ed7cb2a1c7beb8
+exportado_em: 2026-09-22T03:52
 exportado_por: Cauê Carneiro <cauecarneiroc@gmail.com>
 conversao: ok
 tags: [documento]
@@ -32,11 +32,11 @@ Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva
 
 Versão
 
-v1.0.0
+v1.2.0
 
 Data
 
-14/09/2026
+22/09/2026
 
 Histórico de Versões
 
@@ -56,6 +56,22 @@ Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva
 
 Criação inicial. Consolida os documentos 00 a 04 revisados em setembro/2026, a matriz CSD do FigJam e os milestones do CBL C18.
 
+v1.1.0
+
+22/09/2026
+
+Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva
+
+Aplica as respostas do quadro 03 de pendências (21 e 22/09): plataforma horizontal e sem campanha política; despacho por proximidade (até 15 km), sem raio configurável e sem levas, com teto de notificações; check-in geolocalizado a 200 m com confirmação manual; avaliação só com presença verificada e nova definição de taxa de comparecimento; aval herdado retirado; Painel como feature web do gestor e Equipe Frila só por e-mail; denúncia e bloqueio; stack decidida (Swift/SwiftUI, Kotlin, Supabase, FCM, SwiftData); metas de tempo de publicação e de número de toques retiradas até haver medição no piloto.
+
+v1.2.0
+
+22/09/2026
+
+Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva
+
+Aplica as respostas das pendências para codar (22/09): um app só, com um perfil por conta e uma ficha em cada loja; entrada por código no e-mail, sem senha e sem SMS; botão “disponível agora” retirado; referências ao Documento de Requisitos v1.3.0 e ao Backlog v1.2.0.
+
 Glossário
 
 Termo / Sigla
@@ -72,7 +88,7 @@ Todo o documento
 
 Contratante
 
-Quem publica a vaga: estabelecimento de food service, produtor de evento, buffet ou coordenação de campanha política.
+Quem publica a vaga: um negócio de qualquer setor que precise cobrir um turno avulso, como bar, restaurante, buffet, produtora de evento, loja ou operação de logística.
 
 Seções 2 e 3
 
@@ -84,7 +100,7 @@ Seções 2 e 3
 
 Despacho ativo
 
-Mecanismo que envia a vaga aos profissionais elegíveis por função, raio geográfico, disponibilidade e histórico, em vez de esperar que alguém a encontre num mural.
+Mecanismo que envia a vaga, de uma vez, aos profissionais elegíveis: com a função, disponíveis no horário e a até 15 km do local, mais a equipe de confiança do estabelecimento, em vez de esperar que alguém a encontre num mural.
 
 Seções 4 e 5
 
@@ -96,15 +112,9 @@ Seções 4 e 5
 
 Taxa de comparecimento
 
-Proporção entre turnos aceitos e turnos efetivamente cumpridos. É o sinal mais objetivo do sistema e define a prioridade no despacho.
+Turnos com presença divididos pelos turnos confirmados. Presença é check-in geolocalizado ou manual confirmado pelo contratante; falta é não aparecer ou cancelar com menos de 24 horas do início. Não entram na conta: candidatura não escolhida, cancelamento com mais de 24 horas e turno não verificado. É o sinal mais objetivo do sistema, aparece no perfil e não altera quem recebe a notificação.
 
 Seções 4, 5 e 6
-
-Aval herdado
-
-Atestado de alguém que já trabalhou com o profissional fora da plataforma, para que ele não comece do zero.
-
-Seções 4 e 5
 
 Liquidez
 
@@ -112,11 +122,29 @@ Capacidade real de um marketplace de fechar transações. Distinta de volume de 
 
 Seções 2 e 4
 
-Painel de Operação
+Painel
 
-Interface web interna que mostra os turnos em risco de não serem preenchidos, para intervenção manual da operação.
+Feature da versão web do Frila, no perfil de contratante: um painel para o gestor acompanhar vagas, candidatos, contratados, check-ins e turnos. Não é produto separado nem ferramenta interna do Frila.
+
+Seções 3, 4 e 5
+
+Perfil
+
+Tipo da conta: profissional, para quem trabalha no turno, ou contratante, para quem publica pelo estabelecimento. É escolhido no cadastro e não muda.
+
+Seções 3 e 4
+
+Janela crítica
+
+Antecedência em que, com a posição ainda vaga, o contratante recebe um alerta por notificação. Padrão de 3 horas antes do início, ajustável na publicação.
 
 Seções 3 e 5
+
+Equipe Frila
+
+Pessoas do time Frila que respondem, por e-mail, suporte, denúncias, contestações e pedidos de revisão do despacho, em até 5 dias úteis. Não acompanham turnos nem intervêm neles.
+
+Seções 3 e 7
 
 Dado / Relato / Fonte interessada / [H] / Lacuna
 
@@ -154,25 +182,27 @@ Uma ressalva de leitura vale para o documento inteiro. O Frila está em TRL 2: c
 
 1.2 Escopo
 
-Frila é uma plataforma de contratação por turno avulso. O contratante publica o turno que precisa cobrir, com função, data, janela de horário, local e valor, e a vaga é enviada ativamente para os profissionais próximos que podem aceitá-la, em vez de ficar num mural esperando ser encontrada. O profissional se candidata com um toque, a confirmação chega para os dois lados com todos os dados do turno, e depois da execução cada um responde se chamaria o outro de novo.
+Frila é uma plataforma horizontal de contratação por turno avulso, para qualquer setor. O contratante publica o turno que precisa cobrir, com função, data, janela de horário, local e valor, e a vaga é enviada ativamente para os profissionais próximos que podem aceitá-la, em vez de ficar num mural esperando ser encontrada. O profissional se candidata sem formulário, a confirmação chega para os dois lados com todos os dados do turno, e depois da execução cada um responde se chamaria o outro de novo.
 
 Está dentro do escopo do produto:
 
-• Publicação de turno avulso em food service, eventos e campanha política, em menos de 60 segundos.
+• Publicação de turno avulso de qualquer setor, como bares, restaurantes, eventos, varejo, logística e serviços domésticos, com poucos campos. Food service e eventos são só o foco da divulgação inicial.
 
-• Despacho ativo por geolocalização, priorizado por taxa de comparecimento.
+• Despacho ativo por proximidade: a vaga é notificada, de uma vez, a quem tem a função, está disponível e está a até 15 km do local, com no máximo uma notificação a cada 30 minutos por profissional.
 
-• Candidatura em um toque, confirmação e liberação de contato entre as partes.
+• Candidatura sem formulário, confirmação e liberação de contato entre as partes.
 
-• Registro de início, fim e valor acordado do turno.
+• Check-in e check-out geolocalizados, com registro de início, fim e valor acordado do turno.
 
-• Reputação binária bidirecional, com aval herdado do mundo informal.
+• Reputação binária bidirecional, só entre quem trabalhou junto pelo Frila.
 
 • Organização de equipe de confiança e montagem de escala de evento em lote.
 
-• Painel de operação interno para turnos em risco de não serem preenchidos.
+• Alerta de vaga vazia ao contratante e Painel do gestor na versão web do Frila, no perfil de contratante.
 
-• Aplicativo iOS nativo, aplicativo Android e versão web, com todos os perfis de usuário atendidos nas duas vias e proposta de valor distinta por perfil.
+• Denúncia e bloqueio entre usuários, com resposta da Equipe Frila por e-mail.
+
+• Um aplicativo só, com os perfis de profissional e de contratante, em iOS nativo (Swift e SwiftUI), Android nativo (Kotlin) e versão web, com proposta de valor distinta por perfil.
 
 Está explicitamente fora do escopo:
 
@@ -180,11 +210,13 @@ Está explicitamente fora do escopo:
 
 • Contratação efetiva em regime CLT, processo seletivo e banco de currículos, que são outro negócio, outro ciclo, outro comprador.
 
-• Marketplace genérico de serviços e freelance remoto ou digital.
+• Vaga remota no MVP. O freelance remoto faz parte do escopo do produto, mas entra só depois do MVP: sem presença no local não há check-in, notificação por distância nem avaliação com presença verificada.
 
 • Rede social profissional: não há feed, seguidores nem produção de conteúdo.
 
-• Limpeza residencial convencional, que já possui canais próprios consolidados.
+• Operação manual de turnos pelo Frila: não há plantão, atendimento ao vivo nem mediação entre as partes. O produto é automático.
+
+• Aval de quem trabalhou com o profissional fora da plataforma. Só avalia quem trabalhou junto pelo Frila.
 
 • Operação fora do Distrito Federal antes de o DF estar consolidado.
 
@@ -236,21 +268,27 @@ Documentos/MD/EVIDENCIAS.md
 
 Documento de Especificação de Requisitos
 
-v1.0.0
+v1.3.0
 
-Documentos/Frila_Documento_de_Requisitos.docx
+Documentos/Diagramas:Documentos/Frila_Documento_de_Requisitos.docx
+
+Histórias de Usuário e Backlog
+
+v1.2.0
+
+Documentos/Diagramas:Documentos/Frila_Historias_de_Usuario_e_Backlog.docx
 
 CBL do Challenge 18
 
 1.0
 
-CBL/TemplateCBL_C18.docx
+CBL/CBL_C18.pages
 
-Roteiro de validação por áudio no WhatsApp
+Roteiro de validação de campo
 
 1.0
 
-Validacao/Roteiro-de-Validacao-WhatsApp.docx
+Documentos/MD/Frila_Roteiro_de_Validacao_de_Campo.md
 
 Matriz CSD e quadro do Challenge 18 (FigJam)
 
@@ -294,12 +332,6 @@ Agência Sebrae: Pulso dos Pequenos Negócios, 12ª ed.
 
 https://agenciasebrae.com.br/dados/whatsapp-se-consolida-nas-vendas-on-line-enquanto-facebook-e-lojas-proprias-perdem-folego/
 
-TSE: limites de contratação de pessoal, Eleições 2026
-
-Portaria 444/2026
-
-https://www.tse.jus.br/comunicacao/noticias/2026/Julho/tse-divulga-limites-de-contratacao-de-pessoal-para-as-eleicoes-gerais-2026
-
 1.4 Visão Geral do Documento
 
 A Seção 2 trata do posicionamento do produto: a oportunidade de mercado, a instrução do problema e a instrução de posição. A Seção 3 descreve as partes interessadas e os usuários, com perfil individual de cada um e a síntese de suas necessidades. As Seções 4 e 5 detalham o produto: perspectiva, capacidades, suposições, dependências, custo e a lista de recursos de alto nível. As Seções 6 e 7 abordam as faixas de qualidade esperadas e os requisitos de documentação.
@@ -332,7 +364,7 @@ Fechar um turno avulso em poucas horas entre duas partes que nunca trabalharam j
 
 Afeta
 
-De um lado, quem opera na linha de fogo e escolhe a ferramenta: maître, chefe de salão, chefe de cozinha, gerente de unidade, produtor de evento, operador de buffet e coordenação de campanha política. Do outro, o profissional operacional avulso (garçom, bartender, chapeiro, montador, credenciamento, limpeza pós-evento, panfletagem) que tem experiência real e nenhum jeito de prová-la para quem não o conhece.
+De um lado, quem opera na linha de fogo e escolhe a ferramenta: maître, chefe de salão, chefe de cozinha, gerente de unidade, produtor de evento, operador de buffet e quem gerencia turnos em qualquer outro setor que dependa de gente avulsa. Do outro, o profissional operacional avulso (garçom, bartender, chapeiro, montador, credenciamento, limpeza pós-evento, panfletagem) que tem experiência real e nenhum jeito de prová-la para quem não o conhece.
 
 Cujo impacto é
 
@@ -350,7 +382,7 @@ Levar a vaga ativamente até quem pode aceitá-la, em vez de esperar que ela sej
 
 Para
 
-Estabelecimentos de food service, contratantes de evento e campanhas políticas do Distrito Federal, e para os profissionais operacionais que trabalham por turno avulso na região.
+Negócios de qualquer setor no Distrito Federal que precisam cobrir turnos avulsos, com food service e eventos como foco da divulgação inicial, e para os profissionais operacionais que trabalham por turno avulso na região.
 
 Que
 
@@ -370,11 +402,11 @@ Leva a vaga até quem é elegível por função, proximidade e disponibilidade, 
 
 Diferente de
 
-Grupos de WhatsApp, que resolvem distribuição com custo zero mas não garantem comparecimento nem pagamento; e dos marketplaces existentes (GetNinjas, Switch, Closeer, estaff, eFreela, Freela Serviços e Worc), que acumulam cadastro e deixam o profissional esperando ser escolhido.
+Grupos de WhatsApp, que resolvem distribuição sem custo nenhum mas não garantem comparecimento nem pagamento; e dos marketplaces existentes (GetNinjas, Switch, Closeer, estaff, eFreela, Freela Serviços e Worc), que acumulam cadastro e deixam o profissional esperando ser escolhido.
 
 Nosso produto
 
-Despacho ativo em vez de mural passivo; reputação binária, bidirecional e herdável do mundo informal, em vez de média de estrelas; custo zero para o profissional, sem moedas nem desbloqueio de contato; e densidade territorial construída em um mercado por vez, começando pelo DF.
+Despacho ativo em vez de mural passivo; reputação binária e bidirecional, só entre quem trabalhou junto, em vez de média de estrelas; valor integral para o profissional, sem comissão descontada do turno; e densidade territorial construída em um mercado por vez, começando pelo DF.
 
 3. Partes Interessadas e Usuários
 
@@ -470,12 +502,6 @@ Pequenos negócios que usam WhatsApp como canal comercial
 
 Sebrae, Pulso 12ª ed., 8,2 mil ouvidos, fevereiro e março de 2026
 
-Limite de contratação de pessoal de campanha no DF
-
-a partir de 300 pessoas por chapa
-
-Portaria TSE nº 444/2026
-
 Concorrentes com presença comprovada no DF
 
 1 de 11, e não especializado
@@ -516,23 +542,23 @@ Buffets, produtoras e empresas de staff que operam formaturas, casamentos, shows
 
 Montar escalas com antecedência, absorver picos de última hora, avaliar profissionais.
 
-Coordenação de campanha política
+Outros negócios com turno avulso
 
-Responsáveis por militância e mobilização de rua, sujeitos a teto legal de contratação e à obrigação de prestar contas.
+Lojas, centros de distribuição, residências e outros negócios de qualquer setor que precisam de gente por turno. Entram no produto desde o início, mas não são o foco da divulgação inicial.
 
-Contratar dentro do limite legal, registrar quem trabalhou, quando e por quanto.
+Publicar turnos, confirmar profissionais, avaliar após a execução e pagar o combinado.
 
 Profissionais avulsos do DF
 
 Trabalhadores operacionais de gastronomia, eventos, varejo, logística, limpeza, beleza e pets.
 
-Manter perfil, função, raio e disponibilidade atualizados; aceitar, comparecer, executar e avaliar.
+Manter perfil, função, ponto base e disponibilidade atualizados; aceitar, comparecer, fazer check-in e check-out, executar e avaliar.
 
-Operação interna do Frila
+Equipe Frila
 
-Função exercida pela própria equipe na fase inicial, através do painel web.
+Pessoas do time que respondem, por e-mail, suporte, denúncias, contestações e pedidos de revisão do despacho.
 
-Monitorar turnos em risco, intervir manualmente, mediar conflitos e apurar incidentes.
+Responder em até 5 dias úteis. Não acompanha turnos, não intervém e não arbitra divergências: o produto é automático.
 
 Entidades setoriais (Abrasel-DF, Sindhobar-DF)
 
@@ -542,7 +568,7 @@ Não têm papel formal no produto; podem viabilizar acesso a base e a dados seto
 
 Órgãos reguladores
 
-ANPD (LGPD), Justiça do Trabalho (caracterização de vínculo, Tema 1.291) e TSE (Portaria 444/2026, contratação de pessoal de campanha).
+ANPD (LGPD) e Justiça do Trabalho (caracterização de vínculo, Tema 1.291).
 
 Definem restrições que o produto precisa respeitar por desenho, não por política interna.
 
@@ -550,7 +576,7 @@ Lojas de aplicativo
 
 App Store e Google Play, canais obrigatórios de distribuição.
 
-Aprovar as publicações; definem exigências de privacidade, conteúdo e metadados.
+Aprovar as publicações; definem exigências de privacidade, conteúdo e metadados, como denúncia e bloqueio entre usuários e exclusão de conta dentro do app.
 
 3.3 Resumo dos Usuários
 
@@ -572,11 +598,11 @@ Produtor, operador de buffet ou empresa de staff. Planeja escala de dezenas de p
 
 Contratantes de evento
 
-Coordenador de campanha
+Gestor do estabelecimento
 
-Responsável por mobilização de rua. Contrata em volume, dentro de teto legal, e precisa de registro auditável para prestação de contas.
+Dono, gerente ou produtor que acompanha, pelo Painel na versão web, as vagas, os contratados e os turnos do estabelecimento, e confirma check-ins manuais.
 
-Coordenação de campanha política
+Estabelecimentos de food service do DF, contratantes de evento e outros negócios
 
 Profissional avulso
 
@@ -584,23 +610,17 @@ Trabalhador operacional que compõe a renda com turnos avulsos. Usa Android de e
 
 Profissionais avulsos do DF
 
-Operador do painel
-
-Pessoa da equipe Frila que acompanha os turnos em risco e intervém manualmente quando o despacho não resolve.
-
-Operação interna do Frila
-
 3.4 Ambiente do Usuário
 
 O produto é usado majoritariamente em mobilidade e sob pressão de tempo, e isso condiciona todas as decisões de desenho.
 
 O profissional acessa da rua, do intervalo e do transporte, em aparelho Android de entrada, com sinal instável e plano de dados limitado. Sessões são curtas: consultar uma vaga, aceitar, conferir endereço e horário. A confiabilidade da notificação é a parte mais crítica do ambiente dele: nas avaliações públicas dos concorrentes, a segunda queixa mais repetida é o aviso que não chega, relatada tanto por quem elogia o produto quanto por quem o detesta. Um aviso que não chega equivale a uma vaga que não existiu.
 
-O contratante tem dois ambientes opostos. No celular, sob estresse: são 16h de uma sexta, faltou gente, o movimento começa em duas horas e quem publica está no salão, não sentado à mesa. Nesse contexto, publicar precisa levar menos de 60 segundos e exigir poucos campos. No computador, planejando: o operador de buffet monta a escala de uma formatura de 40 pessoas duas semanas antes. É trabalho de mesa, com teclado e tela grande, onde a densidade de informação ajuda em vez de atrapalhar. Por isso todos os perfis têm acesso tanto ao aplicativo quanto à web.
+O contratante tem dois ambientes opostos. No celular, sob estresse: são 16h de uma sexta, faltou gente, o movimento começa em duas horas e quem publica está no salão, não sentado à mesa. Nesse contexto, publicar precisa ser rápido e exigir poucos campos. No computador, planejando: o operador de buffet monta a escala de uma formatura de 40 pessoas duas semanas antes. É trabalho de mesa, com teclado e tela grande, onde a densidade de informação ajuda em vez de atrapalhar. É também no computador que o gestor usa o Painel do estabelecimento. Por isso todos os perfis têm acesso tanto ao aplicativo quanto à web.
 
-A concentração temporal de uso é conhecida: picos de quinta a domingo, na virada da tarde para a noite, além de datas sazonais como Black Friday, Natal, Dia das Mães e temporada de formaturas. A janela crítica de disponibilidade do sistema é quinta a domingo, entre 16h e 02h.
+A concentração temporal de uso é conhecida: picos de quinta a domingo, na virada da tarde para a noite, além de datas sazonais como Black Friday, Natal, Dia das Mães e temporada de formaturas. O horário de pico do sistema é quinta a domingo, entre 16h e 02h.
 
-Quanto a plataformas, o aplicativo iOS nativo é requisito já fechado do projeto. Android não pode ficar para depois, por ser a plataforma da maioria esmagadora do trabalhador de base no Brasil, já que lançar só em iOS excluiria a maior parte do lado da oferta. A versão web atende os dois perfis. A escolha entre nativo nas duas plataformas ou uma base compartilhada ainda não foi tomada.
+Quanto a plataformas, o aplicativo iOS nativo, em Swift e SwiftUI, é requisito já fechado do projeto, e o Android também será nativo, em Kotlin. O Android continua sendo prioridade de alcance, por ser a plataforma de cerca de 75% do uso de celular no Brasil (75,45%, StatCounter, ago/2026), já que lançar só em iOS excluiria a maior parte do lado da oferta. Para a entrega na loja em 13/11, o iOS é o mínimo, e Android e web são a meta. A versão web atende os dois perfis.
 
 Estimativa de uso simultâneo no lançamento: dezenas de usuários ativos ao mesmo tempo na janela de pico, com picos de despacho concentrados nos minutos seguintes a cada publicação de vaga. O número é derivado do tamanho da praça-piloto, não de medição. [H]
 
@@ -614,7 +634,7 @@ Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi e Matheus Silva
 
 Descrição
 
-Os cinco sócios do projeto, responsáveis por pesquisa, produto, design, desenvolvimento e operação inicial. Acumulam também o papel de operação interna enquanto não houver equipe dedicada.
+Os cinco sócios do projeto, responsáveis por pesquisa, produto, design e desenvolvimento. Respondem também, como Equipe Frila, o e-mail de suporte, denúncias e contestações; não há operação manual de turnos.
 
 Tipo
 
@@ -626,11 +646,11 @@ Conduzir a validação de campo; decidir escopo e prioridade; projetar, implemen
 
 Critérios de sucesso
 
-Turnos efetivamente preenchidos no DF, com taxa de comparecimento medida; hipóteses do projeto convertidas em dado ou descartadas; produto publicado nas duas lojas.
+Turnos efetivamente preenchidos no DF, com taxa de comparecimento medida; hipóteses do projeto convertidas em dado ou descartadas; produto publicado na App Store em 13/11, com Google Play e web como meta.
 
 Envolvimento
 
-Integral e diário: definição de requisitos, construção, testes e operação.
+Integral e diário: definição de requisitos, construção, testes, publicação e resposta ao e-mail da Equipe Frila.
 
 Principais preocupações
 
@@ -700,11 +720,11 @@ Stakeholder 4: Órgãos reguladores
 
 Representante
 
-ANPD, Justiça do Trabalho e TSE
+ANPD e Justiça do Trabalho
 
 Descrição
 
-Definem o contorno legal em que o produto opera: proteção de dados pessoais, caracterização de vínculo empregatício em plataformas e limites de contratação de pessoal em campanha eleitoral.
+Definem o contorno legal em que o produto opera: proteção de dados pessoais e caracterização de vínculo empregatício em plataformas.
 
 Tipo
 
@@ -712,7 +732,7 @@ Regulador
 
 Responsabilidades
 
-Fiscalizar o tratamento de dados pessoais; julgar a natureza da relação entre plataforma e trabalhador (Tema 1.291 e PLP 12/2024); fixar e fiscalizar o teto de contratação de campanha (Portaria TSE 444/2026).
+Fiscalizar o tratamento de dados pessoais; julgar a natureza da relação entre plataforma e trabalhador (Tema 1.291 e PLP 12/2024).
 
 Critérios de sucesso
 
@@ -724,7 +744,7 @@ Indireto e permanente, por meio das normas aplicáveis.
 
 Principais preocupações
 
-Uso indevido de dado sensível e de documento de identificação; subordinação disfarçada de intermediação; contratação de pessoal de campanha acima do teto legal, que pode configurar corrupção eleitoral.
+Uso indevido de dado sensível e de documento de identificação; subordinação disfarçada de intermediação; decisão automatizada sem explicação nem canal de revisão (LGPD, art. 20).
 
 3.6 Perfil dos Usuários
 
@@ -744,7 +764,7 @@ Usuário primário
 
 Responsabilidades
 
-Publicar a vaga com função, data, janela, local e valor; confirmar o profissional; receber quem chega; avaliar depois do turno; garantir o pagamento combinado.
+Publicar a vaga com função, data, horário, endereço, valor, o que está incluso e quem recebe no local; confirmar o profissional; receber quem chega e confirmar o check-in manual quando a localização falhar; avaliar depois do turno; garantir o pagamento combinado.
 
 Critérios de sucesso
 
@@ -756,7 +776,7 @@ Episódico e concentrado: picos de quinta a domingo e em datas sazonais, com uso
 
 Principais necessidades
 
-Saber, antes de confirmar, se a pessoa costuma aparecer. Publicar em menos de um minuto, com poucos campos. Ter um plano B quando ninguém aceita. Não assumir risco trabalhista ao contratar avulso.
+Saber, antes de confirmar, se a pessoa costuma aparecer. Publicar rápido, com poucos campos. Ter um plano B quando ninguém aceita. Não assumir risco trabalhista ao contratar avulso.
 
 Comentários
 
@@ -778,7 +798,7 @@ Usuário primário
 
 Responsabilidades
 
-Manter função, raio de atuação e disponibilidade atualizados; aceitar, comparecer e executar; registrar início e fim do turno; avaliar o estabelecimento.
+Manter função, ponto base e disponibilidade atualizados; aceitar, comparecer e executar; fazer check-in e check-out no local; avaliar o estabelecimento.
 
 Critérios de sucesso
 
@@ -790,7 +810,7 @@ Diário na consulta e na resposta a notificações; episódico na execução.
 
 Principais necessidades
 
-Ser notificado de verdade, e a tempo. Cadastro curto, sem exigência pesada de documento antes de qualquer trabalho acontecer. Saber endereço, horário e valor antes de aceitar. Não pagar nada para trabalhar. Não ser bloqueado sem motivo nem sem direito de contestar.
+Ser notificado de verdade, e a tempo. Cadastro curto, sem exigência pesada de documento antes de qualquer trabalho acontecer. Saber endereço, horário, valor e o que está incluso antes de aceitar. Receber o valor integral da diária, sem comissão descontada. Não ser bloqueado sem motivo nem sem direito de contestar.
 
 Comentários
 
@@ -830,74 +850,6 @@ Comentários
 
 Estrategicamente é a porta de entrada do produto: o evento é como se constrói a oferta, o bar fixo é como se ganha frequência. Uma noite de formatura coloca 40 profissionais no mesmo salão, todos trabalhando à vista, e nenhum formulário de cadastro produz um banco curado assim.
 
-Usuário 4: Coordenação de campanha política
-
-Representante
-
-Coordenador de mobilização de rua de uma chapa
-
-Descrição
-
-Contrata em volume para militância, panfletagem, bandeirismo e apoio logístico, dentro de teto legal: no DF, a partir de 300 pessoas por chapa, subindo uma contratação a cada mil eleitores adicionais. Estourar o limite pode configurar corrupção eleitoral e abuso de poder econômico.
-
-Tipo
-
-Usuário primário sazonal
-
-Responsabilidades
-
-Contratar dentro do limite; registrar quem trabalhou, quando e por quanto; prestar contas da despesa de pessoal.
-
-Critérios de sucesso
-
-Equipe de rua completa nos dias que importam e registro exportável que sustente a prestação de contas.
-
-Envolvimento
-
-Fortemente sazonal, concentrado no período eleitoral.
-
-Principais necessidades
-
-Volume rápido, controle de teto e registro auditável do que foi pago a quem.
-
-Comentários
-
-Segmento sustentado hoje por uma única portaria e por inferência do grupo. Não foi encontrada nenhuma fonte descrevendo como essas pessoas são recrutadas e pagas na prática, nem qual a dor de quem organiza. [H]. É a lacuna mais larga do documento. A Freela Serviços já atende o segmento e é o único concorrente com overlap direto.
-
-Usuário 5: Operador do painel (interno)
-
-Representante
-
-Pessoa da equipe Frila em plantão na janela crítica
-
-Descrição
-
-Acompanha, pela web, os turnos que não estão sendo preenchidos e intervém na mão. É o perfil mais esquecido em produtos deste tipo, e é o que impede o negócio de quebrar no primeiro mês: quando um turno não preenche às 17h30 de sexta, alguém precisa ver, ligar para três pessoas e resolver.
-
-Tipo
-
-Usuário interno
-
-Responsabilidades
-
-Monitorar turnos em risco; acionar profissionais manualmente; mediar conflitos entre as partes; apurar incidentes de não comparecimento e de pagamento.
-
-Critérios de sucesso
-
-Nenhum turno publicado terminar sem resposta e sem que alguém tenha tentado resolver.
-
-Envolvimento
-
-Contínuo durante a janela crítica de quinta a domingo.
-
-Principais necessidades
-
-Ver, em uma tela, o que está prestes a falhar, com tempo restante e contato das partes. Registrar o que foi feito.
-
-Comentários
-
-Na fase inicial o papel é exercido pelos próprios sócios. O painel é também o instrumento de medição do produto: é dele que sairão os primeiros números reais de taxa de preenchimento e de comparecimento.
-
 3.7 Principais Necessidades das Partes Interessadas e Usuários
 
 Necessidade
@@ -914,7 +866,7 @@ Alta
 
 Indicação de conhecido, intuição e sorte. O grupo de WhatsApp não garante comparecimento nem responsabiliza ninguém, já que as regras publicadas tratam só de conduta.
 
-Reputação binária bidirecional exibida com denominador, taxa de comparecimento como sinal objetivo e aval herdado de quem já trabalhou com a pessoa fora do app.
+Reputação binária bidirecional exibida com denominador, só entre quem trabalhou junto pelo Frila, e taxa de comparecimento como sinal objetivo.
 
 Cobrir um turno que começa em poucas horas
 
@@ -922,7 +874,7 @@ Alta
 
 Mensagem em um ou vários grupos de WhatsApp, torcendo para alguém ver e responder.
 
-Despacho ativo por geolocalização, notificando quem é elegível em ordem de taxa de comparecimento, mais busca livre por vagas na região.
+Despacho ativo por proximidade: a vaga é notificada, de uma vez, a quem tem a função, está disponível e está a até 15 km do local, e aparece na lista de vagas de todo o DF.
 
 Ser efetivamente chamado, e não apenas estar cadastrado
 
@@ -930,7 +882,7 @@ Alta
 
 Candidatar-se em murais concorridos e não receber resposta. É a queixa dominante nas avaliações de três concorrentes de empresas diferentes.
 
-Despacho dirigido a quem é elegível, em vez de exposição passiva; prioridade construída por comparecimento e não por antiguidade ou por preferência do contratante.
+Despacho dirigido a quem é elegível, em vez de exposição passiva; quem recebe é definido por função, disponibilidade e distância, e não por antiguidade nem por pagamento. A tela “Por que recebo vagas” explica o critério e permite pedir revisão.
 
 Receber o aviso da vaga a tempo
 
@@ -938,7 +890,7 @@ Alta
 
 Checar o aplicativo de dez em dez minutos, ou acompanhar vários grupos simultaneamente.
 
-Notificação como requisito de primeira ordem, com entrega verificável, reentrega e estado consultável, tratada como parte do produto e não como detalhe técnico.
+Notificação como requisito de primeira ordem, com envio medido no servidor, reentrega e estado consultável, e no máximo uma notificação a cada 30 minutos por profissional, para não virar ruído.
 
 Entrar na plataforma sem barreira antes de qualquer trabalho
 
@@ -954,7 +906,7 @@ Alta
 
 Conversa de WhatsApp e memória. Não há registro de horas, de valor nem de quem faltou.
 
-Registro de início, fim e valor acordado do turno, disponível para consulta e exportação pelos dois lados.
+Check-in e check-out geolocalizados e registro de início, fim e valor acordado do turno, disponível para consulta e exportação pelos dois lados.
 
 Não pagar para trabalhar
 
@@ -962,7 +914,7 @@ Alta
 
 Modelos que cobram do profissional: moedas pré-pagas para desbloquear contato de um cliente que pode nem responder, com relatos de gasto sem retorno.
 
-Custo zero para o profissional, em qualquer modalidade. É a única definição fechada do modelo de receita.
+O Frila nunca desconta comissão ou taxa do valor do turno: o valor anunciado na vaga é o valor integral que o profissional recebe (RN01).
 
 Não ser bloqueado sem motivo nem sem direito de resposta
 
@@ -970,7 +922,15 @@ Média
 
 Bloqueios relatados após poucas desistências, inclusive com aviso prévio, e em um caso por falta a uma vaga que havia sumido do aplicativo.
 
-Suspensão sempre com motivo registrado e canal de contestação, com apuração pelo painel de operação.
+Suspensão só por denúncia grave confirmada, sempre com motivo registrado; cancelamento nunca suspende. A contestação vai à Equipe Frila e é respondida em até 5 dias úteis.
+
+Ter a quem recorrer em caso de assédio ou de risco durante o turno
+
+Alta
+
+Resolver por conta própria, sem registro nem a quem recorrer.
+
+Denúncia e bloqueio no perfil e no turno, dos dois lados. A denúncia chega à Equipe Frila, com resposta em até 5 dias úteis, e o bloqueio impede que as partes voltem a se cruzar.
 
 Montar uma equipe grande com antecedência
 
@@ -980,13 +940,13 @@ Planilha, telefone e indicação, posição por posição.
 
 Escala de evento em lote, com várias funções e posições publicadas de uma vez, e equipes de confiança reaproveitáveis.
 
-Chamar primeiro quem já funcionou bem
+Chamar de novo quem já funcionou bem
 
 Média
 
 Lista de contatos pessoal do maître ou do produtor, que se perde quando ele sai.
 
-Equipe de confiança por estabelecimento, com prioridade de despacho e histórico que pertence ao estabelecimento, não a uma pessoa.
+Equipe de confiança por estabelecimento, que sempre recebe a notificação das vagas da casa, mesmo além de 15 km, com histórico que pertence ao estabelecimento, não a uma pessoa.
 
 Comprovar quem trabalhou, quando e por quanto
 
@@ -994,7 +954,7 @@ Média
 
 Recibos avulsos e controle manual, quando existe.
 
-Histórico exportável do turno, útil para prestação de contas de campanha e para controle do contratante.
+Histórico exportável do turno, útil para o fechamento contábil e para o controle do contratante.
 
 Não assumir risco de vínculo empregatício ao contratar avulso
 
@@ -1010,7 +970,7 @@ Alta
 
 Nenhum. Se ninguém responde ao grupo, o turno simplesmente fica descoberto.
 
-Painel de operação interno que enxerga o turno em risco dentro da janela crítica e permite intervenção manual antes de ele falhar.
+Alerta ao contratante quando a vaga segue vazia a 3 horas do início, com antecedência ajustável na publicação, e reabertura com nova notificação quando alguém cancela ou não aparece.
 
 4. Visão Geral do Produto
 
@@ -1018,17 +978,15 @@ Painel de operação interno que enxerga o turno em risco dentro da janela crít
 
 O Frila é um sistema novo e independente. Não é módulo, extensão nem substituição de um sistema existente do cliente: não depende de PDV, de sistema de ponto, de folha de pagamento ou de software de escala já instalado no estabelecimento. Essa independência é deliberada, porque o público-alvo primário são operações pequenas, cuja infraestrutura de software costuma resumir-se ao celular de quem está no salão.
 
-O produto se organiza em três interfaces sobre uma base comum, com necessidades diferentes o bastante para serem tratadas como produtos distintos:
+O produto é um aplicativo só, com dois perfis. Cada conta tem um perfil, escolhido no cadastro e fixo: quem quiser usar o outro lado cria outra conta, com outro e-mail. As necessidades dos dois perfis são diferentes o bastante para que cada um veja só as próprias telas:
 
-• Aplicativo do Profissional, em iOS, Android e web. Leve, tolerante a sinal ruim, com leitura offline dos turnos confirmados e notificação confiável.
+• Perfil de profissional, em iOS, Android e web. Leve, tolerante a sinal ruim, com leitura offline dos turnos confirmados e notificação confiável.
 
-• Aplicativo do Estabelecimento, em iOS, Android e web, cobrindo os dois contextos: publicação sob estresse no celular e planejamento de escala no computador.
-
-• Painel de Operação, web e interno, para os turnos em risco de não serem preenchidos.
+• Perfil de contratante, em iOS, Android e web, cobrindo os dois contextos: publicação sob estresse no celular e planejamento de escala no computador. Na versão web fica o Painel do gestor, para acompanhar vagas, contratados e turnos; o alerta de vaga vazia e a confirmação de check-in manual também existem no celular.
 
 Em relação ao ecossistema existente, o Frila não tenta eliminar o WhatsApp do fluxo: depois da confirmação, o contato entre as partes pode acontecer por WhatsApp ou e-mail, porque é onde as pessoas já estão. O que o produto substitui é a etapa anterior, a de encontrar alguém e decidir confiar nele, que hoje acontece sem nenhum registro e sem nenhum sinal verificável.
 
-As dependências externas previstas são serviço de notificação push das plataformas, serviços de geolocalização e mapa, e um backend cuja stack ainda não foi escolhida. O único requisito técnico fechado é a existência de um aplicativo iOS nativo; o backend pode ser externo. O pagamento fica fora do sistema por decisão de escopo, e não por limitação técnica.
+As dependências externas previstas são o Supabase como backend (Postgres com PostGIS, autenticação por código no e-mail e funções de servidor), o FCM para notificação push nos dois sistemas (no iOS, a entrega passa pelo APNs) e serviços de geolocalização e mapa. Os aplicativos são nativos: Swift e SwiftUI no iOS, Kotlin no Android. As regras que precisam valer igual nas três plataformas, como quem recebe a vaga, a confirmação sem duplicidade e o check-in, ficam no backend e são escritas uma vez. O pagamento fica fora do sistema por decisão de escopo, e não por limitação técnica.
 
 4.2 Resumo das Capacidades
 
@@ -1038,15 +996,15 @@ Recurso que o Suporta
 
 O turno cobrado em cima da hora chega a quem pode aceitá-lo, em vez de esperar ser encontrado
 
-Despacho ativo por geolocalização, com elegibilidade por função, raio, disponibilidade e histórico (REC02)
+Despacho ativo por proximidade, com elegibilidade por função, disponibilidade e distância de até 15 km (REC02)
 
 Publicar não interrompe o serviço de quem está no salão
 
-Publicação de turno em menos de 60 segundos, com poucos campos e reaproveitamento de vagas anteriores (REC01, REC05)
+Publicação de turno com poucos campos e reaproveitamento de vagas anteriores (REC01, REC05)
 
 Aceitar um trabalho não exige preencher formulário nem negociar
 
-Candidatura em um toque, com valor já definido no anúncio (REC03)
+Candidatura sem formulário, com valor já definido no anúncio (REC03)
 
 Os dois lados sabem exatamente o que foi combinado
 
@@ -1056,13 +1014,9 @@ Confirmação com função, local, horário, valor e contato liberado para ambos
 
 Reputação binária bidirecional exibida com denominador e taxa de comparecimento (REC06, REC07)
 
-Quem tem experiência não começa do zero
+Quem já funcionou bem é chamado de novo
 
-Aval herdado do mundo informal, registrado por quem já trabalhou com a pessoa fora do app (REC08)
-
-Quem já funcionou bem é chamado primeiro na próxima vez
-
-Equipe de confiança por estabelecimento, com prioridade de despacho (REC09)
+Equipe de confiança por estabelecimento, sempre notificada das vagas da casa (REC09)
 
 Uma formatura de 40 posições não precisa ser montada vaga a vaga
 
@@ -1070,19 +1024,27 @@ Escala de evento em lote, com múltiplas funções e posições (REC10)
 
 Um turno que não preenche não falha em silêncio
 
-Painel de operação interno, com alerta por janela crítica e intervenção manual (REC11)
+Alerta de vaga vazia ao contratante e Painel do gestor na versão web (REC11)
 
 O histórico do que foi trabalhado e acordado fica disponível
 
-Registro de início, fim e valor do turno, com exportação (REC12, REC14)
+Check-in e check-out geolocalizados e registro de início, fim e valor do turno, com exportação (REC12, REC14)
 
 Mais de uma pessoa do estabelecimento pode operar sem compartilhar login
 
 Múltiplos usuários por estabelecimento, com papéis (REC13)
 
-Trabalhar na plataforma não custa nada para quem trabalha
+Quem sofre assédio ou se sente em risco tem a quem recorrer
 
-Ausência de qualquer cobrança do profissional, em todas as modalidades (regra de negócio, não recurso opcional)
+Denúncia e bloqueio entre usuários (REC16)
+
+O profissional entende por que recebe cada vaga e pode pedir revisão
+
+Explicação do despacho, com pedido de revisão (REC17)
+
+O profissional recebe o valor integral do turno
+
+Nenhuma comissão ou taxa descontada do valor anunciado na vaga (RN01; regra de negócio, não recurso opcional)
 
 4.3 Suposições e Dependências
 
@@ -1142,12 +1104,6 @@ Se o sinal não for lido como informativo, a confiança não se transfere e o di
 
 Suposição [H]
 
-O aval herdado do mundo informal será efetivamente usado pelos profissionais.
-
-Sem ele, todo profissional novo começa em zero e o problema de cold start do lado da oferta permanece.
-
-Suposição [H]
-
 A dor do produtor de evento é suficientemente parecida com a do dono de bar.
 
 Se forem problemas distintos, o nicho aberto se quebra e o produto precisa escolher um segmento, com perda de densidade.
@@ -1160,15 +1116,15 @@ Perde-se um vetor de crescimento previsto. A PEC ainda pode ser alterada no plen
 
 Dependência
 
-Serviços de notificação push das plataformas (APNs e FCM) com entrega confiável.
+Serviço de notificação push (FCM nos dois sistemas; no iOS, a entrega passa pelo APNs), com envio medido no servidor.
 
-A notificação é o produto. Falha de entrega equivale a vaga inexistente, que é a segunda queixa mais repetida nas avaliações dos concorrentes.
+A notificação é o produto. Falha de entrega equivale a vaga inexistente, que é a segunda queixa mais repetida nas avaliações dos concorrentes. Como o produto não usa notificação Time Sensitive nem pede isenção de economia de bateria, a meta é medida no envio ao provedor, não no aparelho.
 
 Dependência
 
-Serviços de geolocalização e mapa, e permissão de localização concedida pelo usuário.
+Serviços de geolocalização e mapa, e permissão de localização concedida pelo usuário no momento do check-in.
 
-Sem raio geográfico confiável, o despacho perde precisão e passa a notificar quem não pode chegar a tempo, treinando o usuário a ignorar avisos.
+Sem localização confiável, a distância até a vaga perde precisão e o despacho passa a notificar quem não pode chegar a tempo; o check-in cai no fluxo manual, que depende da confirmação do contratante.
 
 Dependência
 
@@ -1184,9 +1140,9 @@ Sem distribuição, não há produto. Exigências de privacidade e de metadados 
 
 Dependência
 
-Backend e infraestrutura, com stack ainda não decidida.
+Backend no Supabase (Postgres com PostGIS, autenticação e funções de servidor), no plano gratuito até 50 mil usuários ativos por mês.
 
-A decisão está deliberadamente em aberto; adiá-la além do início da construção trava o desenvolvimento.
+Acima do plano gratuito, ou a partir de certa rentabilidade, a migração é reavaliada. Quem paga a infraestrutura depois do piloto ainda não foi decidido.
 
 Dependência
 
@@ -1198,7 +1154,7 @@ Mudança na caracterização de vínculo em plataformas pode exigir revisão do 
 
 O modelo de monetização não está definido, e essa é uma decisão consciente. Toda conta de receita depende de um preço que ainda não existe, e a pesquisa de concorrência mostrou que errar aqui é caro: cobrar do profissional gera desgaste público documentado, e comissão pura perde para receita recorrente mesmo em quem domina a transação. No Fiverr, a receita de marketplace caiu 15,5% ano a ano enquanto a receita que inclui assinatura cresceu 2%.
 
-Uma única definição está fechada: não se cobra do profissional, em nenhuma modalidade. Ela vem da evidência de que, em todos os concorrentes pesquisados e independentemente do modelo de cobrança, as piores avaliações vêm do lado de quem trabalha.
+Uma definição está fechada: o Frila nunca desconta comissão ou taxa do valor do turno, e o valor anunciado na vaga é o valor integral que o profissional recebe (RN01). Serviços opcionais pagos ao profissional podem existir no futuro. A regra vem da evidência de que, em todos os concorrentes pesquisados e independentemente do modelo de cobrança, as piores avaliações vêm do lado de quem trabalha.
 
 Os modelos praticados pelos concorrentes servem de referência, não de resposta:
 
@@ -1292,13 +1248,13 @@ US$ 25, pagamento único
 
 Infraestrutura de backend e banco de dados
 
-Externa, stack ainda não decidida
+Supabase (Postgres com PostGIS)
 
-Camada gratuita na fase de validação; a definir na construção
+Plano gratuito até 50 mil usuários ativos por mês; migração reavaliada a partir de certa rentabilidade
 
 Serviço de notificação push
 
-APNs e FCM
+FCM (no iOS, via APNs)
 
 Sem custo nos volumes previstos
 
@@ -1330,21 +1286,21 @@ REC01
 
 Publicação de turno
 
-O contratante publica um turno com função, data, janela de início e fim, local, valor e número de posições, em menos de 60 segundos, pelo celular.
+O contratante publica um turno com função, data, horário de início e fim, endereço, valor, número de posições, o que está incluso (refeição, transporte e material próprio) e quem recebe no local, com poucos campos, pelo celular. Traje, rateio dos 10% da taxa de serviço e observações são opcionais.
 
 Alta
 
 REC02
 
-Despacho ativo por geolocalização
+Despacho ativo por proximidade
 
-A vaga é notificada ativamente aos profissionais elegíveis por função, raio, disponibilidade e histórico, priorizando quem tem melhor taxa de comparecimento. É o núcleo do produto.
+A vaga é notificada, de uma vez, aos profissionais com a função, disponíveis no horário e a até 15 km do local, mais a equipe de confiança do estabelecimento. Cada profissional recebe no máximo uma notificação a cada 30 minutos, com vagas próximas no tempo agrupadas. É o núcleo do produto.
 
 Alta
 
 REC03
 
-Candidatura em um toque
+Candidatura sem formulário
 
 O profissional aceita sem carta de apresentação, sem processo seletivo e sem negociação de valor, porque o valor já está no anúncio.
 
@@ -1378,23 +1334,23 @@ REC07
 
 Taxa de comparecimento
 
-Proporção entre turnos aceitos e cumpridos, calculada pelo sistema e usada como prioridade de despacho. É o principal incentivo do produto e não custa dinheiro.
+Turnos com presença divididos pelos turnos confirmados, calculada pelo sistema e exibida no perfil. Falta é não aparecer ou cancelar com menos de 24 horas; turno não verificado não conta. Não altera quem recebe a notificação.
 
 Alta
 
 REC08
 
-Aval herdado do mundo informal
+Aval herdado (retirado)
 
-Quem já trabalhou com o profissional fora da plataforma pode atestar por ele, para que ninguém comece em zero.
+Retirado em 21/09/2026. Só avalia quem trabalhou junto pelo Frila; o número fica reservado.
 
-Média
+—
 
 REC09
 
 Equipe de confiança
 
-O estabelecimento reúne quem já trabalhou bem por lá e chama essas pessoas primeiro nas próximas vagas.
+O estabelecimento reúne quem já trabalhou bem por lá, e essas pessoas sempre recebem a notificação das vagas da casa, mesmo além de 15 km, desde que tenham a função e estejam disponíveis.
 
 Média
 
@@ -1408,9 +1364,9 @@ Média
 
 REC11
 
-Painel de operação interno
+Alerta de vaga vazia e Painel do gestor
 
-Visão web dos turnos em risco de não serem preenchidos dentro da janela crítica, com contato das partes e registro da intervenção.
+O contratante recebe um alerta quando a vaga segue vazia a 3 horas do início, com antecedência ajustável na publicação. Na versão web, no perfil de contratante, o gestor acompanha vagas, contratados e turnos, e confirma check-ins manuais.
 
 Alta
 
@@ -1418,7 +1374,7 @@ REC12
 
 Registro do turno
 
-Início, fim e valor acordado registrados e disponíveis aos dois lados, substituindo a conversa de WhatsApp e a memória.
+Check-in e check-out geolocalizados, a até 200 m do local, com check-in manual confirmado pelo contratante quando a localização falhar. Início, fim e valor acordado ficam disponíveis aos dois lados, substituindo a conversa de WhatsApp e a memória.
 
 Alta
 
@@ -1434,15 +1390,31 @@ REC14
 
 Histórico e exportação
 
-Consulta e exportação dos turnos realizados, útil para controle do contratante e para prestação de contas de campanha política.
+Consulta e exportação dos turnos realizados, útil para o fechamento contábil e o controle do contratante.
 
 Baixa
 
 REC15
 
-Busca de vagas na região
+Lista de vagas do DF
 
-O profissional também pode navegar pelas vagas abertas próximas. Complementa o despacho; em urgência, quem só procura chega tarde.
+O profissional também vê todas as vagas abertas do DF, das mais próximas para as mais distantes, com filtros por função, data e distância; vaga de outro estado aparece no fim. Complementa o despacho; em urgência, quem só procura chega tarde.
+
+Média
+
+REC16
+
+Denúncia e bloqueio
+
+Qualquer usuário pode denunciar ou bloquear outro a partir do perfil ou do turno. A denúncia chega à Equipe Frila, com resposta em até 5 dias úteis; o bloqueio é imediato e as partes não voltam a se cruzar.
+
+Alta
+
+REC17
+
+Explicação do despacho
+
+A tela “Por que recebo vagas” mostra ao profissional os critérios da notificação (função, disponibilidade e distância de até 15 km) e permite pedir revisão, respondida em até 5 dias úteis.
 
 Média
 
@@ -1458,19 +1430,19 @@ Desempenho
 
 O produto responde sem atraso perceptível, inclusive em aparelho de entrada e conexão móvel instável.
 
-Telas principais carregam em menos de 2 segundos em 4G; o fluxo completo de publicação de vaga é concluído em menos de 60 segundos.
+Telas principais carregam em menos de 2 segundos em 4G. Metas de tempo para publicar e para se candidatar só serão definidas depois de medidas no piloto.
 
 Confiabilidade de notificação
 
 É o atributo mais crítico do produto. Uma notificação que não chega equivale a uma vaga que não existiu, e é a segunda queixa mais repetida nas avaliações dos concorrentes.
 
-99% das notificações de vaga entregues em até 60 segundos após o despacho; estado de entrega consultável; reentrega automática em caso de falha.
+99% das notificações de vaga aceitas pelo provedor (APNs/FCM) em até 60 segundos após o despacho; estado de entrega consultável; reentrega automática em caso de falha. Sem notificação Time Sensitive, a entrega no aparelho não é controlada pelo produto e não entra na meta.
 
 Latência de despacho
 
 A vaga chega a quem pode aceitá-la enquanto ainda é útil.
 
-Primeira leva de profissionais elegíveis notificada em até 30 segundos após a publicação.
+Notificação enviada ao provedor em até 30 segundos após a publicação da vaga.
 
 Robustez
 
@@ -1488,13 +1460,13 @@ Usabilidade
 
 O produto é usado sob pressão, por público sem treinamento e sem paciência para tutorial.
 
-Um profissional de primeira viagem conclui uma candidatura em até 3 toques a partir da notificação, sem ajuda; um contratante publica a primeira vaga sem onboarding assistido.
+Um profissional de primeira viagem conclui uma candidatura sem ajuda; um contratante publica a primeira vaga sem onboarding assistido.
 
 Alcance e compatibilidade
 
 O aplicativo precisa caber no aparelho do trabalhador de base, que é onde a densidade da oferta é construída.
 
-Funciona em Android 9 ou superior com 2 GB de memória; em iOS 16 ou superior; e nos navegadores modernos em versão desktop e móvel.
+Funciona em Android 9 ou superior com 2 GB de memória; em iOS 17 ou superior, exigência do SwiftData; e nos navegadores modernos em versão desktop e móvel.
 
 Economia de dados
 
@@ -1524,7 +1496,7 @@ Disponibilidade
 
 O sistema está no ar quando o problema acontece, que é uma janela conhecida e concentrada.
 
-Disponibilidade mensal de 99,5%, sem manutenção programada entre quinta e domingo, das 16h às 02h.
+Disponibilidade mensal de 99,5%, sem manutenção programada no horário de pico, entre quinta e domingo, das 16h às 02h.
 
 Escalabilidade
 
@@ -1542,7 +1514,7 @@ Justiça de processo
 
 Bloqueio e suspensão não acontecem sem explicação. A queixa por punição percebida como injusta aparece de forma recorrente nas avaliações dos concorrentes.
 
-Nenhuma suspensão sem motivo registrado e sem canal de contestação com resposta em prazo definido.
+Nenhuma suspensão sem motivo registrado e sem canal de contestação com resposta em até 5 dias úteis; suspensão só por denúncia grave confirmada, e cancelamento nunca suspende.
 
 7. Requisitos de Documentação
 
@@ -1552,11 +1524,11 @@ Cada versão publicada deve trazer uma nota de liberação contendo: resumo das 
 
 7.2 Ajuda Online
 
-O produto deve oferecer ajuda acessível de dentro da própria interface, sem exigir busca externa. O conjunto mínimo é: uma seção de perguntas frequentes no menu de configurações, cobrindo como funciona o despacho, por que uma vaga pode não aparecer, como a reputação é calculada, o que acontece em caso de cancelamento e como o pagamento é combinado entre as partes; um texto curto explicando cada permissão pedida, especialmente localização e notificação, no momento em que é pedida; a política de privacidade e os termos de uso em linguagem direta; e um canal de suporte acionável durante o turno, com tempo de resposta declarado.
+O produto deve oferecer ajuda acessível de dentro da própria interface, sem exigir busca externa. O conjunto mínimo é: uma seção de perguntas frequentes no menu de configurações, cobrindo como funciona o despacho, por que uma vaga pode não aparecer, como a reputação é calculada, o que acontece em caso de cancelamento e como o pagamento é combinado entre as partes; a tela “Por que recebo vagas”, com o botão para pedir revisão; um texto curto explicando cada permissão pedida, especialmente localização, lida só no toque do check-in e do check-out, e notificação, no momento em que é pedida; a política de privacidade e os termos de uso em linguagem direta; e um canal de suporte por e-mail acionável a partir do turno, com prazo de resposta declarado de até 5 dias úteis e sem atendimento ao vivo. Em risco imediato, o app orienta o contato com as autoridades (190 e 180).
 
 7.3 Guias de Instalação
 
-Não há instalação técnica do lado do usuário além do download nas lojas. O que precisa existir é um guia de primeiro acesso por perfil, exibido no início e consultável depois. Para o profissional: cadastro mínimo, escolha de funções, definição de raio de atuação e de disponibilidade, e ativação da notificação, com explicação de que é ela que traz a vaga. Para o estabelecimento: cadastro, publicação da primeira vaga com um exemplo preenchido, e inclusão de outros usuários da equipe. Para a operação interna: manual do painel, com os critérios de janela crítica e o procedimento de intervenção manual. A documentação técnica de instalação e configuração do ambiente de desenvolvimento fica no repositório, junto ao código.
+Não há instalação técnica do lado do usuário além do download nas lojas. O que precisa existir é um guia de primeiro acesso por perfil, exibido no início e consultável depois. Para o profissional: cadastro mínimo, escolha de funções, definição do ponto base e da disponibilidade, e ativação da notificação, com explicação de que é ela que traz a vaga. Para o estabelecimento: cadastro, publicação da primeira vaga com um exemplo preenchido, e inclusão de outros usuários da equipe. Para o gestor do estabelecimento: guia do Painel na versão web, com o alerta de vaga vazia, a confirmação de check-in manual e o acompanhamento dos turnos. A documentação técnica de instalação e configuração do ambiente de desenvolvimento fica no repositório, junto ao código.
 
 7.4 Rótulo e Embalagem
 
@@ -1568,9 +1540,9 @@ Status
 
 Nome de exibição (App Store / Play)
 
-“Frila”. O nome nomeia a unidade de trabalho, o turno avulso, e não o setor, o que o mantém válido em qualquer expansão de escopo ou de país. Convenção prevista para diferenciar os dois públicos nas lojas: “Frila Profissionais” e “Frila Estabelecimentos”.
+“Frila”. O nome nomeia a unidade de trabalho, o turno avulso, e não o setor, o que o mantém válido em qualquer expansão de escopo ou de país. É um app só, com uma ficha em cada loja; o perfil, de profissional ou de contratante, é escolhido dentro do app, no cadastro.
 
-Definido para a marca; separação por público pendente
+Definido: um app só, com uma ficha por loja
 
 Ícone do app
 
@@ -1598,7 +1570,7 @@ Pendente
 
 Política de privacidade e rótulo de dados
 
-Declaração de coleta exigida pelas duas lojas, coerente com a minimização adotada: localização, dados de contato, identificadores e conteúdo do turno, com finalidade declarada para cada item.
+Declaração de coleta exigida pelas duas lojas, coerente com a minimização adotada: localização, dados de contato, identificadores e conteúdo do turno, com finalidade declarada para cada item. Inclui o compartilhamento de telefone e WhatsApp com a outra parte depois da confirmação, com base na execução do contrato (LGPD, art. 7º, V).
 
 Pendente
 

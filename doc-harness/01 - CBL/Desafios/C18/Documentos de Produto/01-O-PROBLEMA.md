@@ -14,7 +14,7 @@ tags: [produto, frila]
 
 Contratar gente para cobrir um turno de última hora — um garçom que faltou, um bartender para o fim de semana, uma equipe inteira para uma formatura — ainda depende de grupo de WhatsApp, indicação e sorte. O contratante não sabe se quem ele chamar vai aparecer, vai saber fazer o trabalho ou vai sumir no meio do turno; o profissional não tem como provar seu histórico para quem ainda não trabalhou com ele, e o pagamento é combinado na confiança, sem registro. O problema não é falta de gente disponível — pelo contrário, sobra gente se candidatando e sendo ignorada nos aplicativos que já existem. O que falta é um jeito rápido e confiável de duas pessoas que não se conhecem decidirem confiar uma na outra a tempo de resolver uma urgência que, muitas vezes, começa em poucas horas.
 
-O Frila conecta quem precisa de gente para um turno avulso — em restaurantes, bares e cafeterias, em eventos como shows, formaturas e casamentos, ou em campanhas políticas — com profissionais disponíveis na região. O contratante publica a vaga em menos de um minuto e ela é enviada ativamente para quem tem o perfil certo, em vez de esperar alguém encontrá-la por acaso. A candidatura é rápida, a confirmação é clara para os dois lados, e depois de cada turno os dois avaliam um ao outro com uma pergunta simples — "chamaria essa pessoa de novo?" — construindo um histórico que facilita a próxima contratação. Isso reduz a fricção de organizar uma equipe de confiança e tira a contratação avulsa da informalidade total do grupo de WhatsApp, sem torná-la burocrática.
+O Frila conecta quem precisa de gente para um turno avulso — em restaurantes, bares e cafeterias, em eventos como shows, formaturas e casamentos, ou em qualquer outro setor que trabalhe com turno avulso — com profissionais disponíveis na região. O contratante publica a vaga com poucos campos e ela é enviada ativamente para quem tem o perfil certo, em vez de esperar alguém encontrá-la por acaso. A candidatura é rápida, a confirmação é clara para os dois lados, e depois de cada turno os dois avaliam um ao outro com uma pergunta simples — "chamaria essa pessoa de novo?" — construindo um histórico que facilita a próxima contratação. Isso reduz a fricção de organizar uma equipe de confiança e tira a contratação avulsa da informalidade total do grupo de WhatsApp, sem torná-la burocrática.
 
 ---
 
@@ -83,6 +83,8 @@ Isso desloca o problema. Em plataforma, **gente disponível sobra**; o que falta
 > Isso importa mais do que parece. O segmento que o Frila quer atender em eventos é justamente o que nenhuma estatística oficial conta.
 
 ### 2.3. Campanha política
+
+> **Campanha política saiu do radar do produto em 21/09/2026.** A evidência fica registrada como oportunidade futura.
 
 **Dado — a contratação em massa existe, é regulada e tem teto.** A Portaria TSE nº 444/2026 fixa os limites de contratação, direta ou terceirizada, de pessoal para militância e mobilização de rua nas Eleições Gerais de 2026. Em municípios com até 30 mil eleitores, o limite é 1% do eleitorado. Em cidades maiores e no Distrito Federal, começa em 300 pessoas e sobe uma contratação a cada mil eleitores adicionais. O limite vale para a chapa inteira — candidato, vice e suplentes. Estourar o teto pode configurar corrupção eleitoral e abuso de poder econômico, com risco de perda de registro ou diploma ([TSE](https://www.tse.jus.br/comunicacao/noticias/2026/Julho/tse-divulga-limites-de-contratacao-de-pessoal-para-as-eleicoes-gerais-2026) · [Gazeta do Povo](https://www.gazetadopovo.com.br/eleicoes/2026/tse-divulga-limites-de-contratacao-de-pessoal-para-eleicoes-2026/)). A página do TSE bloqueia acesso automatizado — os números vieram do resumo de busca e da cobertura de imprensa, e **devem ser conferidos na fonte antes de virar decisão**.
 
@@ -230,9 +232,9 @@ Perguntas já formuladas, em ordem de importância. Enquanto não tiverem respos
 11. O que faz você aceitar um chamado de alguém que você não conhece?
 12. Quanto da sua renda do mês vem de trabalho avulso?
 
-**Sobre os três segmentos**
+**Sobre os segmentos**
 13. A dor do produtor de evento é a mesma do dono de bar? Se não for, o nicho aberto se quebra.
-14. Como uma campanha política recruta e paga quem vai para a rua?
+14. Como uma campanha política recruta e paga quem vai para a rua? (fora do radar do produto desde 21/09/2026; fica como oportunidade futura)
 15. Alguma plataforma já chegou ao DF, de fato?
 
 **O que se pode medir sem entrevistar ninguém**
