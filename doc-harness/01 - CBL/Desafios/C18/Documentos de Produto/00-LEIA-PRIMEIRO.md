@@ -6,6 +6,14 @@ origem: "Frila/Documentos/MD/00-LEIA-PRIMEIRO.md"
 tags: [produto, frila]
 ---
 
+---
+tipo: documento-produto
+desafio: C18
+data_criacao: 2026-09-15
+origem: "Frila/Documentos/MD/00-LEIA-PRIMEIRO.md"
+tags: [produto, frila]
+---
+
 # Frila — Leia primeiro
 
 **Versão 1.0 · setembro/2026**
@@ -46,6 +54,7 @@ O conjunto tem duas camadas. Os cinco arquivos numerados são a fonte detalhada,
 | `02-O-NEGOCIO.md` | O que é o Frila, para quem, e como funciona ponta a ponta |
 | `03-ESPECIFICACAO-DO-PRODUTO.md` | O app e seus dois perfis, os fluxos principais e os pilares da experiência |
 | `04-MERCADO-E-CONCORRENCIA.md` | Tamanho de mercado, concorrentes e por que o WhatsApp ainda domina |
+| `05-ESCOPO-DO-MVP.md` | O que entra em cada versão, as sprints até a loja e o quadro do Trello |
 
 As duas camadas dizem a mesma coisa. Quando divergirem, a camada detalhada é a fonte da verdade, porque é onde cada número carrega sua marca de origem.
 
@@ -80,6 +89,9 @@ Para entender o projeto inteiro de uma vez, leia o `README.md`. Para conferir de
 Tudo aqui é **hipótese com teste anexado**, não decisão tomada. Valores marcados `[H]` são estimativas de fonte pública ou de aritmética — nenhum foi confirmado em campo. As marcas usadas nos documentos de evidência (Dado, Relato, Fonte interessada, Lacuna) estão explicadas em `01-O-PROBLEMA.md` e em `EVIDENCIAS.md`.
 
 Um documento de estratégia que continua igual depois de cinquenta conversas com clientes é um documento que ninguém usou. A expectativa é que parte destes números esteja errada e seja corrigida com dado real.
+
+---
+← [[01 - CBL/00 - Índice CBL|Índice CBL]]
 
 ---
 ← [[01 - CBL/00 - Índice CBL|Índice CBL]]

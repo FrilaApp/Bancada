@@ -195,6 +195,7 @@ Este documento resume. Cada seção tem um documento detalhado por trás, e é l
 | Como funciona, os dois perfis do app, os pilares | [`03-ESPECIFICACAO-DO-PRODUTO.md`](03-ESPECIFICACAO-DO-PRODUTO.md) |
 | O mercado, a concorrência, por que o WhatsApp vence | [`04-MERCADO-E-CONCORRENCIA.md`](04-MERCADO-E-CONCORRENCIA.md), com dossiê de cada concorrente |
 | Tese e estado do projeto | [`00-LEIA-PRIMEIRO.md`](00-LEIA-PRIMEIRO.md) |
+| O que entra em cada versão, sprints e o quadro do Trello | [`05-ESCOPO-DO-MVP.md`](05-ESCOPO-DO-MVP.md) |
 
 Onde este resumo divergir do documento detalhado, o detalhado vale, porque é onde cada número carrega sua marca de origem.
 
