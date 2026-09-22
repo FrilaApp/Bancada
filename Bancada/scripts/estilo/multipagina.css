@@ -48,7 +48,7 @@ body > header {
   align-items: center;
   justify-content: space-between;
   height: 58px;
-  padding: 0 28px;
+  padding: 0 32px;
   background: rgba(0, 0, 0, 0.82);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -85,8 +85,9 @@ body > header {
 }
 
 .marca-sub {
-  font-family: var(--mono);
+  font-family: var(--sans);
   font-size: 11px;
+  font-weight: 500;
   color: #888d92;
   padding: 2px 8px;
   background: rgba(255, 255, 255, 0.03);
@@ -129,7 +130,7 @@ body > header nav a.ativo {
   align-items: center;
   gap: 8px;
   font-size: 11px;
-  font-family: var(--mono);
+  font-family: var(--sans);
   color: #888d92;
 }
 
@@ -144,11 +145,11 @@ body > header nav a.ativo {
 /* Estrutura de Colunas e Layout ----------------------------------------- */
 .colunas {
   display: grid;
-  grid-template-columns: 260px minmax(0, 1fr);
-  gap: 40px;
-  max-width: 1280px;
+  grid-template-columns: 232px minmax(0, 1fr);
+  gap: 52px;
+  max-width: min(94vw, 1560px);
   margin: 0 auto;
-  padding: 36px 28px 72px;
+  padding: 28px 32px 72px;
   align-items: start;
 }
 
@@ -184,12 +185,12 @@ aside details.grupo summary.grupo-titulo {
   margin: 0 0 4px 0;
   padding: 6px 8px;
   border-radius: 6px;
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   color: #525860;
-  font-family: var(--mono);
+  font-family: var(--sans);
   transition: color 140ms ease, background-color 140ms ease;
 }
 
@@ -357,8 +358,9 @@ main ol > li {
 }
 
 main ol > li::marker {
-  font-family: var(--mono);
-  font-size: 11.5px;
+  font-family: var(--sans);
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
   color: #70b8ff;
   font-weight: 600;
 }
@@ -424,12 +426,12 @@ a:hover {
 
 .numero-sub {
   display: block;
-  font-size: 10.5px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 600;
   color: #525860;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
-  font-family: var(--mono);
+  letter-spacing: 0.06em;
+  font-family: var(--sans);
   margin-bottom: 6px;
 }
 
@@ -489,10 +491,10 @@ a:hover {
   align-items: center;
   gap: 6px;
   width: fit-content;
-  font-family: var(--mono);
-  font-size: 10.5px;
+  font-family: var(--sans);
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--acento);
   background: rgba(59, 158, 255, 0.08);
@@ -528,11 +530,11 @@ a:hover {
   gap: 6px;
   margin-bottom: 8px;
   color: #70b8ff;
-  font-family: var(--mono);
+  font-family: var(--sans);
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   background: rgba(59, 158, 255, 0.08);
   border: 1px solid rgba(59, 158, 255, 0.2);
   padding: 2px 8px;
@@ -592,7 +594,7 @@ a:hover {
 .lista-dias .apoio {
   color: #888d92;
   font-size: 11.5px;
-  font-family: var(--mono);
+  font-family: var(--sans);
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--borda);
   padding: 2px 8px;
@@ -621,12 +623,12 @@ a:hover {
 }
 
 .campo-chave {
-  font-family: var(--mono);
-  font-size: 10px;
+  font-family: var(--sans);
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.06em;
   color: #6a717a;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .campo-valor {
@@ -697,10 +699,10 @@ th, td {
 th {
   font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.06em;
   color: #525860;
   font-weight: 600;
-  font-family: var(--mono);
+  font-family: var(--sans);
   background: rgba(255, 255, 255, 0.02);
 }
 
@@ -763,7 +765,7 @@ tbody tr:last-child td {
 }
 
 .tarefas-total-badge {
-  font-family: var(--mono);
+  font-family: var(--sans);
   font-size: 11.5px;
   color: #888d92;
   background: rgba(255, 255, 255, 0.03);
@@ -880,7 +882,7 @@ tbody tr:last-child td {
 }
 
 .kanban-coluna-qtd {
-  font-family: var(--mono);
+  font-family: var(--sans);
   font-size: 11px;
   color: #888d92;
   background: rgba(255, 255, 255, 0.04);
@@ -1011,7 +1013,7 @@ tbody tr:last-child td {
   border-radius: 9999px;
   font-size: 11px;
   font-weight: 500;
-  font-family: var(--mono);
+  font-family: var(--sans);
   white-space: nowrap;
   border: 1px solid transparent;
 }
@@ -1067,10 +1069,10 @@ th, td {
 th {
   font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.06em;
   color: #525860;
   font-weight: 600;
-  font-family: var(--mono);
+  font-family: var(--sans);
   background: rgba(255, 255, 255, 0.02);
   user-select: none;
   transition: color 150ms ease;
@@ -1375,9 +1377,9 @@ body > footer {
   gap: 6px;
   height: 28px;
   padding: 0 10px;
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 500;
-  font-family: var(--mono);
+  font-family: var(--sans);
   color: #888d92;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -1666,11 +1668,11 @@ body > footer {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: var(--mono);
+  font-family: var(--sans);
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   color: var(--textoSutil);
   margin-bottom: 10px;
 }
@@ -1695,11 +1697,11 @@ body > footer {
 
 .cbl-chamada-lead {
   margin: 0 0 20px;
-  font-size: 14.5px;
-  line-height: 1.6;
+  font-size: 15px;
+  line-height: 1.62;
   color: var(--textoSutil);
   text-wrap: pretty;
-  max-width: 66ch;
+  max-width: 76ch;
 }
 
 :root[data-theme="light"] .cbl-chamada-lead {
@@ -1739,8 +1741,9 @@ body > footer {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-family: var(--mono);
-  font-size: 12px;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
   color: var(--textoSutil) !important;
   text-decoration: underline;
   text-underline-offset: 4px;
@@ -1774,7 +1777,7 @@ body > footer {
    Inspirado em Raphael Salaja: Containerless, tipografia pura, colofão fluido.
    ========================================================================== */
 .cbl-documento {
-  max-width: 900px;
+  max-width: 1140px;
   margin: 0 auto 80px;
   color: var(--texto);
   font-family: var(--sans);
@@ -1818,11 +1821,11 @@ body > footer {
 }
 
 .cbl-masthead-rotulo {
-  font-family: var(--mono);
+  font-family: var(--sans);
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   color: var(--textoSutil);
 }
 
@@ -1830,8 +1833,8 @@ body > footer {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-family: var(--mono);
-  font-size: 11.5px;
+  font-family: var(--sans);
+  font-size: 12px;
   font-weight: 500;
   color: var(--textoSutil) !important;
   text-decoration: underline;
@@ -1859,10 +1862,10 @@ body > footer {
 }
 
 .cbl-masthead-titulo {
-  font-size: clamp(2.1rem, 3.4vw, 2.75rem);
+  font-size: clamp(2rem, 3.2vw, 2.6rem);
   font-weight: 600;
-  letter-spacing: -0.035em;
   line-height: 1.16;
+  letter-spacing: -0.035em;
   margin: 0 0 16px;
   color: var(--texto);
   text-wrap: balance;
@@ -1873,12 +1876,13 @@ body > footer {
 }
 
 .cbl-masthead-lead {
-  font-size: 15.5px;
+  font-size: 15px;
+  font-weight: 400;
   line-height: 1.62;
   color: var(--textoSutil);
   margin: 0 0 28px;
   text-wrap: pretty;
-  max-width: 68ch;
+  max-width: 76ch;
 }
 
 :root[data-theme="light"] .cbl-masthead-lead {
@@ -1888,7 +1892,7 @@ body > footer {
 /* Colofão Editorial Typográfico (Estilo About do Raphael Salaja) */
 .cbl-colofao {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 20px;
   padding: 20px 0;
   border-top: 1px solid var(--divisor);
@@ -1903,11 +1907,11 @@ body > footer {
 }
 
 .cbl-colofao-rotulo {
-  font-family: var(--mono);
-  font-size: 10px;
+  font-family: var(--sans);
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   color: var(--textoSutil);
 }
 
@@ -1973,17 +1977,17 @@ body > footer {
   gap: 12px;
   flex-wrap: wrap;
   padding: 8px 0 0;
-  font-family: var(--mono);
-  font-size: 12px;
+  font-family: var(--sans);
+  font-size: 12.5px;
   background: transparent !important;
   border: none !important;
 }
 
 .cbl-nav-legenda {
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   color: var(--textoSutil);
   opacity: 0.7;
   margin-right: 4px;
@@ -1993,6 +1997,8 @@ body > footer {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
   color: var(--textoSutil) !important;
   text-decoration: none;
   padding: 4px 6px;
@@ -2013,9 +2019,11 @@ body > footer {
 }
 
 .cbl-ancora-num {
+  font-family: var(--sans);
   font-variant-numeric: tabular-nums;
+  font-weight: 600;
   opacity: 0.6;
-  font-size: 11px;
+  font-size: 11.5px;
 }
 
 .cbl-ancora-sep {
@@ -2040,19 +2048,20 @@ body > footer {
 }
 
 .cbl-fase-tag {
-  font-family: var(--mono);
-  font-size: 10.5px;
+  font-family: var(--sans);
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   color: var(--textoSutil);
   margin-bottom: 6px;
 }
 
 .cbl-fase-nome {
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 600;
-  letter-spacing: -0.03em;
+  line-height: 1.22;
+  letter-spacing: -0.025em;
   margin: 0 0 10px;
   color: var(--texto);
   text-wrap: balance;
@@ -2063,12 +2072,13 @@ body > footer {
 }
 
 .cbl-fase-descricao {
-  font-size: 14.5px;
+  font-size: 14px;
+  font-weight: 400;
   color: var(--textoSutil);
   margin: 0;
   line-height: 1.6;
   text-wrap: pretty;
-  max-width: 68ch;
+  max-width: 76ch;
 }
 
 :root[data-theme="light"] .cbl-fase-descricao {
@@ -2089,7 +2099,7 @@ body > footer {
 }
 
 .cbl-num-secao {
-  font-family: var(--mono);
+  font-family: var(--sans);
   font-size: 11.5px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
@@ -2097,8 +2107,9 @@ body > footer {
 }
 
 .cbl-subcabecalho h3 {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-weight: 600;
+  line-height: 1.35;
   letter-spacing: -0.015em;
   margin: 0;
   color: var(--texto);
@@ -2111,11 +2122,12 @@ body > footer {
 
 .cbl-paragrafo-apoio {
   font-size: 14px;
+  font-weight: 400;
   color: var(--textoSutil);
   margin: 0 0 20px;
   line-height: 1.6;
   text-wrap: pretty;
-  max-width: 68ch;
+  max-width: 76ch;
 }
 
 :root[data-theme="light"] .cbl-paragrafo-apoio {
@@ -2139,11 +2151,11 @@ body > footer {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: var(--mono);
-  font-size: 10.5px;
+  font-family: var(--sans);
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   color: var(--textoSutil);
   margin-bottom: 14px;
 }
@@ -2164,10 +2176,10 @@ body > footer {
 
 .cbl-declaracao-destaque,
 .cbl-marco-destaque {
-  font-size: clamp(1.45rem, 2.3vw, 1.85rem);
+  font-size: clamp(1.35rem, 2.2vw, 1.7rem);
   font-weight: 500;
-  letter-spacing: -0.025em;
   line-height: 1.35;
+  letter-spacing: -0.02em;
   color: var(--texto);
   text-wrap: balance;
   margin: 0 0 16px;
@@ -2183,10 +2195,10 @@ body > footer {
 
 .cbl-big-idea-destaque,
 .cbl-big-idea-termo {
-  font-size: clamp(2.2rem, 4vw, 3rem);
+  font-size: clamp(2.1rem, 3.6vw, 2.8rem);
   font-weight: 600;
-  letter-spacing: -0.035em;
   line-height: 1.12;
+  letter-spacing: -0.03em;
   margin: 0 0 14px;
   color: var(--texto);
 }
@@ -2199,11 +2211,12 @@ body > footer {
 .cbl-declaracao-texto,
 .cbl-marco-texto,
 .cbl-big-idea-expl {
-  font-size: 14.5px;
-  line-height: 1.65;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
   color: var(--textoSutil);
   text-wrap: pretty;
-  max-width: 68ch;
+  max-width: 76ch;
 }
 
 :root[data-theme="light"] .cbl-declaracao-texto,
@@ -2256,8 +2269,9 @@ body > footer {
 
 .cbl-essenciais-contagem,
 .cbl-caixa-perguntas-qtd {
-  font-family: var(--mono);
+  font-family: var(--sans);
   font-size: 11px;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
   color: var(--textoSutil);
 }
@@ -2296,12 +2310,12 @@ body > footer {
 .cbl-essencial-num,
 .cbl-num-pergunta {
   display: inline-block;
-  font-family: var(--mono);
+  font-family: var(--sans);
   font-variant-numeric: tabular-nums;
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--textoSutil);
-  width: 22px;
+  width: 24px;
   flex-shrink: 0;
   text-align: right;
 }
@@ -2354,6 +2368,12 @@ body > footer {
 
 .cbl-persona-eyebrow,
 .cbl-persona-topo {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--textoSutil);
   margin-bottom: 2px;
 }
 
@@ -2448,11 +2468,11 @@ body > footer {
 .tabela-cbl th {
   padding: 10px 10px;
   border-bottom: 1px solid var(--borda);
-  font-family: var(--mono);
-  font-size: 10.5px;
+  font-family: var(--sans);
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.06em;
   color: var(--textoSutil);
   text-align: left;
   background: transparent !important;
@@ -2524,8 +2544,9 @@ body > footer {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-family: var(--mono);
-  font-size: 11.5px;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 500;
   color: var(--textoSutil) !important;
   text-decoration: underline;
   text-decoration-thickness: 1px;
@@ -2561,8 +2582,8 @@ body > footer {
 
 .cbl-sem-fonte,
 .cbl-badge-sem-fonte {
-  font-family: var(--mono);
-  font-size: 11px;
+  font-family: var(--sans);
+  font-size: 11.5px;
   color: var(--textoSutil);
   opacity: 0.65;
   white-space: nowrap;
@@ -2573,8 +2594,8 @@ body > footer {
 
 .cbl-texto-fonte,
 .cbl-badge-fonte-texto {
-  font-family: var(--mono);
-  font-size: 11.5px;
+  font-family: var(--sans);
+  font-size: 12px;
   color: var(--textoSutil);
 }
 
@@ -2583,8 +2604,8 @@ body > footer {
    ========================================================================== */
 .cbl-atividade-registro {
   display: grid;
-  grid-template-columns: 1.2fr 0.6fr 1fr 1.2fr;
-  gap: 24px;
+  grid-template-columns: 1.3fr 0.7fr 1.1fr 1.3fr;
+  gap: 28px;
   padding: 18px 0;
   border-top: 1px solid var(--divisor);
   border-bottom: 1px solid var(--divisor);
@@ -2640,11 +2661,11 @@ body > footer {
 
 .cbl-sintese-rotulo,
 .cbl-sintese-topo {
-  font-family: var(--mono);
-  font-size: 10.5px;
+  font-family: var(--sans);
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   color: var(--textoSutil);
   margin-bottom: 14px;
 }
@@ -2842,8 +2863,9 @@ body > footer {
 }
 
 .cbl-library-cat-contagem {
-  font-family: var(--mono);
+  font-family: var(--sans);
   font-size: 11px;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
   color: var(--textoSutil);
 }
@@ -2885,10 +2907,10 @@ body > footer {
 
 .cbl-library-num,
 .cbl-goal-badge {
-  font-family: var(--mono);
+  font-family: var(--sans);
   font-variant-numeric: tabular-nums;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--textoSutil);
   width: 24px;
   flex-shrink: 0;
@@ -2918,9 +2940,10 @@ body > footer {
 .cbl-goal-titulo {
   font-size: 15px;
   font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.015em;
   color: var(--texto);
   margin: 0;
-  letter-spacing: -0.015em;
   text-wrap: balance;
 }
 
@@ -2930,9 +2953,9 @@ body > footer {
 }
 
 .cbl-library-item-cat {
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 500;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--textoSutil);
@@ -2941,12 +2964,13 @@ body > footer {
 
 .cbl-library-item-desc,
 .cbl-goal-descricao {
-  font-size: 13.5px;
+  font-size: 14px;
+  font-weight: 400;
   line-height: 1.6;
   color: var(--textoSutil);
   margin: 0;
   text-wrap: pretty;
-  max-width: 72ch;
+  max-width: 76ch;
 }
 
 :root[data-theme="light"] .cbl-library-item-desc,
@@ -2963,13 +2987,12 @@ body > footer {
 
 .cbl-library-obj-rotulo,
 .cbl-goal-subtitulo {
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 500;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   color: var(--textoSutil);
-  opacity: 0.7;
   display: block;
   margin-bottom: 6px;
 }
@@ -2985,7 +3008,7 @@ body > footer {
 
 .cbl-library-obj-lista li,
 .cbl-goal-objetivos li {
-  font-size: 12.5px;
+  font-size: 13px;
   line-height: 1.55;
   color: var(--textoSutil);
   text-wrap: pretty;
@@ -3010,11 +3033,11 @@ body > footer {
 .tabela-cbl-rubrica th {
   padding: 10px 10px;
   border-bottom: 1px solid var(--borda);
-  font-family: var(--mono);
-  font-size: 10.5px;
+  font-family: var(--sans);
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   color: var(--textoSutil);
   text-align: left;
 }
@@ -3052,7 +3075,7 @@ body > footer {
 
 .cbl-rubrica-tag,
 .cbl-tag-nivel {
-  font-family: var(--mono);
+  font-family: var(--sans);
   font-size: 11.5px;
   font-weight: 600;
   color: var(--texto);
@@ -3086,11 +3109,11 @@ body > footer {
 }
 
 .cbl-meta-rotulo {
-  font-family: var(--mono);
-  font-size: 10px;
+  font-family: var(--sans);
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   color: var(--textoSutil);
 }
 

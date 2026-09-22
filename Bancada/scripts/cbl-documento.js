@@ -82,7 +82,7 @@ function renderizarTabelaAtividade(atividade, idTabela) {
       </div>
       <div class="cbl-atividade-col cbl-col-data">
         <span class="cbl-meta-rotulo">Data</span>
-        <span class="cbl-atividade-valor cbl-mono">${escapar(atividade.data)}</span>
+        <span class="cbl-atividade-valor"><time>${escapar(atividade.data)}</time></span>
       </div>
       <div class="cbl-atividade-col cbl-col-recursos">
         <span class="cbl-meta-rotulo">Recursos</span>
@@ -99,6 +99,7 @@ function renderizarTabelaAtividade(atividade, idTabela) {
 function renderizarDocumentoCBL(base = '../') {
   const dados = carregarDados();
   const pdfHref = `${base}midia/01 - CBL/Desafios/C18/Documentos/CBL_C18.pdf`;
+  const prefixoNotas = base === '' ? 'notas/' : '';
 
   // Mapeamento das 3 categorias dos 22 Learning Goals
   const categoriasGoals = [
@@ -458,7 +459,7 @@ function renderizarDocumentoCBL(base = '../') {
 
           <!-- Documentos de Produto em Lista Editorial Aberta (Zero Caixas / Zero Badges Pesados) -->
           <div class="cbl-doc-refs-lista">
-            <a href="01-cbl-desafios-c18-documentos-de-produto-frila-documento-de-visao.html" class="cbl-doc-ref-item">
+            <a href="${prefixoNotas}01-cbl-desafios-c18-documentos-de-produto-frila-documento-de-visao.html" class="cbl-doc-ref-item">
               <div class="cbl-doc-ref-corpo">
                 <div class="cbl-doc-ref-meta">
                   <span class="cbl-meta-rotulo">Milestone Engenharia</span>
@@ -469,7 +470,7 @@ function renderizarDocumentoCBL(base = '../') {
               <span class="cbl-seta cbl-seta-acao" aria-hidden="true">→</span>
             </a>
 
-            <a href="01-cbl-desafios-c18-documentos-de-produto-frila-documento-de-requisitos.html" class="cbl-doc-ref-item">
+            <a href="${prefixoNotas}01-cbl-desafios-c18-documentos-de-produto-frila-documento-de-requisitos.html" class="cbl-doc-ref-item">
               <div class="cbl-doc-ref-corpo">
                 <div class="cbl-doc-ref-meta">
                   <span class="cbl-meta-rotulo">Milestone Engenharia</span>
@@ -480,7 +481,7 @@ function renderizarDocumentoCBL(base = '../') {
               <span class="cbl-seta cbl-seta-acao" aria-hidden="true">→</span>
             </a>
 
-            <a href="01-cbl-desafios-c18-documentos-de-produto-frila-historias-de-usuario-e-backlog.html" class="cbl-doc-ref-item">
+            <a href="${prefixoNotas}01-cbl-desafios-c18-documentos-de-produto-frila-historias-de-usuario-e-backlog.html" class="cbl-doc-ref-item">
               <div class="cbl-doc-ref-corpo">
                 <div class="cbl-doc-ref-meta">
                   <span class="cbl-meta-rotulo">Milestone Engenharia</span>

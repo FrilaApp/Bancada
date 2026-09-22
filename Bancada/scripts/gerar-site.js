@@ -357,7 +357,8 @@ class Site {
       ['galeria.html', 'Galeria'],
     ]
       .map(([href, rotulo]) => {
-        const classe = ativo === href ? ' class="ativo"' : '';
+        const isDesafio = href === 'index.html' && (ativo === 'index.html' || (ativo && (ativo.includes('cbl-c18') || ativo.includes('C18') || ativo.includes('cbl-desafio'))));
+        const classe = (ativo === href || isDesafio) ? ' class="ativo"' : '';
         return `<a href="${base}${href}"${classe}>${rotulo}</a>`;
       })
       .join('');
@@ -555,8 +556,6 @@ ${this.avisoDeAtualizacao(base)}
   // MARK: - Páginas
 
   paginaCapa() {
-    const desafios = this.notasDe('cbl-desafio');
-    const ativo = desafios.find((d) => d.campos.status === 'ativo') || desafios[0];
     const diarios = this.notasDe('atualizacao-diaria');
 
     const ultimos = diarios
@@ -569,49 +568,25 @@ ${this.avisoDeAtualizacao(base)}
       })
       .join('');
 
-    let corpo = '';
+    let corpo = renderizarDocumentoCBL('');
 
-    corpo += `<section class="cbl-editorial-chamada">
-      <div class="cbl-chamada-eyebrow">
-        <span class="cbl-chamada-tag">Documento Oficial</span>
-        <span class="cbl-chamada-sep">/</span>
-        <span class="cbl-chamada-origem">Apple Developer Academy · CBL</span>
-      </div>
-      <h3 class="cbl-chamada-titulo">Documento Oficial CBL — Challenge 18</h3>
-      <p class="cbl-chamada-lead">Framework Challenge Based Learning aplicado à concepção do Frila: Big Idea, Essential Questions, Pesquisa de Campo e 22 Objetivos de Aprendizagem.</p>
-      <div class="cbl-chamada-acoes">
-        <a href="notas/01-cbl-desafios-c18-documentos-cbl-c18.html" class="cbl-chamada-link-primario">
-          <span>Abrir Documento Completo</span>
-          <span class="cbl-seta" aria-hidden="true">→</span>
-        </a>
-        <a href="midia/01 - CBL/Desafios/C18/Documentos/CBL_C18.pdf" class="cbl-chamada-link-secundario" download="CBL_C18.pdf" title="Baixar PDF original (9.1 MB)">
-          <span>PDF Original (9.1 MB)</span>
-          <span class="cbl-seta" aria-hidden="true">↗</span>
-        </a>
-      </div>
-    </section>`;
-
-    if (ativo) {
-      const corpoSemTitulo = ativo.corpo.replace(/^#\s+.*\n?/, '');
-      corpo += `<article class="narrativa">${this.md(corpoSemTitulo, '')}</article>`;
-    }
-
-    corpo += `<div class="secao-ultimos-dias">
+    corpo += `<div class="secao-ultimos-dias secao-ultimos-dias-home">
       <h2>Últimas atualizações diárias</h2>
       ${ultimos ? `<ul class="lista-dias">${ultimos}</ul>` : `<p class="vazio">Nenhuma nota diária ainda.</p>`}
     </div>`;
 
     return this.pagina({
-      titulo: ativo ? this.limparTitulo(ativo.titulo) : 'Challenge 18',
-      subtitulo: 'Apple Developer Academy · Ciclo CBL · Equipe BlendOps',
+      titulo: 'Documento Oficial CBL',
+      subtitulo: 'Challenge 18 · Apple Developer Academy · Equipe BlendOps',
       corpo,
       ativo: 'index.html',
       daPasta: '',
+      semConteudoTopo: true,
     });
   }
 
   paginaDeNota(nota, secao) {
-    if (nota.caminho.includes('CBL_C18')) {
+    if (nota.caminho.includes('CBL_C18') || nota.caminho.includes('C18.md')) {
       return this.paginaDocumentoCBL(nota, secao);
     }
     // O H1 vira o título da página; repeti-lo no corpo seria redundante.
