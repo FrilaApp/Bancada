@@ -24,6 +24,7 @@ Como PO/PM, esta tarefa serve para fechar o escopo funcional e os fluxos priorit
 ## Notas
 - 2026-09-15 — Tarefa criada em alinhamento com os marcos de 23/09 e 28/09 da Academy.
 - 2026-09-22 — Saem as metas de tempo de publicação (60 segundos) e de número de toques: não há como medir agora, e elas ficam para depois do piloto.
+- 2026-09-22 — Forma dos wireframes escolhida pelo Cauê: protótipo clicável em tons de cinza, gerado pelo Claude, em https://claude.ai/artifact/MUQ4VxtiJMCvG8H86WJD7q (privado até ser compartilhado pelo menu Compartilhar). São 17 telas: a entrada por código no e-mail, comum aos dois perfis, o perfil de contratante e o perfil de profissional. Falta validar com o time e montar o roteiro da demonstração de 28/09.
 
 ---
 ← [[04 - Tarefas/00 - Índice Tarefas|Índice de Tarefas]]
