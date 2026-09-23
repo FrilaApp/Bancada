@@ -13,9 +13,22 @@ echo
 
 echo "▸ Hooks do Git"
 # core.hooksPath faz os hooks morarem no repo (versionados), e não em .git/hooks.
-git config core.hooksPath scripts/git-hooks
+#
+# O caminho é relativo à **raiz do git**, não à do vault, e desde a migração para o
+# monorepo os dois deixaram de ser a mesma pasta. Enquanto isto dizia
+# `scripts/git-hooks` fixo, apontava para um caminho inexistente na raiz do monorepo:
+# o git não reclama de hooksPath que não existe, simplesmente não roda hook nenhum. O
+# registro de fatos ficou parado de 2026-09-10 a 2026-09-23 sem uma linha de aviso.
+hooks_rel="${PREFIXO_NO_REPO}scripts/git-hooks"
+git -C "$GIT_ROOT" config core.hooksPath "$hooks_rel"
 chmod +x scripts/*.sh scripts/git-hooks/* 2>/dev/null || true
-echo "$ok hooks apontando para scripts/git-hooks"
+
+if [ -d "$GIT_ROOT/$hooks_rel" ]; then
+  echo "$ok hooks apontando para $hooks_rel"
+else
+  echo "$aviso core.hooksPath aponta para $hooks_rel, que não existe em $GIT_ROOT"
+  echo "     nenhum hook vai rodar, e o git não avisa. Confira a árvore do repositório."
+fi
 
 echo "▸ Autenticação Biométrica"
 if command -v swiftc >/dev/null 2>&1; then

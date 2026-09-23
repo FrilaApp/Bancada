@@ -8,10 +8,19 @@ set -euo pipefail
 
 [ -n "${SKIP_BIOMETRICS:-}" ] && exit 0
 
-raiz="$(git rev-parse --show-toplevel 2>/dev/null)" || {
-  echo "❌ Push abortado: não consegui localizar a raiz do repositório." >&2
+# `raiz` é a pasta do **vault**, que desde a migração para o monorepo não é mais a raiz
+# do git. Os dois se separaram, e cada um tem o seu uso:
+#   $raiz      abre arquivo do vault (o módulo de Touch ID, o registrar-fato.sh)
+#   $GIT_ROOT  fala com o git
+_aqui="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+# shellcheck source=../lib.sh
+source "$_aqui/../lib.sh"
+raiz="$REPO_ROOT"
+
+if [ -z "$raiz" ] || [ ! -d "$raiz/scripts" ]; then
+  echo "❌ Push abortado: não consegui localizar a raiz do vault." >&2
   exit 1
-}
+fi
 
 # Compila sob demanda caso o binário ainda não exista nesta máquina.
 if [ ! -x "$raiz/scripts/auth-touchid" ]; then
@@ -112,10 +121,10 @@ done
 # escrita legítimo em `05 - Registros/` — a fronteira do `pre-commit` recusa
 # todos os outros.
 log_do_dia="$raiz/05 - Registros"
-if ! git -C "$raiz" diff --quiet -- "$log_do_dia" 2>/dev/null \
-   || [ -n "$(git -C "$raiz" ls-files --others --exclude-standard -- "$log_do_dia")" ]; then
-  git -C "$raiz" add -- "$log_do_dia"
-  git -C "$raiz" commit -q --no-verify \
+if ! git -C "$GIT_ROOT" diff --quiet -- "$log_do_dia" 2>/dev/null \
+   || [ -n "$(git -C "$GIT_ROOT" ls-files --others --exclude-standard -- "$log_do_dia")" ]; then
+  git -C "$GIT_ROOT" add -- "$log_do_dia"
+  git -C "$GIT_ROOT" commit -q --no-verify \
     -m "Registra no log os fatos publicados" >/dev/null 2>&1 || true
   echo "  ✓ Fatos publicados registrados — sai no próximo push."
 fi

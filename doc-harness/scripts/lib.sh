@@ -12,6 +12,34 @@ fi
 REPO_ROOT="$_raiz"
 unset _raiz
 
+# ── O vault deixou de ser a raiz do git ────────────────────────────────────────
+#
+# Até a migração para o monorepo, repo e vault eram a mesma pasta e `REPO_ROOT`
+# respondia pelos dois. Agora o vault é `doc-harness/` dentro de `BlendOps/Bancada`,
+# e as duas coisas se separaram:
+#
+#   REPO_ROOT        a pasta do vault. Tudo que abre arquivo usa esta.
+#   GIT_ROOT         a raiz do git. Todo comando git usa esta.
+#   PREFIXO_NO_REPO  o caminho do vault visto de dentro do git, com barra no fim.
+#                    Vazio quando os dois coincidem. É o que casa com o caminho que
+#                    `git diff --name-only` devolve.
+#
+# Sem essa separação, `bootstrap.sh` apontava `core.hooksPath` para um caminho que não
+# existe na raiz do monorepo, e os hooks ficaram desligados sem ninguém notar. O
+# registro de fatos parou entre 2026-09-10 e 2026-09-23 — treze dias em que o vault
+# gravou zero e não reclamou.
+# O `|| true` importa: os hooks e o `registrar-fato.sh` rodam sob `set -e`, e uma
+# atribuição de substituição que falha aborta o script inteiro. Fora de repositório
+# git, o vault ainda é uma pasta legítima de ler.
+GIT_ROOT="$(git -C "$REPO_ROOT" rev-parse --show-toplevel 2>/dev/null || true)"
+[ -n "$GIT_ROOT" ] || GIT_ROOT="$REPO_ROOT"
+
+if [ "$GIT_ROOT" = "$REPO_ROOT" ]; then
+  PREFIXO_NO_REPO=""
+else
+  PREFIXO_NO_REPO="${REPO_ROOT#"$GIT_ROOT"/}/"
+fi
+
 PASTA_REGISTROS="05 - Registros"
 PAGES_BUNDLE_ID="com.apple.Pages"
 

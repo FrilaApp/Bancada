@@ -45,20 +45,46 @@ contrato. O `openapi.yaml` é espelhado em `contrato/`, e a CI recusa o espelho 
       do caminho quente e as restrições que codificam RN02, RN07, RN18, RN20, RN21, RN22,
       RN24 e RN25. Catálogo de 32 funções na semente.
 - [x] **Ambiente compartilhado** — `frila-dev` no Supabase (`jcobftbhbqdikratzizz`,
-      `sa-east-1`, Postgres 17.6), com as migrações aplicadas e o advisor de segurança
-      sem nenhum alerta.
+      `sa-east-1`, Postgres 17.6), com as migrações aplicadas. **O advisor deixou de ser
+      verificado**: o token de conta venceu, e o portão lia o 401 como "nenhum achado"
+      até 23/09.
 - [x] **Políticas de acesso (RLS)** — o schema `privado` com 12 auxiliares, 19 políticas
       de leitura e o relógio `privado.agora()`, com teste entrando como profissional,
       como contratante de outro estabelecimento e como conta bloqueada.
 - [x] **Entrada por código no e-mail e `criar_conta`** com o perfil fixo da conta (RN25),
       maioridade verificada no banco e o aceite dos termos registrado. O contrato subiu
       para 0.2.1 por causa dele.
+- [x] **Cenários de desenvolvimento** — 12 profissionais, 3 estabelecimentos do DF e 7
+      vagas em todos os estados, com os dois lados de cada critério da RN05 e os três
+      desfechos do check-in da RN22. Fora do `seed.sql`, que é o único arquivo aplicado
+      contra o ambiente remoto. A suíte vai de 196 para **232 asserções**.
+- [x] **Contrato 0.2.2** — as 4 operações que os cartões do Sprint 1 e 2 citavam e não
+      existiam, mais `configuracao_do_app`. `bloquear` e `denunciar` passam a receber
+      `alvo_tipo` + `alvo_id`, que é o que o app tem na mão. CI própria no repositório do
+      Frila (`redocly lint`, versão que sobe, seção Estado que descreve a versão) e, no
+      backend, o portão que recusa RPC mudada sem contrato junto.
 - [ ] **Bloco B · Ciclo principal** — as RPCs de `publicar_vaga` a `avaliar`, com a
       confirmação sem duplicidade de RN19 provada sob concorrência.
 - [ ] **Bloco C · Despacho e turno** — motor de elegibilidade, teto e agrupamento de
       notificações, push pelo FCM, lembretes, alertas e os direitos do usuário.
 - [ ] **Bloco D · Produção** — endurecimento, retenção de dados, auditoria e as consultas
       quentes com o volume do DF simulado.
+
+### O que está aberto, e depende de gente
+
+- **`supabase login`** — o `SUPABASE_ACCESS_TOKEN` do backend responde 401. Sem ele, o
+  advisor de segurança do `frila-dev` não é verificado por ninguém.
+- **`FRILA_DOCS_TOKEN`** — PAT com leitura em `BlendOps/Frila`, gravado como secret do
+  `frila-backend`. Sem ele, a CI confere a integridade do espelho do contrato e **não**
+  confere se ele está atrasado em relação ao original.
+- **11 operações do contrato sem cartão no quadro** — `renovarSessao`, `minhaConta`,
+  `criteriosDeNotificacao`, `pedirRevisaoDespacho`, `equipeDeConfianca`,
+  `incluirNaEquipe`, `removerDaEquipe`, `listarFuncoes`, `candidatosDaVaga`,
+  `escolherCandidato` e `exportarTurnos`. Contrato a mais ou cartão faltando: é decisão
+  de produto.
+- **Uma lacuna do modelo** — a suspensão de uma conta não tem como ser registrada em
+  `ocorrencia`: `autor_id` é `not null` e não existe conta de plataforma para assinar
+  uma decisão da Equipe Frila.
 
 > [!info] Estado detalhado
 > O handoff completo — ambientes, portões, divergências registradas e por onde continuar —

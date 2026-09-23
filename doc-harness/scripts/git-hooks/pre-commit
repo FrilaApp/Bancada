@@ -2,7 +2,13 @@
 # Se algum .pages entrou no commit, regenera o .md derivado e o inclui no mesmo
 # commit — assim o texto versionado nunca fica defasado em relação ao documento.
 # Escape para quando isso atrapalhar: SKIP_PAGES=1 git commit
-raiz="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+# `raiz` é a pasta do **vault**, que desde a migração para o monorepo não é mais a raiz
+# do git. `git rev-parse --show-toplevel` devolvia o monorepo, e com ele o hook
+# procurava `scripts/` e `05 - Registros/` um nível acima de onde eles moram.
+_aqui="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+# shellcheck source=../lib.sh
+source "$_aqui/../lib.sh"
+raiz="$REPO_ROOT"
 
 # ── Fronteira do log de fatos ────────────────────────────────────────────────
 #
@@ -23,7 +29,10 @@ raiz="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
 # O commit que o próprio `pre-push` faz para publicar o log usa `--no-verify` e
 # não passa por aqui — é a única escrita legítima.
 if [ -z "${PERMITIR_REPARO_DE_FATO:-}" ]; then
-  fatos="$(git diff --cached --name-only --diff-filter=ACMRD | grep '^05 - Registros/' || true)"
+  # O caminho vem do git, então carrega o prefixo do vault dentro do repositório
+  # (`doc-harness/` no monorepo, vazio quando o vault é a raiz).
+  fatos="$(git diff --cached --name-only --diff-filter=ACMRD \
+           | grep "^${PREFIXO_NO_REPO}05 - Registros/" || true)"
   if [ -n "$fatos" ]; then
     {
       echo "❌ Commit abortado: este commit altera o log de fatos à mão."

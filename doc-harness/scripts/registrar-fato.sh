@@ -6,6 +6,10 @@
 #   registrar-fato.sh commit <sha>           registra um commit específico
 #   registrar-fato.sh publicados <intervalo> registra os commits de um intervalo
 #   registrar-fato.sh <tipo> <descrição…>    registra um fato arbitrário
+#
+#   registrar-fato.sh externo <data> <hora> <autor> <tipo> <descrição…>
+#     registra um fato vindo de OUTRO repositório do projeto, com a data, a hora e o
+#     autor de lá
 set -euo pipefail
 # shellcheck source=lib.sh
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib.sh"
@@ -60,6 +64,37 @@ case "${1:-}" in
       [ -n "$sha" ] || continue
       registrar_commit "$sha"
     done < <(git -C "$REPO_ROOT" rev-list --reverse "$intervalo")
+    ;;
+
+  externo)
+    # O código do Frila mora em outros repositórios — `frila-backend` hoje, `ios`
+    # depois. O hook daqui registra os commits **deste** repositório, então o trabalho
+    # de lá não chega sozinho, e a Bancada, que é onde os mentores acompanham o
+    # processo, fica cega para a maior parte do que o time faz.
+    #
+    # Existe uma ponte do outro lado (`scripts/bancada-sync.sh`, no frila-backend) que
+    # chama esta forma. Ela precisa carregar a data, a hora e o autor **de lá** pela
+    # mesma razão que `publicados` carrega: o fato sobre um commit pertence ao dia em
+    # que o commit foi feito, não ao dia em que alguém rodou a ponte. Sem isto, uma
+    # semana de trabalho recuperada de uma vez aterrissa toda num dia só, e o diário
+    # daquele dia passa a mentir sobre o que aconteceu nele.
+    #
+    # A forma arbitrária (`registrar-fato.sh <tipo> <desc>`) não serve para isso: ela
+    # carimba o agora e o autor desta máquina. Ela continua certa para o fato que
+    # acontece agora — um portão que reprovou, um PR aberto.
+    data="${2:?uso: registrar-fato.sh externo <data> <hora> <autor> <tipo> <descrição…>}"
+    hora="${3:?falta a hora}"
+    quem="${4:?falta o autor}"
+    tipo="${5:?falta o tipo}"
+    shift 5
+    [ $# -gt 0 ] || { echo "falta a descrição do fato" >&2; exit 2; }
+
+    printf '%s' "$data" | grep -qE '^[0-9]{4}-[0-9]{2}-[0-9]{2}$' \
+      || { echo "data em formato inesperado: $data (use AAAA-MM-DD)" >&2; exit 2; }
+    printf '%s' "$hora" | grep -qE '^[0-9]{2}:[0-9]{2}$' \
+      || { echo "hora em formato inesperado: $hora (use HH:MM)" >&2; exit 2; }
+
+    registrar_em "$data" "$hora" "$quem" "$tipo" "$*"
     ;;
 
   "")

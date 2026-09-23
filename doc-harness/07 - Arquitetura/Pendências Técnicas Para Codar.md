@@ -31,7 +31,7 @@ Extraído dos documentos de arquitetura (T-0024): [[07 - Arquitetura/Diagrama de
 | D8 | Domínio compartilhado entre plataformas | Não há pacote de código comum entre Swift e Kotlin. As regras críticas moram no backend, em funções do Supabase, escritas uma vez; cada app tem o próprio domínio para a tela e os testes (ajustada em 22/09) | B20 |
 | D9 | Backend | Supabase (Postgres + PostGIS, autenticação, Edge Functions, `pg_cron`, `pgmq`). Começa no plano gratuito, que atende até 50 mil usuários ativos por mês; a migração é reavaliada a partir de certa rentabilidade | B02 |
 | D10 | Plataforma | Nativo em cada plataforma: Swift e SwiftUI no iOS, Kotlin no Android. Para a loja em 13/11, o iOS é o mínimo; Android e web são a meta | B01, B03 |
-| D11 | Contrato | A especificação é escrita antes do backend, pelo menos das rotas centrais (publicar vaga, candidatar-se, confirmar, check-in, avaliar). Com o Supabase, o contrato são as funções RPC documentadas. Escrita em 22/09: `Frila/Documentos/API/openapi.yaml` (OpenAPI 3.1, v0.1.0) | B16 |
+| D11 | Contrato | A especificação é escrita antes do backend, pelo menos das rotas centrais (publicar vaga, candidatar-se, confirmar, check-in, avaliar). Com o Supabase, o contrato são as funções RPC documentadas. Escrita em 22/09: `Frila/Documentos/API/openapi.yaml` (OpenAPI 3.1). Em 23/09 está na **0.2.2**; a regra de mudança e o espelho no backend estão em `Documentos/API/README.md` | B16 |
 | D12 | Testes | Swift Testing para a lógica e XCTest só para a interface, com XCUITest. Os dois convivem no mesmo projeto; os 195 testes XCTest da Bancada ficam como estão | B21 |
 | D13 | Push | FCM nos dois sistemas; no iOS, o FCM entrega pela APNs | B17 |
 
@@ -68,7 +68,7 @@ Extraído dos documentos de arquitetura (T-0024): [[07 - Arquitetura/Diagrama de
 
 - [x] Revisão pelos desenvolvedores (Cauê, João Paulo, Matheus) dos quatro documentos técnicos — Classe, Banco de Dados, Arquitetura e Casos de Uso (B05), feita em 22/09.
 - [ ] Curadoria e padronização visual pela Júlia Clovandi, conforme [[04 - Tarefas/T-0012 - Coletar decisões técnicas e gerar diagramas de engenharia|T-0012]].
-- [x] Escrever a especificação das rotas centrais como funções RPC do Supabase (D11): `Frila/Documentos/API/openapi.yaml`, 22/09/2026; versão 0.2.0 no mesmo dia, com a entrada por e-mail e o perfil por conta.
+- [x] Escrever a especificação das rotas centrais como funções RPC do Supabase (D11): `Frila/Documentos/API/openapi.yaml`, 22/09/2026. A 0.2.0 saiu no mesmo dia, com a entrada por e-mail e o perfil por conta; a 0.2.1 acrescentou o aceite dos termos e a chave `headers` no envelope de erro; a **0.2.2**, de 23/09, fechou as divergências com os cartões do Sprint 1 e 2 e trocou `alvo_usuario_id` por `alvo_tipo` + `alvo_id` em `bloquear` e `denunciar`.
 - [ ] Escolher o provedor de e-mail (SMTP) do código de entrada, antes do piloto. O custo, se houver, entra no C09.
 - [ ] Decidir quem paga a infraestrutura (C09), em debate no time.
 - [ ] Atualizar a seção "Arquitetura Técnica · Frila" do FigJam (board Challenge 18): as decisões D1 a D13 passam para a coluna "Decisões Fechadas", com as respostas acima.
