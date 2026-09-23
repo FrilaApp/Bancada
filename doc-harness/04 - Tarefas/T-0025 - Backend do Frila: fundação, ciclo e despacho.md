@@ -50,8 +50,9 @@ contrato. O `openapi.yaml` é espelhado em `contrato/`, e a CI recusa o espelho 
 - [x] **Políticas de acesso (RLS)** — o schema `privado` com 12 auxiliares, 19 políticas
       de leitura e o relógio `privado.agora()`, com teste entrando como profissional,
       como contratante de outro estabelecimento e como conta bloqueada.
-- [ ] Entrada por código no e-mail e `criar_conta` com o perfil fixo da conta (RN25).
-      *Em revisão no PR #3; o contrato subiu para 0.2.1 por causa dele.*
+- [x] **Entrada por código no e-mail e `criar_conta`** com o perfil fixo da conta (RN25),
+      maioridade verificada no banco e o aceite dos termos registrado. O contrato subiu
+      para 0.2.1 por causa dele.
 - [ ] **Bloco B · Ciclo principal** — as RPCs de `publicar_vaga` a `avaliar`, com a
       confirmação sem duplicidade de RN19 provada sob concorrência.
 - [ ] **Bloco C · Despacho e turno** — motor de elegibilidade, teto e agrupamento de
