@@ -121,6 +121,54 @@ Os concorrentes foram agrupados em três camadas estratégicas:
 
 ---
 
+## Varredura da App Store — 23/09/2026
+
+Uma segunda varredura, feita direto na App Store do iPhone na madrugada de 23/09/2026, achou **dez aplicativos de trabalho avulso publicados no Brasil, sete deles fora de qualquer documento do projeto**. Tudo o que está aqui é o que a ficha da loja e as capturas de tela mostram: nenhum app foi instalado, nenhuma conta foi criada e **nenhum foi verificado no Distrito Federal**.
+
+| App | Desenvolvedor | Loja (23/09) | Categoria | O que a captura mostra |
+|---|---|---|---|---|
+| **Freelas Now** | Bruno Estevam | 5,0 · 4 avaliações · compras no app | Negócios | Mapa de "Freelancers Próximos" a partir do endereço do restaurante, filtro por função (auxiliar de cozinha, barista), selo "Super Freela", abas **Pra agora / Agendar / Hora de saída**, diária de R$ 130 e botão "Publicar Vaga". Na tela de contratação: **Taxa do app** e **Total cobrado da empresa**, mais contratação recorrente que reabre sozinha toda semana |
+| **Freelas** ("Trabalhos em eventos") | Leand… | 3,7 · 3 avaliações | Negócios | Evento "Casamento Thiago & Amanda" com funções, vagas e equipe confirmada; ficha do freelancer com **Ranking: Desempenho 5.0/5.0, Confiança 109%, Trabalhos realizados, Cancelamentos** e contato por celular, WhatsApp e Instagram; pagamento "PIX — toda segunda-feira", uniforme, lanche e descanso de 30 min declarados na vaga |
+| **UmFreela** | MJM Sistemas de Software LTDA | 4,3 · 6 avaliações | Negócios | Escolha entre Empresa e profissional; painel do contratante com Vagas Ativas, Contratações, **Média/Vaga** e contratação ativa por hora (auxiliar de cozinha, R$ 20,00/h). É o app do site já registrado na varredura de 20/09 |
+| **BIKO App** | Andrea Camargo | 4,3 · 4 avaliações | Negócios | Tela do profissional com **Saldo a Receber**, "Sua Performance" (4.8 de média, 23 BIKOs concluídos) e o próximo trabalho com contagem regressiva — recepção de congresso em São Paulo |
+| **Staff BR** | Futebolc… | 4,4 · 7 avaliações | Negócios | "A pessoa certa no lugar certo": cadastro dividido em Freelancer ("trabalhos temporários com diárias") e Empresa |
+| **Meu Freelance** | Thiago Oliveira | sem avaliações | Negócios | Perfil com progresso de preenchimento, Locais, Candidaturas, Agenda, "Trabalhos em Andamento" e busca **"Perto de você"** |
+| **Trampei Serviços** | Gustavo Barreto | 4,0 · 2 avaliações · compras no app | Negócios | Três tipos de conta: contratante pessoa física, profissional e empresa contratante |
+| **JobHunter — Freelances e Bicos** | Alessandre Junior | sem avaliações | **Produtividade** | Detalhe de vaga: "Garçom para evento no sábado", aberta há 2 h, 7 candidatos, R$ 150, alimentação (marmitex no local) e "Me candidatar!"; do outro lado, criar e gerenciar vagas |
+| **Freela Serviços** | Freela | 3,7 · 15 avaliações · **nº 99 em Negócios** | Negócios | Vaga de hostess com data, janela de horário, duração e valor (R$ 122 por 6 h) e a lista de turnos confirmados **com a distância em km** |
+| **Bicos app** | Hybriun Desenvolvimento | sem avaliações | **Produtividade** | Serviço doméstico — pintura, limpeza, jardinagem, pequenos reparos. **Adjacente**, não disputa o turno de bar e evento |
+
+### O que isso muda
+
+1. **A tese não está mais sozinha na loja.** Proximidade e urgência, que o projeto trata como diferencial, já estão publicadas: o Freelas Now abre num mapa de freelancers próximos com a aba "Pra agora", o Freela Serviços mostra a distância em km de cada turno e o Meu Freelance tem busca "perto de você".
+2. **Reputação com denominador também já existe, em alguma forma.** O Freelas mostra desempenho, confiança em porcentagem, trabalhos realizados e cancelamentos; o BIKO mostra média e turnos concluídos. Nenhum deles, nas capturas, mostra taxa de comparecimento como o Frila a define (turnos com check-in ÷ turnos confirmados) — é aí que a diferença precisa ser defendida.
+3. **Contato direto depois do aceite não é exclusividade.** O Freelas expõe celular, WhatsApp e Instagram do profissional confirmado. O que o Frila tem de diferente é a janela: contato só depois da confirmação e por sete dias (RN10).
+4. **Cobrar do contratante é o padrão que dá para ver.** O Freelas Now mostra "Taxa do app" e "Total cobrado da empresa" na própria tela de contratação. A RN01 (nenhuma comissão do profissional) continua defensável, mas não é um espanto de mercado.
+5. **O achado maior é o volume de entrantes recentes.** Sete apps que a pesquisa não tinha, quase todos com pouquíssimas avaliações (de 2 a 15) e vários publicados por pessoa física. Barreira de entrada baixa e nenhuma liquidez visível: reforça o "cadastro não é liquidez" e enfraquece "o DF está vazio" como vantagem — ninguém checou o DF em nenhum destes dez.
+6. **A varredura por categoria estava incompleta.** JobHunter e Bicos estão em **Produtividade**, não em Negócios. Qualquer nova busca — e o trabalho de ASO da T-0019 — precisa cobrir as duas categorias.
+7. **Staff BR não é a StaffPRO** da varredura de 20/09: desenvolvedores diferentes, apps diferentes. Não confundir nos documentos.
+
+### O que fica pendente
+
+- Abrir os dez apps com endereço em Brasília e registrar se existe vaga publicada aqui. É a pergunta E04 da varredura de 20/09, agora com dez alvos em vez de dois.
+- Conferir o modelo de cobrança de cada um (só o Freelas Now mostra taxa na tela) e se o profissional paga alguma coisa.
+- Ler as avaliações negativas na loja: com bases tão pequenas, uma reclamação já diz muito.
+
+### Capturas de 23/09/2026
+
+- **Freelas Now:** ![[04 - Tarefas/Anexos/concorrente-freelas-now.png|Freelas Now - mapa de freelancers próximos, "pra agora" e taxa do app]]
+- **Freelas (eventos):** ![[04 - Tarefas/Anexos/concorrente-freelas-eventos.png|Freelas - ranking de confiança, cancelamentos e contato do freelancer]]
+- **UmFreela:** ![[04 - Tarefas/Anexos/concorrente-umfreela.png|UmFreela - escolha de conta e painel do contratante]]
+- **BIKO App:** ![[04 - Tarefas/Anexos/concorrente-biko.png|BIKO - saldo a receber, performance e contagem regressiva do próximo trabalho]]
+- **Staff BR:** ![[04 - Tarefas/Anexos/concorrente-staff-br.png|Staff BR - cadastro de freelancer e de empresa]]
+- **Meu Freelance:** ![[04 - Tarefas/Anexos/concorrente-meu-freelance.png|Meu Freelance - perfil, candidaturas, agenda e "perto de você"]]
+- **Trampei Serviços:** ![[04 - Tarefas/Anexos/concorrente-trampei.png|Trampei - três tipos de conta]]
+- **JobHunter:** ![[04 - Tarefas/Anexos/concorrente-jobhunter-2026-09-23.png|JobHunter - detalhe da vaga com candidatos e benefícios]]
+- **Freela Serviços:** ![[04 - Tarefas/Anexos/concorrente-freela-servicos-2026-09-23.png|Freela Serviços - vaga de hostess e turnos confirmados com distância]]
+- **Bicos app:** ![[04 - Tarefas/Anexos/concorrente-bicos.png|Bicos - serviço doméstico, concorrência adjacente]]
+
+---
+
 ## Próximos Passos (Cauê Carneiro & Júlia Clovandi)
 
 1. **Aprofundamento de Avaliações e Reclamações:** Mapear no Reclame Aqui e nos comentários da App Store as principais queixas dos garçons e donos de restaurantes contra Closeer e Estaff (ex: atraso de repasse, ausências não punidas, cancelamentos de última hora).
@@ -128,6 +176,7 @@ Os concorrentes foram agrupados em três camadas estratégicas:
 3. **Validação de Modelo Econômico:** Simular se o Frila deve operar com comissão percentual sobre a diária paga pelo restaurante ou assinatura mensal para estabelecimentos com alta rotatividade.
 
 ## Notas
+- 2026-09-23 — Segunda varredura, direto na App Store: dez apps catalogados, sete inéditos no projeto, capturas no acervo. A tarefa segue concluída; a seção de 23/09 é adendo, não reabertura.
 - 2026-09-14 — Tarefa concluída: benchmarking consolidado e categorizado com mapeamento dos 9 concorrentes, matriz comparativa detalhada e direcionamento estratégico de produto para o Frila no C18.
 - Tarefa originada do levantamento de capturas da pasta `/Users/juclovandi/Downloads/Concorrentes`.
 - Todas as 9 imagens foram tratadas, renomeadas semanticamente e integradas ao acervo em `04 - Tarefas/Anexos/`.

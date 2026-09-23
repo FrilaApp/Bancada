@@ -8,13 +8,13 @@ tags: [produto, frila]
 
 # Frila — Mercado e Concorrência
 
-**Versão 1.0 · setembro/2026**
+**Versão 1.1 · 23 de setembro de 2026**
 
 Como o mercado de trabalho avulso em food service, eventos e campanha política funciona hoje, quem já compete nele, e por que grupo de WhatsApp ainda é o canal dominante apesar dos concorrentes existirem.
 
 > **Campanha política saiu do radar do produto em 21/09/2026.** A evidência fica registrada como oportunidade futura.
 
-Convenções: `[H]` = hipótese ou estimativa, nunca confirmada em campo. Números de tração de concorrentes são **o que cada empresa declara** — nenhum foi auditado, salvo quando sinalizado o contrário. Pesquisa original feita em 2026-09-10, aprofundada em setembro/2026.
+Convenções: `[H]` = hipótese ou estimativa, nunca confirmada em campo. Números de tração de concorrentes são **o que cada empresa declara** — nenhum foi auditado, salvo quando sinalizado o contrário. Pesquisa original feita em 2026-09-10, aprofundada em setembro/2026. A varredura da App Store de 23/09/2026 acrescentou oito fichas: o que vem dela está marcado como **captura de 23/09** e é só o que a loja mostrava naquele dia — sem instalação, sem conta criada e sem checagem no DF.
 
 Este é o documento de origem da pesquisa de mercado e concorrência. As avaliações de quem trabalha nesses aplicativos estão transcritas em `01-O-PROBLEMA.md` §3.1, o que o Frila propõe em resposta está em `02-O-NEGOCIO.md` e `03-ESPECIFICACAO-DO-PRODUTO.md`, e a versão resumida de tudo, em `README.md`.
 
@@ -22,9 +22,11 @@ Este é o documento de origem da pesquisa de mercado e concorrência. As avalia�
 
 ## 1. Resumo
 
-O Distrito Federal está, até onde a pesquisa alcança, vazio de concorrência especializada. Dos 11 concorrentes brasileiros mapeados em food service, eventos e trabalho avulso, só um — o GetNinjas, que nem é especializado nesse nicho — tem presença comprovável em Brasília, com páginas de categoria e vagas reais na cidade. Todos os outros ou não declaram o DF, ou declaram operação "nacional" sem nenhuma evidência de vaga publicada aqui.
+O Distrito Federal está, até onde a pesquisa alcança, vazio de concorrência especializada. Dos 19 concorrentes brasileiros mapeados em food service, eventos e trabalho avulso, só um — o GetNinjas, que nem é especializado nesse nicho — tem presença comprovável em Brasília, com páginas de categoria e vagas reais na cidade. Todos os outros ou não declaram o DF, ou declaram operação "nacional" sem nenhuma evidência de vaga publicada aqui.
 
 O padrão mais forte que se repete entre praticamente todos os concorrentes pesquisados não é falta de usuários cadastrados — é a desproporção entre cadastro e liquidez real. A Freela Serviços declara quase 200 mil profissionais cadastrados e apenas 203 contratações concluídas. A Worc chegou a anunciar mais de 1.400 vagas abertas numa página de marketing que, na mesma sessão, mostrou zero vagas no próprio quadro ao vivo. A eFreela alega 300 mil usuários contra pouco mais de 100 mil instalações mensuráveis no Android. Cadastro não é liquidez — e é exatamente esse hiato que o despacho ativo do Frila tenta fechar, notificando quem é elegível em vez de esperar alguém procurar.
+
+**Ressalva de 23/09/2026.** Uma varredura direta na App Store acrescentou oito fichas à lista, sete delas inéditas no projeto — e duas mostram, já publicadas, aquilo que o Frila trata como diferencial: o **Freelas Now** abre num mapa de "Freelancers Próximos" com a aba "pra agora", e o **Freelas** mostra ranking de confiança com cancelamentos. Nenhum dos oito foi aberto com endereço em Brasília, então nada aqui derruba ainda o parágrafo acima; o que muda é o tamanho da lista a checar, de dois apps para dez, e o fato de que a barreira de entrada é visivelmente baixa: quase todos têm de 2 a 15 avaliações e vários foram publicados por pessoa física.
 
 Do lado de quem trabalha, a queixa se repete de empresa para empresa, independente do modelo de cobrança: pagamento atrasado ou retido (Switch, Closeer, eFreela), bloqueio de cadastro sem processo justo (estaff), moeda gasta sem retorno (GetNinjas). A instabilidade institucional do setor também é maior do que a superfície sugere: a Toopa parece ter saído do mercado, e o controlador do GetNinjas está sob investigação por infiltração do crime organizado no mercado de capitais, sem publicar balanço desde 2024. Um mercado com vários concorrentes "estabelecidos" pode, na prática, estar mais aberto do que parece.
 
@@ -66,11 +68,19 @@ A PEC 221/2019 foi aprovada na Câmara em 27/05/2026 (472 × 22 no primeiro turn
 | **Closeer** | Food service, hotelaria, varejo, eventos | Percentual por job, pago pelo contratante (valor não divulgado) | 1,1 mi jobs, 670 mil profissionais, 6 mil unidades | Não verificado — sede em SP | App Store 4,1/5 (562) · Google Play 4,6/5 (5.674) · Reclame Aqui 8,5/10 |
 | **estaff** | Bares, restaurantes, buffets, eventos, hotéis — único com modelo dual freela + CLT | Comissão do contratante (% não pública); grátis para o profissional | 1,4 milhão de profissionais (inconsistente com captura anterior de 686 mil) | Não verificado | App Store 3,1/5 (546) — a mais baixa do grupo |
 | **eFreela** | Bares, restaurantes, hotéis, eventos | ~10% do contratante (não confirmado em 1ª mão) | 300 mil "usam a plataforma" vs. só 100 mil+ instalações no Android | Não — GO, MG, SP, RJ, MA, AL | App Store 4,6/5 (~1,5 mil) · Google Play 3,1/5 (178) |
-| **Freela Serviços** | Eventos, bares, festas, **campanha política** | Híbrido: mensalidade decrescente (R$0–499) + taxa de 10–20% | 198 mil profissionais, mas só 203 contratações concluídas | Não verificado — "todo o Brasil" | Google Play: 1.000+ instalações, 1 avaliação |
+| **Freela Serviços** | Eventos, bares, festas, **campanha política** | Híbrido: mensalidade decrescente (R$0–499) + taxa de 10–20% | 198 mil profissionais, mas só 203 contratações concluídas | Não verificado — "todo o Brasil" | Google Play: 1.000+ instalações, 1 avaliação · App Store 3,7/5 (15), nº 99 em Negócios em 23/09 |
 | **Worc** | Recrutamento/gestão de mão de obra para foodservice (B2B) | Assinatura mensal/trimestral do contratante; grátis para o candidato | 3 números diferentes na própria home (40 mil / 2 mi / 5 mi+ "oportunidades") | Não verificado | Reclame Aqui 4,3/10 — "Não Recomendada" |
 | **Toopa** | Bares, restaurantes, hotéis, eventos | 10% do contratante, sem mensalidade | 500+ estabelecimentos, 2 mil candidatos (dado de 2021) | Tinha o DF no roadmap de 2021, nunca confirmado — empresa provavelmente **inativa em 2026** | Sem reviews localizadas em nenhuma fonte |
 | **TradePRO Freelance** | Trade marketing no varejo — adjacente | "Taxa zero" para o promotor, exige MEI | Não divulgada | Não verificado | Dados insuficientes |
-| **JobHunter** | Classificados genéricos de bicos — adjacente | Gratuito para os dois lados | ~33 mil cadastrados, 200+ cidades | Não verificado | Dados insuficientes |
+| **JobHunter** | Classificados genéricos de bicos — adjacente | Gratuito para os dois lados | ~33 mil cadastrados, 200+ cidades | Não verificado | App Store sem avaliação em 23/09; listado em Produtividade, não em Negócios |
+| **Freelas Now** *(captura de 23/09)* | Bares e restaurantes — freelancer por proximidade, "pra agora" | Taxa do app cobrada da empresa, visível na tela de contratação (percentual não divulgado); compras dentro do app | Não divulgada | Não verificado — capturas em São Paulo | App Store 5,0/5 (4) |
+| **Freelas** *(captura de 23/09)* | Eventos: casamento, buffet, equipe por função | Não observado; a vaga declara pagamento em PIX toda segunda-feira | Não divulgada | Não verificado | App Store 3,7/5 (3) |
+| **UmFreela** *(captura de 23/09)* | Gastronomia, hotelaria e eventos | Profissional não paga e recebe o valor integral; "a primeira vaga é sempre grátis" para a empresa (site) | Não divulgada | Declara "todo o Brasil", com filtro por cidade — sem vaga verificada no DF | App Store 4,3/5 (6) |
+| **BIKO** *(captura de 23/09)* | Eventos e recepção | Não observado — o app mostra "saldo a receber", logo intermedia o pagamento | Não divulgada | Não verificado — captura em São Paulo | App Store 4,3/5 (4) |
+| **Staff BR** *(captura de 23/09)* | Trabalho temporário por diária | Não observado | Não divulgada | Não verificado | App Store 4,4/5 (7) |
+| **Meu Freelance** *(captura de 23/09)* | Trabalho avulso com busca "perto de você" | Não observado | Não divulgada | Não verificado | App Store sem avaliação |
+| **Trampei Serviços** *(captura de 23/09)* | Serviços em geral — três tipos de conta, inclusive empresa | Compras dentro do app | Não divulgada | Não verificado | App Store 4,0/5 (2) |
+| **Bicos** *(captura de 23/09)* | Serviço doméstico: pintura, limpeza, jardinagem, pequenos reparos — adjacente | Não observado | Não divulgada | Não verificado | App Store sem avaliação |
 | **Fiverr** | Freelance digital 100% remoto — referência de modelo, não concorrente direto | Take rate ~28% do vendedor + assinatura opcional (US$15–49/mês) | Receita em queda (−10% a/a); receita de assinatura/serviços crescendo (+2% a/a) | Não aplicável (remoto) | Trustpilot 2,5/5, polarizado |
 
 **Sobre a loja.** As notas acima são majoritariamente da App Store. A tabela de `01-O-PROBLEMA.md` §3.1 mede os mesmos aplicativos no Google Play, e por isso os números são bem diferentes: lá a Closeer aparece com 4,6 e 5.674 avaliações, a estaff com 4,0 e 3.263. Não é contradição, é loja diferente — no Brasil o Android concentra muito mais avaliação. **Toda nota só significa alguma coisa junto com a loja e a data.**
@@ -201,6 +211,22 @@ Nenhum dos dois compete diretamente no food service/eventos/campanha política �
 
 **Fontes:** [tradepro.com.br/freelance](https://tradepro.com.br/freelance/) · [home.jobhunterbr.com](https://home.jobhunterbr.com/) — acesso 14/09/2026.
 
+### Varredura da App Store — 23/09/2026: oito fichas novas
+
+Uma busca direta na App Store brasileira, em 23/09/2026, devolveu dez aplicativos de trabalho avulso, **oito deles ausentes de toda a pesquisa anterior** (o JobHunter e a Freela Serviços já estavam mapeados e só ganharam captura nova). Nada aqui foi instalado nem verificado em Brasília: é leitura de ficha de loja e de captura de tela. As imagens estão em `pesquisa/concorrentes/` e o detalhe item a item, na T-0006 do vault.
+
+**Freelas Now** — o mais próximo da tese do Frila. Abre num **mapa de "Freelancers Próximos"** a partir do endereço do restaurante, com filtro por função (auxiliar de cozinha, barista), selo "Super Freela" e três modos de contratação: **Pra agora**, Agendar e Hora de saída. A vaga sai com valor de diária (R$ 130 na captura) e uniforme opcional. Na tela de contratação aparecem **"Taxa do app"** e **"Total cobrado da empresa"** — ou seja, cobra do contratante, como a hipótese do Frila —, além de contratação recorrente que reabre sozinha toda semana. O que o Frila faz diferente, no papel: o despacho notifica quem está perto em vez de mostrar um mapa para o contratante escolher, e o primeiro que aceita leva.
+
+**Freelas ("Trabalhos em eventos")** — o mais próximo da nossa camada de confiança. A ficha do profissional traz **Ranking com Desempenho (5.0/5.0), Confiança em porcentagem, Trabalhos realizados e Cancelamentos**, e o contato sai por celular, WhatsApp e Instagram depois da confirmação. O evento declara função, valor por vaga (R$ 150 para garçom), uniforme, lanche, descanso de 30 minutos e pagamento em PIX às segundas. É reputação com denominador, feita de outro jeito: sem taxa de comparecimento por check-in, sem janela de contato com prazo e com um índice de "confiança" que passa de 100%.
+
+**UmFreela** — já estava registrada na varredura de 20/09 como "a nossa tese no ar", agora com app aberto. O painel do contratante mostra **Vagas Ativas, Contratações e Média/Vaga**, com contratação por hora (R$ 20,00/h para auxiliar de cozinha na captura). O site declara custo zero e valor integral para o profissional e primeira vaga grátis para a empresa.
+
+**Os outros cinco.** **BIKO** (eventos e recepção) mostra saldo a receber, média 4.8, turnos concluídos e contagem regressiva do próximo trabalho — logo intermedia pagamento. **Staff BR** separa cadastro de freelancer "por diárias" e de empresa. **Meu Freelance** tem candidaturas, agenda e busca "perto de você". **Trampei Serviços** abre com três tipos de conta (contratante, profissional e empresa contratante) e é generalista. **Bicos** é serviço doméstico — pintura, limpeza, jardinagem, pequenos reparos — e entra aqui como adjacente, junto de TradePRO e JobHunter, não como concorrente de turno.
+
+**O que isso muda para o posicionamento.** Proximidade, urgência, reputação bilateral e contato direto depois do aceite não são mais território vazio na App Store brasileira: estão publicados, ainda que em apps pequenos e sem liquidez visível. O diferencial defensável do Frila deixa de ser "ninguém faz isso" e passa a ser **como** se faz — despacho que avisa quem é elegível em vez de vitrine, primeiro que aceita leva, taxa de comparecimento medida por check-in com denominador explícito, contato limitado a sete dias e nenhum custo para o profissional. E a checagem no DF, que a varredura de 20/09 pediu para dois apps, agora vale para dez.
+
+**Fontes:** fichas da App Store brasileira e capturas de tela feitas em 23/09/2026; imagens em `pesquisa/concorrentes/concorrente-*.png` e na T-0006 (`04 - Tarefas/Anexos/`).
+
 ### Fiverr — referência de modelo, não concorrente direto
 
 Marketplace global 100% remoto (design, programação, redação, marketing) — sem componente presencial, categoricamente diferente do Frila. Relevante aqui só como referência de modelo de cobrança: take rate de marketplace de 28,0% (12 meses até jun/2026), cobrado majoritariamente do vendedor, mais uma assinatura opcional do lado do profissional (Seller Plus, 3 níveis de US$15 a US$49/mês).
@@ -243,7 +269,9 @@ Fora do Brasil, os players de staffing sob demanda para hospitality cobram marku
 
 ## 7. Insights estratégicos
 
-**O Distrito Federal está, até onde esta pesquisa alcança, vazio de concorrência especializada.** Nenhum dos 11 concorrentes brasileiros de food service/eventos declara ou demonstra operação real no DF — a única presença confirmada é do GetNinjas, um marketplace generalista. A estratégia territorial do Frila (dominar o DF antes de expandir) não está competindo contra um incumbente local — está competindo contra o WhatsApp e contra a ausência de alternativa. É o que sustenta a densidade no DF como primeira barreira de entrada em `02-O-NEGOCIO.md` §6, com a ressalva de que janela aberta não é vantagem permanente.
+**O Distrito Federal está, até onde esta pesquisa alcança, vazio de concorrência especializada.** Nenhum dos 19 concorrentes brasileiros de food service/eventos declara ou demonstra operação real no DF — a única presença confirmada é do GetNinjas, um marketplace generalista. A estratégia territorial do Frila (dominar o DF antes de expandir) não está competindo contra um incumbente local — está competindo contra o WhatsApp e contra a ausência de alternativa. É o que sustenta a densidade no DF como primeira barreira de entrada em `02-O-NEGOCIO.md` §6, com a ressalva de que janela aberta não é vantagem permanente.
+
+**A janela é mais estreita do que parecia, e a tese já tem cópia publicada.** A varredura de 23/09 mostrou oito aplicativos que a pesquisa não tinha, dois deles com proximidade e urgência na tela inicial (Freelas Now) e reputação com cancelamentos na ficha do profissional (Freelas). Nenhum foi verificado em Brasília e todos são pequenos — de 2 a 15 avaliações na App Store —, mas o recado é o mesmo: o custo de publicar um app desses é baixo e o diferencial do Frila precisa estar na execução do despacho e na medida de comparecimento, não na ideia. Checar os dez no DF é a tarefa que fecha essa dúvida.
 
 **O padrão "cadastro não é liquidez" é a vulnerabilidade estrutural mais repetida do setor**, presente em praticamente todo concorrente pesquisado com número de tração verificável. O despacho ativo do Frila — notificar quem é elegível em vez de esperar candidatura — ataca esse ponto especificamente, em vez de competir em volume de cadastro. O desenho desse mecanismo está em `03-ESPECIFICACAO-DO-PRODUTO.md`.
 
