@@ -47,15 +47,22 @@ contrato. O `openapi.yaml` é espelhado em `contrato/`, e a CI recusa o espelho 
 - [x] **Ambiente compartilhado** — `frila-dev` no Supabase (`jcobftbhbqdikratzizz`,
       `sa-east-1`, Postgres 17.6), com as migrações aplicadas e o advisor de segurança
       sem nenhum alerta.
-- [ ] Políticas de acesso (RLS): o schema `privado`, as funções auxiliares e uma política
-      de leitura por tabela, com teste por identidade. *Em revisão no PR #2.*
+- [x] **Políticas de acesso (RLS)** — o schema `privado` com 12 auxiliares, 19 políticas
+      de leitura e o relógio `privado.agora()`, com teste entrando como profissional,
+      como contratante de outro estabelecimento e como conta bloqueada.
 - [ ] Entrada por código no e-mail e `criar_conta` com o perfil fixo da conta (RN25).
+      *Em revisão no PR #3; o contrato subiu para 0.2.1 por causa dele.*
 - [ ] **Bloco B · Ciclo principal** — as RPCs de `publicar_vaga` a `avaliar`, com a
       confirmação sem duplicidade de RN19 provada sob concorrência.
 - [ ] **Bloco C · Despacho e turno** — motor de elegibilidade, teto e agrupamento de
       notificações, push pelo FCM, lembretes, alertas e os direitos do usuário.
 - [ ] **Bloco D · Produção** — endurecimento, retenção de dados, auditoria e as consultas
       quentes com o volume do DF simulado.
+
+> [!info] Estado detalhado
+> O handoff completo — ambientes, portões, divergências registradas e por onde continuar —
+> está em `frila-backend/docs/ESTADO.md`. Esta nota guarda o que interessa ao time; lá
+> está o que interessa a quem for escrever a próxima linha de SQL.
 
 ## Notas
 
@@ -99,6 +106,18 @@ contrato. O `openapi.yaml` é espelhado em `contrato/`, e a CI recusa o espelho 
   Modelagem nomeia: mudança feita pelo painel e não versionada é mudança que o próximo
   ambiente não tem — e o ambiente onde a falha aparece não é o ambiente onde ela foi
   escrita.
+- 2026-09-22 — O contrato subiu para **0.2.1** (BlendOps/Frila#1) por três divergências
+  que apareceram ao implementar a entrada por e-mail: `criar_conta` precisava de um campo
+  de aceite dos termos que a 0.2.0 não tinha, a rota `minha_conta` não existia no
+  documento, e o trecho de `erro()` publicado na descrição não funciona — falta a chave
+  `headers`, e sem ela o PostgREST devolve 500 em toda recusa de regra de negócio. A
+  terceira importa além do Frila: quem copiasse aquele trecho para outro serviço herdaria
+  a falha.
+- 2026-09-22 — Duas vezes no mesmo dia a suíte de testes passou inteira sobre uma regra
+  ausente: 11 de 31 restrições e 10 de 19 políticas podiam ser removidas sem nada
+  reclamar. E uma terceira vez, mais sutil: os testes da primeira RPC conferiam só o
+  `sqlstate` da exceção, nunca o código — trocar `menor_de_idade` por qualquer outra
+  coisa deixava tudo verde. Nos três casos quem achou foi medição, não leitura.
 
 ---
 ← [[04 - Tarefas/00 - Índice Tarefas|Índice de Tarefas]]
