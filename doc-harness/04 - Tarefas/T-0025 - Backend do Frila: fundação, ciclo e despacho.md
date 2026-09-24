@@ -63,8 +63,22 @@ contrato. O `openapi.yaml` é espelhado em `contrato/`, e a CI recusa o espelho 
       `alvo_tipo` + `alvo_id`, que é o que o app tem na mão. CI própria no repositório do
       Frila (`redocly lint`, versão que sobe, seção Estado que descreve a versão) e, no
       backend, o portão que recusa RPC mudada sem contrato junto.
+- [x] **Perfil profissional, estabelecimento e painel** — as três RPCs do perfil
+      (criar, ler e atualizar), `cadastrar_estabelecimento` com CPF ou CNPJ conferido
+      pelo dígito verificador, e o painel do contratante com os alertas calculados na
+      leitura, pelo relógio do produto, em vez de guardados numa coluna.
+- [x] **Filtro de texto ofensivo (diretriz 1.2 da App Store)** — `privado.termo_bloqueado`
+      sem política de leitura, filtro por palavra inteira sobre o texto sem acento, e a
+      recusa `422 campo_invalido` com o campo em `details`. Falta só a revisão da Júlia
+      na lista de termos.
 - [ ] **Bloco B · Ciclo principal** — as RPCs de `publicar_vaga` a `avaliar`, com a
       confirmação sem duplicidade de RN19 provada sob concorrência.
+    - [x] `publicar_vaga` — grava a vaga, cria uma posição por unidade pedida e enfileira
+          o despacho em `pgmq`. O despacho não roda dentro da transação (B15): publicar é
+          um toque na tela de quem está com o salão cheio, e a varredura de elegibilidade
+          cresce com a base. A suíte vai de 232 para **391 asserções**.
+    - [ ] `vagas_abertas` e `detalhe_vaga`, `candidatar`, `meus_turnos`,
+          `contato_do_turno`, check-in, check-out, `avaliar` e os cancelamentos.
 - [ ] **Bloco C · Despacho e turno** — motor de elegibilidade, teto e agrupamento de
       notificações, push pelo FCM, lembretes, alertas e os direitos do usuário.
 - [ ] **Bloco D · Produção** — endurecimento, retenção de dados, auditoria e as consultas
@@ -74,10 +88,10 @@ contrato. O `openapi.yaml` é espelhado em `contrato/`, e a CI recusa o espelho 
 
 - **`supabase login`** — o `SUPABASE_ACCESS_TOKEN` do backend responde 401. Sem ele, o
   advisor de segurança do `frila-dev` não é verificado por ninguém.
-- **`FRILA_DOCS_TOKEN`** — PAT com leitura em `BlendOps/Frila`, gravado como secret do
+- **`FRILA_DOCS_TOKEN`** — PAT com leitura em `FrilaApp/frila-docs`, gravado como secret do
   `frila-backend`. Sem ele, a CI confere a integridade do espelho do contrato e **não**
   confere se ele está atrasado em relação ao original.
-- **11 operações do contrato sem cartão no quadro** — `renovarSessao`, `minhaConta`,
+- **10 operações do contrato sem cartão no quadro** — `renovarSessao`,
   `criteriosDeNotificacao`, `pedirRevisaoDespacho`, `equipeDeConfianca`,
   `incluirNaEquipe`, `removerDaEquipe`, `listarFuncoes`, `candidatosDaVaga`,
   `escolherCandidato` e `exportarTurnos`. Contrato a mais ou cartão faltando: é decisão
@@ -92,6 +106,25 @@ contrato. O `openapi.yaml` é espelhado em `contrato/`, e a CI recusa o espelho 
 > está o que interessa a quem for escrever a próxima linha de SQL.
 
 ## Notas
+
+- 2026-09-24 — Os nove PRs parados entraram, e com eles o Sprint 0 de Backend fechou do
+  lado do backend. O `main` passou a ter o filtro de texto, o perfil profissional, o
+  estabelecimento, o painel e `publicar_vaga`; o contrato foi de 0.2.1 a **0.2.5**.
+  Portões medidos na máquina, com `db reset` antes: **391 asserções** pgTAP em 16
+  arquivos, **74 regras** cobertas pela mutação e nenhuma sem cobertura, lint sem achado
+  novo e o ciclo por HTTP verde até a publicação da vaga.
+- 2026-09-24 — `pgmq` deixou de esperar o Sprint 2 e entrou com `publicar_vaga`: a fila
+  é onde a publicação deixa o trabalho do despacho. `pg_cron` e `pg_net` continuam fora,
+  pelo mesmo motivo de 22/09 — e `pg_net` tem um agravante, porque numa transação de
+  escrita ele falha em silêncio.
+- 2026-09-24 — Dois PRs que passavam sozinhos quebraram o `main` juntos: os cenários de
+  desenvolvimento e o teste de `cadastrar_estabelecimento` escolheram o mesmo CPF válido.
+  O aprendizado não é sobre o CPF — é que o banco não nasce vazio depois do `db reset`, e
+  que teste que conta linha tem de contar as **suas**, por id do cenário, e não a tabela
+  inteira.
+- 2026-09-24 — `vaga` ganhou `publicado_por`, que não está na Modelagem de Banco. Um
+  estabelecimento tem vários membros, e RF04 pergunta quem publicou. Divergência
+  registrada; quem reconcilia é o documento.
 
 - 2026-09-22 — Esquema inicial aplicado e verde: oito migrações datadas, 19 tabelas, 30
   restrições `CHECK`, uma de exclusão, 50 índices e 33 comentários de finalidade (LGPD,
