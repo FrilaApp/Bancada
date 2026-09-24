@@ -111,6 +111,7 @@ final class EstadoDaBancada {
         bases.append(URL(fileURLWithPath: FileManager.default.currentDirectoryPath))
 
         for base in bases {
+            if LeitorDeVault.ehVault(base) { return base }
             let candidato = base.appendingPathComponent("doc-harness")
             if LeitorDeVault.ehVault(candidato) { return candidato }
         }

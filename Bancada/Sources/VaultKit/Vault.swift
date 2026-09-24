@@ -102,7 +102,10 @@ public struct Vault {
 
 public enum LeitorDeVault {
     /// Pastas que não fazem parte do conteúdo.
-    static let ignoradas: Set<String> = [".git", ".obsidian", ".claude", "scripts", ".cache", "node_modules"]
+    static let ignoradas: Set<String> = [
+        ".git", ".obsidian", ".claude", ".github", "scripts", ".cache", "node_modules",
+        "ferramentas"
+    ]
 
     /// Markdown na raiz que é documentação do repositório, não nota do vault.
     ///
@@ -139,7 +142,7 @@ public enum LeitorDeVault {
         public var errorDescription: String? {
             switch self {
             case .raizInvalida(let url):
-                return "\(url.path) não parece um vault do doc-harness — falta a pasta `05 - Registros`."
+                return "\(url.path) não parece um vault do doc-harness — falta `05 - Registros/` ou `historico/registros/`."
             }
         }
     }
@@ -147,9 +150,13 @@ public enum LeitorDeVault {
     /// Confere que a pasta escolhida é mesmo o vault, e não uma pasta qualquer.
     public static func ehVault(_ raiz: URL) -> Bool {
         var ehPasta: ObjCBool = false
-        let alvo = raiz.appendingPathComponent("05 - Registros").path
-        let existe = FileManager.default.fileExists(atPath: alvo, isDirectory: &ehPasta)
-        return existe && ehPasta.boolValue
+        for marcador in ["05 - Registros", "historico/registros"] {
+            ehPasta = false
+            let alvo = raiz.appendingPathComponent(marcador).path
+            let existe = FileManager.default.fileExists(atPath: alvo, isDirectory: &ehPasta)
+            if existe && ehPasta.boolValue { return true }
+        }
+        return false
     }
 
     public static func ler(raiz: URL) throws -> Vault {
@@ -265,9 +272,13 @@ public enum LeitorDeVault {
             midias: midias.sorted { $0.modificadoEm > $1.modificadoEm },
             fatosNaoReconhecidos: naoReconhecidas,
             templates: templates.sorted { $0.caminhoRelativo < $1.caminhoRelativo },
-            // O `CLAUDE.md` fica fora de `notas` (é documentação do repo), mas
-            // a tabela de contatos dele é a única lista da equipe que existe.
-            equipe: (try? String(contentsOf: raiz.appendingPathComponent("CLAUDE.md"), encoding: .utf8))
+            // O `CLAUDE.md` fica fora de `notas`; os dois caminhos existem nos
+            // checkouts antigo e reorganizado do vault.
+            equipe: ["CLAUDE.md", "ferramentas/doc-harness/CLAUDE.md"]
+                .compactMap { caminho in
+                    try? String(contentsOf: raiz.appendingPathComponent(caminho), encoding: .utf8)
+                }
+                .first
                 .map(Equipe.ler(texto:)) ?? Equipe()
         )
     }
