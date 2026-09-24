@@ -23,7 +23,7 @@ public enum Verificacao {
             alvo = raiz.appendingPathComponent("doc-harness")
         } else {
             FileHandle.standardError.write(Data(
-                "✗ \(raiz.path) não é um vault do doc-harness (falta `05 - Registros/`).\n".utf8
+                "✗ \(raiz.path) não é um vault do doc-harness (falta `05 - Registros/` ou `historico/registros/`).\n".utf8
             ))
             return 1
         }
