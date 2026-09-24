@@ -50,7 +50,7 @@ Extraído dos documentos de arquitetura (T-0024): [[07 - Arquitetura/Diagrama de
 | Políticas de acesso (RLS) | Escritas na [[07 - Arquitetura/Modelagem de Banco de Dados|Modelagem de Banco de Dados]], uma por tabela e operação; entram nas migrações quando o código começar |
 | Estimativa da US15 | 8 pontos. O MUST do Backlog passa a somar 90 |
 | Tecnologia da web | Escolhida depois do iOS |
-| Identificador do app (bundle ID) | Decidido ao criar o projeto iOS |
+| Identificador do app (bundle ID) | `com.frila.org.app`, definido ao criar o projeto iOS em 23/09/2026. O App ID está registrado no Apple Developer com Push Notifications, e o mesmo identificador está no app do App Store Connect e nos apps iOS dos projetos Firebase |
 | Wireframes (T-0011) | Protótipo clicável, gerado pelo Claude |
 | Estrutura inicial do código | Criada só quando o Cauê pedir |
 
