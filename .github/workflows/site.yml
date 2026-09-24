@@ -31,6 +31,7 @@ on:
       - 'Bancada/Tests/**'
       - 'Bancada/Package.swift'
       - 'Bancada/scripts/**'
+      - 'Bancada/tokens.json'
       - '.github/workflows/site.yml'
   workflow_dispatch:
 
@@ -92,6 +93,13 @@ jobs:
           apt-get update -qq
           apt-get install -y --no-install-recommends nodejs npm
           node --version && npm --version
+
+      # Os testes do gerador são Node puro e usam um índice de mentira: rodam
+      # em segundos, antes de compilar o Swift, e um teste vermelho para o
+      # build com o site anterior no ar. Quem expande o glob é o shell, porque
+      # o Node 18 do apt não expande padrão sozinho; não ponha aspas nele.
+      - name: Testar o gerador
+        run: node --test scripts/testes/*.test.js
 
       - name: Cachear o .build
         id: cache_build

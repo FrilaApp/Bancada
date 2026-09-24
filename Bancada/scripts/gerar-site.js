@@ -110,12 +110,25 @@ function lerIndice(vault) {
 
 // Ordem de leitura essencial: Produto primeiro, seguido pela arquitetura técnica,
 // planejamento do ciclo, registro diário e sistema de design.
+//
+// `naBarra` decide só o que a barra lateral lista: toda seção continua gerando
+// as próprias páginas, com o mesmo cabeçalho. Quem lê de fora (os mentores)
+// precisa de produto e arquitetura à mão; o resto segue publicado e alcançável
+// pelo endereço, sem disputar a barra. `foraDaBarra` faz o mesmo nota a nota,
+// pelo caminho no vault: Leia Primeiro e README são portas de entrada da pasta
+// do Frila e resumem os documentos que a barra já lista.
 const SECOES = [
-  { id: 'produto',      titulo: 'Produto',      tipos: ['documento-produto', 'documento-derivado'] },
-  { id: 'arquitetura',  titulo: 'Arquitetura',  tipos: ['arquitetura'] },
-  { id: 'planejamento', titulo: 'Planejamento', tipos: ['agenda', 'roadmap'] },
-  { id: 'diario',       titulo: 'Diário',       tipos: ['atualizacao-diaria'] },
-  { id: 'design',       titulo: 'Design',       tipos: ['design'] },
+  {
+    id: 'produto', titulo: 'Produto', tipos: ['documento-produto', 'documento-derivado'], naBarra: true,
+    foraDaBarra: [
+      '01 - CBL/Desafios/C18/Documentos de Produto/00-LEIA-PRIMEIRO.md',
+      '01 - CBL/Desafios/C18/Documentos de Produto/README.md',
+    ],
+  },
+  { id: 'arquitetura',  titulo: 'Arquitetura',  tipos: ['arquitetura'],        naBarra: true },
+  { id: 'planejamento', titulo: 'Planejamento', tipos: ['agenda', 'roadmap'],   naBarra: false },
+  { id: 'diario',       titulo: 'Diário',       tipos: ['atualizacao-diaria'], naBarra: false },
+  { id: 'design',       titulo: 'Design',       tipos: ['design'],             naBarra: false },
 ];
 
 /// Avisa quando um tipo de nota existe no vault mas não chega ao site.
@@ -243,11 +256,14 @@ class Site {
       });
     }
     if (secao.id === 'produto') {
+      // O Escopo do MVP recorta as histórias MUST do backlog, por isso vem
+      // logo depois delas.
       const ordem = [
         'visao',
         'requisitos',
-        'especificacao',
         'historias',
+        'escopo',
+        'especificacao',
         'problema',
         'negocio',
         'mercado',
@@ -271,6 +287,17 @@ class Site {
       });
     }
     return notas.sort((a, b) => a.titulo.localeCompare(b.titulo, 'pt-BR'));
+  }
+
+  /**
+   * O que a barra lateral lista de uma seção: nada, se ela não é `naBarra`;
+   * se é, as notas da seção menos as de `foraDaBarra`. Só a barra usa isto;
+   * a geração de páginas continua em `notasDaSecao`.
+   */
+  notasDaBarra(secao) {
+    if (!secao.naBarra) return [];
+    const fora = new Set(secao.foraDaBarra || []);
+    return this.notasDaSecao(secao).filter((n) => !fora.has(n.caminho));
   }
 
   arquivoDaNota(caminho) {
@@ -705,6 +732,15 @@ class Site {
 
   pagina({ titulo, subtitulo, corpo, ativo, daPasta, semConteudoTopo = false }) {
     const base = daPasta === 'notas' ? '../' : '';
+    // "Desafio" acende na capa e nas duas páginas do documento CBL, e só nelas.
+    // Vem do mesmo predicado que roteia a nota para `paginaDocumentoCBL`: um
+    // pedaço de slug como `cbl-desafio` casava com toda nota de
+    // `01 - CBL/Desafios/`, e o Desafio aparecia aceso no Produto e na Agenda.
+    // As duas páginas mostram o mesmo documento da capa, por isso o link também
+    // leva `aria-current` nelas.
+    const noDocumentoCBL = this.notas.some(
+      (n) => this.ehDocumentoCBL(n) && this.arquivoDaNota(n.caminho) === ativo
+    );
     const nav = [
       ['index.html', 'Desafio'],
       ['tarefas.html', 'Tarefas'],
@@ -712,26 +748,29 @@ class Site {
       ['galeria.html', 'Galeria'],
     ]
       .map(([href, rotulo]) => {
-        const isDesafio = href === 'index.html' && (ativo === 'index.html' || (ativo && (ativo.includes('cbl-c18') || ativo.includes('C18') || ativo.includes('cbl-desafio'))));
-        const classe = (ativo === href || isDesafio) ? ' class="ativo"' : '';
-        return `<a href="${base}${href}"${classe}>${rotulo}</a>`;
+        const isDesafio = href === 'index.html' && noDocumentoCBL;
+        const atual = (ativo === href || isDesafio) ? ' class="ativo" aria-current="page"' : '';
+        return `<a href="${base}${href}"${atual}>${rotulo}</a>`;
       })
       .join('');
 
+    // Todo grupo nasce fechado e abre só o que contém a página atual. Isso se
+    // resolve aqui, no build: a barra chega pronta, sem script para reabrir
+    // grupo nem estado guardado no navegador de quem lê.
     const secoes = SECOES.map((s) => {
-      const notas = this.notasDaSecao(s);
+      const notas = this.notasDaBarra(s);
       if (!notas.length) return '';
       const temAtivo = notas.some((n) => ativo === this.arquivoDaNota(n.caminho));
       const itens = notas
         .map((n) => {
           const href = base + this.arquivoDaNota(n.caminho);
-          const classe = ativo === this.arquivoDaNota(n.caminho) ? ' class="ativo"' : '';
+          const atual = ativo === this.arquivoDaNota(n.caminho) ? ' class="ativo" aria-current="page"' : '';
           const rotulo = n.tipo === 'atualizacao-diaria' ? (n.campos.data || n.titulo) : n.titulo;
           const rotuloLimpo = this.limparRotuloSidebar(rotulo, n.tipo);
-          return `<li><a href="${href}"${classe}><span>${escapar(rotuloLimpo)}</span></a></li>`;
+          return `<li><a href="${href}"${atual}><span>${escapar(rotuloLimpo)}</span></a></li>`;
         })
         .join('');
-      return `<details class="grupo" open data-secao="${s.id}">
+      return `<details class="grupo"${temAtivo ? ' open' : ''} data-secao="${s.id}">
         <summary class="grupo-titulo">
           <svg class="chevron" width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 4 4 4-4 4"/></svg>
           <span class="grupo-rotulo">${s.titulo}</span>
@@ -758,7 +797,8 @@ class Site {
 <link rel="stylesheet" href="${base}estilo.css">
 <script>
 (function() {
-  var salvo = localStorage.getItem('bancada_theme');
+  var salvo = null;
+  try { salvo = localStorage.getItem('bancada_theme'); } catch(e) {}
   var prefereDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   var tema = salvo || (prefereDark ? 'dark' : 'light');
   document.documentElement.setAttribute('data-theme', tema);
@@ -813,24 +853,10 @@ class Site {
 ${this.avisoDeAtualizacao(base)}
 <script>
 (function() {
-  var chave = 'bancada_sidebar_colapso';
-  var estado = {};
-  try { estado = JSON.parse(localStorage.getItem(chave) || '{}'); } catch(e) {}
-  document.querySelectorAll('aside details.grupo[data-secao]').forEach(function(d) {
-    var secao = d.dataset.secao;
-    var temAtivo = d.querySelector('a.ativo') !== null;
-    if (temAtivo) {
-      d.open = true;
-    } else if (estado[secao] === false) {
-      d.open = false;
-    }
-    d.addEventListener('toggle', function() {
-      if (!d.querySelector('a.ativo')) {
-        estado[secao] = d.open;
-        try { localStorage.setItem(chave, JSON.stringify(estado)); } catch(e) {}
-      }
-    });
-  });
+  // Os grupos da barra já chegam abertos ou fechados do build. Uma versão
+  // anterior guardava o estado de cada grupo no navegador; a chave sai daqui
+  // para não sobrar lixo em quem já visitou o site.
+  try { localStorage.removeItem('bancada_sidebar_colapso'); } catch(e) {}
 
   var btnTema = document.getElementById('btn-tema');
   if (btnTema) {
@@ -854,7 +880,8 @@ ${this.avisoDeAtualizacao(base)}
   // Alternância e Recolhimento da Barra Lateral para a Margem
   var btnSidebar = document.getElementById('btn-sidebar-toggle');
   if (btnSidebar) {
-    var recolhida = localStorage.getItem('bancada_sidebar_recolhida') === 'true';
+    var recolhida = false;
+    try { recolhida = localStorage.getItem('bancada_sidebar_recolhida') === 'true'; } catch(e) {}
     if (recolhida) {
       document.body.classList.add('sidebar-colapsada');
       btnSidebar.setAttribute('aria-label', 'Expandir barra lateral');
@@ -1413,9 +1440,20 @@ ${this.avisoDeAtualizacao(base)}
     return texto;
   }
 
+  /**
+   * As notas que viram o documento CBL: a do desafio (`C18.md`) e o derivado
+   * do `.pages` oficial (`Documentos/CBL_C18.md`). Compara o nome inteiro do
+   * arquivo: um `endsWith('C18.md')` pegaria a `Agenda - C18.md` e qualquer
+   * nota futura terminada em ` - C18.md`, e a publicaria como o documento CBL.
+   * `pagina()` usa o mesmo teste para acender o "Desafio" na navegação do topo.
+   */
+  ehDocumentoCBL(nota) {
+    const nome = path.basename(nota.caminho);
+    return nome === 'C18.md' || nome === 'CBL_C18.md';
+  }
+
   paginaDeNota(nota, secao) {
-    const ehDocumentoCBL = (nota.caminho.endsWith('/C18.md') || nota.caminho.endsWith('C18.md')) && !nota.caminho.includes('Agenda') || nota.caminho.includes('CBL_C18');
-    if (ehDocumentoCBL) {
+    if (this.ehDocumentoCBL(nota)) {
       return this.paginaDocumentoCBL(nota, secao);
     }
 
@@ -1702,7 +1740,8 @@ ${this.avisoDeAtualizacao(base)}
     // Script interativo
     const scriptInterativo = `<script>
 (function() {
-  var modoAtual = localStorage.getItem('bancada_tarefas_modo') || 'quadro';
+  var modoAtual = 'quadro';
+  try { modoAtual = localStorage.getItem('bancada_tarefas_modo') || 'quadro'; } catch(e) {}
   var btnQuadro = document.getElementById('btn-visao-quadro');
   var btnTabela = document.getElementById('btn-visao-tabela');
   var containerQuadro = document.getElementById('quadro-container');
@@ -2500,4 +2539,9 @@ ${this.folhaDeEstilo('multipagina')}`;
   }
 }
 
-main();
+// Roda só quando chamado da linha de comando. Os testes em `scripts/testes/`
+// importam o `Site` e geram a partir de um índice de mentira, sem binário nem
+// vault por perto.
+if (require.main === module) main();
+
+module.exports = { Site, SECOES };

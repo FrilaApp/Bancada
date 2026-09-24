@@ -255,7 +255,7 @@ aside details.grupo summary.grupo-titulo {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #525860;
+  color: var(--textoSutil);
   font-family: var(--sans);
   transition: color 140ms ease, background-color 140ms ease;
 }
@@ -266,26 +266,24 @@ aside details.grupo summary.grupo-titulo::marker {
 }
 
 aside details.grupo summary.grupo-titulo:hover {
-  color: #c4c7cb;
+  color: var(--texto);
   background: rgba(255, 255, 255, 0.03);
 }
 
+/* O chevron não tem cor própria: o traço é `currentColor` e herda a do
+   rótulo, no repouso e no hover. Com os grupos fechados por padrão, os
+   rótulos são quase tudo o que a barra mostra, e precisam passar no AA. */
 aside details.grupo summary.grupo-titulo .chevron {
   width: 10px;
   height: 10px;
-  color: #525860;
   transform: rotate(0deg);
   transform-origin: center;
-  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), color 140ms ease;
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
   flex-shrink: 0;
 }
 
 aside details.grupo[open] summary.grupo-titulo .chevron {
   transform: rotate(90deg);
-}
-
-aside details.grupo summary.grupo-titulo:hover .chevron {
-  color: #9499a0;
 }
 
 aside ul {
@@ -1657,21 +1655,8 @@ body > footer {
   border-color: #cbd5e1;
 }
 
-:root[data-theme="light"] aside details.grupo summary.grupo-titulo {
-  color: #64748b;
-}
-
 :root[data-theme="light"] aside details.grupo summary.grupo-titulo:hover {
-  color: #111827;
   background: rgba(0, 0, 0, 0.03);
-}
-
-:root[data-theme="light"] aside details.grupo summary.grupo-titulo .chevron {
-  color: #94a3b8;
-}
-
-:root[data-theme="light"] aside details.grupo summary.grupo-titulo:hover .chevron {
-  color: #475569;
 }
 
 :root[data-theme="light"] aside details.grupo ul {
