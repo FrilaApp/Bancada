@@ -127,6 +127,21 @@ O sistema define papéis tipográficos claros com `clamp()` fluido para garantir
 | **Eyebrow / Rótulo**| `11px` | 600 | `+0.06em` | `1.2` | `nowrap` | Micro-caps (`EQUIPE BLENDOFS`, `FASE 01`, `MILESTONE CBL`) |
 | **Contadores / Tabular**| `11px` a `13px` | 600 | `0` | `1.0` | `nowrap` | Numeração de perguntas (`01`, `02`), contadores de fatos (`3 fatos`) |
 
+### 4.1. Travessão Editorial e Prevenção de Quebras Órfãs (`.cbl-travessao`)
+- **Proibição de espaço comum ao redor de travessões**: Em textos em prosa ou narrativa intercalada, a sequência ` — ` com espaços normais é expressamente proibida no HTML renderizado. Espaços normais somados ao comprimento do travessão geram um vazio de até 1.5em e fazem com que o travessão caia isolado no início da linha seguinte (órfão visual).
+- **Tratamento Canônico**: O parser Markdown (`markdown.js`) substitui automaticamente a ocorrência por:
+  ```html
+  <span class="cbl-travessao">&thinsp;—&thinsp;</span>
+  ```
+- **CSS Aplicado**:
+  ```css
+  .cbl-travessao {
+    white-space: nowrap;
+    opacity: 0.85;
+    letter-spacing: -0.05em;
+  }
+  ```
+
 ---
 
 ## 5. Gramática dos Componentes Canônicos
@@ -184,7 +199,25 @@ O cabeçalho do documento elimina caixas fechadas, adotando uma estrutura editor
 ```
 
 **Regras Mandatórias**:
-- **Nomes de pessoas**: Separados estritamente por vírgula (`Nome 1, Nome 2`), **nunca** por pontos centrais (`·`). O ponto central é reservado para separar metadados analíticos (ex.: `Documento Oficial · CBL`).
+- **Nomes de pessoas**: Separados estritamente por vírgula (`Nome 1, Nome 2`), **nunca** por pontos centrais (`·`). O ponto central é reservado para separar metadados analíticos.
+- **Micro-ponto geométrico em metadados (`.cbl-ponto-sep`)**: Proibido utilizar o caractere de glifo literal `·` (bullet/middot) no HTML de cabeçalhos e metadados. Cada fonte (SF Pro, IBM Plex, Geist) possui uma métrica vertical distinta para o middot, o que causa oscilações de baseline de até 2.5px. Exige-se o uso exclusivo do elemento:
+  ```html
+  <span class="cbl-ponto-sep" aria-hidden="true"></span>
+  ```
+  ```css
+  .cbl-ponto-sep {
+    display: inline-block;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background-color: currentColor;
+    opacity: 0.35;
+    margin: 0 7.5px;
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+  ```
+- **Auditoria no Colofão (Regra das Três Vozes)**: No item de auditoria, o autor do commit deve ser renderizado em sans-serif (`.cbl-colofao-autor`), enquanto o hash do commit deve repousar estritamente em monospace (`<code class="cbl-colofao-hash">`).
 - **Links externos**: Acompanhados do glifo `↗` (`.cbl-seta`), que translada discretamente `transform: translate(2px, -2px)` no estado hover.
 
 ---
@@ -375,6 +408,25 @@ Grid editorial aberto com numeração tabular e micro-interação por linha:
 
 ---
 
+### 5.9. Micro-Badges de Evidência CBL (Taxonomia de Pesquisa)
+Substituem rótulos genéricos por marcadores semânticos de rigor investigativo nas tabelas e seções de pesquisa:
+
+```html
+<span class="cbl-evidencia-tag tag-dado">Dado</span>
+<span class="cbl-evidencia-tag tag-relato">Relato</span>
+<span class="cbl-evidencia-tag tag-hipotese">Hipótese</span>
+<span class="cbl-evidencia-tag tag-lacuna">Lacuna</span>
+```
+
+**Parâmetros de Estilo**:
+- **Geometria**: `display: inline-flex; align-items: center; padding: 2px 6.5px; border-radius: 4px; font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; line-height: 1;`.
+- **Dado** (`.tag-dado`): cor `#38bdf8`, fundo `rgba(56, 189, 248, 0.08)`, contorno `1px solid rgba(56, 189, 248, 0.22)`.
+- **Relato** (`.tag-relato`): cor `#c084fc`, fundo `rgba(192, 132, 252, 0.08)`, contorno `1px solid rgba(192, 132, 252, 0.22)`.
+- **Hipótese** (`.tag-hipotese`): cor `#fbbf24`, fundo `rgba(251, 191, 36, 0.08)`, contorno `1px solid rgba(251, 191, 36, 0.22)`.
+- **Lacuna** (`.tag-lacuna`): cor `#fb7185`, fundo `rgba(251, 113, 133, 0.08)`, contorno `1px solid rgba(251, 113, 133, 0.22)`.
+
+---
+
 ## 6. Navegação, Header e Modo Zen (Distraction-Free)
 
 ### 6.1. Header / HUD Superior Minimalista
@@ -390,7 +442,15 @@ Grid editorial aberto com numeração tabular e micro-interação por linha:
 - **Itens de Navegação**: Raio de 5px, padding vertical compacto (5px 8px), estado ativo com destaque translúcido sem borda saturada.
 
 ### 6.3. Modo Zen Automático (Scroll HUD)
-Ao rolar a página para baixo após o masthead inicial (>120px com delta descendente > 8px), o Header translada suavemente para cima (`transform: translateY(-100%)`), maximizando o campo visual e reduzindo distrações para imersão total na leitura. Qualquer rolagem ascendente traz o HUD de volta instantaneamente.
+- **Comportamento de Rolagem**: Ao rolar a página para baixo após o masthead inicial (>140px com delta descendente > 8px), o Header translada suavemente para cima (`transform: translateY(-100%); opacity: 0;`), maximizando o campo visual e reduzindo distrações para imersão total na leitura. Qualquer rolagem ascendente (delta < -6px) ou retorno ao topo (< 80px) traz o HUD de volta instantaneamente.
+- **Transição e Desempenho**:
+  ```css
+  .cbl-hud {
+    transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1), opacity 220ms ease;
+    will-change: transform;
+  }
+  ```
+- **Compensação de Âncoras**: Quando a classe `.cbl-hud-oculta` é ativada em `html` e `body`, o documento adota `scroll-padding-top: 28px;` para assegurar que a navegação por âncoras não cole cabeçalhos no limite cego superior da viewport.
 
 ---
 
@@ -416,16 +476,47 @@ Para que o site da Bancada mantenha coerência estética integral, os padrões d
 
 ---
 
-## 8. Checklist de Revisão de Design (Pre-flight Gate)
+---
 
-Antes de aprovar qualquer alteração ou nova página na Bancada:
+## 8. Design de Produto, Wireframes e Gramática Funcional (Frila)
 
-- [ ] **Sem "Card Soup"**: O conteúdo precisava mesmo de uma caixa, ou ficaria melhor aberto no canvas?
-- [ ] **Sem Linhas Cruzadas**: Nenhuma borda vertical encosta perpendicularmente em uma régua horizontal?
-- [ ] **Sem Pontos Centrais entre Pessoas**: Nomes estão separados por vírgula limpa (`Nome A, Nome B`)?
-- [ ] **Comprimento de Linha**: Parágrafos de leitura e blocos narrativos respeitam o limite de `66ch`?
-- [ ] **Cantos Arredondados de 12px**: Todos os cartões, sínteses e recipientes interativos usam o raio padrão Apple?
-- [ ] **Bordas Suaves**: Outlines de cartões usam traço translúcido sutil (`rgba(..., 0.06)` a `0.07`), nunca bordas sólidas pesadas?
-- [ ] **Paridade de Tema**: A página foi testada no modo claro (`data-theme="light"`) e escuro sem quebras de contraste?
-- [ ] **Sem Emojis Decorativos**: Glifos de sistema e ícones SVG precisos foram utilizados no lugar de emojis soltos no chrome?
-- [ ] **VoiceOver e Teclado**: Todo componente interativo possui foco visível (`:focus-visible`) e pode ser operado via teclado?
+O ecossistema visual da Bancada serve de espelho e fundamentação para o produto principal concebido no Challenge 18: o **Frila** (aplicativo nativo iOS voltado ao fechamento de turnos avulsos no Distrito Federal).
+
+### 8.1. Referência Canônica de Wireframes de Baixa Fidelidade
+- **Protótipo Interativo Oficial**: O protótipo clicável em escala de cinza estruturado no Claude Artifact (`https://claude.ai/artifact/MUQ4VxtiJMCvG8H86WJD7q`), registrado na tarefa `T-0011` e no documento de escopo `05-ESCOPO-DO-MVP.md`.
+- **Composição**: 17 telas funcionais sem ornamentos, focadas exclusivamente na arquitetura de informação e no fechamento do ciclo de valor.
+- **Divisão de Fluxos**:
+  1. *Entrada Comum*: Onboarding e autenticação passwordless por código enviado ao e-mail, compartilhada por ambos os perfis. Perfil fixo por conta (`RN25`).
+  2. *Contratante*: Publicação de vaga em modo urgência com poucos campos, visualização de candidatos, confirmação de profissional, alerta de vaga vazia e confirmação de check-in manual.
+  3. *Profissional*: Despacho por proximidade geográfica (< 15 km) com teto de frequência (máximo 1 notificação a cada 30 minutos, `RN23`), candidatura direta sem preenchimento de formulário e check-in geolocalizado a até 200 m do estabelecimento (`RN22`).
+
+### 8.2. Princípio da Honestidade Operacional (Sem Metas Arbitrárias de UX)
+- **Expurgamento de Promessas Prematuras**: É terminantemente proibido inserir promessas não mensuradas de tempo ou cliques na interface, na documentação de produto ou em materiais de marketing (ex.: "vaga publicada em 60 segundos", "candidatura com 1 toque", "cadastro em 3 minutos", "3 toques para fechar").
+- **Diretriz de Design**: A interface deve ser projetada para ser enxuta e de fricção mínima ("poucos campos", "sem formulário"), mas qualquer métrica quantitativa só poderá ser declarada formalmente após medição empírica e cronometrada durante o piloto real com usuários no DF.
+- **Remuneração Integral**: A interface do profissional sempre apresenta o valor bruto integral do turno, sem dedução de taxas ou comissões do trabalhador (`RN01`).
+
+### 8.3. Mecanismo de Confiança e Reputação Binária
+- **Rejeição de Escalas Arbitrárias (1 a 5 estrelas)**: O produto recusa notas de 1 a 5 estrelas, que sofrem de inflação de notas e subjetividade.
+- **Pergunta Binária Direta**: Após o turno confirmado e verificado por presença, ambas as partes respondem: *"Chamaria de novo?"* ou *"Trabalharia lá de novo?"* (Sim / Não).
+- **Denominador Explícito**: A reputação exibida no perfil declara sempre o total de turnos avaliados (ex.: `7 de 7 chamariam de novo`), acompanhada da taxa percentual de comparecimento.
+
+---
+
+## 9. Checklist de Revisão de Design (Pre-flight Gate)
+
+Antes de aprovar qualquer alteração, nova página ou componente no ecossistema:
+
+- [ ] **Sem "Card Soup"**: O conteúdo repousa diretamente no canvas aberto, sem caixotes artificiais desnecessários?
+- [ ] **Sem Linhas Cruzadas**: Nenhuma borda vertical (`border-left`) colide perpendicularmente com divisores horizontais?
+- [ ] **Sem Pontos Centrais entre Pessoas**: Nomes de autores e membros estão estritamente separados por vírgula (`Nome A, Nome B`)?
+- [ ] **Micro-Pontos Geométricos**: Metadados em cabeçalhos e colofões utilizam `<span class="cbl-ponto-sep" aria-hidden="true"></span>` em vez do glifo literal `·`?
+- [ ] **Travessão Editorial**: O travessão (`—`) em prosa utiliza a classe `.cbl-travessao` com espaços finos não-quebráveis?
+- [ ] **Comprimento de Linha**: Parágrafos de leitura e blocos narrativos respeitam o limite de `66ch` (`text-wrap: pretty;`)?
+- [ ] **Cantos Arredondados de 12px**: Todos os cartões de lista, sínteses e recipientes fechados adotam o raio padrão Apple?
+- [ ] **Bordas Suaves**: Contornos de cartões utilizam traço translúcido sutil (`rgba(..., 0.06)` a `0.07`), nunca bordas sólidas pesadas?
+- [ ] **Paridade de Tema**: A interface foi validada nos modos claro (`data-theme="light"`) e escuro sem quebras de contraste?
+- [ ] **Sem Emojis Decorativos**: Glifos de sistema e ícones SVG vetoriais precisos foram utilizados no lugar de emojis soltos no chrome?
+- [ ] **Regra das Três Vozes**: Chrome em Sans, narrativa em Serif/Sans editorial, auditoria e identificadores em Monospace?
+- [ ] **Sem Metas Prematuras no Produto**: Textos de interface e requisitos não contêm promessas quantitativas de tempo/toque não medidas em campo?
+- [ ] **VoiceOver e Teclado**: Todo componente interativo possui foco visível (`:focus-visible`) e é plenamente acessível?
+
