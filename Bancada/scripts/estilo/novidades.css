@@ -1,0 +1,1105 @@
+/* ==========================================================================
+   Novidades: o marca-texto do que mudou desde a última visita
+   ==========================================================================
+   O gerador anexa este arquivo ao fim de estilo.css, depois de
+   multipagina.css. Norma e decisões: DESIGN.md, "Marca-texto de novidades".
+
+   Cor só por variável. As marcas usam --mudanca-* (tokens.json, escala
+   `mudanca`); o resto usa os papéis do site. Os poucos derivados, como o
+   traço da marca lida ou o fundo de um bloco fechado, saem de color-mix()
+   sobre essas mesmas variáveis. Nenhum hex mora aqui.
+
+   Especificidade: o multipagina.css pinta `main p`, `main li` e `main h2`
+   com seletores de até (0,2,4), inclusive no tema claro. Onde um elemento
+   desta folha precisa vencer esses seletores, ele leva `:root` à frente
+   (`:root main p.x`, `:root .pagina-novidades …`) em vez de `!important`.
+
+   Movimento: base.css zera toda transição e animação sob
+   prefers-reduced-motion, com `* { transition: none !important }`. O `*`
+   não alcança pseudo-elementos; o único que anima aqui, o chevron do bloco
+   removido, tem regra própria logo abaixo dele.
+   ========================================================================== */
+
+/* Derivados por tema ----------------------------------------------------- */
+
+/* Força da cor da categoria no traço que sobra da marca lida. No claro o
+   pastel sozinho some no papel (1,2:1), então o traço mistura a tinta até
+   ficar visível. No escuro o tom `luz` já passa de 7:1 contra o fundo e
+   entra puro. */
+:root {
+  --nov-traco-forca: 55%;
+}
+
+/* Texto de apoio sobre fundo tingido. O --textoSutil do claro fica em 4,5:1
+   exatos sobre o papel; qualquer véu atrás dele o derruba para 4,3:1. Um
+   passo em direção ao --texto devolve a margem nos dois temas. */
+:root {
+  --nov-apoio: color-mix(in srgb, var(--textoSutil) 70%, var(--texto));
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --nov-traco-forca: 100%;
+  }
+}
+
+:root[data-theme="dark"] {
+  --nov-traco-forca: 100%;
+}
+
+/* Cor da categoria, herdada por marca, amostra, chip e bloco removido. */
+.nov--acrescimo,
+.nov-chip--acrescimo {
+  --nov-cor: var(--mudanca-acrescimo);
+}
+
+.nov--correcao,
+.nov-chip--correcao {
+  --nov-cor: var(--mudanca-correcao);
+}
+
+.nov--remocao,
+.nov-chip--remocao,
+.nov-removido {
+  --nov-cor: var(--mudanca-remocao);
+}
+
+/* Marca chapada ----------------------------------------------------------- */
+
+/* Preenchimento opaco, tinta escura, sem borda nem sombra. `clone` repete o
+   preenchimento, o respiro e o canto em cada linha quebrada, como um
+   marca-texto passado linha a linha.
+
+   Um trecho que atravessa elementos (texto, depois <strong>, depois texto)
+   vira várias peças. Só a primeira (`--inicio`) e a última (`--fim`) têm
+   respiro e canto nas pontas; as do meio encostam umas nas outras e o
+   preenchimento corre sem emenda. Uma peça única leva as duas classes.
+
+   O sublinhado já nasce ligado e transparente: é ele que aparece quando o
+   acréscimo é lido. */
+mark.nov,
+del.nov {
+  --nov-traco: color-mix(in oklab, var(--nov-cor) var(--nov-traco-forca), var(--mudanca-tinta));
+  background-color: var(--nov-cor);
+  color: var(--mudanca-tinta);
+  padding-block: 0.08em;
+  padding-inline: 0;
+  border-radius: 0;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.22em;
+  text-decoration-skip-ink: auto;
+  scroll-margin-block: 24px;
+}
+
+mark.nov.nov--inicio,
+del.nov.nov--inicio {
+  padding-inline-start: 0.14em;
+  border-start-start-radius: 2px;
+  border-end-start-radius: 2px;
+}
+
+mark.nov.nov--fim,
+del.nov.nov--fim {
+  padding-inline-end: 0.14em;
+  border-start-end-radius: 2px;
+  border-end-end-radius: 2px;
+}
+
+/* Correção: só o texto novo é marcado, com tracejado na tinta. O texto de
+   antes vive no balão (#nov-antes) e no texto oculto para leitor de tela. */
+mark.nov.nov--correcao {
+  text-decoration-style: dashed;
+  text-decoration-color: currentColor;
+  cursor: help;
+}
+
+/* Remoção: o texto que saiu volta tachado. Fora da seleção, para que copiar
+   o parágrafo não leve junto o que já não está no documento. */
+del.nov.nov--remocao {
+  text-decoration-line: line-through;
+  text-decoration-color: currentColor;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Foco vindo dos chips: anel de sempre, mas com o canto da marca. O
+   base.css força 4px em todo :focus-visible. */
+mark.nov:focus-visible,
+del.nov:focus-visible {
+  border-radius: 2px;
+  outline-offset: 1px;
+}
+
+/* Marca lida: esmaece e sobra o traço -------------------------------------- */
+
+/* O fundo some devagar (--mov-leitura) e fica um traço fino na cor da
+   categoria até o fim da visita; na próxima, a marca nem é desenhada.
+
+   A cor do texto não cruza com o fundo: ela troca de uma vez na metade do
+   tempo. No escuro, tinta e texto claro se cruzariam sobre um verde médio
+   e o trecho sumiria por um instante (perto de 1:1); trocando na metade,
+   o pior momento fica perto de 3:1. No claro a troca nem se nota: é de
+   uma tinta escura para outra. */
+mark.nov.nov--lida,
+del.nov.nov--lida {
+  background-color: transparent;
+  color: inherit;
+  text-decoration-color: var(--nov-traco);
+  transition:
+    background-color var(--mov-leitura, 0.6s) ease,
+    text-decoration-color var(--mov-leitura, 0.6s) ease,
+    color 0s linear calc(var(--mov-leitura, 0.6s) / 2);
+}
+
+del.nov.nov--remocao.nov--lida {
+  color: var(--textoSutil);
+}
+
+/* Peças dentro de outros elementos --------------------------------------- */
+
+/* Dentro de link, a tinta cobre a cor do link; o sublinhado vira a pista.
+   A correção já é sublinhada (tracejado) e fica como está. */
+a > mark.nov.nov--acrescimo {
+  text-decoration-color: currentColor;
+  text-decoration-thickness: 1px;
+}
+
+a > del.nov.nov--remocao {
+  text-decoration-line: line-through underline;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a:hover > mark.nov:not(.nov--lida) {
+    text-decoration-thickness: 2px;
+  }
+}
+
+/* Se um dia uma marca envolver elementos inteiros (link, código, negrito,
+   travessão), o que estiver dentro dela usa a tinta. Sem isto, o
+   `main strong { color: #fff }` do escuro pintaria branco sobre o verde. */
+:root :is(mark.nov, del.nov) :is(a, code, strong, b, em, i, span, .cbl-travessao) {
+  color: inherit;
+}
+
+/* O travessão editorial tem 1px de respiro dos dois lados; com uma peça
+   dentro dele, esse respiro abriria uma fresta no preenchimento. */
+.cbl-travessao:has(> :is(mark.nov, del.nov)) {
+  padding-inline: 0;
+}
+
+/* Texto para leitor de tela --------------------------------------------- */
+
+/* "Novo:", "Corrigido: … (antes: …)", "Removido:". Fica fora da tela e fora
+   da seleção: copiar um parágrafo não pode trazer o rótulo junto. */
+.nov-sr {
+  position: absolute !important;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Remoção longa ----------------------------------------------------------- */
+
+/* Mais de 25 palavras, ou um trecho que atravessa blocos, não volta inline:
+   vira um bloco fechado que se abre para mostrar o texto antigo. É fechado
+   pelo mesmo motivo da síntese (DESIGN.md §5.5): uma peça acionável que se
+   distingue do texto corrido, sem régua lateral solta. */
+details.nov-removido {
+  margin: 10px 0 18px;
+  max-inline-size: 66ch;
+  border: 1px solid color-mix(in srgb, var(--texto) 7%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--texto) 2.5%, transparent);
+  font-family: var(--sans);
+  scroll-margin-block: 24px;
+}
+
+details.nov-removido > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-block-size: 36px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  list-style: none;
+  cursor: pointer;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--nov-apoio);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+details.nov-removido > summary::-webkit-details-marker {
+  display: none;
+}
+
+details.nov-removido > summary:focus-visible {
+  border-radius: 12px;
+  outline-offset: -2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  details.nov-removido > summary:hover {
+    color: var(--texto);
+  }
+}
+
+/* Chevron geométrico na ponta: aponta para a direita fechado e para baixo
+   aberto, como o da barra lateral. */
+details.nov-removido > summary::after {
+  content: "";
+  inline-size: 6px;
+  block-size: 6px;
+  margin-inline: auto 2px;
+  border-inline-end: 1.5px solid currentColor;
+  border-block-end: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+}
+
+details.nov-removido[open] > summary::after {
+  transform: rotate(45deg);
+}
+
+/* O `*` do base.css não alcança pseudo-elementos: o chevron precisa da
+   própria regra para girar sem transição. */
+@media (prefers-reduced-motion: reduce) {
+  details.nov-removido > summary::after {
+    transition: none;
+  }
+}
+
+.nov-removido-rotulo {
+  color: var(--texto);
+}
+
+.nov-removido-contagem {
+  display: inline-flex;
+  align-items: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* O mesmo micro-ponto de .cbl-ponto-sep, sem glifo literal. */
+.nov-removido-contagem::before {
+  content: "";
+  inline-size: 3px;
+  block-size: 3px;
+  margin-inline: 1px 8px;
+  border-radius: 50%;
+  background-color: currentColor;
+  opacity: 0.35;
+}
+
+.nov-removido-texto {
+  padding: 0 14px 14px 30px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--nov-apoio);
+  text-wrap: pretty;
+}
+
+:root main .nov-removido-texto p {
+  margin: 0 0 10px;
+  color: var(--nov-apoio);
+  font-size: 14px;
+}
+
+:root main .nov-removido-texto p:last-child {
+  margin-block-end: 0;
+}
+
+/* Variante de tabela: a linha removida volta como uma linha só, com o bloco
+   ocupando todas as colunas. Aqui a própria linha da tabela é o contorno;
+   o bloco perde caixa e fundo para não virar caixa dentro de caixa. */
+tr.nov-removido > td {
+  padding-block: 6px;
+}
+
+/* As versões com :has() são só rede de segurança para um <tr>/<li> que
+   chegue sem a classe; o cliente sempre a põe. Cada uma fica numa regra
+   própria: num navegador sem :has() (Safari < 15.4, Firefox < 121), um
+   :has() dentro de uma lista de seletores derrubaria a regra inteira,
+   inclusive a parte com a classe. */
+tr:has(> td > details.nov-removido) > td {
+  padding-block: 6px;
+}
+
+tr.nov-removido details.nov-removido,
+td > details.nov-removido {
+  margin: 0;
+  max-inline-size: none;
+  border: 0;
+  background: none;
+}
+
+tr.nov-removido details.nov-removido > summary,
+td > details.nov-removido > summary {
+  padding-inline: 0;
+}
+
+tr.nov-removido .nov-removido-texto,
+td > details.nov-removido .nov-removido-texto {
+  padding: 0 0 8px 18px;
+}
+
+/* Variante de lista: o item removido não ganha o ponto de lista do site nem
+   conta na numeração de uma <ol>; senão os itens de hoje mudariam de número. */
+li.nov-removido {
+  display: block;
+}
+
+li:has(> details.nov-removido) {
+  display: block;
+}
+
+:root main ul > li.nov-removido::before {
+  content: none;
+}
+
+:root main ul > li:has(> details.nov-removido)::before {
+  content: none;
+}
+
+li > details.nov-removido {
+  margin-block: 2px;
+}
+
+/* Remoção longa lida: o mesmo esmaecer do tachado inline. O bloco perde o
+   véu, rótulo e texto vão para o apoio, a amostra fica vazada no traço da
+   categoria e o texto antigo sai tachado nesse traço. O cliente põe
+   `nov--lida` no <details> e também no <tr>/<li> que o embrulha. Sem véu
+   atrás, o --textoSutil volta a passar no AA (4,5:1 no claro, 6,3:1 no
+   escuro). */
+.nov-removido {
+  --nov-traco: color-mix(in oklab, var(--nov-cor) var(--nov-traco-forca), var(--mudanca-tinta));
+}
+
+details.nov-removido.nov--lida,
+.nov-removido.nov--lida details.nov-removido {
+  background-color: transparent;
+  transition: background-color var(--mov-leitura, 0.6s) ease;
+}
+
+:is(details.nov-removido.nov--lida, .nov-removido.nov--lida details.nov-removido) > summary,
+:is(details.nov-removido.nov--lida, .nov-removido.nov--lida details.nov-removido) .nov-removido-rotulo {
+  color: var(--textoSutil);
+}
+
+:is(details.nov-removido.nov--lida, .nov-removido.nov--lida details.nov-removido) .nov-amostra {
+  background: transparent;
+  box-shadow: none;
+  outline: 1.5px solid var(--nov-traco);
+  outline-offset: -1.5px;
+}
+
+:is(details.nov-removido.nov--lida, .nov-removido.nov--lida details.nov-removido) .nov-removido-texto,
+:root main :is(details.nov-removido.nov--lida, .nov-removido.nov--lida details.nov-removido) .nov-removido-texto p {
+  color: var(--textoSutil);
+  text-decoration-line: line-through;
+  text-decoration-color: var(--nov-traco);
+  text-decoration-thickness: 1px;
+}
+
+/* Balão da correção ------------------------------------------------------- */
+
+/* Um só, compartilhado, pendurado no <body>. O cliente posiciona com top e
+   left em coordenadas do documento. É informativo e `aria-hidden` (o leitor
+   de tela ouve o "antes" pelo .nov-sr), por isso não captura o ponteiro.
+   Cores invertidas: a separação vem do contraste, sem sombra. */
+#nov-antes {
+  position: absolute;
+  z-index: 60;
+  max-inline-size: min(44ch, calc(100vw - 32px));
+  padding: 7px 10px 8px;
+  border-radius: 6px;
+  background: var(--texto);
+  color: var(--fundo);
+  font-family: var(--sans);
+  font-size: 12.5px;
+  font-weight: 400;
+  line-height: 1.45;
+  text-wrap: pretty;
+  overflow-wrap: break-word;
+  pointer-events: none;
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 140ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 140ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@starting-style {
+  #nov-antes {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+
+  #nov-antes[data-lado="acima"] {
+    transform: translateY(-3px);
+  }
+}
+
+.nov-antes-rotulo {
+  font-weight: 600;
+  color: color-mix(in srgb, var(--fundo) 72%, var(--texto));
+}
+
+/* Linha de resumo sob o título ---------------------------------------------- */
+
+/* "Desde sua visita de 22 set:" e os chips. É chrome: sans, 12,5px, uma
+   linha que quebra só quando não cabe. */
+.nov-resumo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  margin: -4px 0 20px;
+  max-width: none;
+  font-family: var(--sans);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+:root main p.nov-resumo {
+  color: var(--textoSutil);
+  font-size: 12.5px;
+  line-height: 1.4;
+  margin: -4px 0 20px;
+  max-width: none;
+}
+
+.nov-resumo-rotulo {
+  margin-inline-end: 4px;
+  color: var(--textoSutil);
+}
+
+.nov-resumo-rotulo time {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Chip: botão que leva à próxima marca não lida da categoria. Leva forma
+   de controle (fundo e canto de botão) para não ser lido como legenda. */
+.nov-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-block-size: 24px;
+  margin: 0;
+  padding: 2px 8px;
+  border: 0;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--texto) 5%, transparent);
+  color: var(--texto);
+  font: inherit;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nov-chip:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--texto) 10%, transparent);
+  }
+}
+
+.nov-chip:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.nov-chip:focus-visible {
+  border-radius: 6px;
+}
+
+/* Categoria toda lida: o chip fica, apagado, para a contagem não pular. */
+.nov-chip:disabled {
+  background: transparent;
+  color: var(--textoSutil);
+  cursor: default;
+}
+
+.nov-chip:disabled .nov-amostra {
+  opacity: 0.45;
+}
+
+/* Amostra da cor da categoria. O fio interno na tinta dá contorno ao pastel,
+   que sozinho quase não se separa do papel. */
+.nov-amostra {
+  display: inline-block;
+  inline-size: 10px;
+  block-size: 10px;
+  border-radius: 2px;
+  background: var(--nov-cor, var(--textoSutil));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--mudanca-tinta) 16%, transparent);
+  flex-shrink: 0;
+}
+
+.nov-marcar-lidas {
+  margin: 0 0 0 6px;
+  padding: 2px 0;
+  border: 0;
+  background: none;
+  color: var(--textoSutil);
+  font: inherit;
+  font-weight: 500;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* Na página muito alterada, "Mostrar as marcas" abre a fila de botões. Sem o
+   recuo que separa "Marcar como lidas" dos chips, ele alinha com o texto de
+   cima quando a linha quebra no celular. */
+.nov-mostrar-marcas {
+  margin-inline-start: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nov-marcar-lidas:hover {
+    color: var(--texto);
+    text-decoration-color: currentColor;
+  }
+}
+
+@media (pointer: coarse) {
+  .nov-chip,
+  .nov-marcar-lidas {
+    min-block-size: 32px;
+  }
+}
+
+/* Ponto de não lido --------------------------------------------------------- */
+
+/* Círculo geométrico de 6px no acento, o "não lido" da Apple. Sem glifo:
+   o ponto do teclado muda de altura de uma fonte para outra. O cliente só
+   liga o atributo `data-novidade`; o desenho é daqui. */
+.nov-ponto {
+  display: inline-block;
+  inline-size: 6px;
+  block-size: 6px;
+  border-radius: 50%;
+  background: var(--acento);
+  flex-shrink: 0;
+}
+
+aside a[data-novidade]:not(.sidebar-novidades)::after,
+aside details.grupo[data-novidade]:not([open]) > summary::after,
+body > header nav a[data-novidade]::after,
+.cbl-link-ancora[data-novidade]::after,
+.nov-entrada[data-novidade] .nov-hora::before {
+  content: "";
+  inline-size: 6px;
+  block-size: 6px;
+  border-radius: 50%;
+  background: var(--acento);
+  flex-shrink: 0;
+}
+
+/* Barra lateral: na ponta direita do item, como a contagem das barras do
+   macOS. No grupo, só enquanto ele está fechado; aberto, quem mostra o
+   ponto são os itens. */
+aside a[data-novidade]:not(.sidebar-novidades)::after {
+  margin-inline-start: auto;
+}
+
+aside details.grupo[data-novidade]:not([open]) > summary::after {
+  margin-inline: auto 2px;
+}
+
+/* Topo: no respiro à direita do rótulo, sem empurrar os vizinhos. */
+body > header nav a[data-novidade] {
+  position: relative;
+}
+
+body > header nav a[data-novidade]::after {
+  position: absolute;
+  inset-inline-end: 4px;
+  inset-block-start: calc(50% - 3px);
+}
+
+/* Âncora de seção: depois do rótulo, no fluxo do inline-flex. */
+.cbl-link-ancora[data-novidade]::after {
+  display: inline-block;
+}
+
+/* Barra lateral: item Novidades ------------------------------------------- */
+
+aside .sidebar-novidades {
+  margin-block-end: 6px;
+}
+
+aside .sidebar-novidades svg {
+  inline-size: 14px;
+  block-size: 14px;
+  flex-shrink: 0;
+}
+
+/* Contagem de páginas com novidade não lida. Número puro, sem cápsula. */
+.nov-contagem {
+  margin-inline-start: auto;
+  color: var(--acento);
+  font-family: var(--sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+:is(.nov-resumo, .nov-para-voce, .nov-contagem, #nov-antes)[hidden] {
+  display: none !important;
+}
+
+/* Página Novidades ----------------------------------------------------------- */
+
+/* Canvas aberto: a coluna de 840px do documento, sem cartões. A hierarquia
+   vem do tamanho e do respiro; a única régua é a que abre cada dia. As três
+   vozes: chrome em sans, o assunto do commit como narrativa, hora, hash e
+   identificador de tarefa em mono. */
+
+/* Sem colofão nem âncoras, o respiro do lead somado ao do masthead deixava
+   um vão de 60px antes da régua. */
+.pagina-novidades .cbl-masthead-lead {
+  margin-block-end: 0;
+}
+
+.pagina-novidades .nov-secao-titulo {
+  margin: 0 0 4px;
+  padding: 0;
+  border: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.35;
+  color: var(--texto);
+  text-wrap: balance;
+}
+
+:root main p.nov-secao-lead {
+  margin: 0 0 18px;
+  max-width: 66ch;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--textoSutil);
+  text-wrap: pretty;
+}
+
+/* "Para você" */
+.nov-para-voce {
+  margin-block-end: 48px;
+}
+
+/* Listas desta página são de chrome: sem o recuo nem o ponto de lista do
+   site. O multipagina.css pinta `main ul > li` com (0,2,3); estas regras e
+   as de tamanho abaixo levam `:root` à frente para vencer sem !important.
+   A cor fica nos filhos (selo, link, título), nunca no <li>. */
+:root .pagina-novidades :is(.nov-paginas, .nov-transicoes) > li {
+  padding-inline-start: 0;
+}
+
+:root .pagina-novidades :is(.nov-paginas, .nov-transicoes) > li::before {
+  content: none;
+}
+
+.pagina-novidades .nov-paginas,
+.pagina-novidades .nov-transicoes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nov-para-voce .nov-paginas {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Item em fluxo de texto, com o ponto pendurado na primeira linha: um
+   título longo quebra como frase e o grupo vem logo depois dele, em vez de
+   ficar preso numa coluna à direita. */
+:root .pagina-novidades .nov-paginas > li.nov-pagina {
+  position: relative;
+  padding-inline-start: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.nov-pagina .nov-ponto {
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-start: calc(0.75em - 3px);
+}
+
+.nov-pagina a {
+  font-weight: 500;
+}
+
+.nov-pagina-grupo {
+  margin-inline-start: 8px;
+  color: var(--textoSutil);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Linha do tempo */
+.nov-dia {
+  margin-block-start: 32px;
+}
+
+.nov-dia-cabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+  padding-block-end: 10px;
+  margin-block-end: 20px;
+  border-bottom: 1px solid var(--divisor);
+}
+
+.pagina-novidades .nov-dia-titulo {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+  color: var(--texto);
+}
+
+/* Sem rótulo relativo, a data é o título do dia. Quando o cliente escreve
+   "Hoje" ou "Ontem", a data passa a apoio ao lado. */
+.nov-dia-relativo {
+  margin-inline-end: 4px;
+}
+
+.nov-dia-relativo:not([hidden]) + .nov-dia-data {
+  font-weight: 400;
+  color: var(--textoSutil);
+}
+
+/* Link de chrome, igual nos dois temas. Sem o `:root` à frente, o
+   `:root[data-theme="light"] a` do multipagina.css pintava de azul só no
+   claro. */
+:root .pagina-novidades .nov-dia-diario {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--textoSutil);
+  white-space: nowrap;
+}
+
+.nov-dia-diario svg {
+  inline-size: 12px;
+  block-size: 12px;
+  transition: transform 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :root .pagina-novidades .nov-dia-diario:hover {
+    color: var(--texto);
+  }
+
+  .nov-dia-diario:hover svg {
+    transform: translateX(2px);
+  }
+}
+
+.pagina-novidades .nov-entradas {
+  display: grid;
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Hora numa coluna fixa, alinhada pela linha de base do assunto. O ponto de
+   não lido mora no respiro à esquerda da hora e não desloca nada. */
+.pagina-novidades .nov-entrada {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  column-gap: 12px;
+  align-items: baseline;
+  padding: 0;
+}
+
+.nov-hora {
+  position: relative;
+  padding-inline-start: 14px;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--textoSutil);
+  white-space: nowrap;
+}
+
+.nov-entrada[data-novidade] .nov-hora::before {
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-start: calc(50% - 3px);
+}
+
+.nov-entrada-corpo {
+  min-width: 0;
+}
+
+:root main p.nov-assunto {
+  margin: 0;
+  max-width: 66ch;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--texto);
+  text-wrap: pretty;
+  overflow-wrap: break-word;
+}
+
+/* Tipo e escopo do Conventional Commits: identificador, então mono. */
+.nov-assunto-tipo {
+  margin-inline-end: 6px;
+  font-size: 11.5px;
+  color: var(--textoSutil);
+}
+
+.nov-entrada-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-block-start: 4px;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--textoSutil);
+}
+
+.nov-autor {
+  font-weight: 500;
+}
+
+.nov-sha,
+.nov-transicao-id {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--textoSutil);
+  letter-spacing: 0.02em;
+}
+
+.nov-fusao {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Páginas que o commit tocou, uma por linha: o selo diz o que houve, o link
+   leva lá. O selo se alinha à primeira linha de um título que quebre. */
+.pagina-novidades .nov-entrada .nov-paginas {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin-block-start: 10px;
+}
+
+:root .pagina-novidades .nov-entrada .nov-paginas > li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.nov-pagina-titulo {
+  color: var(--textoSutil);
+}
+
+/* Selo do tipo de mudança da página. Nova e removida usam o próprio
+   preenchimento do marca-texto (verde e vermelho, mesma tinta); alterada é
+   o caso comum e fica neutra, para a cor continuar sendo exceção. */
+.nov-tipo {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: var(--sans);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.nov-tipo--nova {
+  background: var(--mudanca-acrescimo);
+  color: var(--mudanca-tinta);
+}
+
+.nov-tipo--removida {
+  background: var(--mudanca-remocao);
+  color: var(--mudanca-tinta);
+}
+
+.nov-tipo--alterada {
+  background: transparent;
+  color: var(--textoSutil);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--texto) 16%, transparent);
+}
+
+/* Transição de status de tarefa: T-0011 [Em andamento] → [Revisão]. */
+.nov-transicoes {
+  display: grid;
+  gap: 6px;
+  margin-block-start: 10px;
+}
+
+:root .pagina-novidades .nov-transicoes > li.nov-transicao {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.nov-transicao-rotulo {
+  color: var(--textoSutil);
+}
+
+.nov-transicao-seta {
+  inline-size: 12px;
+  block-size: 12px;
+  color: var(--textoSutil);
+  flex-shrink: 0;
+}
+
+/* As pílulas .status-* do multipagina.css guardam o hex do escuro também no
+   claro (verde a 1,8:1 no papel). Nesta página, no claro, elas voltam aos
+   tokens de status. Com o véu médio atrás, o texto de 11px caía para 4,0 a
+   4,2:1; com o véu sutil e o texto um passo mais perto do --texto, passa
+   no AA com folga. O escuro fica como o resto do site. */
+:root[data-theme="light"] .nov-transicao .etiqueta {
+  color: color-mix(in srgb, var(--nov-status) 85%, var(--texto));
+  background: color-mix(in srgb, var(--nov-status) calc(var(--veu-sutil) * 100%), transparent);
+  border-color: color-mix(in srgb, var(--nov-status) 30%, transparent);
+}
+
+.nov-transicao .etiqueta .status-ponto {
+  background: currentColor;
+}
+
+.nov-transicao .status-a-fazer { --nov-status: var(--status-a-fazer); }
+.nov-transicao .status-em-andamento { --nov-status: var(--status-em-andamento); }
+.nov-transicao .status-revisao { --nov-status: var(--status-revisao); }
+.nov-transicao .status-concluida { --nov-status: var(--status-concluida); }
+.nov-transicao .etiqueta:not([class*="status-a-fazer"], [class*="status-em-andamento"], [class*="status-revisao"], [class*="status-concluida"]) {
+  --nov-status: var(--textoSutil);
+}
+
+/* Vazio e indisponível */
+.nov-vazio {
+  margin-block: 8px 0;
+}
+
+.pagina-novidades .nov-vazio-titulo {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--texto);
+}
+
+:root main p.nov-vazio-texto {
+  margin: 0;
+  max-width: 66ch;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--textoSutil);
+  text-wrap: pretty;
+}
+
+@media (max-width: 520px) {
+  .pagina-novidades .nov-entrada {
+    grid-template-columns: 50px minmax(0, 1fr);
+    column-gap: 10px;
+  }
+}
+
+/* Alto contraste do sistema (forced-colors) ---------------------------------- */
+
+/* O sistema troca todo fundo pelo Canvas. A marca passa às cores de marca-
+   texto do próprio sistema; tracejado e tachado continuam separando as
+   categorias. O ponto vira a cor do texto. */
+@media (forced-colors: active) {
+  mark.nov,
+  del.nov {
+    forced-color-adjust: none;
+    background-color: Mark;
+    color: MarkText;
+  }
+
+  mark.nov.nov--lida,
+  del.nov.nov--lida {
+    background-color: transparent;
+    color: CanvasText;
+  }
+
+  .nov-ponto,
+  .nov-amostra,
+  aside a[data-novidade]::after,
+  aside details.grupo[data-novidade]:not([open]) > summary::after,
+  body > header nav a[data-novidade]::after,
+  .cbl-link-ancora[data-novidade]::after,
+  .nov-entrada[data-novidade] .nov-hora::before {
+    forced-color-adjust: none;
+    background: CanvasText;
+  }
+
+  :is(details.nov-removido.nov--lida, .nov-removido.nov--lida details.nov-removido) .nov-amostra {
+    outline-color: CanvasText;
+  }
+}
+
+/* Impressão -------------------------------------------------------------------- */
+
+/* No papel sai o documento de hoje: marca vira texto comum e o que foi
+   removido não é impresso. */
+@media print {
+  mark.nov {
+    background: none !important;
+    color: inherit !important;
+    padding: 0 !important;
+    text-decoration: none !important;
+  }
+
+  del.nov,
+  details.nov-removido,
+  tr.nov-removido,
+  li.nov-removido,
+  #nov-antes,
+  .nov-resumo,
+  .nov-para-voce,
+  .nov-ponto {
+    display: none !important;
+  }
+
+  .nov-entrada[data-novidade] .nov-hora::before {
+    content: none !important;
+  }
+}

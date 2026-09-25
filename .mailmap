@@ -1,0 +1,12 @@
+# Um nome por pessoa da equipe (AGENTS.md §1), qualquer que seja a máquina ou
+# a conta de onde o commit saiu. O git aplica este arquivo em `%aN`, no
+# `git shortlog` e no `git log --use-mailmap`; a linha do tempo da página
+# Novidades lê os autores por `%aN`.
+#
+# Formato: Nome Canônico <email canônico> [<email do commit>]
+Cauê Carneiro <cauecarneiroc@gmail.com>
+Fabrício Tosta <fbtostadev@gmail.com>
+João Paulo <joaopauloalbuquerque606@gmail.com>
+João Paulo <joaopauloalbuquerque606@gmail.com> <jotape@Jotas-MacBook-Pro.local>
+Júlia Clovandi <juhclovandi14@gmail.com>
+Matheus Silva <124085006+silvaaszx@users.noreply.github.com>

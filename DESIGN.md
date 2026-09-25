@@ -75,6 +75,7 @@ O sistema cromático nasce em `Bancada/tokens.json` e divide-se estritamente em 
 1. **Um único acento**: O azul (`--acento`) é estritamente reservado a ações primárias, estados ativos, links e foco. Nunca é utilizado como preenchimento de grandes superfícies.
 2. **Sem arco-íris**: Cores semânticas adicionais (verde, âmbar, vermelho, violeta) são restritas à tipologia de dado (status de tarefa, categoria de fato, severidade), nunca à decoração estética.
 3. **Equilíbrio ótico no escuro**: Textos primários utilizam `#f4f5f7`, evitando `#ffffff` puro sobre preto absoluto para prevenir fadiga visual (halos óticos).
+4. **Escala de mudança (`mudanca`)**: As cores do marca-texto de novidades são uma categoria de dado, como `statusTarefa` e `tipoFato`: verde é acréscimo, âmbar é correção e vermelho é remoção. `tinta` é o texto sobre as três. A escala vive em `tokens.json` → `mudanca`, só com referências a primitivo (`marca.verde`, `verde.luz`, `neutro.13`), e chega ao CSS como `--mudanca-acrescimo`, `--mudanca-correcao`, `--mudanca-remocao` e `--mudanca-tinta`. Fica fora de `papel` de propósito: é do site e não tem espelho em `Tokens.swift`. Nunca vira decoração nem estado de interface; um verde de acréscimo num botão diria "isto é novo" onde nada mudou. Anatomia, contraste e a exceção sancionada do tema claro estão em §5.10.
 
 ---
 
@@ -427,6 +428,56 @@ Substituem rótulos genéricos por marcadores semânticos de rigor investigativo
 
 ---
 
+### 5.10. Marca-texto de novidades
+O site mostra a cada leitor o texto que mudou desde a última visita dele; quem nunca visitou vê os últimos 7 dias. A mudança aparece como marca-texto chapado: preenchimento sólido e opaco, tinta escura, sem borda nem sombra, repetido em cada linha quebrada. Depois de lida, a marca esmaece e não volta na visita seguinte. O CSS vive em `estilo/novidades.css`; o cliente (`novidades/cliente.js`) só põe as classes.
+
+```html
+<p>O profissional recebe o valor integral do turno<del class="nov nov--remocao nov--inicio nov--fim" tabindex="-1"><span class="nov-sr">Removido: </span>, descontada a comissão da plataforma</del>, e a avaliação pergunta <mark class="nov nov--correcao nov--inicio nov--fim" tabindex="-1"><span class="nov-sr">Corrigido: </span>"Chamaria de novo?"<span class="nov-sr"> (antes: "Você recomendaria este profissional?")</span></mark>.</p>
+```
+
+**Anatomia**:
+- **Três categorias, duas tags**: `mark.nov.nov--acrescimo` e `mark.nov.nov--correcao` para o texto que está na página; `del.nov.nov--remocao` para o texto que saiu e volta tachado. Cada uma pinta com a sua `--mudanca-*` e a tinta `--mudanca-tinta`.
+- **Peças**: um trecho que atravessa elementos (texto, depois `<strong>`, um link, um travessão) vira várias peças. Só a primeira (`.nov--inicio`) e a última (`.nov--fim`) levam respiro de `0.14em` e canto de 2px nas pontas; as do meio encostam e o preenchimento corre sem emenda. Uma peça única leva as duas classes. Com `box-decoration-break: clone` (e o prefixo `-webkit-`), cada linha quebrada repete preenchimento, respiro e canto.
+- **Dentro de link**: a tinta cobre a cor do link, então a peça ganha sublinhado de 1px como pista de que ali se clica.
+- **Correção**: só o texto novo é marcado, com sublinhado tracejado de 1,5px na tinta. O texto de antes aparece no balão compartilhado `#nov-antes` ("Antes: …"), aberto por ponteiro, toque ou foco e fechado com Esc. O balão usa as cores invertidas do tema (`--texto` de fundo, `--fundo` de texto), raio de 6px e nenhuma sombra.
+- **Remoção curta**: volta inline, tachada, com `user-select: none`; copiar o parágrafo não leva junto o que já não está no documento.
+- **Remoção longa** (25 palavras ou mais, ou um trecho que atravessa blocos): vira `details.nov-removido`, um bloco fechado da família da síntese (§5.5), com raio de 12px, véu de 2,5% e fio de 7% sobre `--texto`. O resumo diz "Trecho removido" e a contagem de palavras, com a amostra vermelha à frente e um chevron geométrico na ponta. Na tabela, o bloco ocupa uma `<tr>` inteira sem caixa própria; na lista, entra num `<li>` que não ganha o ponto de lista nem conta na numeração de uma `<ol>`.
+- **Texto para leitor de tela** (`.nov-sr`): "Novo:", "Corrigido: … (antes: …)" e "Removido:". Vai dentro da marca: o rótulo abre a primeira peça e, na correção, o "(antes: …)" fecha a última. Fica fora da tela e fora da seleção.
+- **Linha de resumo** (`.nov-resumo`), logo abaixo do título: "Desde sua visita de 22 set:" seguido de um chip por categoria (`.nov-chip`, um botão com fundo de 5% e raio de 6px), com a amostra quadrada de 10px (`.nov-amostra`) e a contagem, e por fim "Marcar como lidas". As variantes são "Nos últimos 7 dias:", "Página nova", "Tudo lido nesta página", o aviso de página reescrita e o de página muito alterada (em Estados, abaixo). Um chip cuja categoria já foi toda lida fica apagado (`disabled`), para a linha não pular.
+
+**Cores e contraste** (tinta `neutro.13`, `#0C0D0F`, nos dois temas; fundos medidos são os que o `multipagina.css` desenha, `#F8F9FA` no claro e `#000000` no escuro):
+
+| Categoria | Claro (pastel) | Escuro (`luz`) | Tinta sobre a marca | Marca contra o fundo | Pista além da cor |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Acréscimo | `marca.verde` `#B6F2CB` | `verde.luz` `#4FC98A` | 15,32:1 / 9,31:1 | 1,20:1 / 10,05:1 | contagem no resumo e texto oculto |
+| Correção | `marca.ambar` `#FFE08A` | `ambar.luz` `#D9A84E` | 15,07:1 / 8,94:1 | 1,22:1 / 9,66:1 | sublinhado tracejado |
+| Remoção | `marca.vermelho` `#FFC2BC` | `vermelho.luz` `#F0837A` | 12,68:1 / 7,62:1 | 1,45:1 / 8,23:1 | tachado |
+
+**O pastel e a exceção ao WCAG 1.4.11**: No tema claro o preenchimento é pastel por decisão do usuário, em 2026-09-24, depois de ver lado a lado os tons médios (`#3E9E6C`, `#B3851B`, `#D9645B`), que passam nos 3:1 contra o papel mas pesam mais e não parecem marca-texto. Contra o papel, o pastel fica entre 1,2 e 1,5:1, abaixo dos 3:1 que o critério 1.4.11 (contraste não textual) pede ao preenchimento como indicador. É uma exceção consciente, e ela se apoia em compensações que não dependem de enxergar o fundo:
+1. **Texto para leitor de tela**: cada marca anuncia a categoria e, na correção, o texto de antes.
+2. **Resumo com contagem**: a linha sob o título diz quantas mudanças há e de que tipo antes de o leitor procurar por elas.
+3. **Navegação pelos chips**: cada chip leva o foco à próxima marca não lida da categoria, com o anel de foco padrão (2px de acento), e volta ao começo no fim; Esc devolve o foco ao chip.
+4. **Tracejado e tachado**: as duas categorias que mudam o sentido do texto (correção e remoção) têm uma pista de forma, e não só de cor.
+5. **Tinta sempre legível**: sobre qualquer marca, nos dois temas, o texto fica acima de 7,6:1. O que perde contraste é a borda da marca, nunca o que está escrito nela.
+
+No modo de alto contraste do sistema (`forced-colors`), as marcas passam às cores de marca-texto do próprio sistema (`Mark` e `MarkText`), e o tracejado e o tachado continuam separando as categorias. No escuro nenhuma exceção é necessária: os tons `luz` passam de 7:1 contra o fundo. `scripts/testes/tokens.test.js` cobra a tinta em 4,5:1 nos dois temas e os 3:1 no escuro; no claro, mostra a medida e aponta para esta seção. Se algum leitor relatar que não enxerga as marcas no claro, os tons médios acima são o caminho de volta.
+
+**Estados**:
+- **Não lida**: preenchimento chapado, como descrito acima.
+- **Lida** (`.nov--lida`): o cliente considera lida a marca que ficou 2 s na tela, com metade dela à vista (ou metade da tela, se for alta) e a aba ativa. O fundo esmaece e sobra um traço fino, de 1,5px, na cor da categoria até o fim da visita: sublinhado no acréscimo, tracejado na correção, tachado na remoção. No claro o traço é o pastel misturado a 55% com a tinta (entre 4,1 e 4,7:1 contra o papel); no escuro, o tom `luz` puro. A remoção lida passa o texto para `--textoSutil`. O bloco de remoção longa lido segue o mesmo esmaecer: perde o véu, rótulo e texto vão para o `--textoSutil`, a amostra fica vazada no traço da categoria e o texto antigo sai tachado nesse traço. Na visita seguinte a marca nem é desenhada.
+- **Página muito alterada**: com mais de 150 trechos não lidos (`LIMITE_TRECHOS` em `cliente.js`), a página abre sem marcas. A linha de resumo diz "esta página mudou muito (624 trechos)" e oferece "Mostrar as marcas", que desenha tudo só naquela visita, e "Marcar como lida", que aceita a página inteira. Enquanto as marcas estão escondidas, nada conta como lido, e os pontos da barra e das âncoras continuam. Num documento revisado de ponta a ponta, como o Documento de Requisitos na passagem da v1.1 para a v2.0, centenas de marcas viram ruído, e quem decide se quer o detalhe é o leitor.
+- **Foco**: o anel padrão de `:focus-visible`, com o canto da marca (2px) em vez dos 4px gerais.
+- **Impressão**: a marca vira texto comum; remoções, resumo e balão não saem no papel, que mostra o documento de hoje.
+
+**Movimento**:
+- **Leitura**: o fundo e o traço mudam em `movimento.leitura` (0,6 s, `ease`), a única transição do sistema que o leitor não pediu, e por isso lenta. A cor do texto não cruza com o fundo: troca de uma vez na metade do tempo. No escuro, tinta e texto claro cruzados sobre um verde médio chegariam perto de 1:1 no meio do caminho; com a troca na metade, o pior momento fica perto de 3:1.
+- **Balão**: entra em 140 ms, com opacidade e 3px de deslocamento, e sai sem animação.
+- **`prefers-reduced-motion`**: sem transição nenhuma. A regra global de `base.css` zera a dos elementos; o chevron do bloco de remoção longa, que é pseudo-elemento e escapa do `*`, tem regra própria.
+
+**Página Novidades** (`novidades.html`, corpo em `novidades/pagina.js`): canvas aberto na coluna de 840px, sem cartões. No topo fica "Para você", a lista que o cliente monta com as páginas que este leitor ainda não leu. Abaixo vem a linha do tempo, dia a dia, com uma régua de 1px abrindo cada dia. As três vozes seguem §1.2: o assunto do commit é narrativa; hora, hash, prefixo do Conventional Commits e identificador de tarefa são fato, em mono; o resto é chrome. O selo de página nova ou removida usa o próprio preenchimento do marca-texto; "alterada", o caso comum, fica neutra, para a cor continuar sendo exceção. Transições de tarefa usam as pílulas `.status-*`, que no tema claro voltam aos tokens de status.
+
+---
+
 ## 6. Navegação, Header e Modo Zen (Distraction-Free)
 
 ### 6.1. Header / HUD Superior Minimalista
@@ -442,6 +493,14 @@ Substituem rótulos genéricos por marcadores semânticos de rigor investigativo
 - **Itens de Navegação**: Raio de 5px, padding vertical compacto (5px 8px), estado ativo com destaque translúcido sem borda saturada.
 - **Escopo da Barra**: Lista apenas **Produto** e **Arquitetura** (seções com `naBarra` em `SECOES`, no `gerar-site.js`). Planejamento, Diário, Design e as notas de `foraDaBarra` (Leia Primeiro e README do Produto) continuam publicados e acessíveis pelo endereço, mas sem entrada na barra.
 - **Estado Inicial dos Grupos**: Todo grupo nasce fechado; só o grupo que contém a página atual chega aberto, com o link ativo marcado por `aria-current="page"`. O estado é resolvido no build, sem persistência por grupo: abrir ou fechar um grupo vale só para aquela página. Só o recolhimento da barra inteira (⌘B) fica guardado entre páginas.
+- **Item Novidades**: Primeiro item da barra, acima dos grupos, com o mesmo desenho dos itens e o link para `novidades.html` (`a.sidebar-novidades`). Na ponta direita fica a contagem (`.nov-contagem`): o número de páginas com novidade que este leitor ainda não leu, em número puro, sem cápsula, no acento, com algarismos tabulares. Sem novidade, a contagem some.
+- **Ponto de não lido**: Um círculo geométrico de 6px em `var(--acento)`, o "não lido" da Apple, nunca um glifo (o `•` muda de altura de uma fonte para outra). O cliente só liga o atributo `data-novidade`, e o desenho é do CSS. O ponto aparece em quatro lugares:
+  - na ponta direita do item da barra, alinhado com a contagem;
+  - no grupo, só enquanto ele está fechado (aberto, quem mostra o ponto são os itens);
+  - nas âncoras de seção (`.cbl-link-ancora`), depois do rótulo, quando a seção tem marcas não lidas;
+  - no "Desafio" do topo, dentro do respiro à direita do rótulo, sem empurrar os vizinhos.
+
+  O ponto some quando as marcas daquela página ou seção são lidas.
 
 ### 6.3. Modo Zen Automático (Scroll HUD)
 - **Comportamento de Rolagem**: Ao rolar a página para baixo após o masthead inicial (>140px com delta descendente > 8px), o Header translada suavemente para cima (`transform: translateY(-100%); opacity: 0;`), maximizando o campo visual e reduzindo distrações para imersão total na leitura. Qualquer rolagem ascendente (delta < -6px) ou retorno ao topo (< 80px) traz o HUD de volta instantaneamente.

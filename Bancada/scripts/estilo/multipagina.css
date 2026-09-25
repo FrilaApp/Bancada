@@ -1447,9 +1447,13 @@ body > footer {
   display: flex;
   align-items: center;
   gap: 12px;
+  /* Com `left: 50%`, a largura automática para em metade da tela e o texto
+     quebrava em duas linhas no celular. */
+  inline-size: max-content;
+  max-inline-size: calc(100vw - 32px);
   padding: 6px 6px 6px 16px;
-  background: #0c0e12;
-  color: #f0f0f0;
+  background: var(--superficie);
+  color: var(--texto);
   border: 1px solid var(--borda);
   border-radius: 9999px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.06);
@@ -1462,6 +1466,9 @@ body > footer {
   display: none;
 }
 
+/* O rótulo do botão usa a cor do canvas: #000 sobre #3b9eff dá 7,5:1 no
+   escuro e #f8f9fa sobre #2563eb dá 4,9:1 no claro. O branco fixo de antes
+   ficava em 2,8:1 no escuro. */
 #atualizacao button {
   font: inherit;
   font-size: 12px;
@@ -1471,13 +1478,27 @@ body > footer {
   border-radius: 9999px;
   border: 1px solid var(--acento);
   background: var(--acento);
-  color: #ffffff;
-  transition: opacity 150ms ease, transform 150ms ease;
+  color: var(--fundo);
+  transition: background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
 }
 
-#atualizacao button:hover {
-  opacity: 0.9;
-  transform: scale(0.98);
+/* No hover o fundo anda em direção à cor do texto: clareia no escuro e
+   escurece no claro, e o contraste com o rótulo só aumenta. */
+@media (hover: hover) and (pointer: fine) {
+  #atualizacao button:hover {
+    background: color-mix(in srgb, var(--acento) 86%, var(--texto));
+    border-color: color-mix(in srgb, var(--acento) 86%, var(--texto));
+  }
+}
+
+#atualizacao button:active {
+  transform: scale(0.97);
+}
+
+/* Tema claro: pílula branca sobre o papel, com sombra leve no lugar do
+   halo escuro, que no claro virava mancha. */
+:root[data-theme="light"] #atualizacao {
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--texto) 12%, transparent), 0 1px 2px color-mix(in srgb, var(--texto) 8%, transparent);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -3532,21 +3553,6 @@ body > footer {
 .cbl-espaco-sm { height: 12px; }
 .cbl-espaco-md { height: 24px; }
 .cbl-espaco-lg { height: 36px; }
-
-/* Marcadores Semânticos para What Is New / Diffs */
-.cbl-marcador-novo {
-  background: rgba(16, 185, 129, 0.16);
-  color: inherit;
-  padding: 2px 4px;
-  border-radius: 3px;
-}
-
-.cbl-marcador-alterado {
-  background: rgba(245, 158, 11, 0.16);
-  color: inherit;
-  padding: 2px 4px;
-  border-radius: 3px;
-}
 
 /* Impressão */
 @media print {

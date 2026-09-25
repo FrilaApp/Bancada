@@ -139,7 +139,10 @@ test('toda página lista só Produto e Arquitetura na barra, com 10 e 5 itens', 
     const gs = grupos(html);
     assert.deepStrictEqual(gs.map((g) => g.secao), ['produto', 'arquitetura'], pagina);
     assert.deepStrictEqual(gs.map((g) => g.links.length), [10, 5], pagina);
-    assert.strictEqual((barra(html).match(/<a /g) || []).length, 15, pagina);
+    // As 15 páginas, mais o item Novidades que abre a barra.
+    const novidades = barra(html).match(/<a [^>]*class="sidebar-novidades/g) || [];
+    assert.strictEqual(novidades.length, 1, pagina);
+    assert.strictEqual((barra(html).match(/<a /g) || []).length - novidades.length, 15, pagina);
   }
 });
 
@@ -217,7 +220,7 @@ test('"Desafio" acende só na capa e nas duas páginas do documento CBL, com ari
     .sort();
   assert.deepStrictEqual(acesas, ['index.html', ...CBL.map(arquivo)].sort());
   for (const pagina of acesas) {
-    assert.match(navDoTopo(paginas.get(pagina)), /index\.html" class="ativo" aria-current="page">Desafio</, pagina);
+    assert.match(navDoTopo(paginas.get(pagina)), /index\.html" class="ativo" aria-current="page"[^>]*>Desafio</, pagina);
   }
 
   const apagadas = [AGENDA, `${PRODUTO}/Frila_Documento_de_Visao.md`, `${PRODUTO}/05-ESCOPO-DO-MVP.md`, LEIA_PRIMEIRO];
@@ -226,7 +229,7 @@ test('"Desafio" acende só na capa e nas duas páginas do documento CBL, com ari
   }
 
   // No topo, como na barra: aria-current anda junto com o .ativo, nunca sozinho.
-  assert.match(navDoTopo(paginas.get('tarefas.html')), /href="tarefas\.html" class="ativo" aria-current="page">Tarefas</);
+  assert.match(navDoTopo(paginas.get('tarefas.html')), /href="tarefas\.html" class="ativo" aria-current="page"[^>]*>Tarefas</);
   for (const [pagina, html] of paginas) {
     const links = [...navDoTopo(html).matchAll(/<a href="[^"]+"([^>]*)>([^<]*)<\/a>/g)];
     const comAtivo = links.filter(([, atributos]) => atributos.includes('class="ativo"')).map(([, , rotulo]) => rotulo);

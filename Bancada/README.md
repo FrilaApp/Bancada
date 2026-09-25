@@ -87,7 +87,9 @@ Para gerar local, sem publicar:
 node scripts/gerar-site.js ../doc-harness [destino]
 ```
 
-Sai HTML puro e sem dependência de npm — o colapso dos grupos de registro usa `<details>`. A única peça de JavaScript é o aviso de conteúdo novo, que consulta um `versao.json` de ~50 bytes a cada 30 segundos; sem ele o site continua sendo o HTML estático que sempre foi. Tema claro e escuro acompanham o sistema do leitor.
+Sai HTML puro e sem dependência de npm — o colapso dos grupos de registro usa `<details>`. O JavaScript é pouco e dispensável: o tema, a barra recolhível, o aviso de conteúdo novo (que consulta o `versao.json` a cada 30 segundos) e o "O que há de novo" (`novidades.js`). Sem ele o site continua sendo o HTML estático que sempre foi. Tema claro e escuro acompanham o sistema do leitor.
+
+**O que há de novo.** Cada leitor vê marcado o texto que mudou desde a última visita dele; quem nunca visitou vê os últimos 7 dias. Verde é acréscimo, âmbar é correção e vermelho é remoção, e a marca esmaece depois de lida. A barra lateral ganha o item Novidades, com a contagem de páginas por ler, e um ponto em cada página com novidade. A comparação roda no navegador, contra o que aquele leitor já viu, guardado no `localStorage` dele. O build entrega três coisas: o hash do texto de cada página, a versão de 7 dias atrás dos documentos que mudaram (`novidades/base/`) e a linha do tempo do git, que vira a página Novidades. Nada disso precisa de servidor; sem histórico do git o build segue, só sem a base e sem a linha do tempo. O desenho e as cores estão no `DESIGN.md` (§5.10).
 
 **Ao criar um `tipo` de nota novo no vault**, acrescente-o em `SECOES` no `scripts/gerar-site.js`, senão a nota não chega ao site. O build avisa quando um tipo fica de fora — o aviso existe porque o tipo `agenda` passou um dia inteiro fora do site sem ninguém notar.
 

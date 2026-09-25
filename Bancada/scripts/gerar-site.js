@@ -15,16 +15,36 @@ const path = require('path');
 const crypto = require('crypto');
 const { execFileSync } = require('child_process');
 const { renderizar, escapar } = require('./markdown');
-const { renderizarDocumentoCBL } = require('./cbl-documento');
+const documentoCBL = require('./cbl-documento');
 
 const RAIZ_PROJETO = path.resolve(__dirname, '..');
 
-/// Identidade do conteúdo publicado, para o site saber que mudou.
+/// Onde o "O que há de novo" escreve a linha "Desde sua visita…", logo abaixo
+/// do título. Chega vazio e escondido: quem preenche é o navegador, e só ele
+/// sabe o que este leitor já viu. Fica fora do diff, senão a própria linha
+/// contaria como mudança.
+const ESPACO_DO_RESUMO = '<p class="nov-resumo" data-nov-resumo data-novidades="ignorar" hidden></p>';
+
+/// As duas identidades do que foi publicado, para uma aba aberta saber que
+/// o site mudou.
 ///
-/// `geradoEm` sai do cálculo de propósito: é `.now` no momento do build, então
-/// entraria diferente a cada execução e o aviso de "conteúdo novo" dispararia
-/// sem nada ter mudado. Um aviso que aparece à toa é um aviso que se aprende a
-/// ignorar — e aí não serve mais quando o conteúdo muda de verdade.
+/// `versaoDasPaginas` é um hash sobre o hash do texto de cada documento: diz
+/// se foi esta página que mudou, ou quantas outras. `hashDoIndice` pega o
+/// resto, o que não é texto de documento: um fato novo nos registros, o
+/// quadro de tarefas, a galeria.
+///
+/// `geradoEm` sai das duas de propósito: é `.now` no momento do build, então
+/// entraria diferente a cada execução e o aviso de conteúdo novo dispararia
+/// sem nada ter mudado. Um aviso que aparece à toa é um aviso que se aprende
+/// a ignorar — e aí não serve mais quando o conteúdo muda de verdade.
+function versaoDasPaginas(hashes) {
+  const ordenado = Object.keys(hashes).sort().map((chave) => [chave, hashes[chave]]);
+  return crypto.createHash('sha256')
+    .update(JSON.stringify(ordenado))
+    .digest('hex')
+    .slice(0, 16);
+}
+
 function hashDoIndice(indice) {
   const { geradoEm, ...conteudo } = indice;
   return crypto.createHash('sha256')
@@ -33,13 +53,43 @@ function hashDoIndice(indice) {
     .slice(0, 16);
 }
 
+/// JSON para ir dentro de um `<script>`. Um título com `</script>` fecharia o
+/// bloco no meio. Os sinais de tag saem como escape Unicode de JSON, que o
+/// `JSON.parse` devolve iguais.
+function jsonParaHtml(dados) {
+  return JSON.stringify(dados)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026');
+}
+
+/// Um título para ir como texto puro (manifesto, linha do tempo), sem o ponto
+/// literal (AGENTS.md §2.5). No HTML o ponto de metadado é um span; em texto
+/// puro não há span, e o separador que o rótulo da barra põe entre, por
+/// exemplo, o id e o título de uma tarefa volta a ser o travessão com espaços
+/// finos, o mesmo que o `.cbl-travessao` desenha na prosa.
+const FINO = String.fromCharCode(0x2009);
+function tituloSemPonto(titulo) {
+  return titulo.replace(/\s*·\s*/g, `${FINO}—${FINO}`);
+}
+
+/// Um módulo de `scripts/novidades/`, ou `null` se ele não existe.
+///
+/// O "O que há de novo" é um acréscimo: sem ele o site sai igual ao de antes.
+/// Por isso a falta de um módulo vira aviso no log, não erro no build.
+function carregarNovidades(nome) {
+  const arquivo = path.join(__dirname, 'novidades', `${nome}.js`);
+  return fs.existsSync(arquivo) ? require(arquivo) : null;
+}
+
 function main() {
   const args = process.argv.slice(2);
   const paginaUnica = args.includes('--pagina-unica');
   const posicionais = args.filter((a) => !a.startsWith('--'));
 
   const vault = path.resolve(posicionais[0] || path.join(RAIZ_PROJETO, '..', 'doc-harness'));
-  const indice = lerIndice(vault);
+  const binario = localizarBinario();
+  const indice = lerIndice(vault, binario);
   avisarSobreTiposNaoPublicados(indice);
   const tokens = JSON.parse(fs.readFileSync(path.join(RAIZ_PROJETO, 'tokens.json'), 'utf8'));
 
@@ -59,16 +109,56 @@ function main() {
   fs.rmSync(destino, { recursive: true, force: true });
   fs.mkdirSync(destino, { recursive: true });
 
-  const site = new Site(indice, tokens, vault, destino);
+  // A história do "O que há de novo" sai do git do repositório onde o vault
+  // mora, que não é, necessariamente, este: no Mac, o "Gerar site" aponta
+  // para o vault que a pessoa escolher. A base de 7 dias passa pelo mesmo
+  // binário que leu o vault de agora.
+  const site = new Site(indice, tokens, vault, destino, false, { ...ondeNoGit(vault), binario });
   site.gerar();
 
   console.log(`✓ Site gerado em ${destino}`);
   const plural = (n, um, muitos) => `${n} ${n === 1 ? um : muitos}`;
   console.log(`  ${plural(site.paginasEscritas, 'página', 'páginas')} · ${plural(site.midiasCopiadas, 'arquivo', 'arquivos')} de mídia`);
+  const { base } = site.manifesto;
+  console.log(base
+    ? `  novidades: base de 7 dias em ${base.sha}, ${plural(site.basesEscritas, 'documento mudou', 'documentos mudaram')} desde então`
+    : '  novidades: sem base de 7 dias; o navegador compara só uma visita com a outra');
   console.log(`  abra com: open ${path.join(destino, 'index.html')}`);
 }
 
-function lerIndice(vault) {
+/// O binário da Bancada que lê o vault, ou `null` se não há nenhum.
+///
+/// `BANCADA_BIN` existe por causa do CI: o runner é Linux e compila o
+/// `bancada-indice`, enquanto na máquina de quem desenvolve o binário é o
+/// `./Bancada` do macOS. Os dois emitem o mesmo JSON — é o mesmo `NucleoCLI`.
+/// Fica separado de `lerIndice` porque a base de 7 dias também precisa dele,
+/// mesmo quando o índice de agora vem pronto de `BANCADA_INDICE_JSON`.
+function localizarBinario() {
+  const candidatos = [
+    process.env.BANCADA_BIN ? path.resolve(process.env.BANCADA_BIN) : null,
+    path.join(RAIZ_PROJETO, '.build/release/bancada-indice'),
+    path.join(RAIZ_PROJETO, '..', '.build/release/bancada-indice'),
+    path.join(RAIZ_PROJETO, 'Bancada'),
+  ].filter(Boolean);
+  return candidatos.find((c) => fs.existsSync(c)) || null;
+}
+
+/// Onde o vault mora no git: `{ repoRaiz, vaultNoRepo }`, perguntado ao
+/// próprio git a partir do vault (`novidades/construir.js`). Fora de um
+/// repositório, avisa e devolve `{}`: sem `repoRaiz`, o site sai sem base de 7
+/// dias e sem linha do tempo, e o resto sai igual.
+function ondeNoGit(vault) {
+  const novidades = carregarNovidades('construir');
+  if (!novidades) return {};
+  try {
+    return novidades.localizarVault(vault);
+  } catch (e) {
+    console.warn(`⚠︎  Novidades: ${e.message}. O site sai sem base de 7 dias e sem linha do tempo.`);
+    return {};
+  }
+}
+
+function lerIndice(vault, binario) {
   // Índice já pronto: o caminho do CI quando o build separa produzir de
   // renderizar. Também serve para depurar o gerador contra um índice salvo,
   // sem precisar de um vault por perto.
@@ -81,16 +171,6 @@ function lerIndice(vault) {
     return JSON.parse(fs.readFileSync(arquivo, 'utf8'));
   }
 
-  // `BANCADA_BIN` existe por causa do CI: o runner é Linux e compila o
-  // `bancada-indice`, enquanto na máquina de quem desenvolve o binário é o
-  // `./Bancada` do macOS. Os dois emitem o mesmo JSON — é o mesmo `NucleoCLI`.
-  const candidatos = [
-    process.env.BANCADA_BIN ? path.resolve(process.env.BANCADA_BIN) : null,
-    path.join(RAIZ_PROJETO, '.build/release/bancada-indice'),
-    path.join(RAIZ_PROJETO, '..', '.build/release/bancada-indice'),
-    path.join(RAIZ_PROJETO, 'Bancada'),
-  ].filter(Boolean);
-  const binario = candidatos.find((c) => fs.existsSync(c));
   if (!binario) {
     console.error(process.env.BANCADA_BIN
       ? `✗ BANCADA_BIN aponta para um binário que não existe: ${process.env.BANCADA_BIN}`
@@ -157,14 +237,36 @@ function avisarSobreTiposNaoPublicados(indice) {
 }
 
 class Site {
-  constructor(indice, tokens, vault, destino, paginaUnica = false) {
+  /**
+   * `opcoes`:
+   * - `cbl`: o módulo que renderiza o documento CBL. Vem de fora por causa da
+   *   base de 7 dias: a prosa do CBL mora no código, então comparar com a
+   *   semana passada pede o `cbl-documento.js` daquela semana. `null` diz que
+   *   o módulo ainda não existia: o documento CBL fica fora de
+   *   `paginasDeDocumento()`, e `gerar()` recusa, porque a capa é ele.
+   * - `repoRaiz`, `vaultNoRepo`: onde o vault mora no git, achados pelo
+   *   `main()` a partir do próprio vault. `vaultNoRepo` é o caminho do vault
+   *   no repositório, em POSIX ('' na raiz), e dá as `fontes` das notas; sem
+   *   ele, vale o layout do monorepo, 'doc-harness'. Sem `repoRaiz`, o passo
+   *   da história nem roda.
+   * - `binario`, `agora`: o que o `construirNovidades` precisa para montar a
+   *   base de 7 dias e datar a linha do tempo.
+   * - `construirNovidades`: troca o de `novidades/construir.js` (os testes
+   *   passam um de mentira).
+   * - `avisar`: para onde vão os avisos não fatais. Padrão: `console.warn`.
+   */
+  constructor(indice, tokens, vault, destino, paginaUnica = false, opcoes = {}) {
     this.indice = indice;
     this.tokens = tokens;
     this.vault = vault;
     this.destino = destino;
     this.paginaUnica = paginaUnica;
+    this.opcoes = opcoes;
+    this.cbl = opcoes.cbl === undefined ? documentoCBL : opcoes.cbl;
+    this.vaultNoRepo = opcoes.vaultNoRepo === undefined ? 'doc-harness' : opcoes.vaultNoRepo;
     this.paginasEscritas = 0;
     this.midiasCopiadas = 0;
+    this.basesEscritas = 0;
 
     // Duas exclusões, por motivos diferentes:
     //
@@ -180,42 +282,254 @@ class Site {
         !path.basename(n.caminho).startsWith('Template - ')
     );
     this.porCaminho = new Map(this.notas.map((n) => [n.caminho, n]));
+
+    // O documento CBL aparece em três endereços: a capa e as duas notas que o
+    // mostram inteiro.
+    this.hrefsDoDocumentoCBL = [
+      'index.html',
+      ...this.notas.filter((n) => this.ehDocumentoCBL(n)).map((n) => this.arquivoDaNota(n.caminho)),
+    ];
   }
 
+  /**
+   * A ordem importa por causa do "O que há de novo": toda página leva o
+   * manifesto com o hash de todos os documentos, então todo conteúdo é
+   * renderizado antes de a primeira página ir para o disco.
+   */
   gerar() {
+    if (!this.cbl) {
+      throw new Error('gerar() precisa do módulo do documento CBL: a capa do site é ele. Sem o módulo (`cbl: null`), só paginasDeDocumento() funciona.');
+    }
+    const documentos = this.paginasDeDocumento();
+    const novidades = this.construirNovidades();
+    this.manifesto = this.montarManifesto(documentos, novidades);
+
     this.escrever('estilo.css', this.css());
     this.escrever('index.html', this.paginaCapa());
     this.escrever('registros.html', this.paginaRegistros());
     this.escrever('tarefas.html', this.paginaTarefas());
     this.escrever('galeria.html', this.paginaGaleria());
 
-    const jaEscritas = new Set();
-    for (const secao of SECOES) {
-      for (const nota of this.notasDaSecao(secao)) {
-        this.escrever(this.arquivoDaNota(nota.caminho), this.paginaDeNota(nota, secao));
-        jaEscritas.add(nota.caminho);
-      }
+    const conteudos = new Map(documentos.map((d) => [d.arquivo, d.conteudo]));
+    for (const { nota, secao } of this.notasPublicadas()) {
+      const arquivo = this.arquivoDaNota(nota.caminho);
+      this.escrever(arquivo, this.paginaDeNota(nota, secao, conteudos.get(arquivo)));
     }
 
-    // Gera todas as notas restantes do vault para garantir integridade de wikilinks
-    for (const nota of this.notas) {
-      if (['tarefa', 'registro', 'indice', 'home'].includes(nota.tipo) || jaEscritas.has(nota.caminho)) continue;
-      this.escrever(this.arquivoDaNota(nota.caminho), this.paginaDeNota(nota, { titulo: '' }));
-    }
-
-    for (const nota of this.notasDe('tarefa')) {
-      this.escrever(this.arquivoDaNota(nota.caminho), this.paginaDeNota(nota, { titulo: 'Tarefas' }));
-    }
+    this.escrever('novidades.html', this.paginaNovidades((novidades && novidades.linhaDoTempo) || null));
+    this.escreverBases(novidades && novidades.basesHtml);
+    this.escrever('novidades.js', this.scriptNovidades());
 
     // O arquivo que as abas abertas consultam. Fica separado do índice de
     // propósito: o índice passa de 300 KB, e baixá-lo a cada 30 segundos só
     // para descobrir que nada mudou desperdiçaria a banda de quem está lendo.
+    // O hash de cada página é o que deixa o aviso dizer se foi esta que mudou;
+    // `conteudo` avisa do resto, que não é texto de documento.
     this.escrever('versao.json', JSON.stringify({
-      versao: hashDoIndice(this.indice),
+      versao: this.manifesto.versao,
+      conteudo: this.manifesto.conteudo,
       geradoEm: this.indice.geradoEm,
+      paginas: this.manifesto.hashes,
     }) + '\n');
 
     this.copiarMidia();
+  }
+
+  // MARK: - O que há de novo
+
+  avisar(texto) {
+    if (this.opcoes.avisar) this.opcoes.avisar(texto);
+    else console.warn(`⚠︎  ${texto}`);
+  }
+
+  /**
+   * A história do vault, tirada do git: a base de 7 dias e a linha do tempo
+   * (`novidades/construir.js`). Nunca derruba o build. Sem histórico, sem
+   * binário ou com qualquer erro, o site sai sem essas duas coisas, e o
+   * navegador continua comparando uma visita com a anterior.
+   *
+   * Sem `repoRaiz` não há história para contar e o passo nem roda: é o caso
+   * dos testes e da base de 7 dias, que é um `Site` também.
+   */
+  construirNovidades() {
+    const { repoRaiz, binario, agora = new Date() } = this.opcoes;
+    let construir = this.opcoes.construirNovidades;
+    if (construir === undefined && !repoRaiz) return null;
+
+    try {
+      if (construir === undefined) {
+        construir = (carregarNovidades('construir') || {}).construirNovidades;
+        if (!construir) {
+          this.avisar('Novidades: scripts/novidades/construir.js não existe ou não exporta construirNovidades. O site sai sem base de 7 dias e sem linha do tempo.');
+          return null;
+        }
+      }
+      // `construirNovidades: null` nas opções desliga o passo de propósito.
+      if (!construir) return null;
+
+      const resultado = construir({ site: this, repoRaiz, binario, tokens: this.tokens, agora }) || null;
+      for (const aviso of (resultado && resultado.avisos) || []) this.avisar(`Novidades: ${aviso}`);
+      return resultado;
+    } catch (e) {
+      // Só a primeira linha: o erro de módulo ausente arrasta a pilha inteira.
+      const motivo = String((e && e.message) || e).split('\n')[0];
+      this.avisar(`Novidades: ${motivo}. O site sai sem base de 7 dias e sem linha do tempo.`);
+      return null;
+    }
+  }
+
+  /**
+   * O que o manifesto sabe de cada documento: o hash do texto de agora (`h`)
+   * e o que a história diz dele (`hb`, `temBase`, `nova`, `t`).
+   *
+   * `h` vem do `construirNovidades` quando ele rodou. Sem ele, sai daqui, com
+   * as mesmas funções: `h` não depende de histórico nenhum, e sem ele o
+   * navegador não saberia o que mudou desde a última visita.
+   */
+  montarManifesto(documentos, novidades) {
+    const medidas = (novidades && novidades.paginas) || {};
+    const paginas = new Map();
+    const semHash = [];
+    let medir; // carregado na primeira página que precisar
+    for (const d of documentos) {
+      const m = medidas[d.chave] || {};
+      let h = typeof m.h === 'string' ? m.h : null;
+      if (h === null) {
+        if (medir === undefined) medir = this.medidorDoTexto();
+        try {
+          if (medir) h = medir(d.conteudo);
+        } catch (e) {
+          this.avisar(`Novidades: não deu para medir o texto de ${d.chave} (${e.message}).`);
+        }
+      }
+      if (h === null) semHash.push(d.chave);
+      paginas.set(d.chave, {
+        h,
+        hb: m.hb ?? null,
+        temBase: Boolean(m.temBase),
+        t: m.t ?? null,
+        nova: Boolean(m.nova),
+        conta: d.conta,
+        titulo: d.titulo,
+        href: d.arquivo,
+        grupo: d.grupo,
+      });
+    }
+    if (semHash.length) {
+      this.avisar(`Novidades: ${semHash.length} de ${documentos.length} páginas sem o hash do texto (scripts/novidades/html.js e nucleo.js existem?). Nelas o navegador não tem o que comparar.`);
+    }
+
+    const hashes = {};
+    for (const [chave, p] of paginas) hashes[chave] = p.h;
+    // No mesmo formato do `t` de cada página, que o construir escreve com
+    // `toISOString()`: o navegador compara um com o outro.
+    const gerado = new Date(this.indice.geradoEm);
+    return {
+      versao: versaoDasPaginas(hashes),
+      conteudo: hashDoIndice(this.indice),
+      gerado: Number.isNaN(gerado.getTime()) ? null : gerado.toISOString(),
+      base: (novidades && novidades.base) || null,
+      paginas,
+      hashes,
+    };
+  }
+
+  /**
+   * A função que dá o hash do texto de um documento, como o navegador o
+   * mede: os blocos do `html.js` pelo hash do núcleo, a mesma conta do
+   * `construirNovidades`. `null` quando falta um dos dois módulos.
+   */
+  medidorDoTexto() {
+    const html = carregarNovidades('html');
+    const nucleo = carregarNovidades('nucleo');
+    if (!html || !nucleo) return null;
+    return (conteudo) => nucleo.hashDeBlocos(html.blocosDeHtml(conteudo));
+  }
+
+  /**
+   * O manifesto que vai em cada página: as páginas que contam na barra, mais
+   * a própria. Com todas as ~100, cada página levaria uns 20 KB a mais; o
+   * navegador só precisa do que a barra mostra e do que está na tela.
+   */
+  scriptDoManifesto(ativo) {
+    const atual = this.chaveDoArquivo(ativo);
+    const paginas = {};
+    for (const [chave, p] of this.manifesto.paginas) {
+      if (p.conta || chave === atual) paginas[chave] = p;
+    }
+    const dados = {
+      v: 1,
+      versao: this.manifesto.versao,
+      conteudo: this.manifesto.conteudo,
+      gerado: this.manifesto.gerado,
+      base: this.manifesto.base,
+      atual,
+      paginas,
+    };
+    return `<script type="application/json" id="nov-manifesto">${jsonParaHtml(dados)}</script>`;
+  }
+
+  /**
+   * A página Novidades: a linha do tempo das mudanças, dia a dia, com autor.
+   * O corpo vem de `novidades/pagina.js`. `linhaDoTempo` é `null` quando o
+   * build não teve o histórico do git, e a página diz isso em vez de sumir.
+   */
+  paginaNovidades(linhaDoTempo) {
+    let corpo = null;
+    try {
+      const modulo = carregarNovidades('pagina');
+      if (modulo) corpo = modulo.paginaNovidades(linhaDoTempo);
+      else this.avisar('Novidades: scripts/novidades/pagina.js não existe. A página Novidades sai sem a linha do tempo.');
+    } catch (e) {
+      this.avisar(`Novidades: a página Novidades não montou (${e.message}).`);
+    }
+    return this.pagina({
+      titulo: 'Novidades',
+      corpo: corpo || `<article class="cbl-documento pagina-novidades">
+        <header class="cbl-masthead-doc">
+          <h1 class="cbl-masthead-titulo">Novidades</h1>
+          <p class="cbl-masthead-lead">A linha do tempo das mudanças não entrou nesta versão do site.</p>
+        </header>
+      </article>`,
+      ativo: 'novidades.html',
+      daPasta: '',
+      semConteudoTopo: true,
+    });
+  }
+
+  /**
+   * As versões de 7 dias atrás dos documentos que mudaram, para quem chega
+   * sem ter visitado antes ter com o que comparar. A chave vira caminho
+   * (`notas/…` abre uma pasta), por isso só passa chave com forma de chave.
+   */
+  escreverBases(basesHtml) {
+    for (const [chave, html] of Object.entries(basesHtml || {})) {
+      if (!/^[a-z0-9-]+(?:\/[a-z0-9-]+)*$/.test(chave)) {
+        this.avisar(`Novidades: base com chave inválida ignorada (${chave}).`);
+        continue;
+      }
+      this.escrever(`novidades/base/${chave}.html`, html);
+      this.basesEscritas++;
+    }
+  }
+
+  /**
+   * O `novidades.js` de toda página: o núcleo do diff e o cliente, num
+   * arquivo só. O núcleo é o mesmo código que o build usa para o hash, e é
+   * isso que faz o navegador e o build medirem o texto do mesmo jeito.
+   */
+  scriptNovidades() {
+    const falta = {
+      nucleo: 'o navegador fica sem o diff',
+      cliente: 'as páginas ficam sem marca-texto e sem o aviso de conteúdo novo',
+    };
+    const partes = [];
+    for (const nome of Object.keys(falta)) {
+      const arquivo = path.join(__dirname, 'novidades', `${nome}.js`);
+      if (fs.existsSync(arquivo)) partes.push(fs.readFileSync(arquivo, 'utf8'));
+      else this.avisar(`Novidades: scripts/novidades/${nome}.js não existe. O novidades.js sai sem ele, e ${falta[nome]}.`);
+    }
+    return `/* Gerado por scripts/gerar-site.js a partir de scripts/novidades/ (nucleo.js e cliente.js). Não editar à mão. */\n${partes.join('\n;\n')}\n`;
   }
 
   // MARK: - Utilidades
@@ -224,7 +538,8 @@ class Site {
     const alvo = path.join(this.destino, nome);
     fs.mkdirSync(path.dirname(alvo), { recursive: true });
     fs.writeFileSync(alvo, conteudo, 'utf8');
-    if (nome.endsWith('.html')) this.paginasEscritas++;
+    // As bases de 7 dias são .html, mas ninguém as abre: não contam como página.
+    if (nome.endsWith('.html') && !nome.startsWith('novidades/base/')) this.paginasEscritas++;
   }
 
   notasDe(tipo) {
@@ -300,6 +615,98 @@ class Site {
     return this.notasDaSecao(secao).filter((n) => !fora.has(n.caminho));
   }
 
+  /**
+   * Toda nota que vira página em `notas/`, na ordem em que `gerar()` escreve,
+   * cada uma com a seção que dá o cabeçalho. Escrever as páginas e listar os
+   * documentos saem desta mesma lista: separadas, uma página nova no site
+   * podia ficar fora do "O que há de novo" sem ninguém notar.
+   */
+  notasPublicadas() {
+    const publicadas = [];
+    const vistas = new Set();
+    for (const secao of SECOES) {
+      for (const nota of this.notasDaSecao(secao)) {
+        publicadas.push({ nota, secao });
+        vistas.add(nota.caminho);
+      }
+    }
+
+    // As notas restantes do vault também saem, para nenhum wikilink cair no vazio.
+    for (const nota of this.notas) {
+      if (['tarefa', 'registro', 'indice', 'home'].includes(nota.tipo) || vistas.has(nota.caminho)) continue;
+      publicadas.push({ nota, secao: { titulo: '' } });
+    }
+
+    for (const nota of this.notasDe('tarefa')) {
+      publicadas.push({ nota, secao: { titulo: 'Tarefas' } });
+    }
+    return publicadas;
+  }
+
+  /**
+   * Os documentos do site, um por chave, para o "O que há de novo".
+   *
+   * Pura: renderiza o conteúdo e não escreve nada. É o que deixa o
+   * `construirNovidades` chamar isto também num `Site` montado com o vault de
+   * 7 dias atrás, só para comparar o texto. Guarda o resultado, porque o
+   * `gerar()` e o `construirNovidades` pedem a mesma lista.
+   *
+   * Cada item é `{ chave, hrefs, arquivo, titulo, conta, grupo, fontes, conteudo }`:
+   * - `hrefs`: todo endereço que mostra o documento. `arquivo` é o principal.
+   * - `titulo`: o rótulo que a barra mostra, em texto puro. É ele que aparece
+   *   em "Para você" e na linha do tempo; o h1 da página segue com o
+   *   `limparTitulo()`.
+   * - `conta`: entra na contagem da barra. Só o documento CBL e as páginas da
+   *   barra contam; tarefas e páginas ocultas também mudam, mas não disputam a
+   *   atenção de quem só passa pela barra.
+   * - `grupo`: a seção da barra que lista a página, ou `null` fora dela.
+   * - `fontes`: os arquivos do repositório que produzem a página. É por eles
+   *   que a linha do tempo liga um commit às páginas que ele mudou.
+   * - `conteudo`: o `<article>` que o leitor vê, com a raiz do diff.
+   */
+  paginasDeDocumento() {
+    if (this.documentos) return this.documentos;
+
+    const secaoNaBarra = new Map();
+    for (const secao of SECOES) {
+      for (const nota of this.notasDaBarra(secao)) secaoNaBarra.set(nota.caminho, secao.id);
+    }
+
+    const documentos = [];
+    if (this.cbl) {
+      // A prosa do CBL vem do código e os números, do cbl-dados.json: o
+      // CBL_C18.md do vault não muda uma linha desta página.
+      documentos.push({
+        chave: 'documento-cbl',
+        hrefs: [...this.hrefsDoDocumentoCBL],
+        arquivo: 'index.html',
+        titulo: 'Documento Oficial CBL',
+        conta: true,
+        grupo: null,
+        fontes: ['Bancada/scripts/cbl-dados.json'],
+        conteudo: this.cbl.renderizarDocumentoCBL('').trim(),
+      });
+    }
+
+    for (const { nota, secao } of this.notasPublicadas()) {
+      if (this.ehDocumentoCBL(nota)) continue;
+      const arquivo = this.arquivoDaNota(nota.caminho);
+      documentos.push({
+        chave: this.chaveDoArquivo(arquivo),
+        hrefs: [arquivo],
+        arquivo,
+        titulo: tituloSemPonto(this.rotuloDaNota(nota)),
+        conta: secaoNaBarra.has(nota.caminho),
+        grupo: secaoNaBarra.get(nota.caminho) || null,
+        fontes: [[this.vaultNoRepo, nota.caminho].filter(Boolean).join('/')],
+        conteudo: this.conteudoDaNota(nota, secao),
+      });
+    }
+
+    this.documentos = documentos;
+    return documentos;
+  }
+
   arquivoDaNota(caminho) {
     const slug = caminho
       .replace(/\.md$/, '')
@@ -325,6 +732,16 @@ class Site {
 
   ancora(caminho) {
     return this.arquivoDaNota(caminho).replace(/^notas\//, 'nota-').replace(/\.html$/, '');
+  }
+
+  /**
+   * A chave de uma página no "O que há de novo": o endereço sem `.html`.
+   *
+   * O documento CBL é a exceção. São três endereços para um documento só, e
+   * ler numa das três páginas tem de limpar as outras duas.
+   */
+  chaveDoArquivo(arquivo) {
+    return this.hrefsDoDocumentoCBL.includes(arquivo) ? 'documento-cbl' : arquivo.replace(/\.html$/, '');
   }
 
   md(texto, daPasta) {
@@ -529,10 +946,16 @@ class Site {
       lead = mapaLeads[tituloLimpo] || '';
     }
 
+    // Tirado do corpo, o lead repete um parágrafo que o texto já tem. Fica
+    // fora do diff do "O que há de novo", senão um parágrafo novo apareceria
+    // marcado duas vezes, no lead e no corpo. Do frontmatter ou do mapa acima,
+    // é texto que só existe aqui, e conta.
+    let leadDoCorpo = false;
     if (!lead && corpoMarkdown) {
       const matchParagrafo = corpoMarkdown.match(/(?:^|\n\n)([A-ZÁÀÂÃÉÈÊÍÏÓÔÕÖÚÇ][^\n#|]{40,250}\.)(?:\n|$)/);
       if (matchParagrafo) {
         lead = matchParagrafo[1].replace(/\*\*|\*/g, '').trim();
+        leadDoCorpo = true;
       }
     }
 
@@ -690,24 +1113,28 @@ class Site {
       }).join('<span class="cbl-ancora-sep">/</span>');
 
       navAncorasHtml = `
-        <nav class="cbl-nav-ancoras" aria-label="Navegação rápida pelas seções">
+        <nav class="cbl-nav-ancoras" data-novidades="ignorar" aria-label="Navegação rápida pelas seções">
           <span class="cbl-nav-legenda">Seções</span>
           ${linksAncoras}
         </nav>
       `;
     }
 
+    // Eyebrow, colofão e âncoras ficam fora do diff do "O que há de novo":
+    // são metadados e navegação, não o texto do documento. Uma data de
+    // auditoria que muda a cada conversão não é novidade para quem lê.
     return `
       <header class="cbl-masthead-doc">
-        <div class="cbl-masthead-eyebrow">
+        <div class="cbl-masthead-eyebrow" data-novidades="ignorar">
           <span class="cbl-masthead-rotulo">${eyebrowHtml}</span>
           ${linkOriginalHtml}
         </div>
 
         <h1 class="cbl-masthead-titulo">${escapar(tituloLimpo)}</h1>
-        ${lead ? `<p class="cbl-masthead-lead">${escapar(lead)}</p>` : ''}
+        ${ESPACO_DO_RESUMO}
+        ${lead ? `<p class="cbl-masthead-lead"${leadDoCorpo ? ' data-novidades="ignorar"' : ''}>${escapar(lead)}</p>` : ''}
 
-        <div class="cbl-colofao">
+        <div class="cbl-colofao" data-novidades="ignorar">
           ${itensColofao.join('')}
         </div>
 
@@ -750,7 +1177,7 @@ class Site {
       .map(([href, rotulo]) => {
         const isDesafio = href === 'index.html' && noDocumentoCBL;
         const atual = (ativo === href || isDesafio) ? ' class="ativo" aria-current="page"' : '';
-        return `<a href="${base}${href}"${atual}>${rotulo}</a>`;
+        return `<a href="${base}${href}"${atual} data-chave="${escapar(this.chaveDoArquivo(href))}">${rotulo}</a>`;
       })
       .join('');
 
@@ -763,11 +1190,9 @@ class Site {
       const temAtivo = notas.some((n) => ativo === this.arquivoDaNota(n.caminho));
       const itens = notas
         .map((n) => {
-          const href = base + this.arquivoDaNota(n.caminho);
-          const atual = ativo === this.arquivoDaNota(n.caminho) ? ' class="ativo" aria-current="page"' : '';
-          const rotulo = n.tipo === 'atualizacao-diaria' ? (n.campos.data || n.titulo) : n.titulo;
-          const rotuloLimpo = this.limparRotuloSidebar(rotulo, n.tipo);
-          return `<li><a href="${href}"${atual}><span>${escapar(rotuloLimpo)}</span></a></li>`;
+          const arquivo = this.arquivoDaNota(n.caminho);
+          const atual = ativo === arquivo ? ' class="ativo" aria-current="page"' : '';
+          return `<li><a href="${base}${arquivo}"${atual} data-chave="${escapar(this.chaveDoArquivo(arquivo))}"><span>${escapar(this.rotuloDaNota(n))}</span></a></li>`;
         })
         .join('');
       return `<details class="grupo"${temAtivo ? ' open' : ''} data-secao="${s.id}">
@@ -778,6 +1203,13 @@ class Site {
         <ul>${itens}</ul>
       </details>`;
     }).join('');
+
+    // O item Novidades abre a barra. A contagem chega vazia e escondida: quem
+    // sabe quantas páginas este leitor ainda não viu é o navegador dele.
+    const atualNovidades = ativo === 'novidades.html'
+      ? ' class="sidebar-novidades ativo" aria-current="page"'
+      : ' class="sidebar-novidades"';
+    const itemNovidades = `<a href="${base}novidades.html"${atualNovidades} data-chave="novidades"><span>Novidades</span><span class="nov-contagem" hidden></span></a>`;
 
     const geradoEm = new Date(this.indice.geradoEm).toLocaleString('pt-BR', {
       dateStyle: 'long',
@@ -804,7 +1236,9 @@ class Site {
   document.documentElement.setAttribute('data-theme', tema);
 })();
 </script>
-</head>
+${this.manifesto ? `${this.scriptDoManifesto(ativo)}
+<script defer src="${base}novidades.js"></script>
+` : ''}</head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
 <header>
@@ -833,7 +1267,7 @@ class Site {
 </header>
 <div class="colunas">
   <aside>
-    <div class="sidebar-inner">${secoes}</div>
+    <div class="sidebar-inner">${itemNovidades}${secoes}</div>
   </aside>
   <main id="conteudo" tabindex="-1">
     ${semConteudoTopo ? '' : `
@@ -850,7 +1284,7 @@ class Site {
     <span>A narrativa deste registro é escrita a partir de fatos automáticos.</span>
   </div>
 </footer>
-${this.avisoDeAtualizacao(base)}
+${this.avisoDeAtualizacao()}
 <script>
 (function() {
   // Os grupos da barra já chegam abertos ou fechados do build. Uma versão
@@ -963,57 +1397,26 @@ ${this.avisoDeAtualizacao(base)}
 </html>`;
   }
 
-  /// O aviso de conteúdo novo — a única peça de JavaScript do site multipágina.
+  /// O aviso de conteúdo novo.
   ///
-  /// O vault muda por fora de quem está lendo: os hooks do Git escrevem em
-  /// `05 - Registros/` a cada commit, e o build republica em poucos minutos.
-  /// Sem isso, uma aba aberta mostra um registro velho sem dar nenhum sinal —
-  /// que é exatamente a falha que a Bancada nativa evita com o relógio andando
-  /// no cabeçalho.
+  /// O vault muda por fora de quem está lendo: a equipe faz commits o dia
+  /// inteiro, e o build republica em poucos minutos. Sem isso, uma aba aberta
+  /// mostra um documento velho sem dar nenhum sinal — que é exatamente a falha
+  /// que a Bancada nativa evita com o relógio andando no cabeçalho.
   ///
   /// **Avisa, não recarrega.** Recarregar sozinho jogaria fora a posição de
-  /// quem está no meio de um registro longo. Quem decide é quem lê.
+  /// quem está no meio de um documento longo. Quem decide é quem lê.
   ///
-  /// Degrada em silêncio: sem JS, ou com a rede caindo, o site continua sendo
-  /// o HTML estático que já era. O `<details>` do colapso de registros nunca
-  /// dependeu de script e continua não dependendo.
-  avisoDeAtualizacao(base) {
+  /// Aqui fica só a marcação. Quem consulta o `versao.json` é o
+  /// `novidades.js`: com o hash de cada página, ele diz se foi esta página que
+  /// mudou ou quantas outras mudaram. Sem JS, ou com a rede caindo, o site
+  /// continua sendo o HTML estático que já era.
+  avisoDeAtualizacao() {
     if (this.paginaUnica) return '';
-    const versao = hashDoIndice(this.indice);
     return `<div id="atualizacao" hidden role="status" aria-live="polite">
   <span>Há conteúdo novo no vault.</span>
   <button type="button" onclick="location.reload()">Atualizar</button>
-</div>
-<script>
-(function () {
-  var atual = ${JSON.stringify(versao)};
-  var painel = document.getElementById('atualizacao');
-  var alvo = ${JSON.stringify(base + 'versao.json')};
-
-  function checar() {
-    // 'no-store' porque o que se quer saber é o estado do servidor. Um 304 do
-    // cache responderia "igual ao que você já tem", que é sempre verdade e
-    // nunca útil.
-    fetch(alvo, { cache: 'no-store' })
-      .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (dados) {
-        if (dados && dados.versao && dados.versao !== atual) {
-          painel.hidden = false;
-          clearInterval(timer);
-        }
-      })
-      .catch(function () { /* rede caiu; a próxima passada tenta de novo */ });
-  }
-
-  var timer = setInterval(checar, 30000);
-
-  // Voltar para a aba é quando a chance de ter perdido algo é maior, e é o
-  // momento em que esperar mais 30s pareceria o site estar quebrado.
-  document.addEventListener('visibilitychange', function () {
-    if (!document.hidden) checar();
-  });
-})();
-</script>`;
+</div>`;
   }
 
   // MARK: - Páginas
@@ -1032,7 +1435,7 @@ ${this.avisoDeAtualizacao(base)}
       })
       .join('');
 
-    let corpo = renderizarDocumentoCBL('');
+    let corpo = this.cbl.renderizarDocumentoCBL('');
 
     corpo += `<div class="secao-ultimos-dias secao-ultimos-dias-home">
       <h2>Últimas atualizações diárias</h2>
@@ -1452,12 +1855,46 @@ ${this.avisoDeAtualizacao(base)}
     return nome === 'C18.md' || nome === 'CBL_C18.md';
   }
 
-  paginaDeNota(nota, secao) {
+  /**
+   * A página de uma nota. `conteudo` é o `<article>` já renderizado, quando
+   * quem chama já o tem (o `gerar()`, via `paginasDeDocumento()`); sem ele, a
+   * nota é renderizada aqui.
+   */
+  paginaDeNota(nota, secao, conteudo = null) {
     if (this.ehDocumentoCBL(nota)) {
       return this.paginaDocumentoCBL(nota, secao);
     }
 
-    const tituloLimpo = this.limparTitulo(nota.titulo, nota.tipo, nota);
+    return this.pagina({
+      titulo: this.tituloDaNota(nota),
+      subtitulo: secao.titulo,
+      corpo: conteudo || this.conteudoDaNota(nota, secao),
+      ativo: this.arquivoDaNota(nota.caminho),
+      daPasta: 'notas',
+      semConteudoTopo: true,
+    });
+  }
+
+  tituloDaNota(nota) {
+    return this.limparTitulo(nota.titulo, nota.tipo, nota);
+  }
+
+  /** O rótulo que a barra mostra para uma nota. O diário aparece pela data. */
+  rotuloDaNota(nota) {
+    const rotulo = nota.tipo === 'atualizacao-diaria' ? (nota.campos.data || nota.titulo) : nota.titulo;
+    return this.limparRotuloSidebar(rotulo, nota.tipo);
+  }
+
+  /**
+   * O `<article>` de uma nota, sem a moldura da página. É a raiz do diff do
+   * "O que há de novo": o que está aqui dentro é o texto que se compara.
+   */
+  conteudoDaNota(nota, secao) {
+    if (this.ehDocumentoCBL(nota)) {
+      return this.cbl.renderizarDocumentoCBL('../').trim();
+    }
+
+    const tituloLimpo = this.tituloDaNota(nota);
 
     // 1. O H1 vira o título da página no Masthead; retira do corpo para não duplicar.
     let corpoLimpo = nota.corpo.replace(/^#\s+[^\n]+\n+/, '');
@@ -1509,29 +1946,19 @@ ${this.avisoDeAtualizacao(base)}
       </section>`;
     }
 
-    const corpo = `
-      <article class="cbl-documento pagina-conteudo-centralizado">
+    const chave = this.chaveDoArquivo(this.arquivoDaNota(nota.caminho));
+    return `<article class="cbl-documento pagina-conteudo-centralizado" data-novidades-raiz data-novidades-chave="${escapar(chave)}">
         ${mastheadHtml}
         ${chamadaCBL}
         <div class="narrativa">
           ${this.md(corpoLimpo, 'notas')}
         </div>
-      </article>
-    `;
-
-    return this.pagina({
-      titulo: tituloLimpo,
-      subtitulo: secao.titulo,
-      corpo,
-      ativo: this.arquivoDaNota(nota.caminho),
-      daPasta: 'notas',
-      semConteudoTopo: true,
-    });
+      </article>`;
   }
 
   paginaDocumentoCBL(nota, secao) {
     const base = '../';
-    const corpo = renderizarDocumentoCBL(base);
+    const corpo = this.cbl.renderizarDocumentoCBL(base);
     return this.pagina({
       titulo: 'Documento Oficial CBL',
       subtitulo: 'Challenge 18 · Ciclo CBL · Framework & Concepção do Frila',
@@ -2440,6 +2867,13 @@ ${this.cssPaginaUnica()}
       for (const [nome, par] of Object.entries(t.tipoFato)) {
         linhas.push(`  --fato-${nome}: ${resolver(par[modo])};`);
       }
+      // As cores do marca-texto de novidades. A página única não tem
+      // novidades, e não as leva.
+      if (!this.paginaUnica) {
+        for (const [nome, par] of Object.entries(t.mudanca || {})) {
+          linhas.push(`  --mudanca-${nome}: ${resolver(par[modo])};`);
+        }
+      }
       return linhas.join('\n');
     };
 
@@ -2453,8 +2887,10 @@ ${this.cssPaginaUnica()}
       // Movimento sai do mesmo lugar que o do app. O site tinha `transition:
       // none` para quem pede menos movimento e nenhuma `transition` para quem
       // não pede — os tokens existiam em tokens.json e nunca chegavam ao CSS.
+      // `leitura` é o esmaecer do marca-texto de novidades, que a página
+      // única não tem.
       ...Object.entries(t.movimento)
-        .filter(([n]) => !n.startsWith('_'))
+        .filter(([n]) => !n.startsWith('_') && !(this.paginaUnica && n === 'leitura'))
         .map(([n, v]) => `  --mov-${n}: ${v}s;`),
       `  --tipo-titulo: ${t.tipografia.interface.titulo.tamanho}px;`,
       `  --galeria-card: ${t.metrica.galeria.larguraMinimaCard}px;`,
@@ -2535,7 +2971,13 @@ ${this.folhaDeEstilo('pagina-unica')}`;
 
 ${this.variaveis()}
 ${this.folhaDeEstilo('base')}
-${this.folhaDeEstilo('multipagina')}`;
+${this.folhaDeEstilo('multipagina')}${this.folhaDeNovidades()}`;
+  }
+
+  /** O CSS do "O que há de novo", por último para vencer as regras gerais. */
+  folhaDeNovidades() {
+    const arquivo = path.join(__dirname, 'estilo', 'novidades.css');
+    return fs.existsSync(arquivo) ? `\n${fs.readFileSync(arquivo, 'utf8')}` : '';
   }
 }
 

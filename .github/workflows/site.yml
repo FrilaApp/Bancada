@@ -61,10 +61,13 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
     steps:
-      # Checkout com histórico suficiente para diff
+      # Histórico inteiro, e não só os dois últimos commits: a página Novidades
+      # lê 14 dias de git para a linha do tempo e renderiza o vault de 7 dias
+      # atrás como base do marca-texto. Com um clone raso, o build não falha,
+      # mas sai sem uma e sem a outra.
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
       # Identifica se o commit tocou em código Swift
       - name: Verificar alterações em código Swift
@@ -164,7 +167,7 @@ jobs:
             echo "### Build do site"
             echo ""
             echo "- Páginas geradas: $(find site -name '*.html' 2>/dev/null | wc -l)"
-            echo "- Versão do conteúdo: \`$(cat site/versao.json 2>/dev/null)\`"
+            echo "- Versão do conteúdo: \`$(node -p "require('./site/versao.json').versao" 2>/dev/null)\`"
             if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
               echo "- Publicação: ⏭️ falta o secret \`CLOUDFLARE_API_TOKEN\`"
             elif [ "${{ github.event_name }}" = "pull_request" ]; then
