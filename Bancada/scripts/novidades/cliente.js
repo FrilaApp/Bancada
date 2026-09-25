@@ -708,9 +708,7 @@
       }
       // 3. Página que não existia na base de 7 dias.
       if (pagina.nova) {
-        aceitar(null);
-        resumoSimples('Página nova');
-        voltarAoAlvoDoEndereco();
+        paginaNova();
         return;
       }
       // 4. A versão de 7 dias atrás, se o build escreveu uma.
@@ -835,6 +833,80 @@
       atualizarCromo();
       // Outra aba pode ter lido parte desta página enquanto esta estava recolhida.
       if (aPedido) sincronizarLeitura();
+    }
+
+    // ── Página nova ───────────────────────────────────────────────────────
+    //
+    // Não existia na base de 7 dias: não há trecho para marcar, a página
+    // inteira é novidade. Abrir não basta para ela contar como lida: o ponto
+    // da barra só sai quando o fim do texto fica 2 s à vista, com a aba
+    // visível (quem chegou ao fim passou pela página), ou com "Marcar como
+    // lida". Sair antes deixa o ponto onde estava.
+
+    var vigiaNova = null;
+
+    function paginaNova() {
+      estadoAtual = { aceito: estadoAnterior ? estadoAnterior.aceito : null, pend: 1, visto: agora };
+      salvarEstado();
+      resumoNova();
+      voltarAoAlvoDoEndereco();
+      atualizarCromo();
+      vigiarFimDaPagina();
+    }
+
+    function lerPaginaNova() {
+      if (!vigiaNova) return;
+      pararVigiaNova();
+      aceitar(null);
+      tudoLido();
+    }
+
+    function pararVigiaNova() {
+      if (!vigiaNova) return;
+      if (vigiaNova.timer) clearTimeout(vigiaNova.timer);
+      if (vigiaNova.observador) vigiaNova.observador.disconnect();
+      doc.removeEventListener('visibilitychange', vigiaNova.aoMudarAba);
+      vigiaNova = null;
+    }
+
+    function vigiarFimDaPagina() {
+      var hosts = extrair(raizConteudo).hosts;
+      var fim = hosts.length ? hosts[hosts.length - 1] : raizConteudo;
+      if (typeof raiz.IntersectionObserver !== 'function' || !fim) return;
+      vigiaNova = { timer: null, avista: false, observador: null, aoMudarAba: null };
+      var v = vigiaNova;
+      function avaliarFim() {
+        var conta = v.avista && doc.visibilityState === 'visible';
+        if (conta && !v.timer) {
+          v.timer = setTimeout(seguro(function () {
+            v.timer = null;
+            if (v.avista && doc.visibilityState === 'visible') lerPaginaNova();
+          }), LEITURA_MS);
+        } else if (!conta && v.timer) {
+          clearTimeout(v.timer);
+          v.timer = null;
+        }
+      }
+      v.aoMudarAba = seguro(avaliarFim);
+      v.observador = new raiz.IntersectionObserver(seguro(function (entradas) {
+        entradas.forEach(function (en) { v.avista = en.isIntersecting; });
+        avaliarFim();
+      }), { threshold: [0, 0.5, 1] });
+      v.observador.observe(fim);
+      doc.addEventListener('visibilitychange', v.aoMudarAba);
+    }
+
+    function resumoNova() {
+      if (!elResumo) return;
+      limpar(elResumo);
+      elResumo.appendChild(span('nov-resumo-rotulo', 'Página nova'));
+      var lida = doc.createElement('button');
+      lida.type = 'button';
+      lida.className = 'nov-marcar-lidas';
+      lida.textContent = 'Marcar como lida';
+      lida.addEventListener('click', seguro(lerPaginaNova));
+      elResumo.appendChild(lida);
+      mostrarResumo();
     }
 
     // ── Página que mudou demais ───────────────────────────────────────────
@@ -1407,13 +1479,6 @@
 
     function mostrarResumo() {
       if (elResumo) elResumo.hidden = false;
-    }
-
-    function resumoSimples(texto) {
-      if (!elResumo) return;
-      limpar(elResumo);
-      elResumo.appendChild(span('nov-resumo-rotulo', texto));
-      mostrarResumo();
     }
 
     function resumoReescrita(ref) {
