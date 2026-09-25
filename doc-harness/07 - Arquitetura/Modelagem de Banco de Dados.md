@@ -441,12 +441,13 @@ Depois da consulta vem o teto (RN23). Para cada elegível, a função de despach
 CREATE INDEX profissional_ponto     ON profissional USING gist (ponto_base);
 CREATE INDEX disponibilidade_busca  ON disponibilidade (profissional_id, dia_semana);
 CREATE INDEX despacho_vaga          ON despacho (vaga_id);
-CREATE INDEX notificacao_teto       ON notificacao (profissional_id, enviada_em DESC);
+CREATE INDEX notificacao_teto       ON notificacao (profissional_id, enviada_em DESC)
+  WHERE tipo IN ('vaga', 'vagas_agrupadas');
 CREATE INDEX posicao_abertas        ON posicao (vaga_id) WHERE estado = 'aberta';
 CREATE INDEX vaga_janela_critica    ON vaga (inicio_em) WHERE estado = 'publicada';
 ```
 
-`notificacao_teto` responde à pergunta que o teto faz a cada envio: *quando foi a última notificação desta pessoa?* `vaga_janela_critica` é o índice do alerta de vaga vazia (RF20): o agendador varre as vagas ainda publicadas cujo início, menos a `alerta_antecedencia`, já chegou, e avisa o contratante. O índice parcial mantém pequeno o conjunto que interessa.
+`notificacao_teto` responde à pergunta que o teto faz a cada envio: *quando foi a última notificação **de vaga** desta pessoa?* Desde o cartão #146 a tabela guarda todo aviso do produto, para qualquer conta; `profissional_id` só existe nas de vaga (`CHECK notificacao_profissional_so_de_vaga`), e é por isso que um lembrete ou uma confirmação nunca entram na conta do teto. Os tipos agendados (lembretes, atraso, fim sem check-out, vaga vazia, avaliação disponível) têm um índice único parcial em `(tipo, referencia_id, usuario_id)`, que é a marca de envio: o agendador pode rodar de novo sem avisar duas vezes. `vaga_janela_critica` é o índice do alerta de vaga vazia (RF20): o agendador varre as vagas ainda publicadas cujo início, menos a `alerta_antecedencia`, já chegou, e avisa o contratante. O índice parcial mantém pequeno o conjunto que interessa.
 
 ---
 
@@ -471,7 +472,13 @@ CREATE TABLE dispositivo (
 
 CREATE TABLE notificacao (
   id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  profissional_id uuid NOT NULL REFERENCES profissional(id),
+  usuario_id      uuid NOT NULL REFERENCES usuario(id) ON DELETE CASCADE,  -- o destinatário
+  tipo            tipo_notificacao NOT NULL,   -- os 16 avisos do produto
+  referencia_id   uuid NOT NULL,               -- a vaga, a posição ou o turno do aviso
+  payload         jsonb NOT NULL DEFAULT '{}', -- o destino do toque: tipo e ids (RN15)
+  profissional_id uuid REFERENCES profissional(id),  -- só nas de vaga, para o teto
+  tentativas      int NOT NULL DEFAULT 0 CHECK (tentativas >= 0),
+  aceita_em       timestamptz,
   enviada_em      timestamptz NOT NULL DEFAULT now(),
   urgente         boolean NOT NULL DEFAULT false,   -- furou o agrupamento (RN23)
   estado_entrega  estado_entrega NOT NULL DEFAULT 'pendente',
@@ -931,7 +938,7 @@ CREATE POLICY despacho_leitura ON despacho FOR SELECT TO authenticated
   USING (profissional_id = (SELECT privado.meu_profissional_id()));
 
 CREATE POLICY notificacao_leitura ON notificacao FOR SELECT TO authenticated
-  USING (profissional_id = (SELECT privado.meu_profissional_id()));
+  USING (usuario_id = (SELECT auth.uid()));
 
 CREATE POLICY dispositivo_leitura ON dispositivo FOR SELECT TO authenticated
   USING (usuario_id = (SELECT auth.uid()));
@@ -988,7 +995,7 @@ Cada política ganha teste antes de ir para produção: entrar como profissional
 | `avaliacao` | Só o autor | `avaliar` |
 | `bloqueio` | Só o autor | `bloquear` |
 | `despacho` | O próprio profissional | O agendador |
-| `notificacao` | O próprio profissional | O agendador |
+| `notificacao` | A conta destinatária | `privado.notificar`, pelas RPCs e pelo agendador |
 | `dispositivo` | O dono | `registrar_dispositivo`; `excluir-conta` apaga |
 | `ocorrencia` | O autor; o alvo, na suspensão e no cancelamento | `denunciar`, `contestar_suspensao`, `pedir_revisao_despacho` e os cancelamentos; a Equipe Frila, com a chave de serviço |
 
