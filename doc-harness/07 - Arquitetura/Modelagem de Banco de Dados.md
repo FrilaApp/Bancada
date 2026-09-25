@@ -706,7 +706,7 @@ Os clientes falam com o banco pela API do Supabase, com o token de quem está lo
 2. **Cada um lê o que é seu.** As políticas de `select` abrem a linha para quem tem direito a ela: a própria conta, o próprio perfil, as próprias candidaturas, turnos, aparelhos, notificações e ocorrências. O membro de um estabelecimento lê o que é do estabelecimento.
 3. **O que é da outra parte sai por função.** RLS filtra linha, não coluna. `usuario` mistura o que a outra parte pode ver (o nome), o que só o dono vê (e-mail e nascimento) e o que tem prazo (o telefone, RN10); `profissional` guarda o `ponto_base`, que é quase o endereço de alguém. Por isso nenhuma política abre a linha de `usuario` ou de `profissional` para outra pessoa: o que a contraparte vê sai por funções `security definer` que devolvem só as colunas permitidas ([[#O que a outra parte vê]]).
 
-`anon` não lê nem escreve nada: toda rota exige login. O agendador (Edge Function) e a Equipe Frila usam a chave de serviço, que fica fora do RLS e nunca vai para um app.
+`anon` não lê nem escreve nada: toda rota exige login, **com uma exceção**. `public.configuracao_do_app` é a única função que `anon` executa, porque o app abaixo da versão mínima precisa descobrir isso antes de conseguir entrar (contrato 0.2.16, cartão #201). Ela lê `privado.configuracao_app`, que tem RLS ligada, nenhuma política, não é exposta pelo PostgREST e só muda por migração. O agendador (Edge Function) e a Equipe Frila usam a chave de serviço, que fica fora do RLS e nunca vai para um app.
 
 ### As funções auxiliares
 
@@ -847,6 +847,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public
   REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON TABLES FROM authenticated;
 
 -- Função nova nasce sem execute para anon; authenticated continua chamando as RPCs.
+-- Exceção única, concedida por nome na própria migração: public.configuracao_do_app.
 ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC, anon;
 ```
 
@@ -991,7 +992,7 @@ Cada política ganha teste antes de ir para produção: entrar como profissional
 | `dispositivo` | O dono | `registrar_dispositivo`; `excluir-conta` apaga |
 | `ocorrencia` | O autor; o alvo, na suspensão e no cancelamento | `denunciar`, `contestar_suspensao`, `pedir_revisao_despacho` e os cancelamentos; a Equipe Frila, com a chave de serviço |
 
-`anon` não aparece na tabela porque não tem nada: nenhuma leitura e nenhuma escrita.
+`anon` não aparece na tabela porque não tem nada: nenhuma leitura de tabela e nenhuma escrita. A única coisa que ele alcança é a função `configuracao_do_app`, que lê `privado.configuracao_app` por dentro; a tabela em si continua fora do alcance dele.
 
 ---
 
