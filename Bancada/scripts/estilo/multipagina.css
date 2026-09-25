@@ -1549,6 +1549,43 @@ body > footer {
   }
 }
 
+/* No celular o topo não cabia em 390px: marca, quatro abas e o botão de tema
+   somavam uns 580px e empurravam a página inteira para o lado. Com a página
+   mais larga que a tela, tudo que é `position: fixed` (o aviso de conteúdo
+   novo, a prévia e a pílula de volta) se centrava fora da vista. A marca
+   fica só com o símbolo, as abas encolhem, e se ainda não couber quem rola
+   é a faixa das abas, nunca a página. As margens automáticas centram as abas
+   quando sobra espaço e somem quando falta, sem cortar a primeira. */
+@media (max-width: 640px) {
+  body > header {
+    gap: 8px;
+  }
+  .marca > span:not(.marca-simbolo) {
+    display: none;
+  }
+  body > header nav {
+    flex: 1 1 auto;
+    min-width: 0;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  body > header nav::-webkit-scrollbar {
+    display: none;
+  }
+  body > header nav a {
+    flex: none;
+    padding: 6px 9px;
+    font-size: 12.5px;
+  }
+  body > header nav a:first-child {
+    margin-inline-start: auto;
+  }
+  body > header nav a:last-child {
+    margin-inline-end: auto;
+  }
+}
+
 /* ==========================================================================
    Tema Claro (Light Mode) e Alternador de Tema
    ========================================================================== */

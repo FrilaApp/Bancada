@@ -14,8 +14,9 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { execFileSync } = require('child_process');
-const { renderizar, escapar } = require('./markdown');
+const { renderizar, escapar, slugificar } = require('./markdown');
 const documentoCBL = require('./cbl-documento');
+const referencias = require('./referencias/indice');
 
 const RAIZ_PROJETO = path.resolve(__dirname, '..');
 
@@ -283,6 +284,21 @@ class Site {
     );
     this.porCaminho = new Map(this.notas.map((n) => [n.caminho, n]));
 
+    // Os wikilinks chegam em NFC, do jeito que se digita; o índice traz o
+    // caminho como o sistema de arquivos do Mac o grava, em NFD. Sem
+    // normalizar os dois lados, todo link para "Atualizações", "Revisão" ou
+    // "protótipo" caía em "nota não publicada".
+    this.porCaminhoNFC = new Map(this.notas.map((n) => [n.caminho.normalize('NFC'), n.caminho]));
+    // O Obsidian também aceita só o nome do arquivo (`[[2026-09-10]]`). Vale
+    // quando o nome é único no vault; se dois arquivos têm o mesmo nome, o
+    // wikilink curto é ambíguo e fica sem link.
+    const porNome = new Map();
+    for (const n of this.notas) {
+      const nome = path.basename(n.caminho, '.md').normalize('NFC');
+      porNome.set(nome, porNome.has(nome) ? null : n.caminho);
+    }
+    this.porNomeNFC = porNome;
+
     // O documento CBL aparece em três endereços: a capa e as duas notas que o
     // mostram inteiro.
     this.hrefsDoDocumentoCBL = [
@@ -303,6 +319,7 @@ class Site {
     const documentos = this.paginasDeDocumento();
     const novidades = this.construirNovidades();
     this.manifesto = this.montarManifesto(documentos, novidades);
+    this.referencias = this.construirReferencias(documentos);
 
     this.escrever('estilo.css', this.css());
     this.escrever('index.html', this.paginaCapa());
@@ -319,6 +336,11 @@ class Site {
     this.escrever('novidades.html', this.paginaNovidades((novidades && novidades.linhaDoTempo) || null));
     this.escreverBases(novidades && novidades.basesHtml);
     this.escrever('novidades.js', this.scriptNovidades());
+
+    // Depois de todas as páginas: é escrevendo cada uma que o registro fica
+    // sabendo de que seções os links precisam de prévia.
+    this.escrever('referencias.json', JSON.stringify(this.dadosDasReferencias()) + '\n');
+    this.escrever('referencias.js', this.scriptReferencias());
 
     // O arquivo que as abas abertas consultam. Fica separado do índice de
     // propósito: o índice passa de 300 KB, e baixá-lo a cada 30 segundos só
@@ -532,6 +554,129 @@ class Site {
     return `/* Gerado por scripts/gerar-site.js a partir de scripts/novidades/ (nucleo.js e cliente.js). Não editar à mão. */\n${partes.join('\n;\n')}\n`;
   }
 
+  // MARK: - Referências cruzadas
+
+  /**
+   * Quem define cada identificador (RN25, RF01, US07, T-0011…) e os `id` de
+   * cada página, para ligar as citações e conferir os `#seção` dos links.
+   * Ver `referencias/indice.js`.
+   */
+  construirReferencias(documentos) {
+    const rotulosStatus = {
+      'a-fazer': 'A fazer',
+      'em-andamento': 'Em andamento',
+      revisao: 'Revisão',
+      concluida: 'Concluída',
+    };
+    const tarefas = this.notasDe('tarefa')
+      .filter((t) => t.campos.id)
+      .map((t) => ({
+        id: t.campos.id,
+        arquivo: this.arquivoDaNota(t.caminho),
+        titulo: t.titulo.replace(/^T-\d+\s*[-—–:]\s*/, ''),
+        status: rotulosStatus[t.campos.status] || null,
+        responsavel: String(t.campos.responsavel || '')
+          .replace(/[[\]]/g, '')
+          .split(',')
+          .map((p) => p.trim())
+          .filter(Boolean)
+          .join(', ') || null,
+      }));
+
+    // O grupo que a prévia mostra acima do título: a seção da página, esteja
+    // ela na barra ou não.
+    const grupoDe = new Map();
+    for (const { nota, secao } of this.notasPublicadas()) {
+      if (secao.titulo) grupoDe.set(this.arquivoDaNota(nota.caminho), secao.titulo);
+    }
+
+    const registro = referencias.construirRegistro({
+      documentos: documentos.map((d) => ({ arquivo: d.arquivo, titulo: d.titulo, conteudo: d.conteudo })),
+      tarefas,
+    });
+
+    const ancoras = new Map();
+    const conteudoDe = new Map();
+    for (const d of documentos) {
+      const ids = referencias.idsDoHtml(d.conteudo);
+      for (const ancora of (registro.linhas.get(d.arquivo) || new Map()).values()) ids.add(ancora);
+      for (const href of d.hrefs) {
+        ancoras.set(href, ids);
+        conteudoDe.set(href, d);
+      }
+    }
+
+    return { registro, ancoras, conteudoDe, grupoDe, secoes: new Set() };
+  }
+
+  /** Liga as citações de uma página já montada. Sem registro, devolve como veio. */
+  ligarReferencias(corpo, ativo) {
+    const refs = this.referencias;
+    if (!refs || !ativo) return corpo;
+    const mesmaPagina = this.hrefsDoDocumentoCBL.includes(ativo) ? this.hrefsDoDocumentoCBL : [ativo];
+    // A página que define as linhas é a do documento; o CBL, com três
+    // endereços, é registrado pelo principal.
+    const doc = refs.conteudoDe.get(ativo);
+    return referencias.ligarReferencias(corpo, {
+      registro: refs.registro,
+      arquivo: ativo,
+      arquivoDasLinhas: doc ? doc.arquivo : ativo,
+      mesmaPagina,
+      ancorasPorArquivo: refs.ancoras,
+      aoLigar: (alvo) => refs.secoes.add(alvo),
+    });
+  }
+
+  /**
+   * O `referencias.json`: o que a prévia mostra quando o ponteiro para sobre
+   * um link. Os endereços vão sem `.html`, como o navegador os vê depois do
+   * redirecionamento da Cloudflare.
+   */
+  dadosDasReferencias() {
+    const refs = this.referencias;
+    const semHtml = (arquivo) => arquivo.replace(/\.html$/, '');
+    const ids = {};
+    for (const [chave, d] of refs.registro.ids) {
+      ids[chave] = {
+        rotulo: d.rotulo,
+        href: semHtml(d.arquivo) + (d.ancora ? `#${d.ancora}` : ''),
+        forma: d.forma,
+        pagina: d.pagina,
+        secao: d.secao,
+        titulo: d.titulo,
+        texto: d.texto,
+        detalhes: d.detalhes && d.detalhes.length ? d.detalhes : undefined,
+        status: d.status,
+        responsavel: d.responsavel,
+      };
+    }
+
+    const paginas = {};
+    for (const [href, d] of refs.conteudoDe) {
+      paginas[semHtml(href)] = {
+        titulo: d.titulo,
+        grupo: refs.grupoDe.get(d.arquivo) || refs.grupoDe.get(href) || null,
+        texto: referencias.previaDaPagina(d.conteudo),
+      };
+    }
+
+    const secoes = {};
+    for (const alvo of refs.secoes) {
+      const [arquivo, id] = alvo.split('#');
+      const d = refs.conteudoDe.get(arquivo);
+      const previa = d && referencias.previaDaSecao(d.conteudo, id);
+      if (previa) secoes[`${semHtml(arquivo)}#${id}`] = { pagina: d.titulo, ...previa };
+    }
+
+    return { v: 1, ids, paginas, secoes };
+  }
+
+  /** O `referencias.js`: prévia dos links e o caminho de volta. */
+  scriptReferencias() {
+    const arquivo = path.join(__dirname, 'referencias', 'cliente.js');
+    return `/* Gerado por scripts/gerar-site.js a partir de scripts/referencias/cliente.js. Não editar à mão. */\n${fs.readFileSync(arquivo, 'utf8')}`;
+  }
+
   // MARK: - Utilidades
 
   escrever(nome, conteudo) {
@@ -719,15 +864,21 @@ class Site {
 
   /** Wikilinks do vault vêm sem extensão: `02 - Atualizações Diárias/…/2026-09-08`. */
   resolver(alvo, daPasta) {
-    const candidatos = [alvo, `${alvo}.md`];
-    for (const c of candidatos) {
-      if (this.porCaminho.has(c)) {
-        if (this.paginaUnica) return `#${this.ancora(c)}`;
-        const href = this.arquivoDaNota(c);
-        return daPasta === 'notas' ? path.basename(href) : href;
-      }
-    }
-    return null;
+    // `[[Nota#Seção]]` leva à seção; `[[#Seção]]`, à seção da própria nota.
+    // O id da seção é o mesmo slug que o markdown.js dá ao título.
+    const cerquilha = alvo.indexOf('#');
+    const caminho = (cerquilha === -1 ? alvo : alvo.slice(0, cerquilha)).trim().normalize('NFC');
+    const secao = cerquilha === -1 ? '' : alvo.slice(cerquilha + 1).trim();
+    const fragmento = secao && !this.paginaUnica ? `#${slugificar(secao)}` : '';
+    if (!caminho) return fragmento || null;
+
+    const real = this.porCaminhoNFC.get(caminho)
+      || this.porCaminhoNFC.get(`${caminho}.md`)
+      || (caminho.includes('/') ? null : this.porNomeNFC.get(caminho.replace(/\.md$/, '')));
+    if (!real) return null;
+    if (this.paginaUnica) return `#${this.ancora(real)}`;
+    const href = this.arquivoDaNota(real);
+    return (daPasta === 'notas' ? path.basename(href) : href) + fragmento;
   }
 
   ancora(caminho) {
@@ -1159,6 +1310,7 @@ class Site {
 
   pagina({ titulo, subtitulo, corpo, ativo, daPasta, semConteudoTopo = false }) {
     const base = daPasta === 'notas' ? '../' : '';
+    corpo = this.ligarReferencias(corpo, ativo);
     // "Desafio" acende na capa e nas duas páginas do documento CBL, e só nelas.
     // Vem do mesmo predicado que roteia a nota para `paginaDocumentoCBL`: um
     // pedaço de slug como `cbl-desafio` casava com toda nota de
@@ -1238,6 +1390,7 @@ class Site {
 </script>
 ${this.manifesto ? `${this.scriptDoManifesto(ativo)}
 <script defer src="${base}novidades.js"></script>
+` : ''}${this.referencias ? `<script defer src="${base}referencias.js"></script>
 ` : ''}</head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -1246,7 +1399,7 @@ ${this.manifesto ? `${this.scriptDoManifesto(ativo)}
     <button type="button" class="btn-sidebar-toggle" id="btn-sidebar-toggle" aria-label="Recolher barra lateral" title="Recolher barra lateral (⌘B)">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg>
     </button>
-    <a class="marca" href="${base}index.html">
+    <a class="marca" href="${base}index.html" aria-label="Challenge 18">
       <span class="marca-simbolo">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
       </span>
@@ -2971,7 +3124,8 @@ ${this.folhaDeEstilo('pagina-unica')}`;
 
 ${this.variaveis()}
 ${this.folhaDeEstilo('base')}
-${this.folhaDeEstilo('multipagina')}${this.folhaDeNovidades()}`;
+${this.folhaDeEstilo('multipagina')}${this.folhaDeNovidades()}
+${this.folhaDeEstilo('referencias')}`;
   }
 
   /** O CSS do "O que há de novo", por último para vencer as regras gerais. */

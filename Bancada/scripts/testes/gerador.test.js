@@ -535,11 +535,15 @@ test('o título de cada página no manifesto é o rótulo da barra, sem o ponto 
   for (const d of site.paginasDeDocumento()) assert.ok(!d.titulo.includes(PONTO), `${d.chave} → ${d.titulo}`);
 });
 
-test('toda página carrega o novidades.js do lugar certo, depois do manifesto', () => {
+test('toda página carrega o novidades.js e o referencias.js do lugar certo, depois do manifesto', () => {
   for (const [pagina, html] of paginas()) {
     const base = pagina.startsWith('notas/') ? '../' : '';
     const scripts = [...html.matchAll(/<script\b[^>]*\bsrc="([^"]*)"[^>]*><\/script>/g)];
-    assert.deepStrictEqual(scripts.map(([tag, src]) => [src, /\bdefer\b/.test(tag)]), [[`${base}novidades.js`, true]], pagina);
+    assert.deepStrictEqual(
+      scripts.map(([tag, src]) => [src, /\bdefer\b/.test(tag)]),
+      [[`${base}novidades.js`, true], [`${base}referencias.js`, true]],
+      pagina
+    );
     assert.ok(html.indexOf('id="nov-manifesto"') < html.indexOf('novidades.js'), pagina);
   }
 });
@@ -780,11 +784,15 @@ test('as cores de mudança saem nos dois temas, também quando o botão escolhe 
 
 const CSS_NOVIDADES = path.join(__dirname, '..', 'estilo', 'novidades.css');
 
-test('o CSS do site termina com o novidades.css', {
+const CSS_REFERENCIAS = path.join(__dirname, '..', 'estilo', 'referencias.css');
+
+test('o CSS do site termina com o novidades.css e, depois dele, o referencias.css', {
   skip: !fs.existsSync(CSS_NOVIDADES) && 'estilo/novidades.css ainda não existe',
 }, () => {
-  const css = arquivos.get('estilo.css');
-  assert.ok(css.trimEnd().endsWith(fs.readFileSync(CSS_NOVIDADES, 'utf8').trimEnd()));
+  const css = arquivos.get('estilo.css').trimEnd();
+  const referencias = fs.readFileSync(CSS_REFERENCIAS, 'utf8').trimEnd();
+  assert.ok(css.endsWith(referencias));
+  assert.ok(css.slice(0, -referencias.length).trimEnd().endsWith(fs.readFileSync(CSS_NOVIDADES, 'utf8').trimEnd()));
 });
 
 test('a página única fica fora do "O que há de novo"', () => {

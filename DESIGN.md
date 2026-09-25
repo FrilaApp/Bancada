@@ -476,6 +476,28 @@ No modo de alto contraste do sistema (`forced-colors`), as marcas passam às cor
 
 **Página Novidades** (`novidades.html`, corpo em `novidades/pagina.js`): canvas aberto na coluna de 840px, sem cartões. No topo fica "Para você", a lista que o cliente monta com as páginas que este leitor ainda não leu. Abaixo vem a linha do tempo, dia a dia, com uma régua de 1px abrindo cada dia. As três vozes seguem §1.2: o assunto do commit é narrativa; hora, hash, prefixo do Conventional Commits e identificador de tarefa são fato, em mono; o resto é chrome. O selo de página nova ou removida usa o próprio preenchimento do marca-texto; "alterada", o caso comum, fica neutra, para a cor continuar sendo exceção. Transições de tarefa usam as pílulas `.status-*`, que no tema claro voltam aos tokens de status.
 
+### 5.11. Referências cruzadas (citação, prévia e volta)
+Os documentos do Frila se citam por identificador o tempo todo: RN25, RF01, UC08, US07, T-0011, D6. No site, toda citação de um identificador que alguém define vira link para a definição, e todo wikilink do vault, inclusive `[[Nota#Seção]]` e `[[#Seção]]`, leva à seção certa. O build decide o que liga (`scripts/referencias/indice.js`); o navegador cuida da prévia e da volta (`referencias/cliente.js`, publicado como `referencias.js`); o CSS vive em `estilo/referencias.css`.
+
+```html
+<p>A conta é criada como em <a class="ref" href="#ref-rf01" data-ref="RF1">RF01</a>, com o perfil de contratante (<a class="ref" href="#ref-rn25" data-ref="RN25">RN25</a>).</p>
+```
+
+**Onde mora a definição**: uma linha de tabela cuja primeira célula é só o identificador (`| RN25 | Cada conta DEVE… |`) ou um título que começa por ele (`#### US07: Notificação…`). A tarefa `T-0011` é a própria página da tarefa. Citação no meio de uma frase nunca é definição. Quando duas páginas definem o mesmo identificador (o Requisitos define RN21 e a Modelagem repete RN21 para dizer como o banco a garante), vale a **casa da família**, a página que define mais identificadores dela. `RF01` e `RF1`, `D07` e `D7` são o mesmo. A linha que define ganha `id="ref-rn25"`, e o link de uma página para ela mesma fica só no `#`, sem recarregar.
+
+**O que não vira link**: citação dentro de título, cabeçalho de tabela, código, link ou trecho que o "O que há de novo" ignora; a célula que define o próprio identificador; identificador que ninguém define (`UTF-8`, `B15`). As hipóteses `H1` a `H8` do Roteiro ficam de fora de propósito: nas revisões de design, "H1" é o nível de título. Ligar não muda uma letra do texto, e por isso não acende novidade.
+
+**Anatomia**:
+- **Citação** (`a.ref`): mesma cor e peso do texto em volta; o que diz que é link é o sublinhado pontilhado no acento a 55%, e o cursor. No hover e no foco vira link inteiro, no acento, com sublinhado sólido. Numa página de requisitos com 200 citações, 200 links azuis seriam ruído; o pontilhado deixa o texto ler como texto.
+- **Prévia** (`#ref-previa`): parar o ponteiro 350 ms sobre um link (80 ms, se outra prévia acabou de fechar) mostra o que ele cita sem sair da página. Uma superfície que flutua abaixo do link, ou acima quando não cabe: `--superficie`, borda de 1px, raio de 12px e sombra curta. A linha de cima traz o identificador em mono e onde ele mora ("Documento de Requisitos", ou "Nesta página" e a seção), separados pelo `.cbl-ponto-sep`. Depois vêm o título, se a definição tem um, o texto na voz de leitura (cortado em sete linhas) e, sob um fio de 1px, os detalhes curtos da linha da tabela com o título da coluna: prioridade, ator, requisitos ligados, responsável. Wikilinks para outro documento mostram o grupo, o título e o lead dele; para uma seção, o título e o primeiro parágrafo. A prévia acompanha o link quando a página rola e some quando ele sai da tela. Enquanto está aberta, a página de destino já vem para o cache.
+- **Folha do toque** (`.ref-previa--folha`): no celular não existe "passar por cima". A primeira batida numa citação abre a mesma prévia presa ao pé da tela, ao alcance do polegar, com "Abrir RN25" (acento, 44px de alvo) e "Fechar". A segunda batida no mesmo link segue o link, e tocar fora fecha a folha. Wikilink para documento segue direto na primeira batida: ali quem toca quer ir.
+- **Pílula de volta** (`.ref-volta`): quem segue um link dentro do conteúdo ganha, no destino, "Voltar para Documento de Requisitos" (ou "Voltar para onde você estava", no mesmo documento). A pílula fica no pé da tela, com o mesmo lugar e a mesma forma do aviso de conteúdo novo, e sobe quando ele aparece. A volta leva ao ponto exato de onde o leitor saiu: o link seguido fica na mesma altura da tela em que estava, e pisca uma vez. Saltos encadeados voltam um a um. O botão Voltar do navegador faz o mesmo que a pílula, que só o deixa à vista, e o × dispensa. Sumários (`.cbl-nav-ancoras`) e chips do resumo não criam volta.
+- **Chegada**: o destino de um salto pisca uma vez no acento a 16% (22% no escuro): a linha de tabela pinta as células, e o título ganha um halo de 6px que não empurra o texto. Enquanto a página se arruma (fontes, a linha de resumo do "O que há de novo" abrindo acima), o destino fica preso no lugar por até 2,5 s, e solta no primeiro gesto de quem lê.
+
+**Movimento**: a prévia entra em 140 ms, com opacidade e 3px de deslocamento, e a pílula em 180 ms, com 8px. O piscar dura 1,6 s: segura a cor por um terço e esmaece. Com `prefers-reduced-motion`, nada anima. O destaque fica parado enquanto dura e some de uma vez.
+
+**Acessibilidade**: a prévia abre também pelo foco do teclado (`:focus-visible`), liga `aria-describedby` no link e fecha com Esc. A folha é um `role="dialog"` que recebe o foco e o devolve ao link ao fechar. A pílula é feita de dois `<button>` com o anel de foco padrão. Tudo é camada: sem JavaScript, as citações continuam links comuns.
+
 ---
 
 ## 6. Navegação, Header e Modo Zen (Distraction-Free)
@@ -483,6 +505,7 @@ No modo de alto contraste do sistema (`forced-colors`), as marcas passam às cor
 ### 6.1. Header / HUD Superior Minimalista
 - **Altura**: `44px` fixo, sticky no topo com `backdrop-filter: blur(16px)`.
 - **Marca**: Ícone discreto (15×15px) acompanhado de `Challenge 18`. Sem subtítulos redundantes.
+- **Celular (até 640px)**: a marca fica só com o ícone, as abas encolhem, e se ainda faltar espaço quem rola é a faixa das abas, nunca a página. Página mais larga que a tela desloca tudo que é `position: fixed` (o aviso de conteúdo novo, a prévia e a pílula de volta).
 - **Botão de Alternância de Tema**: Botão compacto quadrado de 28×28px (`.btn-tema`), raio de 6px, com ícones SVG centralizados de Sol e Lua, sem rótulo de texto para economizar espaço horizontal.
 - **Indicador de Status**: Ponto pulsante verde suave (`status-pulsar`, animação de pulsação radial de 2s) acompanhado de `Live`.
 
@@ -580,4 +603,5 @@ Antes de aprovar qualquer alteração, nova página ou componente no ecossistema
 - [ ] **Regra das Três Vozes**: Chrome em Sans, narrativa em Serif/Sans editorial, auditoria e identificadores em Monospace?
 - [ ] **Sem Metas Prematuras no Produto**: Textos de interface e requisitos não contêm promessas quantitativas de tempo/toque não medidas em campo?
 - [ ] **VoiceOver e Teclado**: Todo componente interativo possui foco visível (`:focus-visible`) e é plenamente acessível?
+- [ ] **Referências Ligadas**: Identificadores novos (RN, RF, US, UC, D…) estão definidos numa linha de tabela ou num título que começa por eles, para as citações virarem link (§5.11)?
 
