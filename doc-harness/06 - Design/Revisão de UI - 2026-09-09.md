@@ -82,7 +82,7 @@ E o conteúdo era "Nada registrado". A espera de 600 ms foi projetada para não
 piscar popover ao atravessar a grade, mas dispara igual em célula vazia — e num
 mês com 33 das 35 células vazias, é isso que acontece na maior parte do tempo.
 
-![[04 - Tarefas/Anexos/bancada-calendario-claro-popover.png|Popover sobre dia vazio, com sombra difusa sobre a grade]]
+*Captura removida do site: Popover sobre dia vazio, com sombra difusa sobre a grade.*
 
 ### V-04 · O calendário abre no modo errado para o formato do vault
 
@@ -93,8 +93,8 @@ com borda visível em cada célula, o efeito é o de uma planilha em branco.
 Não é problema da grade. Semana é denso e legível, e Lista é o melhor dos três
 para este conteúdo. O que está desalinhado é o padrão de abertura.
 
-![[04 - Tarefas/Anexos/bancada-calendario-mes.png|Modo Mês, o padrão — 33 de 35 células vazias]]
-![[04 - Tarefas/Anexos/bancada-calendario-semana.png|Modo Semana — o mesmo dado, aproveitando a tela]]
+*Captura removida do site: Modo Mês, o padrão — 33 de 35 células vazias.*
+*Captura removida do site: Modo Semana — o mesmo dado, aproveitando a tela.*
 
 ### V-05 · Dois seletores segmentados e duas seleções de barra lateral
 
@@ -109,7 +109,7 @@ translúcido, texto azul, borda). Os dois aparecem ao mesmo tempo na mesma
 coluna. E o rodapé está desalinhado cerca de 9 px à esquerda: ícone e rótulo não
 batem na coluna vertical das linhas de cima.
 
-![[04 - Tarefas/Anexos/bancada-ajustes.png|Ajustes — segmentado nativo e rodapé com tratamento próprio]]
+*Captura removida do site: Ajustes — segmentado nativo e rodapé com tratamento próprio.*
 
 ### V-06 · A navegação principal não tem nome acessível
 
@@ -147,7 +147,7 @@ incompleta: a navegação primária do app não tem rótulo.
   linha com autor à direita. No Diário, empilhado em duas linhas e mais
   apertado.
 
-![[04 - Tarefas/Anexos/bancada-trabalho.png|Trabalho — as faixas abaixo de T-0005 são linhas vazias da tabela]]
+*Captura removida do site: Trabalho — as faixas abaixo de T-0005 são linhas vazias da tabela.*
 
 ## O que está bom
 
@@ -162,7 +162,7 @@ dizer antes de qualquer conserto.
 - **A correção de locale aparece.** "setembro de 2026" e "dom. seg. ter." estão
   certos — o bug do ICU realmente saiu, e dá para ver.
 
-![[04 - Tarefas/Anexos/bancada-calendario-lista.png|Modo Lista — as três vozes tipográficas fazendo o trabalho]]
+*Captura removida do site: Modo Lista — as três vozes tipográficas fazendo o trabalho.*
 
 ## O que o fonte mostrou
 
