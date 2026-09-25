@@ -198,6 +198,24 @@ final class CalendarioTests: XCTestCase {
         XCTAssertTrue(Calendario.eventos(de: vault).isEmpty)
     }
 
+    func testPrazoDoTrelloViraEventoComNomeEData() throws {
+        let prazo = try XCTUnwrap(DataISO.trelloDate("2026-09-30T18:00:00.000Z"))
+        let tarefa = TarefaDoTrello(
+            id: "card-1",
+            nome: "Preparar apresentação",
+            prazo: prazo,
+            quadro: "Challenge 18",
+            url: URL(string: "https://trello.com/c/card-1")
+        )
+
+        let evento = try XCTUnwrap(Calendario.eventosDoTrello([tarefa]).first)
+        XCTAssertEqual(evento.especie, .trello)
+        XCTAssertEqual(evento.titulo, "Preparar apresentação")
+        XCTAssertEqual(evento.detalhe, "Challenge 18")
+        XCTAssertEqual(evento.data, DataISO.texto(prazo))
+        XCTAssertEqual(evento.prazo, prazo)
+    }
+
     private func vaultComAgenda() -> Vault {
         Vault(
             raiz: URL(fileURLWithPath: "/v"),

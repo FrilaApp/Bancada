@@ -15,6 +15,9 @@ struct TelaAjustes: View {
 
     @State private var gerandoSite = false
     @State private var statusSite: String?
+    @State private var chaveDoTrello = ""
+    @State private var tokenDoTrello = ""
+    @State private var quadroDoTrello = ""
 
     private var vault: Vault? { estado.vault }
 
@@ -23,12 +26,66 @@ struct TelaAjustes: View {
             VStack(alignment: .leading, spacing: DS.Espaco.lg) {
                 blocoDeAparencia
                 blocoDeSincronizacao
+                blocoDoTrello
                 blocoDoAmbiente
                 blocoDeMentores
                 blocoDeIntegridade
                 blocoSobre
             }
             .padding(DS.Espaco.lg)
+        }
+    }
+
+    private var blocoDoTrello: some View {
+        Bloco("Trello", simbolo: "checklist", corDoSimbolo: cores.acento) {
+            VStack(alignment: .leading, spacing: DS.Espaco.sm) {
+                Text("A Bancada consulta cartões abertos com data de entrega e os mostra no Calendário. Deixe o quadro vazio para buscar todos os quadros aos quais sua conta tem acesso.")
+                    .font(DS.Tipografia.detalhe)
+                    .foregroundStyle(cores.textoSutil)
+
+                TextField("Chave da API", text: $chaveDoTrello)
+                    .textFieldStyle(.roundedBorder)
+                SecureField("Token", text: $tokenDoTrello)
+                    .textFieldStyle(.roundedBorder)
+                TextField("ID do quadro (opcional)", text: $quadroDoTrello)
+                    .textFieldStyle(.roundedBorder)
+
+                HStack(spacing: DS.Espaco.sm) {
+                    Button("Salvar e sincronizar") {
+                        estado.configuracaoDoTrello = ConfiguracaoDoTrello(
+                            chave: chaveDoTrello,
+                            token: tokenDoTrello,
+                            quadroID: quadroDoTrello
+                        )
+                    }
+                    .controlSize(.small)
+
+                    if let ultima = estado.ultimaSincronizacaoDoTrello {
+                        Text("\(estado.tarefasDoTrello.count) tarefas · \(ultima.formatted(date: .omitted, time: .shortened))")
+                            .font(DS.Tipografia.detalhe)
+                            .foregroundStyle(cores.textoSutil)
+                    }
+                }
+
+                if let erro = estado.erroDoTrello {
+                    Text(erro)
+                        .font(DS.Tipografia.detalhe)
+                        .foregroundStyle(cores.perigo)
+                } else if estado.configuracaoDoTrello.habilitada {
+                    Text("Sincronização automática a cada 15 minutos.")
+                        .font(DS.Tipografia.detalhe)
+                        .foregroundStyle(cores.status(.concluida))
+                } else {
+                    Text("Sem credenciais: o calendário continua funcionando apenas com o vault.")
+                        .font(DS.Tipografia.detalhe)
+                        .foregroundStyle(cores.textoSutil)
+                }
+            }
+            .onAppear {
+                chaveDoTrello = estado.configuracaoDoTrello.chave
+                tokenDoTrello = estado.configuracaoDoTrello.token
+                quadroDoTrello = estado.configuracaoDoTrello.quadroID
+            }
         }
     }
 
@@ -354,11 +411,12 @@ struct TelaAjustes: View {
         guard !gerandoSite else { return }
         gerandoSite = true
         statusSite = "Gerando site estático…"
+        let raizVault = estado.raiz?.path
 
         DispatchQueue.global(qos: .userInitiated).async {
             let base = raizBancada()
             let script = base.appendingPathComponent("scripts/gerar-site.js").path
-            guard FileManager.default.fileExists(atPath: script), let raizVault = estado.raiz?.path else {
+            guard FileManager.default.fileExists(atPath: script), let raizVault else {
                 DispatchQueue.main.async {
                     gerandoSite = false
                     statusSite = "Erro: script gerar-site.js ou vault não encontrados."

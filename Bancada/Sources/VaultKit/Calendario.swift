@@ -61,7 +61,7 @@ public struct EventoDeCalendario: Identifiable, Equatable {
     public enum Especie: String, CaseIterable, Sendable {
         /// Primeiro no enum de propósito: é a ordem que `allCases` empresta
         /// para os filtros e o resumo do dia, e a agenda lidera os dois.
-        case agenda, fato, diario, tarefaCriada
+        case agenda, fato, diario, tarefaCriada, trello
 
         /// "Fato" é vocabulário do doc-harness; quem chega de fora conhece a
         /// pasta `05 - Registros` e a seção de mesmo nome na barra lateral.
@@ -71,6 +71,7 @@ public struct EventoDeCalendario: Identifiable, Equatable {
             case .fato: return "Registros"
             case .diario: return "Diário"
             case .tarefaCriada: return "Tarefas criadas"
+            case .trello: return "Trello"
             }
         }
 
@@ -80,13 +81,20 @@ public struct EventoDeCalendario: Identifiable, Equatable {
             case .fato: return "circle.fill"
             case .diario: return "text.alignleft"
             case .tarefaCriada: return "checklist"
+            case .trello: return "checklist"
             }
         }
 
         /// Menor vem primeiro na célula e sobrevive ao corte de "+N": a
         /// agenda é o cronograma que a Academy marcou, e por decisão do time
         /// tem prioridade de leitura sobre o que o vault registrou sozinho.
-        var prioridade: Int { self == .agenda ? 0 : 1 }
+        var prioridade: Int {
+            switch self {
+            case .agenda: return 0
+            case .trello: return 1
+            default: return 2
+            }
+        }
     }
 
     public let data: String          // ISO, como no vault
@@ -111,6 +119,8 @@ public struct EventoDeCalendario: Identifiable, Equatable {
     public let bastidor: Bool
     /// O corpo que acompanha o evento; só o diário tem.
     public let texto: String?
+    /// Prazo externo, quando o evento veio do Trello.
+    public let prazo: Date?
 
     public var id: String { "\(data) \(hora ?? "--") \(especie.rawValue) \(rotulo)" }
 
@@ -127,7 +137,8 @@ public struct EventoDeCalendario: Identifiable, Equatable {
         arquivos: Int? = nil,
         tarefa: TarefaCitada? = nil,
         bastidor: Bool = false,
-        texto: String? = nil
+        texto: String? = nil,
+        prazo: Date? = nil
     ) {
         self.data = data
         self.hora = hora
@@ -142,6 +153,7 @@ public struct EventoDeCalendario: Identifiable, Equatable {
         self.tarefa = tarefa
         self.bastidor = bastidor
         self.texto = texto
+        self.prazo = prazo
     }
 
     /// Minutos desde a meia-noite; evento sem hora vai para o fim do dia.
@@ -261,6 +273,23 @@ public enum Calendario {
         }
 
         return todos
+    }
+
+    /// Converte cartões externos em eventos de calendário, mantendo a mesma
+    /// unidade de data ISO usada pelo vault.
+    public static func eventosDoTrello(_ tarefas: [TarefaDoTrello]) -> [EventoDeCalendario] {
+        tarefas.map { tarefa in
+            EventoDeCalendario(
+                data: DataISO.texto(tarefa.prazo),
+                especie: .trello,
+                rotulo: tarefa.nome,
+                detalhe: tarefa.quadro,
+                origem: tarefa.url,
+                titulo: tarefa.nome,
+                referencia: tarefa.url?.absoluteString,
+                prazo: tarefa.prazo
+            )
+        }
     }
 
     /// Os dias que têm algum evento, do mais recente para o mais antigo.
