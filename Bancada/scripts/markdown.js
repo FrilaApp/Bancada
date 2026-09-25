@@ -54,7 +54,8 @@ function inline(texto, resolverWikilink) {
 
   // Wikilink antes do link normal: `[[a|b]]` casaria parcialmente com `[x](y)`.
   s = s.replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_, alvo, alias) => {
-    const rotulo = escapar(alias || alvo);
+    // `[[#Seção]]` sem apelido mostra só o nome da seção, como no Obsidian.
+    const rotulo = escapar(alias || alvo.replace(/^#\s*/, ''));
     const href = resolverWikilink ? resolverWikilink(alvo.trim()) : null;
     return href
       ? `<a href="${href}">${rotulo}</a>`
@@ -276,4 +277,4 @@ function renderizar(markdown, resolverWikilink) {
   return saida.join('\n');
 }
 
-module.exports = { renderizar, inline, escapar };
+module.exports = { renderizar, inline, escapar, slugificar };

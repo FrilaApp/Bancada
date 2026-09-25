@@ -42,6 +42,7 @@ enum Secao: String, CaseIterable, Identifiable {
     }
 }
 
+@MainActor
 @Observable
 final class EstadoDaBancada {
     private(set) var vault: Vault?
@@ -59,10 +60,26 @@ final class EstadoDaBancada {
     }
 
     private var observador: ObservadorDeVault?
+    private var sincronizacaoDoTrello: Task<Void, Never>?
+    private var atualizacaoAutomaticaDoTrello: Task<Void, Never>?
+    private(set) var tarefasDoTrello: [TarefaDoTrello] = []
+    private(set) var erroDoTrello: String?
+    private(set) var ultimaSincronizacaoDoTrello: Date?
+    var configuracaoDoTrello: ConfiguracaoDoTrello {
+        didSet {
+            UserDefaults.standard.set(configuracaoDoTrello.chave, forKey: Self.chaveTrello)
+            UserDefaults.standard.set(configuracaoDoTrello.token, forKey: Self.tokenTrello)
+            UserDefaults.standard.set(configuracaoDoTrello.quadroID, forKey: Self.quadroTrello)
+            sincronizarTrello()
+        }
+    }
 
     /// A chave em `UserDefaults` guarda apenas o caminho: o conteúdo continua
     /// vindo do disco a cada leitura, nunca de um cache.
     private static let chaveRaiz = "com.blendops.bancada.raiz"
+    private static let chaveTrello = "com.blendops.bancada.trello.key"
+    private static let tokenTrello = "com.blendops.bancada.trello.token"
+    private static let quadroTrello = "com.blendops.bancada.trello.board"
 
     var raiz: URL? {
         didSet {
@@ -76,6 +93,25 @@ final class EstadoDaBancada {
     }
 
     init() {
+        let ambiente = ConfiguracaoDoTrello.doAmbiente(em: Self.arquivosDeAmbiente())
+        if ambiente.habilitada {
+            configuracaoDoTrello = ambiente
+        } else {
+            configuracaoDoTrello = ConfiguracaoDoTrello(
+                chave: UserDefaults.standard.string(forKey: Self.chaveTrello) ?? "",
+                token: UserDefaults.standard.string(forKey: Self.tokenTrello) ?? "",
+                quadroID: UserDefaults.standard.string(forKey: Self.quadroTrello) ?? ""
+            )
+        }
+
+        sincronizarTrello()
+        atualizacaoAutomaticaDoTrello = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(900))
+                guard !Task.isCancelled else { return }
+                self?.sincronizarTrello()
+            }
+        }
         // Ao abrir, tenta a última pasta usada; depois, o irmão `doc-harness`,
         // que é o arranjo real em Challenge18/.
         if let salvo = UserDefaults.standard.string(forKey: Self.chaveRaiz) {
@@ -83,6 +119,19 @@ final class EstadoDaBancada {
             if LeitorDeVault.ehVault(url) { raiz = url; return }
         }
         if let vizinho = Self.vaultVizinho() { raiz = vizinho }
+    }
+
+    private static func arquivosDeAmbiente() -> [URL] {
+        let local = Bundle.main.bundleURL
+        let origem = local.pathExtension == "app" ? local.deletingLastPathComponent() : local
+        var candidatos = [URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+            .appendingPathComponent(".env")]
+        var base = origem
+        for _ in 0...3 {
+            candidatos.append(base.appendingPathComponent(".env"))
+            base = base.deletingLastPathComponent()
+        }
+        return Array(Set(candidatos.map(\.standardizedFileURL)))
     }
 
     /// Procura um `doc-harness` ao lado do app, subindo alguns níveis.
@@ -184,6 +233,29 @@ final class EstadoDaBancada {
 
     var diasDoCalendario: [DiaDoCalendario] {
         guard let vault else { return [] }
-        return Calendario.porDia(de: vault)
+        let eventos = Calendario.eventos(de: vault) + Calendario.eventosDoTrello(tarefasDoTrello)
+        return Calendario.porDia(eventos)
+    }
+
+    func sincronizarTrello() {
+        sincronizacaoDoTrello?.cancel()
+        guard configuracaoDoTrello.habilitada else {
+            tarefasDoTrello = []
+            erroDoTrello = nil
+            return
+        }
+        let configuracao = configuracaoDoTrello
+        sincronizacaoDoTrello = Task { [weak self] in
+            do {
+                let tarefas = try await ClienteDoTrello().tarefas(com: configuracao)
+                guard !Task.isCancelled else { return }
+                self?.tarefasDoTrello = tarefas
+                self?.erroDoTrello = nil
+                self?.ultimaSincronizacaoDoTrello = .now
+            } catch {
+                guard !Task.isCancelled else { return }
+                self?.erroDoTrello = error.localizedDescription
+            }
+        }
     }
 }

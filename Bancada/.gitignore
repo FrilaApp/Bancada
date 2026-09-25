@@ -7,3 +7,6 @@
 /scripts/AppIcon-preview.png
 .DS_Store
 site/
+.env
+.env.*
+!.env.example

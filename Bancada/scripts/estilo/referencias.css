@@ -1,0 +1,442 @@
+/* ==========================================================================
+   Referências cruzadas: citação, prévia, volta e chegada
+   ==========================================================================
+   O gerador anexa este arquivo ao fim de estilo.css, depois de novidades.css.
+   Norma e decisões: DESIGN.md, "Referências cruzadas".
+
+   Cor só por variável: os papéis do site (--texto, --acento, --superficie…)
+   e derivados de color-mix() sobre eles. Nenhum hex mora aqui.
+
+   Especificidade: o multipagina.css pinta `a` e `a:hover` com hex, e o tema
+   claro repete com `:root[data-theme="light"] a:hover`, (0,3,1). Onde um
+   link desta folha precisa vencer, ele leva `:root` e a classe à frente.
+
+   Movimento: base.css zera animação e transição sob prefers-reduced-motion.
+   O destaque de chegada tem uma versão parada para esse caso, no fim.
+   ========================================================================== */
+
+/* Derivados por tema ----------------------------------------------------- */
+
+:root {
+  /* O pontilhado da citação: o acento pela metade, para marcar que ali há
+     um link sem acender 200 links azuis numa página de requisitos. */
+  --ref-traco: color-mix(in srgb, var(--acento) 55%, transparent);
+  --ref-destaque: color-mix(in srgb, var(--acento) 16%, transparent);
+  --ref-sombra:
+    0 10px 28px color-mix(in srgb, var(--texto) 12%, transparent),
+    0 1px 2px color-mix(in srgb, var(--texto) 8%, transparent);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ref-destaque: color-mix(in srgb, var(--acento) 22%, transparent);
+    --ref-sombra:
+      0 14px 36px color-mix(in srgb, var(--fundo) 85%, transparent),
+      0 0 0 1px color-mix(in srgb, var(--texto) 5%, transparent);
+  }
+}
+
+:root[data-theme="dark"] {
+  --ref-destaque: color-mix(in srgb, var(--acento) 22%, transparent);
+  --ref-sombra:
+    0 14px 36px color-mix(in srgb, var(--fundo) 85%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--texto) 5%, transparent);
+}
+
+/* Citação ------------------------------------------------------------------ */
+
+/* "RN25" no meio do texto continua lendo como texto: mesma cor, mesmo peso.
+   O que diz que é link é o pontilhado, e o cursor. No hover e no foco vira
+   link inteiro, na cor do acento. */
+:root main a.ref {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: var(--ref-traco);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.22em;
+  text-decoration-skip-ink: none;
+  transition: color 150ms ease, text-decoration-color 150ms ease;
+}
+
+:root main a.ref:hover,
+:root main a.ref:focus-visible {
+  color: var(--acento);
+  text-decoration-style: solid;
+  text-decoration-color: currentColor;
+}
+
+/* Prévia ------------------------------------------------------------------- */
+
+/* Uma só, pendurada no <body>. O cliente posiciona com top e left fixos, em
+   coordenadas da janela, abaixo do link (ou acima, quando não cabe). É uma
+   superfície que flutua: raio de cartão, borda de 1px e sombra curta. */
+.ref-previa {
+  position: fixed;
+  z-index: 70;
+  inline-size: max-content;
+  max-inline-size: min(380px, calc(100vw - 24px));
+  box-sizing: border-box;
+  padding: 12px 14px 13px;
+  background: var(--superficie);
+  color: var(--texto);
+  border: 1px solid var(--borda);
+  border-radius: 12px;
+  box-shadow: var(--ref-sombra);
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 1.45;
+  text-align: start;
+  overflow-wrap: break-word;
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 140ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 140ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.ref-previa[hidden] {
+  display: none;
+}
+
+@starting-style {
+  .ref-previa {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+
+  .ref-previa[data-lado="acima"] {
+    transform: translateY(-3px);
+  }
+}
+
+.ref-previa:focus {
+  outline: none;
+}
+
+.ref-previa p {
+  margin: 0;
+  max-width: none;
+}
+
+/* Linha de cima: o identificador (voz de fato, mono) e onde ele mora. */
+.ref-previa-topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-block-end: 6px !important;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--textoSutil);
+}
+
+.ref-previa-topo .cbl-ponto-sep {
+  margin: 0 6px;
+}
+
+.ref-previa-id {
+  font-family: var(--mono);
+  font-weight: 500;
+  color: var(--texto);
+}
+
+.ref-previa-titulo {
+  margin-block-end: 4px !important;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-wrap: balance;
+}
+
+/* O texto do documento é narrativa: a voz de leitura, cortada em sete
+   linhas. A página inteira está a um clique. */
+.ref-previa-texto {
+  font-family: var(--serif);
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--texto) 88%, var(--textoSutil));
+  text-wrap: pretty;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 7;
+  line-clamp: 7;
+  overflow: hidden;
+}
+
+.ref-previa-detalhes {
+  display: grid;
+  gap: 3px;
+  margin: 10px 0 0;
+  padding-block-start: 8px;
+  border-block-start: 1px solid var(--divisor);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.ref-previa-detalhes div {
+  display: flex;
+  gap: 8px;
+}
+
+.ref-previa-detalhes dt {
+  flex: none;
+  color: var(--textoSutil);
+}
+
+.ref-previa-detalhes dd {
+  margin: 0;
+  color: var(--texto);
+}
+
+/* Folha do toque ----------------------------------------------------------- */
+
+/* No celular não há "passar por cima": a primeira batida numa citação abre a
+   prévia presa ao pé da tela, ao alcance do polegar, com "Abrir" e "Fechar".
+   Os dois botões têm 44px de alvo. */
+.ref-previa--folha {
+  inset-inline: 12px;
+  inset-block-end: calc(12px + env(safe-area-inset-bottom, 0px));
+  inline-size: auto;
+  max-inline-size: 560px;
+  margin-inline: auto;
+  padding: 16px 16px 12px;
+  font-size: 14px;
+}
+
+@starting-style {
+  .ref-previa--folha {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+.ref-previa--folha .ref-previa-texto {
+  font-size: 15px;
+  -webkit-line-clamp: 9;
+  line-clamp: 9;
+}
+
+.ref-previa-acoes {
+  display: flex;
+  gap: 8px;
+  margin-block-start: 14px;
+}
+
+:root .ref-previa a.ref-previa-abrir,
+:root .ref-previa a.ref-previa-abrir:hover {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: 44px;
+  border-radius: 6px;
+  background: var(--acento);
+  color: var(--fundo);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.ref-previa-fechar {
+  min-block-size: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--borda);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--texto);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Pílula de volta ------------------------------------------------------------ */
+
+/* Aparece depois de seguir uma citação e desfaz o salto. Mesmo lugar e mesma
+   forma do aviso de conteúdo novo (#atualizacao): quem já viu um reconhece o
+   outro. */
+.ref-volta {
+  position: fixed;
+  z-index: 90;
+  inset-block-end: calc(24px + env(safe-area-inset-bottom, 0px));
+  inset-inline-start: 50%;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  inline-size: max-content;
+  max-inline-size: calc(100vw - 32px);
+  box-sizing: border-box;
+  padding: 3px;
+  background: var(--superficie);
+  color: var(--texto);
+  border: 1px solid var(--borda);
+  border-radius: 9999px;
+  box-shadow: var(--ref-sombra);
+  font-family: var(--sans);
+  font-size: 13px;
+  opacity: 1;
+  transform: translate(-50%, 0);
+  transition:
+    opacity 180ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 180ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.ref-volta[hidden] {
+  display: none;
+}
+
+@starting-style {
+  .ref-volta {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+}
+
+/* Com o aviso de conteúdo novo à vista, a pílula sobe e os dois não se
+   cobrem. */
+body:has(#atualizacao:not([hidden])) .ref-volta {
+  inset-block-end: calc(80px + env(safe-area-inset-bottom, 0px));
+}
+
+.ref-volta button {
+  font: inherit;
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  border-radius: 9999px;
+  transition: background-color 150ms ease;
+}
+
+.ref-volta button:focus-visible {
+  outline: 2px solid var(--foco);
+  outline-offset: 1px;
+}
+
+.ref-volta-botao {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-inline-size: 0;
+  min-block-size: 36px;
+  padding: 0 12px 0 11px;
+  font-weight: 500;
+}
+
+.ref-volta-botao svg {
+  flex: none;
+  color: var(--acento);
+}
+
+.ref-volta-rotulo {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-inline-size: 40ch;
+}
+
+.ref-volta-fechar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  inline-size: 36px;
+  block-size: 36px;
+  color: var(--textoSutil) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ref-volta button:hover {
+    background: color-mix(in srgb, var(--texto) 7%, transparent);
+  }
+}
+
+.ref-volta button:active {
+  background: color-mix(in srgb, var(--texto) 10%, transparent);
+}
+
+/* Chegada e volta ------------------------------------------------------------ */
+
+/* A linha de tabela que um salto alcança para um pouco abaixo do topo, e
+   não colada nele: os títulos já têm esse respiro no multipagina.css. */
+:root main tr[id^="ref-"] {
+  scroll-margin-top: 20px;
+}
+
+/* O destino de um salto pisca uma vez no acento: é para o olho achar a
+   linha, não para ficar pintada. Linha de tabela pinta as células; título
+   ganha um halo que não empurra o texto. */
+:root main .ref-alvo:not(tr) {
+  border-radius: 6px;
+  animation: ref-alvo-halo 1600ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+:root main tr.ref-alvo > td {
+  animation: ref-alvo-celula 1600ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@keyframes ref-alvo-halo {
+  0%,
+  35% {
+    background-color: var(--ref-destaque);
+    box-shadow: 0 0 0 6px var(--ref-destaque);
+  }
+
+  100% {
+    background-color: transparent;
+    box-shadow: 0 0 0 6px transparent;
+  }
+}
+
+@keyframes ref-alvo-celula {
+  0%,
+  35% {
+    background-color: var(--ref-destaque);
+  }
+
+  100% {
+    background-color: transparent;
+  }
+}
+
+/* Na volta, é o link seguido que pisca: "você estava aqui". */
+:root main a.ref-voltou {
+  border-radius: 3px;
+  animation: ref-alvo-halo-curto 1600ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@keyframes ref-alvo-halo-curto {
+  0%,
+  35% {
+    background-color: var(--ref-destaque);
+    box-shadow: 0 0 0 3px var(--ref-destaque);
+  }
+
+  100% {
+    background-color: transparent;
+    box-shadow: 0 0 0 3px transparent;
+  }
+}
+
+/* Sem movimento, o destaque fica parado enquanto dura (o cliente tira a
+   classe em 1,6 s) e some de uma vez. */
+@media (prefers-reduced-motion: reduce) {
+  :root main .ref-alvo:not(tr),
+  :root main a.ref-voltou {
+    background-color: var(--ref-destaque);
+    box-shadow: 0 0 0 4px var(--ref-destaque);
+  }
+
+  :root main tr.ref-alvo > td {
+    background-color: var(--ref-destaque);
+  }
+}
+
+@media print {
+  .ref-previa,
+  .ref-volta {
+    display: none !important;
+  }
+
+  :root main a.ref {
+    text-decoration: none;
+  }
+}

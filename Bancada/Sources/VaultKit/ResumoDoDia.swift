@@ -30,6 +30,7 @@ public struct AssuntoDoDia: Identifiable, Equatable {
 public struct ResumoDoDia: Equatable {
     public let data: String
     public let agenda: [EventoDeCalendario]
+    public let trello: [EventoDeCalendario]
     /// Trabalho agrupado: tarefas por volume, `Outros` sempre por último.
     public let assuntos: [AssuntoDoDia]
     /// O vault registrando a si mesmo. Ver `LeituraDeFato.ehBastidor`.
@@ -41,6 +42,7 @@ public struct ResumoDoDia: Equatable {
     public init(_ dia: DiaDoCalendario) {
         data = dia.data
         agenda = dia.eventos.filter { $0.especie == .agenda }
+        trello = dia.eventos.filter { $0.especie == .trello }
         diario = dia.eventos.first { $0.especie == .diario }
 
         let porHora = dia.eventos.sorted { $0.minutoDoDia < $1.minutoDoDia }

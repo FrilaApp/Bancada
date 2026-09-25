@@ -404,6 +404,7 @@ struct TelaCalendario: View {
         // leitura —, depois o nome das tarefas do dia. Commit cru não entra:
         // era ele que fazia a célula dizer `` `df873d0` — Regi… ``.
         let itens = (resumo?.agenda.map(ItemDaCelula.agenda) ?? [])
+            + (resumo?.trello.map(ItemDaCelula.trello) ?? [])
             + (resumo?.destaques.map(ItemDaCelula.assunto) ?? [])
         let trabalho = resumo?.quantidadeDeTrabalho ?? 0
         let doMes = Calendario.mesmoMes(data, ancora)
@@ -495,6 +496,7 @@ struct TelaCalendario: View {
         var partes = [Calendario.rotuloDoDia(data)]
         if ehHoje { partes.append("hoje") }
         partes += resumo?.agenda.map(\.titulo) ?? []
+        partes += resumo?.trello.map(\.titulo) ?? []
         partes.append(resumo?.frase ?? (resumo == nil ? "sem registro" : ""))
         return partes.filter { !$0.isEmpty }.joined(separator: ", ")
     }
@@ -562,6 +564,9 @@ struct TelaCalendario: View {
                             }
                             ForEach(LinhaUnica.de(resumo.agenda, em: dia.data)) { linha in
                                 LinhaDeAgenda(evento: linha.valor)
+                            }
+                            ForEach(LinhaUnica.de(resumo.trello, em: dia.data)) { linha in
+                                LinhaDeTrello(evento: linha.valor)
                             }
                             ForEach(LinhaUnica.de(resumo.assuntos, em: dia.data, chave: \.id)) { linha in
                                 LinhaDeValor(linha.valor.titulo, valor: "\(linha.valor.eventos.count)")
@@ -711,6 +716,7 @@ extension LinhaUnica where Valor == EventoDeCalendario {
 /// O que uma célula da grade pode mostrar.
 private enum ItemDaCelula {
     case agenda(EventoDeCalendario)
+    case trello(EventoDeCalendario)
     /// O nome de uma tarefa do dia, ou o título de um trabalho fora delas.
     case assunto(String)
 }
@@ -730,6 +736,7 @@ private struct ChipDaCelula: View {
     private var texto: String {
         switch item {
         case let .agenda(evento): return evento.titulo
+        case let .trello(evento): return evento.titulo
         case let .assunto(titulo): return titulo
         }
     }
@@ -737,12 +744,14 @@ private struct ChipDaCelula: View {
     private var cor: Color {
         switch item {
         case let .agenda(evento): return cores.categoriaDeAgenda(evento.detalhe)
+        case .trello: return cores.acento
         case .assunto: return cores.textoSutil
         }
     }
 
     private var destaque: Bool {
         if case .agenda = item { return true }
+        if case .trello = item { return true }
         return false
     }
 
@@ -808,6 +817,14 @@ private struct PainelDoDia: View {
                 Section {
                     ForEach(LinhaUnica.de(resumo.agenda, em: "agenda")) { linha in
                         LinhaDeAgenda(evento: linha.valor)
+                    }
+
+                    if !resumo.trello.isEmpty {
+                        Section {
+                            ForEach(LinhaUnica.de(resumo.trello, em: "trello")) { linha in
+                                LinhaDeTrello(evento: linha.valor)
+                            }
+                        } header: { RotuloDeSecao("Prazos do Trello") }
                     }
                 } header: { RotuloDeSecao("Agenda da Academy") }
             }
@@ -881,6 +898,39 @@ private struct LinhaDeAgenda: View {
                 Etiqueta(texto: categoria.rotulo, cor: cor)
             }
         }
+    }
+}
+
+private struct LinhaDeTrello: View {
+    @Environment(\.cores) private var cores
+    let evento: EventoDeCalendario
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: DS.Espaco.sm) {
+            Image(systemName: "checklist")
+                .font(DS.Icone.fonte(DS.Icone.micro))
+                .foregroundStyle(cores.acento)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(evento.titulo)
+                    .font(DS.Tipografia.corpo)
+                    .foregroundStyle(cores.texto)
+                    .lineLimit(2)
+                Text(evento.detalhe)
+                    .font(DS.Tipografia.detalhe)
+                    .foregroundStyle(cores.textoSutil)
+            }
+            Spacer()
+            if let prazo = evento.prazo {
+                Text(prazo.formatted(date: .abbreviated, time: .omitted))
+                    .font(DS.Tipografia.mono)
+                    .foregroundStyle(cores.acento)
+            }
+        }
+        .contentShape(Rectangle())
+        .onTapGesture(count: 2) {
+            if let origem = evento.origem { NSWorkspace.shared.open(origem) }
+        }
+        .help("Cartão do Trello — \(evento.detalhe)")
     }
 }
 
@@ -1070,6 +1120,15 @@ private struct PreviaDoDia: View {
                 Divisor()
                 ForEach(resumo.tarefas.prefix(tarefasVisiveis)) { assunto in
                     LinhaDeValor(assunto.titulo, valor: "\(assunto.eventos.count)")
+                }
+
+                if !resumo.trello.isEmpty {
+                    Divisor()
+                    ForEach(resumo.trello.prefix(tarefasVisiveis)) { evento in
+                        LinhaDeValor(evento.titulo, valor: evento.prazo.map {
+                            $0.formatted(date: .abbreviated, time: .omitted)
+                        } ?? "Trello")
+                    }
                 }
                 if resumo.tarefas.count > tarefasVisiveis {
                     Text("e mais \(Plural.contar(resumo.tarefas.count - tarefasVisiveis, "tarefa", "tarefas"))")

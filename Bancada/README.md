@@ -87,7 +87,11 @@ Para gerar local, sem publicar:
 node scripts/gerar-site.js ../doc-harness [destino]
 ```
 
-Sai HTML puro e sem dependência de npm — o colapso dos grupos de registro usa `<details>`. A única peça de JavaScript é o aviso de conteúdo novo, que consulta um `versao.json` de ~50 bytes a cada 30 segundos; sem ele o site continua sendo o HTML estático que sempre foi. Tema claro e escuro acompanham o sistema do leitor.
+Sai HTML puro e sem dependência de npm — o colapso dos grupos de registro usa `<details>`. O JavaScript é pouco e dispensável: o tema, a barra recolhível, o aviso de conteúdo novo (que consulta o `versao.json` a cada 30 segundos), o "O que há de novo" (`novidades.js`) e a prévia e a volta das referências (`referencias.js`). Sem ele o site continua sendo o HTML estático que sempre foi. Tema claro e escuro acompanham o sistema do leitor.
+
+**O que há de novo.** Cada leitor vê marcado o texto que mudou desde a última visita dele; quem nunca visitou vê os últimos 7 dias. Verde é acréscimo, âmbar é correção e vermelho é remoção, e a marca esmaece depois de lida. A barra lateral ganha o item Novidades, com a contagem de páginas por ler, e um ponto em cada página com novidade. A comparação roda no navegador, contra o que aquele leitor já viu, guardado no `localStorage` dele. O build entrega três coisas: o hash do texto de cada página, a versão de 7 dias atrás dos documentos que mudaram (`novidades/base/`) e a linha do tempo do git, que vira a página Novidades. Nada disso precisa de servidor; sem histórico do git o build segue, só sem a base e sem a linha do tempo. O desenho e as cores estão no `DESIGN.md` (§5.10).
+
+**Referências cruzadas.** Toda citação de um identificador que algum documento define (RN25, RF01, UC08, US07, T-0011, D6) vira link para a definição, e os wikilinks do vault levam à seção certa, inclusive `[[Nota#Seção]]`. Parar o ponteiro sobre o link mostra o que ele cita; no celular, a primeira batida abre essa prévia no pé da tela. Quem segue um link ganha a pílula "Voltar para …", que devolve ao ponto exato de onde saiu. O build acha as definições no HTML já renderizado (`scripts/referencias/indice.js`) e escreve o `referencias.json` que a prévia lê. Para um identificador novo virar link, basta defini-lo numa linha de tabela (`| RN30 | O sistema… |`) ou num título que comece por ele. O desenho está no `DESIGN.md` (§5.11).
 
 **Ao criar um `tipo` de nota novo no vault**, acrescente-o em `SECOES` no `scripts/gerar-site.js`, senão a nota não chega ao site. O build avisa quando um tipo fica de fora — o aviso existe porque o tipo `agenda` passou um dia inteiro fora do site sem ninguém notar.
 
@@ -105,7 +109,7 @@ As páginas levam `noindex, nofollow`. Isso pede a buscadores que não indexem, 
 
 | Seção | O que resolve |
 |---|---|
-| **Calendário** | O que aconteceu em cada dia, em linguagem de gente: a agenda da Academy, a narrativa do dia e o trabalho agrupado por tarefa. O log cru fica no fim, recolhido, para quem precisa conferir |
+| **Calendário** | O que aconteceu em cada dia, em linguagem de gente: a agenda da Academy, prazos de cartões do Trello, a narrativa do dia e o trabalho agrupado por tarefa. O log cru fica no fim, recolhido, para quem precisa conferir |
 | **Trabalho** | A tabela de tarefas (colunas ordenáveis, filtro por status) com os fatos logo abaixo. Selecionar uma tarefa mostra só os fatos que citam o ID dela; sem seleção, o log inteiro indentado por dia → tipo → grupo, com a repetição colapsada — cinco commits "Registra os fatos da sessão" viram um nó `5× … [20:21–22:05]`, que abre e mostra os cinco |
 | **Diário** | A narrativa do dia ao lado dos fatos que a sustentam — a regra de ouro do vault, verificável de relance |
 | **Acervo** | Imagens, vídeos, PDFs e `.pages`, cada um com miniatura de verdade. Selecionar um `.pages` traz o `.md` derivado no painel ao lado |
@@ -127,6 +131,19 @@ Nada ficou inalcançável na fusão. A árvore inteira de registros continua a u
 `VaultKit/Calendario.swift` já agrega o vault em `DiaDoCalendario` — fatos, diários e tarefas criadas por data — e `DataISO` converte as datas do frontmatter ancorando ao meio-dia, para que fuso e horário de verão nunca joguem um evento para a véspera. A tela foi lista enquanto a grade não estava pronta — uma grade incompleta pareceria pronta. Desde `99bfabf` são três modos: Mês, Semana e Lista, com um puxador que comprime a grade entre uma faixa de sete dias e o mês inteiro, navegação entre meses e seleção de dia.
 
 O calendário não mostra o log como ele foi gravado. A linha `` `df873d0` — Registra os fatos da sessão · 1 arquivo(s) `` é escrita para auditoria, e na célula o que cabia dela era o hash. Entre o vault e a tela há uma camada de tradução, toda em `VaultKit` e coberta por teste:
+
+### Integração com o Trello
+
+Em **Ajustes → Trello**, informe a chave da API e o token. O ID do quadro é opcional:
+vazio busca os cartões abertos de todos os quadros da conta; preenchido, limita a
+um quadro. A Bancada lê apenas cartões abertos que tenham data de entrega, não
+cria nem altera cartões e atualiza a cada 15 minutos. A configuração também pode
+ser fornecida ao iniciar o app com `TRELLO_KEY`, `TRELLO_TOKEN` e, opcionalmente,
+`TRELLO_BOARD_ID`.
+
+Para usar um arquivo local, copie `Bancada/.env.example` para `Bancada/.env` e
+preencha os três valores. Esse arquivo é carregado automaticamente ao abrir a
+Bancada e está protegido pelo `.gitignore`; não o versionar nem compartilhar.
 
 - **`LeituraDeFato`** separa a mensagem do hash e da contagem de arquivos, e marca como **bastidor** o que é o vault registrando a si mesmo ("Registra os fatos da sessão", `sessao`, atualizações da narrativa) — 37% dos fatos dos três primeiros dias.
 - **`Equipe`** lê a tabela de contatos do `CLAUDE.md` do vault e troca o login do Git pelo primeiro nome: `fbtostadev` vira Fabrício. Quem não casa com ninguém sai como veio.

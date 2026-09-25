@@ -164,10 +164,10 @@ function renderizarDocumentoCBL(base = '../') {
   `).join('');
 
   return `
-    <article class="cbl-documento" id="cbl-documento-oficial">
+    <article class="cbl-documento" id="cbl-documento-oficial" data-novidades-raiz data-novidades-chave="documento-cbl">
       <!-- Masthead / Colofão Editorial do Documento (Inspirado em Raphael Salaja) -->
       <header class="cbl-masthead-doc">
-        <div class="cbl-masthead-eyebrow">
+        <div class="cbl-masthead-eyebrow" data-novidades="ignorar">
           <span class="cbl-masthead-rotulo"><span class="cbl-eyebrow-item">Documento Oficial</span><span class="cbl-ponto-sep" aria-hidden="true"></span><span class="cbl-eyebrow-item">Apple Developer Academy</span><span class="cbl-ponto-sep" aria-hidden="true"></span><span class="cbl-eyebrow-item">CBL</span></span>
           <a href="${pdfHref}" class="cbl-masthead-pdf" download="CBL_C18.pdf" title="Baixar PDF original de 28 páginas (9.1 MB)">
             <span>PDF Original (28p<span class="cbl-ponto-sep" aria-hidden="true"></span>9.1 MB)</span>
@@ -176,10 +176,11 @@ function renderizarDocumentoCBL(base = '../') {
         </div>
 
         <h1 class="cbl-masthead-titulo">Documento Oficial CBL — Challenge 18</h1>
+        <p class="nov-resumo" data-nov-resumo data-novidades="ignorar" hidden></p>
         <p class="cbl-masthead-lead">Framework Challenge Based Learning aplicado à concepção, pesquisa empírica de mercado e especificação técnica do produto <strong>Frila</strong>.</p>
 
         <!-- Colofão Editorial Aberto (Zero Containers Artificiais) -->
-        <div class="cbl-colofao">
+        <div class="cbl-colofao" data-novidades="ignorar">
           <div class="cbl-colofao-item">
             <span class="cbl-colofao-rotulo">Equipe BlendOps</span>
             <div class="cbl-colofao-valor">
@@ -205,7 +206,7 @@ function renderizarDocumentoCBL(base = '../') {
         </div>
 
         <!-- Navegação por Seções Minimalista e Aberta -->
-        <nav class="cbl-nav-ancoras" aria-label="Navegação rápida pelas seções do CBL">
+        <nav class="cbl-nav-ancoras" data-novidades="ignorar" aria-label="Navegação rápida pelas seções do CBL">
           <span class="cbl-nav-legenda">Seções</span>
           <a href="#cbl-engage" class="cbl-link-ancora"><span class="cbl-ancora-num">01</span> Engage</a>
           <span class="cbl-ancora-sep">/</span>

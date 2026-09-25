@@ -255,7 +255,7 @@ aside details.grupo summary.grupo-titulo {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #525860;
+  color: var(--textoSutil);
   font-family: var(--sans);
   transition: color 140ms ease, background-color 140ms ease;
 }
@@ -266,26 +266,24 @@ aside details.grupo summary.grupo-titulo::marker {
 }
 
 aside details.grupo summary.grupo-titulo:hover {
-  color: #c4c7cb;
+  color: var(--texto);
   background: rgba(255, 255, 255, 0.03);
 }
 
+/* O chevron não tem cor própria: o traço é `currentColor` e herda a do
+   rótulo, no repouso e no hover. Com os grupos fechados por padrão, os
+   rótulos são quase tudo o que a barra mostra, e precisam passar no AA. */
 aside details.grupo summary.grupo-titulo .chevron {
   width: 10px;
   height: 10px;
-  color: #525860;
   transform: rotate(0deg);
   transform-origin: center;
-  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), color 140ms ease;
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
   flex-shrink: 0;
 }
 
 aside details.grupo[open] summary.grupo-titulo .chevron {
   transform: rotate(90deg);
-}
-
-aside details.grupo summary.grupo-titulo:hover .chevron {
-  color: #9499a0;
 }
 
 aside ul {
@@ -1449,9 +1447,13 @@ body > footer {
   display: flex;
   align-items: center;
   gap: 12px;
+  /* Com `left: 50%`, a largura automática para em metade da tela e o texto
+     quebrava em duas linhas no celular. */
+  inline-size: max-content;
+  max-inline-size: calc(100vw - 32px);
   padding: 6px 6px 6px 16px;
-  background: #0c0e12;
-  color: #f0f0f0;
+  background: var(--superficie);
+  color: var(--texto);
   border: 1px solid var(--borda);
   border-radius: 9999px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.06);
@@ -1464,6 +1466,9 @@ body > footer {
   display: none;
 }
 
+/* O rótulo do botão usa a cor do canvas: #000 sobre #3b9eff dá 7,5:1 no
+   escuro e #f8f9fa sobre #2563eb dá 4,9:1 no claro. O branco fixo de antes
+   ficava em 2,8:1 no escuro. */
 #atualizacao button {
   font: inherit;
   font-size: 12px;
@@ -1473,13 +1478,27 @@ body > footer {
   border-radius: 9999px;
   border: 1px solid var(--acento);
   background: var(--acento);
-  color: #ffffff;
-  transition: opacity 150ms ease, transform 150ms ease;
+  color: var(--fundo);
+  transition: background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
 }
 
-#atualizacao button:hover {
-  opacity: 0.9;
-  transform: scale(0.98);
+/* No hover o fundo anda em direção à cor do texto: clareia no escuro e
+   escurece no claro, e o contraste com o rótulo só aumenta. */
+@media (hover: hover) and (pointer: fine) {
+  #atualizacao button:hover {
+    background: color-mix(in srgb, var(--acento) 86%, var(--texto));
+    border-color: color-mix(in srgb, var(--acento) 86%, var(--texto));
+  }
+}
+
+#atualizacao button:active {
+  transform: scale(0.97);
+}
+
+/* Tema claro: pílula branca sobre o papel, com sombra leve no lugar do
+   halo escuro, que no claro virava mancha. */
+:root[data-theme="light"] #atualizacao {
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--texto) 12%, transparent), 0 1px 2px color-mix(in srgb, var(--texto) 8%, transparent);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -1527,6 +1546,43 @@ body > footer {
   .footer-inner {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+/* No celular o topo não cabia em 390px: marca, quatro abas e o botão de tema
+   somavam uns 580px e empurravam a página inteira para o lado. Com a página
+   mais larga que a tela, tudo que é `position: fixed` (o aviso de conteúdo
+   novo, a prévia e a pílula de volta) se centrava fora da vista. A marca
+   fica só com o símbolo, as abas encolhem, e se ainda não couber quem rola
+   é a faixa das abas, nunca a página. As margens automáticas centram as abas
+   quando sobra espaço e somem quando falta, sem cortar a primeira. */
+@media (max-width: 640px) {
+  body > header {
+    gap: 8px;
+  }
+  .marca > span:not(.marca-simbolo) {
+    display: none;
+  }
+  body > header nav {
+    flex: 1 1 auto;
+    min-width: 0;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  body > header nav::-webkit-scrollbar {
+    display: none;
+  }
+  body > header nav a {
+    flex: none;
+    padding: 6px 9px;
+    font-size: 12.5px;
+  }
+  body > header nav a:first-child {
+    margin-inline-start: auto;
+  }
+  body > header nav a:last-child {
+    margin-inline-end: auto;
   }
 }
 
@@ -1657,21 +1713,8 @@ body > footer {
   border-color: #cbd5e1;
 }
 
-:root[data-theme="light"] aside details.grupo summary.grupo-titulo {
-  color: #64748b;
-}
-
 :root[data-theme="light"] aside details.grupo summary.grupo-titulo:hover {
-  color: #111827;
   background: rgba(0, 0, 0, 0.03);
-}
-
-:root[data-theme="light"] aside details.grupo summary.grupo-titulo .chevron {
-  color: #94a3b8;
-}
-
-:root[data-theme="light"] aside details.grupo summary.grupo-titulo:hover .chevron {
-  color: #475569;
 }
 
 :root[data-theme="light"] aside details.grupo ul {
@@ -3547,21 +3590,6 @@ body > footer {
 .cbl-espaco-sm { height: 12px; }
 .cbl-espaco-md { height: 24px; }
 .cbl-espaco-lg { height: 36px; }
-
-/* Marcadores Semânticos para What Is New / Diffs */
-.cbl-marcador-novo {
-  background: rgba(16, 185, 129, 0.16);
-  color: inherit;
-  padding: 2px 4px;
-  border-radius: 3px;
-}
-
-.cbl-marcador-alterado {
-  background: rgba(245, 158, 11, 0.16);
-  color: inherit;
-  padding: 2px 4px;
-  border-radius: 3px;
-}
 
 /* Impressão */
 @media print {
