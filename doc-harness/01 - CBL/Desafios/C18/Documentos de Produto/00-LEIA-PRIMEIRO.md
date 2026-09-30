@@ -69,7 +69,7 @@ As duas camadas dizem a mesma coisa. Quando divergirem, a camada detalhada é a 
 | Código | **Nenhum** |
 | Validação de campo | **Nenhuma** |
 | Receita | Zero |
-| Estágio de maturidade tecnológica | **TRL 2** — conceito formulado, nada implementado |
+| Estágio de maturidade tecnológica | Saiu do **TRL 2** (conceito formulado): backend e app iOS em construção desde 22/09, testados em ambiente de desenvolvimento, sem validação de campo |
 
 ---
 

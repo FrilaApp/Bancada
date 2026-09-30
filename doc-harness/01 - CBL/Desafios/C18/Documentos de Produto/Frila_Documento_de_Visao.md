@@ -1,8 +1,8 @@
 ---
 tipo: documento-derivado
 origem: "doc-harness/01 - CBL/Desafios/C18/Documentos de Produto/Frila_Documento_de_Visao.docx"
-hash_origem: 4546ae65d6c1b255e469f62e068339f2b2bad0bfdb681455a3ab90dd42e8df41
-exportado_em: 2026-09-30T16:48
+hash_origem: c150ab957b09799c46e60f7f59a41a08934ddb7cad2ae1db7e98aa84c5feeb03
+exportado_em: 2026-09-30T17:34
 exportado_por: Cauê Carneiro <cauecarneiroc@gmail.com>
 conversao: ok
 tags: [documento]
@@ -78,7 +78,7 @@ v1.3.0
 
 Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva
 
-Revisão de consistência para a entrega parcial de 02/10: v1.0 só iOS, com Android e web na v1.2 (Escopo do MVP); estado do projeto com o código em construção; taxa de comparecimento só do profissional; múltiplos usuários com contas próprias (RN25); só estabelecimentos do DF no lançamento; check-out sem limite de distância; a Equipe Frila pode ocultar vaga imprópria; referências com os caminhos do repositório frila-docs, o Documento de Requisitos v1.4.0, o Backlog v1.2.1 e o contrato da API 0.2.26.
+Revisão de consistência para a entrega parcial de 02/10: v1.0 só iOS, com Android e web na v1.2 (Escopo do MVP); estado do projeto com o código em construção; taxa de comparecimento só do profissional; múltiplos usuários com contas próprias (RN25); só estabelecimentos do DF no lançamento; check-out sem limite de distância; a Equipe Frila pode ocultar vaga imprópria; referências com os caminhos do repositório frila-docs, o Documento de Requisitos v1.4.0, o Backlog v1.2.1 e o contrato da API 0.2.27.
 
 Glossário
 
@@ -294,7 +294,7 @@ requisitos/casos-de-uso/, arquitetura/ e banco-de-dados/
 
 Contrato da API (OpenAPI 3.1)
 
-0.2.26
+0.2.27
 
 api/openapi.yaml
 

@@ -574,7 +574,7 @@ CREATE TABLE ocorrencia (
 
 `dispositivo` guarda o token de push de cada aparelho, que o app registra ao abrir e sempre que o token muda. Uma pessoa pode ter mais de um aparelho; o token é único. Quem negou a permissão de notificação não tem linha aqui e, para o despacho, não é alcançável. Na exclusão de conta, os dispositivos vão junto (RN15).
 
-`chave_cliente` torna seguras as duas escritas que não têm chave natural: publicar uma vaga e denunciar. O app gera a chave uma vez por ação; se a rede cair e ele reenviar, o `UNIQUE` devolve a vaga ou a denúncia já gravada em vez de criar outra. As demais escritas já são idempotentes pela chave natural — candidatura por vaga e profissional, check-in por turno, avaliação por turno e lado, bloqueio por par. O contrato está em `api/openapi.yaml`, no repositório frila-docs (versão 0.2.26, de 30/09/2026).
+`chave_cliente` torna seguras as duas escritas que não têm chave natural: publicar uma vaga e denunciar. O app gera a chave uma vez por ação; se a rede cair e ele reenviar, o `UNIQUE` devolve a vaga ou a denúncia já gravada em vez de criar outra. As demais escritas já são idempotentes pela chave natural — candidatura por vaga e profissional, check-in por turno, avaliação por turno e lado, bloqueio por par. O contrato está em `api/openapi.yaml`, no repositório frila-docs (versão 0.2.27, de 30/09/2026).
 
 `despacho` e `notificacao` são duas coisas, e separar as duas é o que torna o teto possível. `despacho` diz *quem foi considerado para qual vaga*; `notificacao` diz *qual push saiu, quando, e se chegou*. Um push agrupado ("4 vagas novas perto de você") é uma `notificacao` com quatro `despacho` apontando para ela. O `UNIQUE (vaga_id, profissional_id, rodada)` garante RN05 contra o modo de falha mais banal: a mesma vaga reenviada, na mesma rodada, para quem já recebeu. A reabertura por atraso abre uma rodada nova (decisão de 28/09): a vaga volta a chegar a quem já a tinha recebido, menos a quem faltou nela. E o estado de entrega mora em `notificacao`, que é a unidade que RNF02 mede.
 
@@ -592,7 +592,7 @@ A avaliação só é aceita depois do fim previsto de um turno com `verificacao 
 
 `bloqueio` liga duas contas, `autor_id` e `bloqueado_id`, e vale nos dois sentidos: quem bloqueou não recebe mais nada de quem foi bloqueado, e vice-versa. Quando uma das contas é membro de estabelecimento, a consulta junta o bloqueio com `membro_estabelecimento`, e o bloqueio passa a valer para as vagas daquele estabelecimento inteiro. A elegibilidade, a lista de vagas e a candidatura leem a mesma tabela (RF26). O bloqueio é imediato e não depende de ninguém da Equipe Frila.
 
-Uma tabela só (`ocorrencia`) para seis coisas diferentes é escolha: todas são **o mesmo ato** do ponto de vista do registro — alguém saiu do curso normal, num momento, por um motivo declarado. RN12 e RN13 pedem a mesma tripla para cancelamento e para suspensão, e `motivo text NOT NULL` é o que impede a suspensão silenciosa apontada como queixa recorrente nos concorrentes. Suporte, denúncia, contestação e pedido de revisão do despacho chegam à Equipe Frila por e-mail; a `ocorrencia` guarda o registro e o prazo de resposta, de até 5 dias úteis. Suspensão só nasce de denúncia grave confirmada — assédio, fraude ou documento falso —, nunca de cancelamento (RN13).
+Uma tabela só (`ocorrencia`) para seis coisas diferentes é escolha: todas são **o mesmo ato** do ponto de vista do registro — alguém saiu do curso normal, num momento, por um motivo declarado. RN12 e RN13 pedem a mesma tripla para cancelamento e para suspensão, e `motivo text NOT NULL` é o que impede a suspensão silenciosa apontada como queixa recorrente nos concorrentes. Suporte, denúncia, contestação e pedido de revisão do despacho chegam à Equipe Frila por e-mail; a `ocorrencia` guarda o registro e o prazo de resposta, de até 5 dias úteis. Suspensão só nasce de denúncia grave confirmada — assédio, fraude ou documento falso, e os dois últimos chegam pelo motivo `outro` do enum `motivo_denuncia` —, nunca de cancelamento (RN13).
 
 ---
 
@@ -1024,7 +1024,7 @@ As leituras que só tocam no que é do próprio usuário podem rodar com a ident
 
 | Função | O que devolve | Regra |
 |---|---|---|
-| `perfil_publico` | Nome, funções, turnos realizados, taxa de comparecimento e o par `aval_positivas` / `aval_total` | RN08: sempre com o denominador, nunca só o percentual. `ponto_base`, telefone, e-mail e nascimento não saem |
+| `perfil_publico` | Nome, funções, turnos realizados, taxa de comparecimento e o par `aval_positivas` / `aval_total` | RN08: sempre com o denominador, nunca só o percentual. `ponto_base`, telefone, e-mail e nascimento não saem. Hoje não filtra bloqueio; a decisão de 30/09 é passar a esconder o perfil entre partes bloqueadas (RF26), numa próxima versão do contrato |
 | `vagas_abertas`, `detalhe_vaga` | A vaga e, do estabelecimento, nome, tipo e reputação | RF26: some a vaga de quem tem bloqueio com o profissional. O documento (CNPJ ou CPF) não sai |
 | `candidatos_da_vaga` | Para o membro do estabelecimento, quem se candidatou, com o perfil público de cada um | RF26: quem tem bloqueio some da lista |
 | `contato_do_turno` | Nome, telefone e link do WhatsApp da outra parte | RN10: só com a posição confirmada ou cumprida, até 7 dias depois do fim, e sem bloqueio |

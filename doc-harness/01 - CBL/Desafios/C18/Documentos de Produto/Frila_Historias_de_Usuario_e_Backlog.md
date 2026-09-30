@@ -7,7 +7,7 @@ desafio: C18
 data: 2026-09-30
 status: revisao
 origem: "01 - CBL/Desafios/C18/Documentos de Produto/Frila_Historias_de_Usuario_e_Backlog.pages"
-hash_origem: 3c052318304af4dcac1399a561030ba8ba0c24e750e6f092af2a0d17f6de0401
+hash_origem: 842ded33deab663fec51933eca6d7e73c392b3548552758f6cd2ad2e6e68ab9b
 tags: [documento, user-stories, backlog, moscow, produto, frila]
 ---
 
@@ -29,7 +29,7 @@ Backlog do Produto e Especificação Ágil (MoSCoW / BDD)
 | v1.0.0 | 17/09/2026 | Júlia Clovandi & Fabrício Tosta | Criação do Backlog do Produto com 25 Histórias de Usuário priorizadas via MoSCoW e especificadas em formato BDD (INVEST), derivadas da Especificação de Requisitos v1.0.0 e do Documento de Visão v1.0.0 para orientar o protótipo de baixa fidelidade e o MVP. |
 | v1.1.0 | 22/09/2026 | Cauê Carneiro | Aplica as respostas do quadro 03 de pendências (21 e 22/09), alinhado à Especificação de Requisitos v1.2.0 e ao Documento de Visão v1.1.0: despacho por proximidade (até 15 km), sem raio configurável e sem levas, com teto de notificações; check-in geolocalizado a 200 m com confirmação manual; avaliação só com presença verificada; aval herdado retirado (US19); persona interna retirada, com Painel do gestor na web e Equipe Frila só por e-mail; modo seleção com fechamento automático; novas US26 (denúncia e bloqueio) e US27 (explicação do despacho); referências de RF e RN corrigidas; metas de tempo de publicação e de número de toques retiradas até haver medição no piloto. |
 | v1.2.0 | 22/09/2026 | Cauê Carneiro | Aplica as respostas das pendências para codar (22/09), alinhado à Especificação de Requisitos v1.3.0 e ao Documento de Visão v1.2.0: um app só, com um perfil por conta (RN25, em US01, US03 e US24); entrada por código no e-mail, sem senha e sem SMS (US01); cenário “Disponível agora” retirado (US02); US15 reestimada de 5 para 8 pontos. |
-| v1.2.1 | 30/09/2026 | Cauê Carneiro | Publicação consolidada das decisões de produto de 28/09 e revisão de consistência para a entrega parcial de 02/10, alinhada à Especificação de Requisitos v1.4.0, ao Documento de Visão v1.3.0, ao Escopo do MVP e ao contrato da API 0.2.26: maioridade pela data de nascimento (US01); região administrativa (US03, US04, US08); republicar muda data e horário (US05); US07 escrita do ponto de vista do profissional; equipe de confiança pelo administrador e com turno cumprido (US09); o toque na notificação abre o detalhe da vaga com o aviso de RN10 (US10); lembrete sem telefone e “estou a caminho” na v1.1 (US14); falta para quem termina o turno sem check-in (US15); a vaga ganha posição nova no cancelamento (US16); um voto por lado (US17); taxa de comparecimento só do profissional (US18); exclusão sem falta (US25); épicos, datas, componentes de engenharia e metas de tempo corrigidos. Pontos e prioridades MoSCoW não mudaram. |
+| v1.2.1 | 30/09/2026 | Cauê Carneiro | Publicação consolidada das decisões de produto de 28/09 e revisão de consistência para a entrega parcial de 02/10, alinhada à Especificação de Requisitos v1.4.0, ao Documento de Visão v1.3.0, ao Escopo do MVP e ao contrato da API 0.2.27: maioridade pela data de nascimento (US01); região administrativa (US03, US04, US08); republicar muda data e horário (US05); US07 escrita do ponto de vista do profissional; equipe de confiança pelo administrador e com turno cumprido (US09); o toque na notificação abre o detalhe da vaga com o aviso de RN10 (US10); lembrete sem telefone e “estou a caminho” na v1.1 (US14); falta para quem termina o turno sem check-in (US15); a vaga ganha posição nova no cancelamento (US16); um voto por lado (US17); taxa de comparecimento só do profissional (US18); exclusão sem falta (US25); bloqueio que também esconde o perfil e fraude pelo motivo “outro” (US26, decisões de 30/09); épicos, datas, componentes de engenharia e metas de tempo corrigidos. Pontos e prioridades MoSCoW não mudaram. |
 
 ## Glossário e Metodologia
 
@@ -1073,7 +1073,15 @@ A US19 (aval de quem trabalhou com o profissional fora da plataforma) saiu do pr
 
 **Quando **confirma,
 
-**Então **o bloqueio é imediato: as partes não voltam a se cruzar em notificações, listas e candidaturas.
+**Então **o bloqueio é imediato: as partes não voltam a se cruzar em notificações, listas, candidaturas e no perfil (decisão de 30/09; o perfil ainda aparece e passa a ser escondido numa próxima versão do contrato).
+
+- **• Cenário 3: Fraude ou documento falso**
+
+**Dado que **o usuário suspeita de fraude ou de documento falso,
+
+**Quando **denuncia com o motivo 'outro' e descreve o caso,
+
+**Então **a Equipe Frila apura; confirmada a denúncia grave, a conta denunciada é suspensa, com direito de contestar (US23).
 
 ## 4. Matriz de Priorização MoSCoW
 
