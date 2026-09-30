@@ -174,7 +174,7 @@ O nome também é uma decisão. "Frila" nomeia a unidade de trabalho, o turno av
 
 A segunda dessas hipóteses é o que sobrou de uma tese antiga do projeto, de que o profissional seria o lado escasso do mercado. A pesquisa desfez a versão ampla dessa tese: quem é escasso é o candidato a vaga fixa, porque a diária avulsa paga mais que o dia de CLT e 61% dos empresários reclamam de não ter interessados. Para turno avulso sobra gente, e o que falta é confiança verificável. O que ninguém mediu é o instante da urgência, num bairro específico, com duas horas de antecedência. Abundância no agregado não é abundância na hora.
 
-**Estado atual.** Cinco sócios: Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi e Matheus Silva. Nenhuma linha de código escrita, nenhuma validação de campo feita, receita zero. Maturidade tecnológica em TRL 2, conceito formulado e nada implementado.
+**Estado atual.** Cinco sócios: Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi e Matheus Silva. Em 22/09 o projeto estava em TRL 2, com o conceito formulado; desde então há código, o backend no Supabase e o app iOS, com builds internos no TestFlight, testados em ambiente de desenvolvimento. Nenhuma validação de campo feita, receita zero.
 
 **O próximo passo** é validação de campo: 50 conversas. Sem isso, todo número deste projeto é hipótese. A medida mais barata disponível hoje é entrar nos grupos de WhatsApp de freela do DF e contar quantas vagas aparecem por dia, de que funções, com que antecedência, a que valores, e quantas são reabertas por falta de resposta.
 

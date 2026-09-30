@@ -1,8 +1,8 @@
 ---
 tipo: documento-derivado
 origem: "doc-harness/01 - CBL/Desafios/C18/Documentos de Produto/Frila_Documento_de_Requisitos.docx"
-hash_origem: 33df0f16b69b0e41509d511a036b1c5790a7ff52e5f442eda2143bfac4fef281
-exportado_em: 2026-09-30T16:48
+hash_origem: 95737cb1a602b6129132143ad152baa45fb3a885a7a3bc98417280ca8118f342
+exportado_em: 2026-09-30T17:34
 exportado_por: Cauê Carneiro <cauecarneiroc@gmail.com>
 conversao: ok
 tags: [documento]
@@ -86,7 +86,7 @@ v1.4.0
 
 Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva
 
-Revisão de consistência para a entrega parcial de 02/10, contra o contrato da API 0.2.26, as decisões de produto de 28/09, o Escopo do MVP e o código: v1.0 só iOS, com Android e web na v1.2; região administrativa na vaga e no estabelecimento (RN02, RF02, RF04); cancelamento que dá à vaga uma posição nova (RN12, RF14, UC08); suspensão com cancelamento em cascata (RN13); check-in de 60 minutos antes até o fim, check-out sem limite de distância e falta para quem termina o turno sem check-in (RN22, RF13, UC05); maioridade pela data de nascimento e aceite dos termos (RF01, UC09); lembrete sem telefone nem endereço na tela de bloqueio e “estou a caminho” na v1.1 (RF12); um voto por lado na avaliação (RF15, UC06); taxa de comparecimento só do profissional (RF16); equipe de confiança só pelo administrador e com turno cumprido (RF18, UC11); exclusão sem falta (RF25, UC16); vaga ocultada pela Equipe Frila (RF26, UC17); entidades, classes, pacotes e estrutura de pastas conferidos com o banco e o app; regras vinculadas alinhadas ao Diagrama de Casos de Uso; contrato em api/openapi.yaml.
+Revisão de consistência para a entrega parcial de 02/10, contra o contrato da API 0.2.27, as decisões de produto de 28/09, o Escopo do MVP e o código: v1.0 só iOS, com Android e web na v1.2; região administrativa na vaga e no estabelecimento (RN02, RF02, RF04); cancelamento que dá à vaga uma posição nova (RN12, RF14, UC08); suspensão com cancelamento em cascata (RN13); check-in de 60 minutos antes até o fim, check-out sem limite de distância e falta para quem termina o turno sem check-in (RN22, RF13, UC05); maioridade pela data de nascimento e aceite dos termos (RF01, UC09); lembrete sem telefone nem endereço na tela de bloqueio e “estou a caminho” na v1.1 (RF12); um voto por lado na avaliação (RF15, UC06); taxa de comparecimento só do profissional (RF16); equipe de confiança só pelo administrador e com turno cumprido (RF18, UC11); exclusão sem falta (RF25, UC16); vaga ocultada pela Equipe Frila (RF26, UC17); decisões de 30/09: o bloqueio também esconde o perfil (RF26, UC17) e fraude e documento falso chegam pelo motivo “outro” da denúncia (RN13); entidades, classes, pacotes e estrutura de pastas conferidos com o banco e o app; regras vinculadas alinhadas ao Diagrama de Casos de Uso; contrato em api/openapi.yaml.
 
 Glossário
 
@@ -234,7 +234,7 @@ Todo o documento
 
 Este documento especifica os requisitos funcionais, os requisitos não funcionais, as regras de negócio e os casos de uso do sistema Frila, servindo de referência para o time de desenvolvimento, para os testes e para a validação com as partes interessadas. O posicionamento de mercado, as personas e a justificativa de cada escolha estão no Documento de Visão v1.3.0, que este documento complementa e não repete.
 
-Uma ressalva de leitura: o Frila ainda não passou por validação de campo. Desde 22/09 há código, o backend no Supabase e o app iOS, com builds internos no TestFlight, e o comportamento da API está no contrato (api/openapi.yaml, versão 0.2.26). As regras e os requisitos aqui derivam de evidência pública sobre o mercado e das falhas observadas nos concorrentes, mas as premissas de comportamento do usuário no Distrito Federal permanecem hipóteses, marcadas com [H]. Requisitos que dependem diretamente de uma hipótese trazem a marca no próprio texto, para que a revisão posterior saiba onde mexer.
+Uma ressalva de leitura: o Frila ainda não passou por validação de campo. Desde 22/09 há código, o backend no Supabase e o app iOS, com builds internos no TestFlight, e o comportamento da API está no contrato (api/openapi.yaml, versão 0.2.27). As regras e os requisitos aqui derivam de evidência pública sobre o mercado e das falhas observadas nos concorrentes, mas as premissas de comportamento do usuário no Distrito Federal permanecem hipóteses, marcadas com [H]. Requisitos que dependem diretamente de uma hipótese trazem a marca no próprio texto, para que a revisão posterior saiba onde mexer.
 
 1.2 Escopo
 
@@ -342,7 +342,7 @@ Uma posição cancelada e não reaberta é um turno que falha em silêncio. Guar
 
 RN13
 
-O sistema NÃO DEVE suspender ou bloquear um perfil sem motivo registrado e sem canal de contestação com resposta em até 5 dias úteis. A suspensão só acontece por denúncia grave confirmada (assédio, fraude ou documento falso) e cancela na hora os turnos futuros da conta, com registro, aviso à contraparte e reabertura das posições; cancelamento nunca suspende, só afeta a taxa de comparecimento.
+O sistema NÃO DEVE suspender ou bloquear um perfil sem motivo registrado e sem canal de contestação com resposta em até 5 dias úteis. A suspensão só acontece por denúncia grave confirmada (assédio, fraude ou documento falso) e cancela na hora os turnos futuros da conta, com registro, aviso à contraparte e reabertura das posições; cancelamento nunca suspende, só afeta a taxa de comparecimento. Fraude e documento falso chegam pelo motivo “outro” da denúncia, com o relato, e a Equipe Frila apura.
 
 Punição percebida como injusta é queixa recorrente: bloqueio por duas desistências, inclusive com dois dias de antecedência, e punição por falta a uma vaga que havia sumido do aplicativo.
 
@@ -636,7 +636,7 @@ O sistema deve permitir que qualquer usuário denuncie e bloqueie outro a partir
 
 Alta
 
-A denúncia registra o motivo (assédio, discriminação, risco à segurança ou outro) e chega à Equipe Frila, com resposta em até 5 dias úteis; o bloqueio é imediato e impede que as partes voltem a se cruzar em notificações, listas e candidaturas; a Equipe Frila pode ocultar vaga com conteúdo impróprio até revisá-la, sem cancelar turnos confirmados, e o estabelecimento vê que ela foi ocultada.
+A denúncia registra o motivo (assédio, discriminação, risco à segurança ou outro) e chega à Equipe Frila, com resposta em até 5 dias úteis; o bloqueio é imediato e impede que as partes voltem a se cruzar em notificações, listas, candidaturas e no perfil público (decisão de 30/09; o perfil ainda aparece e passa a ser escondido numa próxima versão do contrato); a Equipe Frila pode ocultar vaga com conteúdo impróprio até revisá-la, sem cancelar turnos confirmados, e o estabelecimento vê que ela foi ocultada.
 
 RF27
 
@@ -1948,9 +1948,9 @@ Fluxo Alternativo
 
 1a. O usuário só quer bloquear: toca em “Bloquear”, e o bloqueio vale na hora, sem denúncia.
 
-4a. Com o bloqueio, as partes não voltam a se cruzar: o profissional não recebe notificação nem vê vagas do estabelecimento, e o estabelecimento não recebe candidatura dele.
+4a. Com o bloqueio, as partes não voltam a se cruzar: o profissional não recebe notificação nem vê vagas do estabelecimento, o estabelecimento não recebe candidatura dele, e o perfil de um deixa de aparecer para o outro (decisão de 30/09, a implementar).
 
-5a. A denúncia grave é confirmada (assédio, fraude ou documento falso): o perfil denunciado é suspenso, com motivo registrado e direito de contestar (UC15); os turnos futuros dele são cancelados, a contraparte é avisada e as posições são reabertas (RN13).
+5a. A denúncia grave é confirmada (assédio, ou fraude e documento falso, que chegam pelo motivo “outro”): o perfil denunciado é suspenso, com motivo registrado e direito de contestar (UC15); os turnos futuros dele são cancelados, a contraparte é avisada e as posições são reabertas (RN13).
 
 5b. Há risco imediato: o app mostra atalhos para o 190 e o 180, sem esperar a resposta da Equipe Frila.
 
@@ -1966,7 +1966,7 @@ RN05, RN13, RN15
 
 Critério de Aceitação (BDD)
 
-Dado que sofri assédio num turno, quando denuncio e bloqueio a outra parte, então a denúncia chega à Equipe Frila com prazo de resposta de até 5 dias úteis, e a outra parte deixa de aparecer para mim, e eu para ela, em notificações, listas e candidaturas, na hora. É o mecanismo que a diretriz 1.2 da App Store exige.
+Dado que sofri assédio num turno, quando denuncio e bloqueio a outra parte, então a denúncia chega à Equipe Frila com prazo de resposta de até 5 dias úteis, e a outra parte deixa de aparecer para mim, e eu para ela, em notificações, listas, candidaturas e no perfil, na hora. É o mecanismo que a diretriz 1.2 da App Store exige.
 
 6.2 Diagrama de Banco de Dados (DER)
 
@@ -2284,7 +2284,7 @@ A arquitetura foi decidida em 21/09/2026. Os aplicativos são nativos: Swift e S
 
 As regras que precisam valer igual nos três clientes ficam no backend e são escritas uma vez, como funções e restrições no banco: quem recebe a notificação (RN05 e RN23), a confirmação sem duplicidade (RN19), o turno sobreposto (RN21), o check-in a até 200 m (RN22) e o fechamento do modo seleção (RN24). O despacho roda fora da requisição: publicar grava, enfileira o despacho na pgmq e responde; depois do commit, o pg_net aciona a Edge Function despachar, o pg_cron roda os lembretes, os alertas e os prazos, e o push sai pela Edge Function enviar-push. Cada app mantém o próprio domínio para a tela e para os testes.
 
-O contrato entre os apps e o backend foi escrito antes do código (decisão B16) e está em api/openapi.yaml, no repositório frila-docs (OpenAPI 3.1; primeira versão em 22/09/2026, versão 0.2.26 em 30/09/2026). Toda mudança passa primeiro por ele, depois pelo backend e só então chega ao app. Cada operação com regra de negócio é uma função RPC do Supabase; as recusas de regra voltam com código estável, como posicao_ja_preenchida (409) e inelegivel (422), e reenviar a mesma escrita devolve o mesmo resultado.
+O contrato entre os apps e o backend foi escrito antes do código (decisão B16) e está em api/openapi.yaml, no repositório frila-docs (OpenAPI 3.1; primeira versão em 22/09/2026, versão 0.2.27 em 30/09/2026). Toda mudança passa primeiro por ele, depois pelo backend e só então chega ao app. Cada operação com regra de negócio é uma função RPC do Supabase; as recusas de regra voltam com código estável, como posicao_ja_preenchida (409) e inelegivel (422), e reenviar a mesma escrita devolve o mesmo resultado.
 
 Dentro do aplicativo iOS, as camadas são quatro:
 

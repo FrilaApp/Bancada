@@ -103,7 +103,7 @@ O telefone é obrigatório, porque é o contato do turno (RN10) e o app não tem
 
 ### Os recursos do MVP
 
-A especificação está em `api/openapi.yaml`, no repositório `frila-docs` (OpenAPI 3.1; a primeira versão é de 22/09, e a atual, 0.2.26, de 30/09). Toda mudança passa primeiro por ela, depois pelo backend (que guarda um espelho em `frila-backend/contrato/`) e só então chega ao app. Ela substitui a lista de rotas `/v1` da época em que o backend seria próprio. São três portas do Supabase:
+A especificação está em `api/openapi.yaml`, no repositório `frila-docs` (OpenAPI 3.1; a primeira versão é de 22/09, e a atual, 0.2.27, de 30/09). Toda mudança passa primeiro por ela, depois pelo backend (que guarda um espelho em `frila-backend/contrato/`) e só então chega ao app. Ela substitui a lista de rotas `/v1` da época em que o backend seria próprio. São três portas do Supabase:
 
 | Porta | O que passa por ela |
 |---|---|
@@ -253,10 +253,10 @@ Fica para depois sem prejuízo do ciclo: escala em lote (RF19), exportação (RF
 | D7 | Cache local: SwiftData ou Core Data | SwiftData, com iOS 17 como mínimo (B19) |
 | D9 | Backend próprio ou gerenciado | Supabase (Postgres com PostGIS); a migração é reavaliada a partir de certa rentabilidade. É a mesma decisão da D5 (B02, B06) |
 | D10 | Nativo nas três plataformas ou núcleo compartilhado | Nativo: Swift e SwiftUI no iOS, Kotlin no Android. As regras críticas moram no backend, escritas uma vez (B01, B20) |
-| D11 | A especificação é escrita antes ou junto do backend | Antes, pelo menos das rotas centrais; com o Supabase, funções RPC documentadas (B16). Escrita em 22/09; hoje em `frila-docs/api/openapi.yaml`, versão 0.2.26 |
+| D11 | A especificação é escrita antes ou junto do backend | Antes, pelo menos das rotas centrais; com o Supabase, funções RPC documentadas (B16). Escrita em 22/09; hoje em `frila-docs/api/openapi.yaml`, versão 0.2.27 |
 | D13 | Provedor de push no Android | FCM, que também entrega no iOS pela APNs (B17) |
 
-Com as seis respondidas, nada de arquitetura trava a primeira versão que alguém use de verdade. A especificação (D11) foi escrita em 22/09 e está na versão 0.2.26. A stack da web fica para depois do iOS; o bundle ID é `com.frila.org.app`.
+Com as seis respondidas, nada de arquitetura trava a primeira versão que alguém use de verdade. A especificação (D11) foi escrita em 22/09 e está na versão 0.2.27. A stack da web fica para depois do iOS; o bundle ID é `com.frila.org.app`.
 
 ---
 ← [[🏠 Início|Início]]

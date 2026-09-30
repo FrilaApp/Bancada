@@ -145,7 +145,7 @@ Para a entrega parcial de 02/10, esta nota e a Seção 6.1 do Documento de Requi
 | UC14 | RN11 e RN15 | RN10, RN11 e RN15 | O fluxo 4a manda combinar o turno pelo contato liberado (RN10) |
 | UC17 | RN13 e RN15 no Documento de Requisitos | RN05, RN13 e RN15 nos dois | O bloqueio tira as partes do despacho (RN05) |
 
-As descrições da Seção 6.1 também passaram a seguir o contrato da API (0.2.26) e as decisões de produto de 28/09:
+As descrições da Seção 6.1 também passaram a seguir o contrato da API (0.2.27) e as decisões de produto de 28/09:
 
 | UC | O que mudou | De onde vem |
 |---|---|---|
@@ -157,7 +157,7 @@ As descrições da Seção 6.1 também passaram a seguir o contrato da API (0.2.
 | UC09 | A maioridade é conferida pela data de nascimento, e o cadastro registra o aceite da versão vigente dos termos | Decisão de 28/09 |
 | UC11 | Só o administrador inclui e remove, e só quem já cumpriu turno com presença verificada no estabelecimento | Contrato 0.2.22 |
 | UC16 | A exclusão cancela os turnos futuros sem contar falta; o contratante que é o único membro tem as vagas abertas canceladas | Contrato 0.2.18 |
-| UC17 | A suspensão cancela os turnos futuros da conta e reabre as posições; a Equipe Frila pode ocultar vaga imprópria sem cancelar turnos | Contrato 0.2.23; decisão de 28/09 |
+| UC17 | A suspensão cancela os turnos futuros da conta e reabre as posições; a Equipe Frila pode ocultar vaga imprópria sem cancelar turnos; fraude e documento falso chegam pelo motivo "outro" da denúncia; o bloqueio também vai esconder o perfil público, ainda a implementar | Contrato 0.2.23; decisões de 28/09 e de 30/09 |
 
 ---
 
