@@ -1,8 +1,8 @@
 ---
 tipo: documento-derivado
 origem: "doc-harness/01 - CBL/Desafios/C18/Documentos de Produto/Frila_Documento_de_Requisitos.docx"
-hash_origem: 6f2f1bfe9843755e87bdfc4f6e4bdb2799a28d5af505ade97138451864bf1853
-exportado_em: 2026-09-22T03:52
+hash_origem: 33df0f16b69b0e41509d511a036b1c5790a7ff52e5f442eda2143bfac4fef281
+exportado_em: 2026-09-30T16:48
 exportado_por: Cauê Carneiro <cauecarneiroc@gmail.com>
 conversao: ok
 tags: [documento]
@@ -32,11 +32,11 @@ Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva
 
 Versão
 
-v1.3.0
+v1.4.0
 
 Data
 
-22/09/2026
+30/09/2026
 
 Histórico de Versões
 
@@ -79,6 +79,14 @@ v1.3.0
 Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva
 
 Aplica as respostas das pendências para codar (22/09): um app só, com um perfil por conta (RN25); entrada por código no e-mail, sem senha e sem SMS, com telefone obrigatório e sem verificação (RF01, UC09 e UC10); botão “disponível agora” retirado (RF03 e UC09); entidade Usuario com o perfil da conta e SessaoUsuario sem troca de perfil.
+
+v1.4.0
+
+30/09/2026
+
+Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva
+
+Revisão de consistência para a entrega parcial de 02/10, contra o contrato da API 0.2.26, as decisões de produto de 28/09, o Escopo do MVP e o código: v1.0 só iOS, com Android e web na v1.2; região administrativa na vaga e no estabelecimento (RN02, RF02, RF04); cancelamento que dá à vaga uma posição nova (RN12, RF14, UC08); suspensão com cancelamento em cascata (RN13); check-in de 60 minutos antes até o fim, check-out sem limite de distância e falta para quem termina o turno sem check-in (RN22, RF13, UC05); maioridade pela data de nascimento e aceite dos termos (RF01, UC09); lembrete sem telefone nem endereço na tela de bloqueio e “estou a caminho” na v1.1 (RF12); um voto por lado na avaliação (RF15, UC06); taxa de comparecimento só do profissional (RF16); equipe de confiança só pelo administrador e com turno cumprido (RF18, UC11); exclusão sem falta (RF25, UC16); vaga ocultada pela Equipe Frila (RF26, UC17); entidades, classes, pacotes e estrutura de pastas conferidos com o banco e o app; regras vinculadas alinhadas ao Diagrama de Casos de Uso; contrato em api/openapi.yaml.
 
 Glossário
 
@@ -210,7 +218,7 @@ Seções 1, 2 e 3
 
 Equipe Frila
 
-Pessoas do time Frila que respondem, por e-mail, suporte, denúncias, contestações e pedidos de revisão do despacho. Não acompanham turnos.
+Pessoas do time Frila que respondem, por e-mail, suporte, denúncias, contestações e pedidos de revisão do despacho, e podem ocultar vaga com conteúdo impróprio até revisá-la. Não acompanham turnos.
 
 Seções 3 e 6
 
@@ -224,9 +232,9 @@ Todo o documento
 
 1.1 Propósito do Documento
 
-Este documento especifica os requisitos funcionais, os requisitos não funcionais, as regras de negócio e os casos de uso do sistema Frila, servindo de referência para o time de desenvolvimento, para os testes e para a validação com as partes interessadas. O posicionamento de mercado, as personas e a justificativa de cada escolha estão no Documento de Visão v1.2.0, que este documento complementa e não repete.
+Este documento especifica os requisitos funcionais, os requisitos não funcionais, as regras de negócio e os casos de uso do sistema Frila, servindo de referência para o time de desenvolvimento, para os testes e para a validação com as partes interessadas. O posicionamento de mercado, as personas e a justificativa de cada escolha estão no Documento de Visão v1.3.0, que este documento complementa e não repete.
 
-Uma ressalva de leitura, herdada da documentação de pesquisa do projeto: o Frila está em TRL 2, sem código escrito e sem validação de campo. As regras e os requisitos aqui derivam de evidência pública sobre o mercado e das falhas observadas nos concorrentes, mas as premissas de comportamento do usuário no Distrito Federal permanecem hipóteses, marcadas com [H]. Requisitos que dependem diretamente de uma hipótese trazem a marca no próprio texto, para que a revisão posterior saiba onde mexer.
+Uma ressalva de leitura: o Frila ainda não passou por validação de campo. Desde 22/09 há código, o backend no Supabase e o app iOS, com builds internos no TestFlight, e o comportamento da API está no contrato (api/openapi.yaml, versão 0.2.26). As regras e os requisitos aqui derivam de evidência pública sobre o mercado e das falhas observadas nos concorrentes, mas as premissas de comportamento do usuário no Distrito Federal permanecem hipóteses, marcadas com [H]. Requisitos que dependem diretamente de uma hipótese trazem a marca no próprio texto, para que a revisão posterior saiba onde mexer.
 
 1.2 Escopo
 
@@ -240,7 +248,7 @@ Qualquer negócio que precise cobrir um turno avulso, de qualquer setor: bares, 
 
 Plataformas
 
-Um aplicativo só, com dois perfis, o do profissional e o do contratante, que publica pelo estabelecimento, em iOS nativo (Swift e SwiftUI), Android nativo (Kotlin) e versão web. Cada conta tem um perfil só (RN25). O Painel é uma feature da versão web, no perfil de contratante, usada pelo gestor. O backend é o Supabase, onde ficam as regras que precisam valer igual nos três clientes. Para a entrega na loja em 13/11, o iOS é o mínimo; Android e web são a meta.
+Um aplicativo só, com dois perfis, o do profissional e o do contratante, que publica pelo estabelecimento, em iOS nativo (Swift e SwiftUI), Android nativo (Kotlin) e versão web. Cada conta tem um perfil só (RN25). O Painel é uma feature da versão web, no perfil de contratante, usada pelo gestor. O backend é o Supabase, onde ficam as regras que precisam valer igual nos três clientes. A v1.0, na App Store em 13/11/2026, é só iOS; Android e web, com o Painel, entram na v1.2, no 1º trimestre de 2027 (Escopo do MVP).
 
 Fora do Escopo
 
@@ -268,7 +276,7 @@ Em todos os concorrentes pesquisados, e independentemente do modelo de cobrança
 
 RN02
 
-Uma vaga NÃO DEVE ser publicada sem função, data, horário de início e fim, endereço, valor por posição, número de posições, o que está incluso (refeição, transporte e material próprio) e o nome de quem recebe o profissional no local.
+Uma vaga NÃO DEVE ser publicada sem função, data, horário de início e fim, endereço e região administrativa do local, valor por posição, número de posições, o que está incluso (refeição, transporte e material próprio) e o nome de quem recebe o profissional no local.
 
 O profissional precisa decidir com informação completa antes de aceitar. Avaliações dos concorrentes relatam chegada ao local “sem muita informação”, e aceite sem tempo de deslocamento. Refeição, transporte e material mudam o valor real de uma diária: sem esses campos, dois anúncios com o mesmo valor não são comparáveis.
 
@@ -328,13 +336,13 @@ Hoje tudo isso vive em conversa de WhatsApp e memória. O registro geolocalizado
 
 RN12
 
-Todo cancelamento DEVE registrar autor, momento, antecedência e motivo, e DEVE reabrir a posição com nova notificação imediata.
+Todo cancelamento DEVE registrar autor, momento, antecedência e motivo. Cancelada antes do início, a posição fica no histórico e a vaga DEVE ganhar uma posição nova, aberta, com nova notificação imediata. Depois do início, só a reabertura por atraso reabre (RF13); cancelar a vaga inteira não reabre, e a outra parte é avisada de que o turno ficou descoberto.
 
-Uma posição cancelada e não reaberta é um turno que falha em silêncio. A antecedência separa o cancelamento que não conta (mais de 24 horas) da falta (menos de 24 horas).
+Uma posição cancelada e não reaberta é um turno que falha em silêncio. Guardar a cancelada, em vez de devolvê-la a aberta, é o que preserva o registro de quem cancelou e por quê. A antecedência separa o cancelamento que não conta (mais de 24 horas) da falta (menos de 24 horas).
 
 RN13
 
-O sistema NÃO DEVE suspender ou bloquear um perfil sem motivo registrado e sem canal de contestação com resposta em até 5 dias úteis. A suspensão só acontece por denúncia grave confirmada (assédio, fraude ou documento falso); cancelamento nunca suspende, só afeta a taxa de comparecimento.
+O sistema NÃO DEVE suspender ou bloquear um perfil sem motivo registrado e sem canal de contestação com resposta em até 5 dias úteis. A suspensão só acontece por denúncia grave confirmada (assédio, fraude ou documento falso) e cancela na hora os turnos futuros da conta, com registro, aviso à contraparte e reabertura das posições; cancelamento nunca suspende, só afeta a taxa de comparecimento.
 
 Punição percebida como injusta é queixa recorrente: bloqueio por duas desistências, inclusive com dois dias de antecedência, e punição por falta a uma vaga que havia sumido do aplicativo.
 
@@ -388,7 +396,7 @@ Sem ela, o profissional aceita de boa-fé dois turnos no mesmo horário e falta 
 
 RN22
 
-O check-in e o check-out DEVEM ser geolocalizados, com a localização lida só no momento do toque, e valem a até 200 m do endereço da vaga. Se a geolocalização falhar, o check-in manual SÓ conta como presença depois de confirmado pelo contratante; sem confirmação, o turno fica “não verificado” e não conta a favor nem contra na taxa de comparecimento.
+O check-in e o check-out DEVEM ser geolocalizados, com a localização lida só no momento do toque; o app envia só a distância até o endereço da vaga, nunca a coordenada. O check-in vale como geolocalizado a até 200 m; o check-out registra a distância, sem limite. Se a geolocalização falhar ou passar de 200 m, o check-in manual SÓ conta como presença depois de confirmado pelo contratante; sem confirmação, o turno fica “não verificado” e não conta a favor nem contra na taxa de comparecimento. Turno que termina sem check-in nenhum conta como falta.
 
 Ler a localização só no toque respeita a regra de não rastrear o profissional (RN16) e o pedido de permissão da App Store. Os 200 m cobrem o erro comum de GPS em área urbana [H]. A confirmação manual resolve subsolo, sinal ruim e permissão negada sem inventar presença.
 
@@ -400,7 +408,7 @@ Com vários estabelecimentos publicando ao mesmo tempo, notificar cada vaga sepa
 
 RN24
 
-O modo seleção SÓ PODE ser escolhido para vaga que começa em mais de 24 horas. Se o contratante não escolher até 24 horas antes do início, a vaga fecha automaticamente e os candidatos são avisados e liberados; o profissional pode retirar a candidatura sem penalidade enquanto não for escolhido.
+O modo seleção SÓ PODE ser escolhido para vaga que começa em mais de 24 horas. Se o contratante não escolher até 24 horas antes do início, a vaga fecha automaticamente: as posições ainda abertas são canceladas, as candidaturas pendentes expiram, e candidatos e estabelecimento são avisados; o profissional pode retirar a candidatura sem penalidade enquanto não for escolhido.
 
 Sem prazo, a posição fica presa esperando uma escolha que pode não vir, e o profissional deixa de aceitar outras vagas. Vaga para menos de 24 horas é urgência por natureza.
 
@@ -424,15 +432,15 @@ Critério de aceitação
 
 RF01
 
-O sistema deve permitir que o profissional se cadastre e entre com um código de uso único enviado ao e-mail, sem senha e sem SMS, informando dados mínimos: nome, telefone com WhatsApp e confirmação de maioridade.
+O sistema deve permitir que o profissional se cadastre e entre com um código de uso único enviado ao e-mail, sem senha e sem SMS, informando dados mínimos: nome, telefone com WhatsApp e data de nascimento, e aceitando a versão vigente dos termos de uso e da política de privacidade.
 
 Alta
 
-Um profissional conclui o cadastro e fica apto a receber notificações de vaga sem enviar documento; o telefone é obrigatório, porque é o contato do turno (RN10), e o app confere só o formato, sem verificação por SMS.
+Um profissional conclui o cadastro e fica apto a receber notificações de vaga sem enviar documento; o telefone é obrigatório, porque é o contato do turno (RN10), e o app confere só o formato, sem verificação por SMS; a maioridade é conferida pelo servidor, pela data de nascimento (RN20).
 
 RF02
 
-O sistema deve permitir que o contratante cadastre o estabelecimento com razão social ou nome, documento (CNPJ ou CPF), endereço e responsável.
+O sistema deve permitir que o contratante cadastre o estabelecimento com nome (ou razão social), documento (CNPJ ou CPF), tipo de negócio, endereço, região administrativa do DF e ponto no mapa; quem cadastra fica como administrador.
 
 Alta
 
@@ -452,7 +460,7 @@ O sistema deve permitir que o contratante publique uma vaga com os campos obriga
 
 Alta
 
-A publicação pede só os campos de RN02, com o local pré-preenchido pelo endereço do estabelecimento; o modo de preenchimento e a antecedência do alerta de vaga vazia (padrão de 3 horas) são escolhidos na publicação; a vaga é rejeitada com mensagem clara se algum campo obrigatório de RN02 faltar.
+A publicação pede só os campos de RN02, com o local e a região pré-preenchidos pelos do estabelecimento; o modo de preenchimento e a antecedência do alerta de vaga vazia (padrão de 3 horas) são escolhidos na publicação; a vaga é rejeitada com mensagem clara se algum campo obrigatório de RN02 faltar.
 
 RF05
 
@@ -476,15 +484,15 @@ O sistema deve permitir que o profissional liste e filtre todas as vagas abertas
 
 Média
 
-A lista traz todas as vagas abertas, das mais próximas para as mais distantes; vagas de outro estado aparecem no fim.
+A lista traz todas as vagas abertas, das mais próximas para as mais distantes; a vaga que já começou sai da lista, salvo a que tem posição reaberta por atraso; no lançamento, só há estabelecimentos do DF.
 
 RF08
 
-O sistema deve permitir que o profissional se candidate a uma vaga direto da notificação ou da lista, sem formulário.
+O sistema deve permitir que o profissional se candidate a uma vaga a partir da notificação ou da lista, sem formulário.
 
 Alta
 
-A candidatura sai da notificação ou da lista sem formulário, sem carta de apresentação e sem negociação de valor.
+O toque na notificação abre o detalhe da vaga, com o aviso de RN10; a candidatura sai sem formulário, sem carta de apresentação e sem negociação de valor; só se candidata quem tem a função da vaga.
 
 RF09
 
@@ -492,7 +500,7 @@ O sistema deve oferecer dois modos de preenchimento: urgência, em que o primeir
 
 Alta
 
-O modo é escolhido na publicação, e o seleção só aparece para vaga que começa em mais de 24 horas; em urgência, a posição é ocupada automaticamente pelo primeiro candidato elegível; em seleção, se ninguém for escolhido, a vaga fecha sozinha 24 horas antes do início, e os candidatos são avisados e liberados.
+O modo é escolhido na publicação, e o seleção só aparece para vaga que começa em mais de 24 horas; em urgência, a posição é ocupada automaticamente pelo primeiro candidato elegível; em seleção, se ninguém for escolhido, a vaga fecha sozinha 24 horas antes do início, e os candidatos são avisados e liberados. O backend aceita os dois modos; na v1.0, o app publica só em urgência, e o modo seleção entra na v1.1.
 
 RF10
 
@@ -516,7 +524,7 @@ O sistema deve enviar lembrete pré-turno para os dois lados, 24 horas e 3 horas
 
 Média
 
-Os dois lembretes são entregues nos horários definidos e trazem endereço, horário e contato da contraparte.
+Os dois lembretes são entregues nos horários definidos e mostram função, horário e região administrativa, sem telefone nem endereço com número na tela de bloqueio (RN10, RN15); ao tocar, o app abre o turno com endereço e contato. Na v1.1, o profissional confirmado poderá avisar que está a caminho, de 3 horas antes até 15 minutos depois do início; o aviso aparece para o estabelecimento e não conta como presença.
 
 RF13
 
@@ -524,15 +532,15 @@ O sistema deve registrar o check-in e o check-out do profissional por geolocaliz
 
 Alta
 
-O check-in a até 200 m grava a hora e a distância medida; fora disso, o check-in manual só vale com a confirmação do contratante, no app ou no Painel web; no horário de início sem check-in, o profissional recebe um lembrete; aos 15 minutos sem check-in, o contratante é alertado e decide esperar ou reabrir a vaga; ao passar o fim previsto sem check-out, os dois são avisados.
+O check-in vale de 60 minutos antes do início até o fim previsto; a até 200 m, grava a hora e a distância medida; fora disso, o check-in manual só vale com a confirmação do contratante, no app ou no Painel web; no horário de início sem check-in, o profissional recebe um lembrete; aos 15 minutos sem check-in, o contratante é alertado e decide esperar ou reabrir a vaga, e a posição nova aceita candidatura até 1 hora antes do fim previsto; ao passar o fim previsto sem check-out, os dois são avisados; se o turno termina sem check-in nenhum, conta falta para o profissional.
 
 RF14
 
-O sistema deve permitir o cancelamento por qualquer das partes, com motivo e registro de antecedência, reabrindo a posição com nova notificação imediata.
+O sistema deve permitir o cancelamento por qualquer das partes, com motivo e registro de antecedência, e reabrir a vaga com nova notificação imediata (RN12).
 
 Alta
 
-O cancelamento registra autor, momento, antecedência e motivo; a posição volta a aparecer como aberta e a notificação é enviada em até 30 segundos; cancelamento do profissional com menos de 24 horas conta como falta na taxa de comparecimento.
+O cancelamento registra autor, momento, antecedência e motivo; antes do início, a vaga ganha uma posição nova, aberta, e a notificação sai em até 30 segundos; depois do início, a contraparte é avisada de que o turno ficou descoberto; o contratante pode cancelar a vaga inteira, sem falta para ninguém; cancelamento do profissional com menos de 24 horas conta como falta na taxa de comparecimento.
 
 RF15
 
@@ -540,15 +548,15 @@ O sistema deve solicitar a avaliação binária de cada lado após o fim previst
 
 Alta
 
-A avaliação só fica disponível após o horário de término e só para turno com check-in geolocalizado ou manual confirmado; cada lado responde “sim” ou “não” a uma única pergunta; nenhuma nota de 1 a 5 é oferecida; quem não compareceu não é avaliado.
+A avaliação só fica disponível após o horário de término e só para turno com check-in geolocalizado ou manual confirmado; cada lado responde “sim” ou “não” a uma única pergunta e vota uma vez por turno: pelo estabelecimento, vale a primeira resposta de qualquer membro; nenhuma nota de 1 a 5 é oferecida; quem não compareceu não é avaliado.
 
 RF16
 
-O sistema deve exibir, no perfil de cada parte, a reputação com denominador e a taxa de comparecimento.
+O sistema deve exibir, no perfil de cada parte, a reputação binária com denominador e, no perfil do profissional, a taxa de comparecimento.
 
 Alta
 
-O perfil mostra “N de M chamariam de novo” e a taxa de comparecimento com o total de turnos considerados; perfis sem histórico são exibidos explicitamente como sem histórico, e não como nota zero.
+O perfil do profissional mostra “N de M chamariam de novo”, a taxa de comparecimento com os turnos considerados e os turnos realizados; o do estabelecimento mostra “N de M trabalhariam lá de novo”; perfis sem histórico são exibidos explicitamente como sem histórico, e não como nota zero.
 
 RF17
 
@@ -564,7 +572,7 @@ O sistema deve permitir que o estabelecimento mantenha uma equipe de confiança,
 
 Média
 
-Profissionais da equipe com a função e disponíveis recebem a notificação das vagas do estabelecimento, independentemente da distância; não há exclusividade de tempo nem prioridade sobre os demais.
+Profissionais da equipe com a função e disponíveis recebem a notificação das vagas do estabelecimento, independentemente da distância; não há exclusividade de tempo nem prioridade sobre os demais; só o administrador inclui ou remove, e só entra quem já cumpriu turno com presença verificada no estabelecimento.
 
 RF19
 
@@ -620,7 +628,7 @@ O sistema deve permitir que o usuário exporte seus dados pessoais e exclua a co
 
 Alta
 
-O perfil sai do despacho e da busca na hora; os dados pessoais são apagados em até 15 dias; os turnos já realizados são anonimizados em vez de apagados, preservando o histórico da contraparte; atende à diretriz 5.1.1(v) da App Store.
+O perfil sai do despacho e da busca na hora; os dados pessoais são apagados em até 15 dias; os turnos já realizados são anonimizados em vez de apagados, preservando o histórico da contraparte; os turnos futuros são cancelados sem contar falta; atende à diretriz 5.1.1(v) da App Store.
 
 RF26
 
@@ -628,7 +636,7 @@ O sistema deve permitir que qualquer usuário denuncie e bloqueie outro a partir
 
 Alta
 
-A denúncia registra o motivo (assédio, discriminação, risco à segurança ou outro) e chega à Equipe Frila, com resposta em até 5 dias úteis; o bloqueio é imediato e impede que as partes voltem a se cruzar em notificações, listas e candidaturas.
+A denúncia registra o motivo (assédio, discriminação, risco à segurança ou outro) e chega à Equipe Frila, com resposta em até 5 dias úteis; o bloqueio é imediato e impede que as partes voltem a se cruzar em notificações, listas e candidaturas; a Equipe Frila pode ocultar vaga com conteúdo impróprio até revisá-la, sem cancelar turnos confirmados, e o estabelecimento vê que ela foi ocultada.
 
 RF27
 
@@ -640,7 +648,7 @@ A tela “Por que recebo vagas” mostra os critérios (função, disponibilidad
 
 3.2 Tempo e Custo Estimados por RF
 
-Estimativas em dias de trabalho de uma equipe de cinco pessoas, considerando sprint de duas semanas. Custo de desenvolvimento é R$ 0 por ser trabalho interno da equipe; onde há custo, ele é de infraestrutura ou de serviço externo. Como não há código escrito, todas as estimativas são preliminares e devem ser revistas ao fim da primeira sprint. [H]
+Estimativas em dias de trabalho de uma equipe de cinco pessoas, considerando sprint de duas semanas. Custo de desenvolvimento é R$ 0 por ser trabalho interno da equipe; onde há custo, ele é de infraestrutura ou de serviço externo. As estimativas foram feitas antes do código e são preliminares: devem ser revistas com o ritmo medido nas primeiras sprints. [H]
 
 #
 
@@ -1248,7 +1256,7 @@ UC01, UC04, UC05, UC06, UC07, UC08, UC10, UC11, UC13, UC14, UC15, UC16, UC17
 
 Equipe Frila
 
-Pessoa da equipe Frila que responde, por e-mail, suporte, denúncias, contestações e pedidos de revisão do despacho. Não acompanha turnos nem intervém neles.
+Pessoa da equipe Frila que responde, por e-mail, suporte, denúncias, contestações e pedidos de revisão do despacho, e pode ocultar vaga com conteúdo impróprio até revisá-la. Não acompanha turnos nem intervém neles.
 
 UC09, UC14, UC15, UC17
 
@@ -1274,9 +1282,9 @@ Fluxo Principal
 
 1. O contratante escolhe publicar uma vaga.
 
-2. O sistema apresenta o formulário com os campos obrigatórios de RN02 (função, data, horário de início e fim, endereço, valor por posição, número de posições, o que está incluso e quem recebe no local), os opcionais (traje exigido, participação no rateio dos 10% e observações), o modo de preenchimento (urgência ou seleção) e a antecedência do alerta de vaga vazia, com padrão de 3 horas.
+2. O sistema apresenta o formulário com os campos obrigatórios de RN02 (função, data, horário de início e fim, endereço e região administrativa, valor por posição, número de posições, o que está incluso e quem recebe no local), os opcionais (traje exigido, participação no rateio dos 10% e observações), o modo de preenchimento (urgência ou seleção) e a antecedência do alerta de vaga vazia, com padrão de 3 horas.
 
-3. O contratante preenche os campos. O endereço é pré-preenchido com o do estabelecimento.
+3. O contratante preenche os campos. O endereço e a região são pré-preenchidos com os do estabelecimento.
 
 4. O sistema valida a obrigatoriedade dos campos conforme RN02.
 
@@ -1286,7 +1294,7 @@ Fluxo Principal
 
 Fluxo Alternativo
 
-2a. A vaga começa em menos de 24 horas: o modo seleção não é oferecido, e a vaga é publicada em modo urgência (RN24).
+2a. A vaga começa em menos de 24 horas: o modo seleção não é oferecido, e a vaga é publicada em modo urgência; se o pedido chegar com seleção, o servidor o recusa (RN24).
 
 3a. O contratante opta por republicar uma vaga anterior: o sistema pré-preenche todos os campos e solicita apenas a nova data e o novo horário (RF05).
 
@@ -1302,7 +1310,7 @@ Regras Relacionadas
 
 RN02, RN03, RN04, RN18, RN24
 
-Critério de Aceito (BDD)
+Critério de Aceitação (BDD)
 
 Dado que sou um contratante autenticado com estabelecimento cadastrado, quando preencho os campos obrigatórios e confirmo, então a vaga é publicada e a notificação aos profissionais elegíveis é disparada.
 
@@ -1348,7 +1356,7 @@ Regras Relacionadas
 
 RN04, RN05, RN06, RN16, RN23
 
-Critério de Aceito (BDD)
+Critério de Aceitação (BDD)
 
 Dado que uma vaga foi publicada com posições abertas, quando o despacho é executado, então apenas profissionais elegíveis são notificados, em até 30 segundos e sem ordem entre eles, nenhum inelegível recebe a notificação e nenhum profissional recebe mais de uma notificação de vaga a cada 30 minutos.
 
@@ -1364,7 +1372,7 @@ O profissional está autenticado, tem perfil ativo e recebeu a notificação (UC
 
 Fluxo Principal
 
-1. O profissional abre a notificação ou a vaga na lista.
+1. O profissional toca na notificação, que abre o detalhe da vaga, ou abre a vaga na lista.
 
 2. O sistema exibe função, endereço, data, horário, valor, o que está incluso e o perfil do contratante com reputação e denominador.
 
@@ -1382,6 +1390,8 @@ Fluxo Alternativo
 
 3d. Há bloqueio entre o profissional e o estabelecimento: a vaga não aparece para ele, nem na notificação nem na lista (RF26).
 
+3e. O profissional não tem a função da vaga, ou ainda não completou o perfil: a candidatura é recusada, e o app leva à tela de funções.
+
 Pós-condição
 
 Candidatura registrada e submetida ao fluxo de confirmação.
@@ -1390,7 +1400,7 @@ Regras Relacionadas
 
 RN03, RN05, RN08, RN10, RN21
 
-Critério de Aceito (BDD)
+Critério de Aceitação (BDD)
 
 Dado que recebi a notificação de uma vaga elegível, quando toco em candidatar-me, então a candidatura é registrada sem formulário e sem negociação de valor.
 
@@ -1410,7 +1420,7 @@ Fluxo Principal
 
 2. No modo seleção, o sistema apresenta os candidatos ao contratante com reputação, denominador e taxa de comparecimento, e o contratante escolhe.
 
-3. O sistema marca a posição como preenchida e garante que nenhuma outra confirmação ocorra para ela.
+3. O sistema marca a posição como confirmada e garante que nenhuma outra confirmação ocorra para ela; quando todas as posições estão ocupadas, a vaga passa a preenchida.
 
 4. O sistema notifica os dois lados com função, local, horário, valor e identificação da contraparte.
 
@@ -1418,9 +1428,11 @@ Fluxo Principal
 
 Fluxo Alternativo
 
-2a. No modo seleção, o contratante não escolhe até 24 horas antes do início: a vaga fecha automaticamente, e os candidatos são avisados e liberados (RN24).
+2a. No modo seleção, o contratante não escolhe até 24 horas antes do início: a vaga fecha automaticamente, as posições ainda abertas são canceladas, as candidaturas pendentes expiram, e candidatos e estabelecimento são avisados (RN24).
 
 2b. O profissional retira a candidatura antes de ser escolhido: a retirada não gera penalidade, e ele segue livre para outras vagas (RN24).
+
+2c. No modo seleção, a escolha ocupa a última posição aberta: as candidaturas ainda pendentes são recusadas, com aviso.
 
 3a. Duas confirmações chegam simultaneamente: o sistema confirma exatamente uma, e a outra recebe a resposta de posição já ocupada.
 
@@ -1432,7 +1444,7 @@ Regras Relacionadas
 
 RN08, RN10, RN19, RN24
 
-Critério de Aceito (BDD)
+Critério de Aceitação (BDD)
 
 Dado que há candidaturas para uma posição, quando a confirmação ocorre, então os dois lados recebem a notificação com os dados completos do turno, o contato é liberado e a posição deixa de aparecer entre as vagas abertas.
 
@@ -1448,23 +1460,27 @@ Existe uma posição confirmada cujo horário de início se aproxima.
 
 Fluxo Principal
 
-1. O sistema envia o lembrete pré-turno para os dois lados, 24 horas e 3 horas antes do início, com endereço, horário e contato da contraparte (RF12).
+1. O sistema envia o lembrete pré-turno para os dois lados, 24 horas e 3 horas antes do início, com função, horário e região administrativa; o endereço e o contato ficam dentro do app, e não na tela de bloqueio (RF12).
 
-2. Ao chegar, o profissional faz o check-in. O app lê a localização só nesse toque e confere se ele está a até 200 m do endereço da vaga (RN22).
+2. Ao chegar, o profissional faz o check-in, a partir de 60 minutos antes do início. O app lê a localização só nesse toque, calcula a distância até o endereço da vaga e envia só ela; o servidor registra como geolocalizado o check-in a até 200 m (RN22).
 
 3. O sistema grava a hora e a distância medida e avisa o contratante.
 
-4. Ao terminar, o profissional faz o check-out da mesma forma.
+4. Ao terminar, o profissional faz o check-out da mesma forma; a distância é registrada, sem limite.
 
 5. O sistema grava início, fim e valor acordado, e disponibiliza o registro aos dois.
 
 Fluxo Alternativo
+
+1a. (v1.1) De 3 horas antes até 15 minutos depois do início, o profissional confirmado avisa que está a caminho: o estabelecimento vê a hora do aviso, que não conta como presença nem substitui o check-in.
 
 2a. A geolocalização falha (sem sinal, permissão negada, GPS impreciso ou a mais de 200 m): o profissional faz check-in manual, e o contratante confirma com um toque, no app ou no Painel web. Sem confirmação, o turno fica “não verificado” e não conta a favor nem contra na taxa de comparecimento.
 
 2b. Chega o horário de início sem check-in: o profissional recebe um lembrete.
 
 2c. Passam 15 minutos do início sem check-in: o contratante é alertado e decide esperar ou reabrir a vaga. Se reabrir, conta como falta do profissional, e a posição segue para UC08.
+
+2d. O turno termina sem check-in nenhum, e o contratante não reabriu a vaga: o sistema cancela a posição com falta do profissional, e o turno fica “não verificado”.
 
 4a. O fim previsto passa sem check-out: os dois lados recebem uma notificação. O que acontece com o valor fica entre as partes; o sistema não calcula hora extra.
 
@@ -1478,7 +1494,7 @@ Regras Relacionadas
 
 RN09, RN11, RN18, RN22
 
-Critério de Aceito (BDD)
+Critério de Aceitação (BDD)
 
 Dado que um turno confirmado começou, quando faço check-in a até 200 m do endereço, então o sistema grava a hora e a distância, avisa o contratante e disponibiliza o registro para consulta e exportação pelos dois (UC13).
 
@@ -1506,19 +1522,21 @@ Fluxo Alternativo
 
 2a. Uma das partes não responde: a reputação da outra não é alterada, e o denominador exibido considera apenas as respostas efetivamente dadas.
 
+2b. Outro membro do estabelecimento já respondeu: vale a resposta gravada, um voto por lado do turno, e o app mostra que a casa já avaliou.
+
 3a. O turno foi cancelado antes de começar ou o profissional não compareceu: nenhuma avaliação é solicitada. A falta conta só na taxa de comparecimento, para não pesar duas vezes.
 
 3b. O turno ficou “não verificado”: nenhuma avaliação é solicitada, e o turno não entra na taxa de comparecimento.
 
 Pós-condição
 
-Reputação e taxa de comparecimento atualizadas para os dois lados.
+Reputação dos dois lados atualizada; taxa de comparecimento do profissional recalculada.
 
 Regras Relacionadas
 
 RN07, RN08, RN22
 
-Critério de Aceito (BDD)
+Critério de Aceitação (BDD)
 
 Dado que um turno com presença verificada terminou, quando ambas as partes respondem à pergunta binária, então a reputação de cada uma é atualizada e passa a ser exibida com o denominador, sem que nenhuma média de 1 a 5 seja apresentada.
 
@@ -1558,7 +1576,7 @@ Regras Relacionadas
 
 RN12, RN22, RN24
 
-Critério de Aceito (BDD)
+Critério de Aceitação (BDD)
 
 Dado que uma posição continua vaga a 3 horas do início, quando o prazo é atingido, então o contratante recebe o alerta no app, e a posição aparece destacada no Painel web com o tempo que falta para o início.
 
@@ -1580,13 +1598,17 @@ Fluxo Principal
 
 3. O sistema notifica a contraparte.
 
-4. O sistema devolve a posição ao estado aberto e inclui UC02 imediatamente.
+4. O sistema mantém a posição cancelada no histórico, cria na mesma vaga uma posição nova, aberta, e inclui UC02 imediatamente.
 
 5. O sistema contabiliza o evento no histórico da parte que cancelou: cancelamento do profissional com mais de 24 horas não entra na taxa de comparecimento; com menos de 24 horas, ou não comparecimento, conta como falta.
 
 Fluxo Alternativo
 
-4a. O horário de início já passou: a posição não é reaberta, e o contratante é avisado de que o turno ficou descoberto.
+1a. O contratante cancela a vaga inteira: as posições abertas e confirmadas são canceladas com o motivo, os profissionais confirmados são avisados, e ninguém recebe falta.
+
+4a. O cancelamento acontece depois do início: não há reabertura, e a outra parte é avisada de que o turno ficou descoberto.
+
+4b. Reabertura por atraso (UC05, 2c): conta falta para o profissional, e a posição nova aceita candidatura até 1 hora antes do fim previsto, pelo valor integral (RN01).
 
 5a. Uma parte cancela com frequência: o sistema não suspende nem bloqueia; o efeito é só na taxa de comparecimento, exibida no perfil (RN13).
 
@@ -1598,9 +1620,9 @@ Regras Relacionadas
 
 RN12, RN13, RN16
 
-Critério de Aceito (BDD)
+Critério de Aceitação (BDD)
 
-Dado que uma posição confirmada é cancelada antes do início do turno, quando o motivo é informado, então a contraparte é notificada, a posição volta a ficar aberta e uma nova notificação é disparada em até 30 segundos.
+Dado que uma posição confirmada é cancelada antes do início do turno, quando o motivo é informado, então a contraparte é notificada, a vaga ganha uma posição nova, aberta, e uma nova notificação é disparada em até 30 segundos.
 
 UC09: Cadastrar-se e manter o perfil profissional
 
@@ -1616,7 +1638,7 @@ Fluxo Principal
 
 1. O profissional informa o e-mail e digita o código de uso único que chega nele. Não há senha nem SMS.
 
-2. O profissional escolhe o perfil de profissional, que fica fixo na conta (RN25), informa nome, telefone com WhatsApp e data de nascimento e confirma ter 18 anos ou mais. O sistema confere só o formato do telefone.
+2. O profissional escolhe o perfil de profissional, que fica fixo na conta (RN25), informa nome, telefone com WhatsApp e data de nascimento e aceita a versão vigente dos termos e da política de privacidade. O servidor confere a maioridade pela data de nascimento; do telefone, só o formato.
 
 3. O profissional declara suas funções, o ponto base e a disponibilidade por dia e faixa de horário. Não há distância para configurar: a notificação vai para quem está a até 15 km do local (RN05).
 
@@ -1626,7 +1648,7 @@ Fluxo Principal
 
 Fluxo Alternativo
 
-2a. A pessoa declara ter menos de 18 anos: o cadastro é recusado, e nada além do necessário para registrar a recusa é guardado (RN20).
+2a. A data de nascimento indica menos de 18 anos: o cadastro é recusado, e nada além do necessário para registrar a recusa é guardado (RN20).
 
 2b. A pessoa já tem conta de contratante: para trabalhar em turnos, cria outra conta, com outro e-mail; o telefone pode ser o mesmo (RN25).
 
@@ -1644,7 +1666,7 @@ Regras Relacionadas
 
 RN01, RN05, RN14, RN15, RN20, RN25
 
-Critério de Aceito (BDD)
+Critério de Aceitação (BDD)
 
 Dado que tenho 18 anos ou mais, quando entro com o código enviado ao meu e-mail e informo nome, telefone, funções, ponto base e disponibilidade, então fico apto a receber notificações de vaga sem enviar documento e sem pagar nada.
 
@@ -1660,13 +1682,13 @@ O responsável tem 18 anos ou mais e uma conta de contratante (RN25), criada com
 
 Fluxo Principal
 
-1. O contratante informa nome ou razão social, documento (CNPJ ou CPF), endereço e responsável.
+1. O contratante informa nome ou razão social, documento (CNPJ ou CPF), tipo de negócio, endereço e região administrativa do DF.
 
 2. O sistema valida o documento e localiza o endereço no mapa.
 
-3. O sistema cria o estabelecimento, com o responsável como administrador.
+3. O sistema cria o estabelecimento, com quem cadastrou como administrador.
 
-4. O administrador convida outros usuários pelo e-mail e atribui a cada um o papel de administrador ou de operador do estabelecimento.
+4. (v1.2, RF21) O administrador convida outros usuários pelo e-mail e atribui a cada um o papel de administrador ou de operador do estabelecimento.
 
 5. O convidado aceita com a própria conta de contratante, sem compartilhar acesso. Uma conta de profissional não pode aceitar o convite (RN25).
 
@@ -1686,7 +1708,7 @@ Regras Relacionadas
 
 RN15, RN20, RN25
 
-Critério de Aceito (BDD)
+Critério de Aceitação (BDD)
 
 Dado que cadastrei o estabelecimento, quando convido um gerente como operador, então ele passa a publicar e acompanhar vagas com a própria conta, sem compartilhar acesso, e o histórico permanece com o estabelecimento se eu sair.
 
@@ -1694,23 +1716,27 @@ UC11: Manter a equipe de confiança
 
 Ator(es)
 
-Contratante
+Contratante com papel de administrador do estabelecimento
 
 Pré-condição
 
-O profissional tem perfil ativo no Frila.
+O profissional tem perfil ativo no Frila e ao menos um turno com presença verificada no estabelecimento.
 
 Fluxo Principal
 
-1. O contratante abre o perfil de um profissional, a partir do histórico de turnos (UC13) ou de uma candidatura.
+1. O administrador abre o perfil de um profissional a partir do histórico de turnos do estabelecimento (UC13).
 
-2. O contratante adiciona o profissional à equipe de confiança do estabelecimento.
+2. O administrador adiciona o profissional à equipe de confiança do estabelecimento.
 
 3. O sistema registra a inclusão, e o profissional passa a receber a notificação das próximas vagas do estabelecimento para as quais tiver a função e estiver disponível, mesmo além de 15 km (UC02).
 
-4. O contratante pode remover o profissional da equipe a qualquer momento.
+4. O administrador pode remover o profissional da equipe a qualquer momento.
 
 Fluxo Alternativo
+
+2a. O profissional não tem turno com presença verificada na casa: a inclusão é recusada, e o motivo é explicado.
+
+2b. Quem tenta incluir ou remover é operador: a ação é recusada, porque é do administrador (RF21).
 
 3a. O profissional da equipe não tem a função ou não está disponível: ele não é notificado. A equipe dispensa só o limite de distância, nunca os outros critérios de elegibilidade (RN05).
 
@@ -1724,9 +1750,9 @@ Equipe atualizada, valendo a partir da próxima vaga.
 
 Regras Relacionadas
 
-RN05, RN16, RN23
+RN05, RN06, RN16, RN23
 
-Critério de Aceito (BDD)
+Critério de Aceitação (BDD)
 
 Dado que um profissional está na equipe de confiança do meu estabelecimento, tem a função e está disponível, quando publico uma vaga a mais de 15 km dele, então ele recebe a notificação ao mesmo tempo que os demais elegíveis.
 
@@ -1770,7 +1796,7 @@ Regras Relacionadas
 
 RN09, RN11, RN17, RN18
 
-Critério de Aceito (BDD)
+Critério de Aceitação (BDD)
 
 Dado que tenho turnos registrados no mês, quando exporto o período, então o arquivo traz data, função, horários auditados, valor acordado e contraparte de cada turno, pronto para o fechamento contábil.
 
@@ -1810,7 +1836,7 @@ Regras Relacionadas
 
 RN10, RN11, RN15
 
-Critério de Aceito (BDD)
+Critério de Aceitação (BDD)
 
 Dado que estou num turno confirmado, quando aciono o suporte, então o e-mail abre já com os dados do turno, e eu vejo o prazo de resposta de até 5 dias úteis.
 
@@ -1850,7 +1876,7 @@ Regras Relacionadas
 
 RN13, RN15, RN16
 
-Critério de Aceito (BDD)
+Critério de Aceitação (BDD)
 
 Dado que meu perfil foi suspenso, quando abro o aplicativo, então vejo o motivo registrado e consigo contestar, com resposta em até 5 dias úteis.
 
@@ -1878,9 +1904,11 @@ Fluxo Principal
 
 Fluxo Alternativo
 
-3a. O usuário tem turnos confirmados no futuro: o sistema avisa que a exclusão os cancela e, confirmada a exclusão, aplica UC08 com o motivo “exclusão de conta”.
+3a. O usuário tem turnos confirmados no futuro: o sistema avisa que a exclusão os cancela e, confirmada a exclusão, cancela cada posição com o motivo “exclusão de conta”, sem contar falta, e a vaga ganha uma posição nova (UC02).
 
 3b. O usuário é o único administrador de um estabelecimento com outros usuários: o sistema pede que ele transfira a administração antes (UC10).
+
+3c. O usuário é o único membro de um estabelecimento: as vagas abertas são canceladas, as candidaturas pendentes são retiradas e os profissionais são avisados; um turno já em andamento segue até o fim.
 
 Pós-condição
 
@@ -1890,7 +1918,7 @@ Regras Relacionadas
 
 RN15
 
-Critério de Aceito (BDD)
+Critério de Aceitação (BDD)
 
 Dado que quero sair do Frila, quando peço a exclusão dentro do aplicativo, então a conta deixa de aparecer na hora e é excluída em até 15 dias, sem precisar de e-mail ou site externo, como exige a diretriz 5.1.1(v) da App Store.
 
@@ -1922,9 +1950,11 @@ Fluxo Alternativo
 
 4a. Com o bloqueio, as partes não voltam a se cruzar: o profissional não recebe notificação nem vê vagas do estabelecimento, e o estabelecimento não recebe candidatura dele.
 
-5a. A denúncia grave é confirmada (assédio, fraude ou documento falso): o perfil denunciado é suspenso, com motivo registrado e direito de contestar (UC15).
+5a. A denúncia grave é confirmada (assédio, fraude ou documento falso): o perfil denunciado é suspenso, com motivo registrado e direito de contestar (UC15); os turnos futuros dele são cancelados, a contraparte é avisada e as posições são reabertas (RN13).
 
 5b. Há risco imediato: o app mostra atalhos para o 190 e o 180, sem esperar a resposta da Equipe Frila.
+
+5c. A denúncia é sobre uma vaga com conteúdo impróprio: a Equipe Frila pode ocultá-la até revisar, sem cancelar turnos confirmados; a vaga sai da lista e do despacho, e o estabelecimento vê que ela foi ocultada.
 
 Pós-condição
 
@@ -1932,11 +1962,11 @@ Denúncia registrada e respondida no prazo, e bloqueio em vigor quando pedido.
 
 Regras Relacionadas
 
-RN13, RN15
+RN05, RN13, RN15
 
-Critério de Aceito (BDD)
+Critério de Aceitação (BDD)
 
-Dado que sofri assédio num turno, quando denuncio e bloqueio a outra parte, então a denúncia chega à Equipe Frila com prazo de resposta de até 5 dias úteis, e a outra parte deixa de aparecer para mim, e eu para ela, na hora. É o mecanismo que a diretriz 1.2 da App Store exige.
+Dado que sofri assédio num turno, quando denuncio e bloqueio a outra parte, então a denúncia chega à Equipe Frila com prazo de resposta de até 5 dias úteis, e a outra parte deixa de aparecer para mim, e eu para ela, em notificações, listas e candidaturas, na hora. É o mecanismo que a diretriz 1.2 da App Store exige.
 
 6.2 Diagrama de Banco de Dados (DER)
 
@@ -1946,9 +1976,11 @@ O eixo do modelo é uma cadeia só — vaga → posição → turno → avaliaç
 
 *Figura 5 — Cada conta com um perfil só (RN25)*
 
-*Figura 6 — O que decide quem recebe o despacho*
+*Figura 6 — O que decide quem recebe a notificação*
 
 *Figura 7 — Os estados de uma posição e as transições válidas*
+
+A tabela descreve as dezoito entidades de domínio. O banco implementado, nas migrações de frila-backend, tem também a tabela associativa profissional_funcao, duas tabelas de operação (entrada_demonstracao e pedido_de_exclusao) e tabelas auxiliares num schema que a API não expõe; a Modelagem de Banco de Dados lista todas.
 
 Descrição das Entidades Principais
 
@@ -1962,9 +1994,9 @@ Relacionamentos
 
 Usuario
 
-Conta de acesso, com um perfil só, profissional ou contratante (RN25). A entrada é por código no e-mail, a credencial fica no Supabase Auth e o id é o mesmo da conta de autenticação. O e-mail é único; o telefone, não.
+Conta de acesso, com um perfil só, profissional ou contratante (RN25). A entrada é por código no e-mail, a credencial fica no Supabase Auth e o id é o mesmo da conta de autenticação. O e-mail é único entre as contas não anonimizadas; o telefone, não.
 
-id, perfil, nome, telefone, email, nascimento, estado, criado_em, anonimizado_em
+id, perfil, nome, telefone, email, nascimento, estado, termos_versao, termos_aceite_em, demonstracao, criado_em, anonimizado_em
 
 1:1 com Profissional, na conta de profissional; N:N com Estabelecimento via MembroEstabelecimento, na conta de contratante
 
@@ -1972,15 +2004,15 @@ Profissional
 
 Perfil de quem executa turnos.
 
-id, usuario_id, ponto_base, taxa_comparecimento, turnos_realizados, estado
+id, usuario_id, perfil, ponto_base, taxa_comparecimento, turnos_realizados, aval_positivas, aval_total
 
-1:1 com Usuario; N:N com Funcao; 1:N com Disponibilidade, Candidatura e Avaliacao
+1:1 com Usuario; N:N com Funcao; 1:N com Disponibilidade e Candidatura; alvo de Avaliacao
 
 Estabelecimento
 
 Contratante de qualquer setor: bar, restaurante, buffet, produtora, loja, residência ou outro negócio.
 
-id, nome, documento, tipo, endereco, geo_lat, geo_lng, criado_em
+id, nome, documento, tipo, endereco, regiao_administrativa, ponto, aval_positivas, aval_total, criado_em
 
 1:N com Vaga e EquipeConfianca; N:N com Usuario via MembroEstabelecimento
 
@@ -2004,7 +2036,7 @@ Vaga
 
 Turno publicado por um estabelecimento.
 
-id, estabelecimento_id, funcao_id, inicio_em, fim_em, endereco, geo_lat, geo_lng, valor_centavos, posicoes, inclui_refeicao, inclui_transporte, exige_material_proprio, responsavel_local, traje, participa_rateio, observacoes, modo, alerta_antecedencia, estado, publicado_em, chave_cliente
+id, estabelecimento_id, publicado_por, funcao_id, inicio_em, fim_em, local, regiao_administrativa, ponto, valor_centavos, posicoes, inclui_refeicao, inclui_transporte, exige_material_proprio, responsavel_local, traje, participa_rateio, observacoes, modo, alerta_antecedencia, estado, rodada_despacho, publicado_em, chave_cliente
 
 N:1 com Estabelecimento e Funcao; 1:N com Posicao e Despacho
 
@@ -2012,7 +2044,7 @@ Posicao
 
 Unidade preenchível de uma vaga. Uma vaga de 4 garçons tem 4 posições.
 
-id, vaga_id, estado, profissional_id, confirmado_em, falta, inicio_em, fim_em
+id, vaga_id, estado, profissional_id, confirmado_em, falta, reaberta_por_atraso_de, inicio_em, fim_em
 
 N:1 com Vaga; 1:N com Candidatura; 1:1 com Turno
 
@@ -2026,19 +2058,19 @@ N:1 com Profissional
 
 Despacho
 
-Registro de cada vaga enviada a um profissional elegível.
+Registro de cada vaga enviada a um profissional elegível, uma vez por rodada; a reabertura por atraso abre rodada nova.
 
-id, vaga_id, profissional_id, notificacao_id, criado_em
+id, vaga_id, profissional_id, notificacao_id, rodada, criado_em
 
 N:1 com Vaga, Profissional e Notificacao
 
 Notificacao
 
-Cada notificação enviada a um profissional, com uma ou mais vagas agrupadas. É o que sustenta o teto de RN23.
+Cada aviso enviado a uma conta, de profissional ou de membro do estabelecimento, com um de 18 tipos. Só os avisos de vaga, com uma ou mais vagas agrupadas, contam no teto de RN23.
 
-id, profissional_id, enviada_em, urgente, estado_entrega, entregue_em, motivo_falha
+id, usuario_id, tipo, referencia_id, profissional_id, rodada, enviada_em, urgente, estado_entrega, entregue_em, motivo_falha
 
-N:1 com Profissional; 1:N com Despacho
+N:1 com Usuario; 1:N com Despacho
 
 Candidatura
 
@@ -2052,15 +2084,15 @@ Turno
 
 Execução efetiva de uma posição confirmada.
 
-id, posicao_id, checkin_em, checkin_tipo, checkin_distancia_m, checkin_confirmado_em, checkout_em, checkout_distancia_m, verificacao, valor_acordado_centavos
+id, posicao_id, checkin_em, checkin_tipo, checkin_distancia_m, checkin_confirmado_em, checkout_em, checkout_distancia_m, a_caminho_em, verificacao, valor_acordado_centavos
 
 1:1 com Posicao; 1:N com Avaliacao
 
 Avaliacao
 
-Resposta binária de um lado sobre o outro, após turno com presença verificada.
+Resposta binária de um lado sobre o outro, após turno com presença verificada: uma por turno e por lado.
 
-id, turno_id, autor_tipo, autor_id, alvo_tipo, alvo_id, resposta, criada_em
+id, turno_id, autor_id, alvo_tipo, alvo_id, resposta, criada_em
 
 N:1 com Turno
 
@@ -2068,7 +2100,7 @@ EquipeConfianca
 
 Profissionais que recebem as vagas do estabelecimento mesmo além de 15 km.
 
-id, estabelecimento_id, profissional_id, adicionado_em
+estabelecimento_id e profissional_id (chave composta), adicionado_em
 
 N:1 com Estabelecimento; N:1 com Profissional
 
@@ -2084,9 +2116,9 @@ Ocorrencia
 
 Registro de cancelamento, suspensão, contestação, suporte, denúncia ou pedido de revisão do despacho.
 
-id, tipo, turno_id, posicao_id, autor_id, motivo, criada_em, resultado, chave_cliente
+id, tipo, turno_id, posicao_id, usuario_id, estabelecimento_id, autor_id, motivo, relato, criada_em, resultado, resolvido_em, chave_cliente
 
-N:1 com Posicao; N:1 com Turno
+N:1 com Posicao, Turno, Usuario e Estabelecimento
 
 Bloqueio
 
@@ -2106,7 +2138,7 @@ N:1 com Usuario
 
 6.3 Diagrama de Classes
 
-A regra de dependência vale em toda seta: o domínio é alvo de todas e origem de nenhuma. Quando precisa falar com o mundo, declara um protocolo e espera que alguém o implemente — é o que permite testar despacho, elegibilidade e reputação sem rede, sem interface e sem simulador. As regras que precisam valer igual nos três clientes são garantidas no backend (Seção 6.4); o domínio do app as espelha para a tela e para os testes.
+A regra de dependência vale em toda seta: o domínio é alvo de todas e origem de nenhuma. Quando precisa falar com o mundo, declara um protocolo e espera que alguém o implemente — é o que permite testar despacho, elegibilidade e reputação sem rede, sem interface e sem simulador. As regras que precisam valer igual nos três clientes são garantidas no backend (Seção 6.4): DespachoService, NotificacaoService e ElegibilidadeSpec são a especificação dessas funções e não têm classe no app. O domínio do app cuida das regras de tela, e o Diagrama de Classe mostra a correspondência entre o desenho e os nomes do código em frila-frontend/iOS.
 
 *Figura 8 — A regra de dependência entre as camadas*
 
@@ -2130,7 +2162,7 @@ Vaga
 
 Representar o turno publicado e seu estado.
 
-id: UUID, funcao: Funcao, inicio: Date, fim: Date, local: Local, valorCentavos: Int, inclusos: Inclusos, responsavelLocal: String, modo: ModoPreenchimento, alertaAntecedencia: TimeInterval, posicoes: [Posicao]
+id: UUID, funcao: Funcao, periodo: Periodo, local: Local, valor: Dinheiro, inclusos: Inclusos, responsavelLocal: String, modo: ModoPreenchimento, alertaAntecedencia: TimeInterval, posicoes: [Posicao]
 
 posicoesAbertas(): [Posicao], estaNaJanelaCritica(): Bool, aceitaModoSelecao(): Bool, encerrar(): Void
 
@@ -2140,15 +2172,15 @@ Controlar o preenchimento de uma unidade da vaga.
 
 id: UUID, estado: EstadoPosicao, profissional: Profissional?, candidaturas: [Candidatura]
 
-confirmar(_: Profissional) throws, reabrir(motivo: String): Void
+confirmar(_: Profissional) -> ResultadoConfirmacao, reabrir(motivo: String) -> Ocorrencia
 
 Profissional
 
 Guardar perfil, elegibilidade e reputação de quem executa.
 
-id: UUID, funcoes: [Funcao], pontoBase: Coordenada, disponibilidades: [Disponibilidade], taxaComparecimento: Double?
+id: UUID, funcoes: [Funcao], pontoBase: Coordenada, disponibilidades: [Disponibilidade], reputacao: Reputacao
 
-estaElegivel(para: Vaga): Bool, atualizarComparecimento(_: Turno): Void
+— (quem decide a elegibilidade é o backend)
 
 Estabelecimento
 
@@ -2162,7 +2194,7 @@ Turno
 
 Registrar o check-in, o check-out e a presença.
 
-id: UUID, posicao: Posicao, checkin: RegistroDePresenca?, checkout: RegistroDePresenca?, verificacao: Verificacao, valorAcordadoCentavos: Int
+id: UUID, posicao: Posicao, checkin: RegistroDePresenca?, checkout: RegistroDePresenca?, verificacao: Verificacao, valorAcordado: Dinheiro
 
 registrarCheckin(distanciaMetros: Double?, em: Date): Void, confirmarCheckinManual(por: Ator): Void, registrarCheckout(distanciaMetros: Double?, em: Date): Void, temPresencaVerificada(): Bool
 
@@ -2184,7 +2216,7 @@ descricao(): String, temHistorico(): Bool
 
 DespachoService
 
-Selecionar os elegíveis e notificar de uma vez, respeitando teto e agrupamento (RN23).
+Especificar a seleção dos elegíveis e a notificação de uma vez, com teto e agrupamento (RN23). Roda no backend, em privado.despachar_vaga.
 
 vaga: Vaga, distanciaMaximaKm: Double (15), tetoIntervalo: TimeInterval (30 min)
 
@@ -2192,27 +2224,27 @@ elegiveis(): [Profissional], notificar() async
 
 NotificacaoService
 
-Agrupar, enviar, acompanhar a entrega e reenviar notificações.
+Especificar o agrupamento, o envio, o acompanhamento da entrega e o reenvio. Roda no backend, na Edge Function enviar-push.
 
-provedor: ProvedorPush, pendentes: [Notificacao]
+provedor: NotificacaoPort, pendentes: [Notificacao]
 
 agrupar(_: [Vaga], para: Profissional): Notificacao, enviar(_: Notificacao) async throws, confirmarEntrega(_: UUID): Void, reenviarFalhas() async
 
 ElegibilidadeSpec
 
-Isolar as regras de quem pode receber uma vaga.
+Especificar as regras de quem pode receber uma vaga. Roda no backend, em privado.elegiveis.
 
 distanciaMaximaKm: Double, exigeFuncao: Bool, exigeDisponibilidade: Bool
 
 satisfaz(_: Profissional, _: Vaga): Bool
 
-VagaRepository
+VagaRepositorio
 
-Persistir e consultar vagas, posições e candidaturas.
+Persistir e consultar vagas, posições e candidaturas (protocolo; VagaRepositorioHTTP em produção e VagaRepositorioEmMemoria nos testes).
 
 fonte: FonteDeDados
 
-salvar(_: Vaga) async throws, abertas(ordenadasPorDistanciaDe: Coordenada, filtro: FiltroVagas) async -> [Vaga], confirmar(posicao: UUID, profissional: UUID) async throws
+salvar(_: Vaga) async throws, abertas(ordenadasPorDistanciaDe: Coordenada, filtro: FiltroVagas) async -> [Vaga], confirmar(posicao: UUID, profissional: UUID) async -> ResultadoConfirmacao
 
 PublicarVagaViewModel
 
@@ -2248,17 +2280,17 @@ encerrar(): Void
 
 6.4 Arquitetura
 
-A arquitetura foi decidida em 21/09/2026. Os aplicativos são nativos: Swift e SwiftUI no iOS, Kotlin no Android, e há uma versão web. O backend é o Supabase (Postgres com PostGIS, autenticação, Edge Functions, pg_cron e fila pgmq), escolhido pelo plano gratuito de até 50 mil usuários ativos por mês; a migração será reavaliada a partir de certa rentabilidade.
+A arquitetura foi decidida em 21/09/2026. Os aplicativos são nativos: Swift e SwiftUI no iOS, Kotlin no Android, e uma versão web; a v1.0 é só iOS, e Android e web entram na v1.2. O backend é o Supabase (Postgres com PostGIS, autenticação, Edge Functions, pg_cron, pg_net e fila pgmq), escolhido pelo plano gratuito de até 50 mil usuários ativos por mês; a migração será reavaliada a partir de certa rentabilidade. O código está na organização FrilaApp do GitHub: frila-backend (branch develop) e frila-frontend (pasta iOS/).
 
-As regras que precisam valer igual nos três clientes ficam no backend e são escritas uma vez, como funções e restrições no banco: quem recebe a notificação (RN05 e RN23), a confirmação sem duplicidade (RN19), o turno sobreposto (RN21), o check-in a até 200 m (RN22) e o fechamento do modo seleção (RN24). O despacho roda fora da requisição: publicar só grava e responde, e um job separado faz as notificações, os lembretes e os alertas. Cada app mantém o próprio domínio para a tela e para os testes.
+As regras que precisam valer igual nos três clientes ficam no backend e são escritas uma vez, como funções e restrições no banco: quem recebe a notificação (RN05 e RN23), a confirmação sem duplicidade (RN19), o turno sobreposto (RN21), o check-in a até 200 m (RN22) e o fechamento do modo seleção (RN24). O despacho roda fora da requisição: publicar grava, enfileira o despacho na pgmq e responde; depois do commit, o pg_net aciona a Edge Function despachar, o pg_cron roda os lembretes, os alertas e os prazos, e o push sai pela Edge Function enviar-push. Cada app mantém o próprio domínio para a tela e para os testes.
 
-O contrato entre os apps e o backend foi escrito antes do código (decisão B16) e está em Documentos/API/openapi.yaml (OpenAPI 3.1, versão 0.1.0, de 22/09/2026). Cada operação com regra de negócio é uma função RPC do Supabase; as recusas de regra voltam com código estável, como posicao_ja_preenchida (409) e inelegivel (422), e reenviar a mesma escrita devolve o mesmo resultado.
+O contrato entre os apps e o backend foi escrito antes do código (decisão B16) e está em api/openapi.yaml, no repositório frila-docs (OpenAPI 3.1; primeira versão em 22/09/2026, versão 0.2.26 em 30/09/2026). Toda mudança passa primeiro por ele, depois pelo backend e só então chega ao app. Cada operação com regra de negócio é uma função RPC do Supabase; as recusas de regra voltam com código estável, como posicao_ja_preenchida (409) e inelegivel (422), e reenviar a mesma escrita devolve o mesmo resultado.
 
 Dentro do aplicativo iOS, as camadas são quatro:
 
 • Apresentação: telas em SwiftUI e view models por funcionalidade, sem regra de negócio.
 
-• Domínio: entidades, especificação de elegibilidade e regras de reputação, espelhando o que o backend garante. É a camada que precisa ser testável sem rede e sem interface.
+• Domínio: entidades, objetos de valor, reputação exibida e as portas (protocolos) que as outras camadas implementam. Não importa SwiftUI, Supabase, SwiftData nem CoreLocation, e é testável sem rede e sem interface.
 
 • Dados: repositórios, cliente do Supabase, cache local em SwiftData e fila de ações offline.
 
@@ -2280,19 +2312,23 @@ Operações assíncronas e isolamento de estado na sincronização e na fila off
 
 CoreLocation
 
-Leitura da localização no momento do check-in e do check-out, nunca em segundo plano
+Leitura da localização no momento do check-in e do check-out, nunca em segundo plano (entra na Sprint 2)
 
 MapKit
 
-Exibição do local do turno e da distância até ele
+Exibição do local do turno e da distância até ele (Sprint 2)
 
 UserNotifications
 
-Recebimento e apresentação das notificações de vaga
+Recebimento e apresentação das notificações de vaga (Sprint 2)
 
-Supabase Swift
+Supabase Swift (supabase-swift)
 
-Entrada por código no e-mail, acesso às tabelas e chamada das funções RPC do backend
+Entrada por código no e-mail e chamada das funções RPC do backend; guarda a sessão no Keychain
+
+MetricKit e OSLog
+
+Relatório de falhas e telemetria sem dado pessoal
 
 Keychain Services
 
@@ -2300,7 +2336,7 @@ Armazenamento de credenciais e token de sessão
 
 Firebase Cloud Messaging (FCM)
 
-Push de vaga no Android e no iOS (no iOS, via APNs)
+Push de vaga no Android e no iOS (no iOS, via APNs); o SDK entra no app na Sprint 2
 
 SwiftData
 
@@ -2314,15 +2350,19 @@ XCTest (XCUITest)
 
 Testes de interface dos fluxos principais
 
+XcodeGen
+
+Geração do projeto Xcode a partir do project.yml
+
 Supabase (backend)
 
-Postgres com PostGIS, autenticação, Edge Functions, pg_cron e pgmq: persistência, regras críticas, despacho e envio de push
+Postgres com PostGIS, autenticação, Edge Functions, pg_cron, pg_net e pgmq: persistência, regras críticas, despacho e envio de push; testes em pgTAP
 
 Diagrama de arquitetura
 
 *Figura 12 — Contexto: atores e dependências externas*
 
-*Figura 13 — Contêineres: três clientes, o Supabase e o despacho em fila*
+*Figura 13 — Contêineres: o app iOS (Android e web na v1.2), o Supabase e o despacho em fila*
 
 *Figura 14 — A estratégia decidida para iOS, Android e web: nativo em cada plataforma, regras críticas no backend*
 
@@ -2334,7 +2374,7 @@ Módulo 1 (obrigatório)
 
 Nome do Módulo
 
-Frila-iOS, aplicativo do Profissional e do Estabelecimento
+Frila (iOS), aplicativo do Profissional e do Estabelecimento, em frila-frontend/iOS; bundle ID com.frila.org.app
 
 Padrão Arquitetural
 
@@ -2342,29 +2382,39 @@ MVVM com camada de domínio isolada (Clean Architecture enxuta)
 
 Justificativa
 
-MVVM é o padrão idiomático de SwiftUI e mantém as telas livres de regra de negócio. A camada de domínio separada é o ponto que importa neste produto: elegibilidade, presença e reputação sustentam a tese inteira e precisam ser testáveis sem interface, sem rede e sem simulador, inclusive porque vão mudar conforme a validação de campo corrigir as hipóteses. As regras que precisam valer igual no Android e na web moram no backend; o domínio do app as espelha para a tela e para os testes.
+MVVM é o padrão idiomático de SwiftUI e mantém as telas livres de regra de negócio. A camada de domínio separada é o ponto que importa neste produto: elegibilidade, presença e reputação sustentam a tese inteira e precisam ser testáveis sem interface, sem rede e sem simulador, inclusive porque vão mudar conforme a validação de campo corrigir as hipóteses. As regras que precisam valer igual no Android e na web moram no backend. O app é dividido em quatro módulos (FrilaDominio, FrilaDados, FrilaInfraestrutura e a apresentação) e no alvo que os compõe.
 
 Linguagem / Framework
 
 Swift e SwiftUI
 
-Frila-iOS/
+frila-frontend/iOS/
+
+├── project.yml # projeto gerado pelo XcodeGen
 
 ├── Sources/
 
-│ ├── Features/ # Publicação, Feed, Turno, Reputação, Perfil
+│ ├── App/ # composição: liga as camadas e escolhe o ambiente
 
-│ ├── Domain/ # Entidades, ElegibilidadeSpec, DespachoService, Reputacao
+│ ├── Apresentacao/ # telas SwiftUI, view models, componentes e tokens
 
-│ ├── Data/ # Repositórios, cliente Supabase, cache SwiftData e fila offline
+│ ├── Dominio/ # FrilaDominio: entidades, objetos de valor e portas
 
-│ ├── Infra/ # Push (FCM), localização no toque, keychain, telemetria
+│ ├── Dados/ # FrilaDados: cliente Supabase, cache SwiftData e fila offline
 
-│ └── UI/ # Componentes, tokens de estilo e acessibilidade
+│ └── Infraestrutura/ # FrilaInfraestrutura: Keychain, telemetria, conexão
 
-├── Tests/ # Swift Testing (domínio) e XCUITest (interface)
+├── Tests/
 
-└── Resources/ # Assets, strings pt-BR e configurações
+│ ├── Unitarios/ # Swift Testing
+
+│ └── UI/ # XCUITest
+
+├── Contrato/ # cópia do openapi.yaml, com a soma de verificação
+
+├── Resources/ # assets, strings pt-BR, fixtures do contrato, manifesto de privacidade
+
+└── Configurations/ # ambientes (Local, Dev, Beta e Prod)
 
 7. Documentação de Apoio
 
@@ -2378,7 +2428,7 @@ RN(s) Relacionadas
 
 RNF(s) Relacionados
 
-UC(s) Relacionadas
+UC(s) Relacionados
 
 RF01
 
@@ -2494,7 +2544,7 @@ RF12
 
 Lembrete pré-turno (24 h e 3 h)
 
-Nenhuma
+RN10, RN15
 
 RNF02
 
@@ -2504,7 +2554,7 @@ RF13
 
 Check-in e check-out geolocalizados
 
-RN11, RN18, RN22
+RN11, RN12, RN18, RN22
 
 RNF06, RNF13
 
@@ -2554,7 +2604,7 @@ RF18
 
 Equipe de confiança
 
-RN05, RN23
+RN05, RN06, RN23
 
 RNF03
 
@@ -2634,7 +2684,7 @@ RF26
 
 Denúncia e bloqueio
 
-RN13, RN15
+RN05, RN13, RN15
 
 RNF08, RNF13
 
@@ -2650,4 +2700,4 @@ RNF09
 
 UC09
 
-*RN01 (sem desconto no valor do turno), RN09 (não processar pagamento) e RN20 (maioridade) não aparecem vinculadas a um único requisito porque são restrições de produto que valem sobre o sistema inteiro: a primeira e a segunda determinam o que não existe, e a terceira condiciona todo o cadastro. Elas são verificadas por ausência, já que nenhum fluxo pode introduzi-las, e não por um requisito específico que as implemente. O RF17 e o UC12 foram retirados em 21/09/2026 e seguem na tabela só para preservar a numeração.*
+*RN01 (sem desconto no valor do turno) e RN09 (não processar pagamento) não aparecem vinculadas a nenhum requisito porque são restrições de produto que valem sobre o sistema inteiro e determinam o que não existe. Elas são verificadas por ausência, já que nenhum fluxo pode introduzi-las, e não por um requisito específico que as implemente. A RN20 (maioridade) aparece em RF01 e RF02, mas vale para todo cadastro, dos dois perfis. O RF17 e o UC12 foram retirados em 21/09/2026 e seguem na tabela só para preservar a numeração.*

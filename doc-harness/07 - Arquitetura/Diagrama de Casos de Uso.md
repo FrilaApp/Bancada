@@ -19,7 +19,7 @@ O modelo de dados que sustenta estes fluxos está em [[07 - Arquitetura/Modelage
 |---|---|---|
 | **Profissional** | Quem executa turnos avulsos em funções operacionais. Maior de 18 anos | UC03, UC05, UC06, UC08, UC09, UC13, UC14, UC15, UC16, UC17 |
 | **Contratante** | Usuário de um estabelecimento que publica turnos, com papel de administrador ou de operador do estabelecimento (RF21). Na versão web, o gestor acompanha tudo pelo Painel | UC01, UC04, UC05, UC06, UC07, UC08, UC10, UC11, UC13 a UC17 |
-| **Equipe Frila** | Pessoa da equipe Frila que responde, por e-mail, suporte, denúncias, contestações e pedidos de revisão do despacho, em até 5 dias úteis. Não acompanha turnos | UC14, UC15, UC17 |
+| **Equipe Frila** | Pessoa da equipe Frila que responde, por e-mail, suporte, denúncias, contestações e pedidos de revisão do despacho, em até 5 dias úteis, e pode ocultar vaga com conteúdo impróprio até revisá-la. Não acompanha turnos | UC09, UC14, UC15, UC17 |
 | **Usuário** | Generalização dos dois primeiros, onde eles têm o mesmo direito | UC14, UC15, UC16, UC17 |
 
 > [!note] Não existe o ator "Sistema"
@@ -50,7 +50,7 @@ O UC07 não tem seta. É o contratante acompanhando vagas e turnos pelo Painel: 
 
 ![[07 - Arquitetura/Anexos/casos-de-uso/cadastro-e-confianca.png|UC09 a UC13, sem o UC12: como cada lado entra e o que se acumula com o uso]]
 
-UC09 inclui a tela "Por que recebo vagas", com o botão "Contestar" (RF27): o profissional vê os critérios da notificação — função, disponibilidade e distância de até 15 km — e pode pedir revisão, respondida pela Equipe Frila em até 5 dias úteis (LGPD, art. 20).
+UC09 inclui a tela "Por que recebo vagas", com o botão "Contestar" (RF27): o profissional vê os critérios da notificação — função, disponibilidade e distância de até 15 km — e pode pedir revisão, respondida pela Equipe Frila em até 5 dias úteis (LGPD, art. 20). Por isso a Equipe Frila aparece nesta vista como ator secundário do UC09.
 
 ### Suporte e direitos de quem usa
 
@@ -72,14 +72,14 @@ UC17 também é exigência da App Store: app com perfis e conteúdo de usuário 
 | UC04 | Confirmar profissional na posição | Contratante | RF09, RF10, RF11, RF16 | RN08, RN10, RN19, RN24 |
 | UC05 | Registrar a execução do turno | Profissional e Contratante | RF12, RF13 | RN09, RN11, RN18, RN22 |
 | UC06 | Avaliar após o turno | Profissional e Contratante | RF15, RF16 | RN07, RN08, RN22 |
-| UC07 | Acompanhar vagas e turnos pelo Painel | Contratante | RF20 | RN12, RN22 |
+| UC07 | Acompanhar vagas e turnos pelo Painel | Contratante | RF13, RF20 | RN12, RN22, RN24 |
 | UC08 | Cancelar e reabrir posição | Profissional ou Contratante | RF14 | RN12, RN13, RN16 |
 | UC09 | Cadastrar-se e manter o perfil profissional | Profissional | RF01, RF03, RF27 | RN01, RN05, RN14, RN15, RN20, RN25 |
 | UC10 | Cadastrar o estabelecimento e gerenciar usuários | Contratante | RF02, RF21 | RN15, RN20, RN25 |
-| UC11 | Manter a equipe de confiança | Contratante | RF18 | RN05, RN06, RN16 |
+| UC11 | Manter a equipe de confiança | Contratante administrador | RF18 | RN05, RN06, RN16, RN23 |
 | UC12 | *Retirado em 21/09/2026* — era "Registrar aval externo" | — | RF17 (retirado) | — |
 | UC13 | Consultar e exportar o histórico de turnos | Profissional e Contratante | RF22 | RN09, RN11, RN17, RN18 |
-| UC14 | Acionar suporte durante o turno | Usuário | RF23 | RN11, RN15 |
+| UC14 | Acionar suporte durante o turno | Usuário | RF23 | RN10, RN11, RN15 |
 | UC15 | Consultar e contestar suspensão | Usuário | RF24 | RN13, RN15, RN16 |
 | UC16 | Exportar dados pessoais e excluir a conta | Usuário | RF25 | RN15 |
 | UC17 | Denunciar e bloquear | Usuário | RF26 | RN05, RN13, RN15 |
@@ -132,6 +132,32 @@ Depois do quadro 03, as respostas sobre o app e o cadastro mudaram dois casos de
 |---|---|---|---|
 | UC09 | Telefone confirmado por código; botão "disponível agora" | Entrada por código no e-mail, sem senha e sem SMS; telefone obrigatório, só com o formato conferido; perfil de profissional fixo na conta; só a grade semanal de disponibilidade | Um app só, com um perfil por conta (RN25) |
 | UC10 | Conta de acesso qualquer; convite por telefone ou e-mail | Conta de contratante, criada com código no e-mail; convite pelo e-mail; conta de profissional não aceita convite | RN25 |
+
+### Revisão de consistência (30/09)
+
+Para a entrega parcial de 02/10, esta nota e a Seção 6.1 do Documento de Requisitos (v1.4.0) foram conferidas uma contra a outra e contra os três desenhos:
+
+| Onde | Antes | Agora | Por quê |
+|---|---|---|---|
+| Atores | Equipe Frila em UC14, UC15 e UC17 aqui, e também em UC09 no Documento de Requisitos | UC09, UC14, UC15 e UC17 nos dois, e a Equipe Frila entra na vista "Cadastro, perfil e confiança" como ator secundário do UC09 | É ela quem responde o pedido de revisão de "Por que recebo vagas" (RF27) |
+| UC07 | RF20; RN12 e RN22 | RF13 e RF20; RN12, RN22 e RN24 | O Painel confirma check-in manual (RF13) e escolhe candidatos do modo seleção (RN24) |
+| UC11 | RN05, RN06 e RN16 aqui; RN05, RN16 e RN23 no Documento de Requisitos | RN05, RN06, RN16 e RN23 nos dois | A equipe não tem prioridade (RN06) e entra no teto de notificações (RN23) |
+| UC14 | RN11 e RN15 | RN10, RN11 e RN15 | O fluxo 4a manda combinar o turno pelo contato liberado (RN10) |
+| UC17 | RN13 e RN15 no Documento de Requisitos | RN05, RN13 e RN15 nos dois | O bloqueio tira as partes do despacho (RN05) |
+
+As descrições da Seção 6.1 também passaram a seguir o contrato da API (0.2.26) e as decisões de produto de 28/09:
+
+| UC | O que mudou | De onde vem |
+|---|---|---|
+| UC01 | A região administrativa do local entra nos campos obrigatórios, pré-preenchida pela do estabelecimento | Contrato 0.2.20 |
+| UC03 | Só se candidata quem tem a função da vaga; o toque na notificação abre o detalhe da vaga, com o aviso de RN10, antes de candidatar | Contrato 0.2.7; decisão de 28/09 |
+| UC05 | O lembrete mostra função, horário e região, sem telefone nem endereço com número na tela de bloqueio; o check-in vale de 60 minutos antes do início até o fim previsto, e a 201 m vira manual; o check-out é aceito a qualquer distância; turno que termina sem check-in vira falta; "estou a caminho" fica para a v1.1 | Contratos 0.2.10, 0.2.20 e 0.2.25; decisões de 28/09 |
+| UC06 | Um voto por lado do turno: pelo estabelecimento, vale a primeira resposta de qualquer membro; a taxa de comparecimento é só do profissional | Contratos 0.2.6 e 0.2.12 |
+| UC08 | A posição cancelada não volta a "aberta": antes do início, a vaga ganha uma posição nova; depois do início, só a reabertura por atraso reabre, e a posição nova aceita candidatura até 1 hora antes do fim | Contratos 0.2.11 e 0.2.19 |
+| UC09 | A maioridade é conferida pela data de nascimento, e o cadastro registra o aceite da versão vigente dos termos | Decisão de 28/09 |
+| UC11 | Só o administrador inclui e remove, e só quem já cumpriu turno com presença verificada no estabelecimento | Contrato 0.2.22 |
+| UC16 | A exclusão cancela os turnos futuros sem contar falta; o contratante que é o único membro tem as vagas abertas canceladas | Contrato 0.2.18 |
+| UC17 | A suspensão cancela os turnos futuros da conta e reabre as posições; a Equipe Frila pode ocultar vaga imprópria sem cancelar turnos | Contrato 0.2.23; decisão de 28/09 |
 
 ---
 

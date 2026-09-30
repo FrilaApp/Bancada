@@ -9,10 +9,10 @@ tags: [arquitetura, frila, banco-de-dados]
 
 Preenche a Seção 6.2 do [[01 - CBL/Desafios/C18/Documentos de Produto/Frila_Documento_de_Requisitos|Documento de Requisitos]], que descreve as dezoito entidades em tabela mas não traz o desenho nem o esquema físico. Aqui estão o diagrama, o DDL com as restrições que transformam regra de negócio em constraint, a máquina de estados que o código vai seguir, e o plano de migração para quando o esquema mudar.
 
-> [!info] Estado do projeto
-> TRL 2: sem código e sem validação de campo. O backend está decidido desde 21/09/2026: **Supabase**, com Postgres e PostGIS (B02, B06). Por isso o DDL daqui roda como está; [[#No Supabase]] diz o que muda de lugar. Toda premissa de comportamento de usuário carrega `[H]`.
+> [!info] Estado do projeto (30/09/2026)
+> O esquema está implementado no Supabase (Postgres com PostGIS, B02 e B06), em `frila-backend/supabase/migrations/`, na branch `develop`: 75 migrações até 30/09, cobertas por testes pgTAP. O DDL daqui é o **desenho de referência**: onde ele e uma migração divergirem, vale a migração, e [[#Do desenho às migrações (30/09)]] lista o que o banco real tem a mais. Ainda não houve validação de campo, e toda premissa de comportamento de usuário carrega `[H]`.
 
-> [!info] Atualizado em 22/09/2026 (rodada 2 das pendências para codar)
+> [!info] Atualizado em 22/09/2026 (rodada 2 das pendências para codar) e revisado em 30/09/2026
 > Cada conta tem um perfil só, profissional ou contratante, fixado em `usuario.perfil` (RN25). A entrada é por código enviado ao e-mail, sem senha e sem SMS. O telefone continua obrigatório, mas sem verificação e sem unicidade. O "disponível agora" saiu: a disponibilidade é só a grade semanal. E as políticas de acesso de cada tabela estão escritas em [[#Políticas de acesso (RLS)]].
 
 ---
@@ -33,7 +33,7 @@ Nove das vinte e cinco regras de negócio são dessa natureza. Se falharem uma v
 | RN02 | Vaga sem função, horário, endereço, valor, o que está incluso ou quem recebe no local não existe | `NOT NULL` nas colunas obrigatórias de `vaga` |
 | RN24 | Modo seleção só para vaga que começa em mais de 24 horas | `CHECK` em `vaga` |
 | RN22 | Check-in geolocalizado vale até 200 m; manual só conta confirmado | `CHECK` de coerência entre o registro e a `verificacao` em `turno` |
-| RN07 | Avaliação binária, bidirecional, só depois do fim previsto e com presença verificada | `UNIQUE (turno_id, autor_id)` + *trigger* que confere horário e presença |
+| RN07 | Avaliação binária, bidirecional, só depois do fim previsto e com presença verificada | `UNIQUE (turno_id, alvo_tipo)`, um voto por lado do turno, + *trigger* que confere horário e presença |
 
 O teto de notificações (RN23) não é constraint: mora na função de despacho, que consulta `notificacao` antes de enviar. O resto do documento é, em boa medida, a defesa dessas nove linhas.
 
@@ -77,7 +77,7 @@ CREATE TABLE usuario (
   nome            text        NOT NULL,
   telefone        text,                   -- contato do turno (RN10); nulo só depois de anonimizado
   email           citext,                 -- copiado de auth.users; nulo só depois de anonimizado
-  nascimento      date        NOT NULL,
+  nascimento      date,                   -- nulo só depois de anonimizado (limpeza dos 15 dias)
   estado          estado_conta NOT NULL DEFAULT 'ativa',
   criado_em       timestamptz NOT NULL DEFAULT now(),
   anonimizado_em  timestamptz,
@@ -85,6 +85,8 @@ CREATE TABLE usuario (
   -- RN20: maioridade verificada na escrita, não na tela.
   CONSTRAINT maior_de_idade
     CHECK (nascimento <= (CURRENT_DATE - INTERVAL '18 years')),
+  CONSTRAINT nascimento_ate_anonimizar
+    CHECK (estado = 'anonimizada' OR nascimento IS NOT NULL),
   CONSTRAINT anonimizacao_coerente
     CHECK ((estado = 'anonimizada') = (anonimizado_em IS NOT NULL)),
   CONSTRAINT email_ate_anonimizar
@@ -117,7 +119,7 @@ O índice único é **parcial** de propósito. RF25 manda anonimizar em vez de a
 
 `nascimento` substitui o `maioridade_confirmada: boolean` da tabela original do Documento de Requisitos. Um booleano que o cliente envia não é verificação de nada — é a tela dizendo ao banco aquilo que a tela quis. Com a data, a restrição é verificável e o `CHECK` faz o trabalho.
 
-`perfil` é RN25 escrita em SQL, em três peças. `criar_conta` grava o perfil escolhido no cadastro, e o *trigger* `usuario_perfil_imutavel` recusa qualquer mudança depois. `UNIQUE (id, perfil)` existe para servir de alvo: `profissional` e `membro_estabelecimento` repetem o perfil numa coluna constante e apontam para o par `(id, perfil)`. Com isso, uma conta de contratante não consegue ter linha em `profissional`, nem uma conta de profissional entrar num estabelecimento — nem por bug de função. As funções conferem antes e respondem `422 perfil_incompativel`: `criar_perfil_profissional` com conta de contratante, `cadastrar_estabelecimento` e o aceite de convite de membro com conta de profissional. A chave estrangeira é a última linha de defesa.
+`perfil` é RN25 escrita em SQL, em três peças. `criar_conta` grava o perfil escolhido no cadastro, e o *trigger* `usuario_perfil_imutavel` recusa qualquer mudança depois. `UNIQUE (id, perfil)` existe para servir de alvo: `profissional` e `membro_estabelecimento` repetem o perfil numa coluna constante e apontam para o par `(id, perfil)`. Com isso, uma conta de contratante não consegue ter linha em `profissional`, nem uma conta de profissional entrar num estabelecimento — nem por bug de função. As funções conferem antes e respondem `422 perfil_incompativel`: `criar_perfil_profissional` com conta de contratante e `cadastrar_estabelecimento` com conta de profissional; o aceite de convite de membro fará o mesmo quando o convite entrar, na v1.2 (RF21). A chave estrangeira é a última linha de defesa.
 
 O telefone é obrigatório porque é o contato que as partes veem depois da confirmação (RN10), e o app não tem chat. Mas não é verificado, porque não há SMS no Frila, e não é único: a mesma pessoa pode ter as duas contas com o mesmo número (RN25). O `CHECK telefone_e164` confere só o formato. O e-mail continua único entre as contas ativas, porque é ele que identifica a conta na entrada.
 
@@ -233,13 +235,14 @@ CREATE TABLE disponibilidade (
   dia_semana      smallint NOT NULL CHECK (dia_semana BETWEEN 0 AND 6),
   hora_inicio     time NOT NULL,
   hora_fim        time NOT NULL,
-  CONSTRAINT janela_nao_vazia CHECK (hora_inicio <> hora_fim)
+  CONSTRAINT janela_nao_vazia CHECK (hora_inicio <> hora_fim),
+  UNIQUE (profissional_id, dia_semana, hora_inicio, hora_fim)
 );
 ```
 
 A restrição **não** exige `hora_fim > hora_inicio`. Um bar fecha às 2h; a janela 18:00–02:00 é a mais comum do setor, não uma exceção. Quem escreve `CHECK (hora_fim > hora_inicio)` por reflexo exclui do produto justamente o turno que ele existe para preencher.
 
-A grade semanal é a única fonte de disponibilidade: o profissional recebe notificação da vaga que começa numa das janelas dele. O botão "disponível agora", que abria uma exceção por algumas horas, saiu do produto em 22/09, e com ele a coluna `disponivel_agora_ate`.
+A grade semanal é a única fonte de disponibilidade: o profissional recebe notificação da vaga quando uma das janelas dele cobre o turno inteiro, do início ao fim (decisão de 28/09; antes bastava o início cair na janela). O botão "disponível agora", que abria uma exceção por algumas horas, saiu do produto em 22/09, e com ele a coluna `disponivel_agora_ate`.
 
 ### Vaga, posição e evento
 
@@ -298,6 +301,7 @@ CREATE TABLE posicao (
   profissional_id uuid REFERENCES profissional(id),
   confirmado_em   timestamptz,
   falta           boolean NOT NULL DEFAULT false,   -- ver §Reputação
+  reaberta_por_atraso_de uuid REFERENCES posicao(id), -- a posição que faltou (contrato 0.2.19)
   -- Desnormalizado de vaga para a constraint de sobreposição abaixo.
   inicio_em       timestamptz NOT NULL,
   fim_em          timestamptz NOT NULL,
@@ -336,15 +340,19 @@ RN19 diz que uma posição não pode ser confirmada para mais de um profissional
 A defesa é fazer a própria escrita ser a verificação:
 
 ```sql
-UPDATE posicao
+UPDATE posicao p
    SET estado = 'confirmada',
        profissional_id = $1,
        confirmado_em = now()
- WHERE id = $2
-   AND estado = 'aberta';      -- quem chega depois afeta 0 linhas
+ WHERE p.id = (SELECT x.id FROM posicao x
+                WHERE x.vaga_id = $2 AND x.estado = 'aberta'
+                ORDER BY x.id
+                FOR UPDATE SKIP LOCKED   -- cada candidato tenta uma linha livre
+                LIMIT 1)
+RETURNING p.id;                          -- nenhuma linha: todas já foram ocupadas
 ```
 
-Se `rowcount = 0`, outro profissional chegou antes — e o segundo recebe "posição já preenchida", não uma confirmação falsa. É uma linha de SQL, e é ela que impede o modo de falha descrito na justificativa da regra: alguém que se desloca até o local sem ter trabalho. No Supabase, essa linha vive numa função RPC que os três clientes chamam: a regra é escrita uma vez, não três.
+Se nenhuma linha volta, outros profissionais chegaram antes — e o último recebe "posição já preenchida" (`409`), não uma confirmação falsa. O `SKIP LOCKED` separa vinte candidatos disputando a mesma linha de vinte candidatos pegando linhas diferentes: sem ele, dezenove esperariam o *commit* do primeiro só para descobrir que perderam. É uma escrita só, e é ela que impede o modo de falha descrito na justificativa da regra: alguém que se desloca até o local sem ter trabalho. No Supabase, ela vive na função RPC `candidatar` (e em `escolher_candidato`, no modo seleção), que os clientes chamam: a regra é escrita uma vez, não três.
 
 ### Turnos sobrepostos
 
@@ -370,7 +378,7 @@ A desnormalização tem um custo: quando o horário da vaga muda, as posições 
 
 Quatro estados, e nenhum a mais. A tentação de criar um estado `reservada` — entre a candidatura e a confirmação — aparece em quase todo marketplace, e aqui seria um erro: no modo urgência o primeiro aprovado leva, e no modo seleção a posição fica aberta até a escolha do contratante. Nenhum dos dois comportamentos precisa de estado intermediário, e cada estado a mais é um caminho a mais pelo qual RN19 pode falhar.
 
-A presença não é estado da posição: é atributo do turno (`verificacao`, abaixo). Um turno "não verificado" é uma posição `cumprida` cujo turno terminou com `verificacao = 'nao_verificado'` — ele existe, mas não conta a favor nem contra ninguém.
+A presença não é estado da posição: é atributo do turno (`verificacao`, abaixo). Um turno "não verificado" é uma posição `cumprida` cujo turno terminou com check-in manual não confirmado, com `verificacao = 'nao_verificado'` — ele existe, mas não conta a favor nem contra ninguém. O turno que termina sem check-in nenhum não entra aqui: desde a decisão de 28/09, a posição é cancelada com falta.
 
 Transições válidas, e só elas:
 
@@ -378,8 +386,9 @@ Transições válidas, e só elas:
 |---|---|---|---|
 | `aberta` | `confirmada` | `UPDATE` condicional bem-sucedido | Libera contato (RN10), cria `turno` |
 | `confirmada` | `cumprida` | O turno termina com check-in registrado | Libera avaliação se a presença foi verificada (RN07, RN22) |
-| `confirmada` | `cancelada` | Cancelamento com motivo (RN12), inclusive a reabertura por não comparecimento | Cria nova posição e notifica de novo; com menos de 24 horas ou por não comparecimento, marca `falta` |
-| `aberta` | `cancelada` | Vaga cancelada inteira, ou modo seleção fechado 24 horas antes sem escolha (RN24) | Encerra o despacho e libera os candidatos |
+| `confirmada` | `cancelada` | Cancelamento com motivo (RN12), inclusive a reabertura por atraso, a partir de 15 minutos sem check-in | Antes do início, a vaga ganha uma posição nova e notifica de novo. Na reabertura por atraso, a posição nova aceita candidatura até 1 hora antes do fim (contrato 0.2.19). Depois do início, fora disso, não há reabertura. Com menos de 24 horas ou por não comparecimento, marca `falta` |
+| `confirmada` | `cancelada` | O turno termina sem check-in nenhum (agendador, decisão de 28/09) | Marca `falta` e o turno como `nao_verificado`; não reabre |
+| `aberta` | `cancelada` | Vaga cancelada inteira; modo seleção fechado 24 horas antes com a posição sem escolha (RN24); posição reaberta por atraso que ninguém pegou até 1 hora antes do fim | Encerra o despacho e libera os candidatos |
 
 O cancelamento **não volta** a posição para `aberta`: cria uma nova. Preservar a linha cancelada é o que mantém a auditoria de RN12 — autor, momento e motivo — e o que permite distinguir a posição que ninguém quis da que alguém aceitou e largou.
 
@@ -391,41 +400,38 @@ RNF03 exige a notificação enviada ao provedor em **até 30 segundos** após a 
 
 ```sql
 -- Elegíveis para uma vaga (RN05). O teto e o agrupamento (RN23) vêm
--- depois, na função que decide quando cada notificação sai.
--- $dia e $hora são o dia da semana e a hora de início da vaga no fuso
--- America/Sao_Paulo, porque a grade é hora de parede do profissional.
+-- depois, na função que decide quando cada notificação sai. No banco, é
+-- privado.elegiveis (20260929160100_elegiveis_ordem_de_filtro.sql), que
+-- parte da função e do raio, os filtros mais seletivos, e só então aplica
+-- os caros. janelas_da_grade(p, $inicio) resume as janelas da grade semanal
+-- de p convertidas em intervalos reais no fuso America/Sao_Paulo, inclusive
+-- a que começou na véspera e vira a noite.
 SELECT p.id
   FROM profissional p
   JOIN usuario u ON u.id = p.usuario_id AND u.estado = 'ativa'
   JOIN profissional_funcao pf
-    ON pf.profissional_id = p.id AND pf.funcao_id = $funcao
+    ON pf.profissional_id = p.id AND pf.funcao_id = $funcao        -- 1. a função
  WHERE (
-         ST_DWithin(p.ponto_base, $ponto_vaga, 15000)          -- até 15 km
-      OR EXISTS (SELECT 1 FROM equipe_confianca e              -- a equipe recebe mesmo além
+         ST_DWithin(p.ponto_base, $ponto_vaga, 15000)              -- 2. até 15 km
+      OR EXISTS (SELECT 1 FROM equipe_confianca e                  --    ou a equipe, mesmo além
                   WHERE e.estabelecimento_id = $estab AND e.profissional_id = p.id)
        )
-   AND EXISTS (SELECT 1 FROM disponibilidade d                 -- a grade semanal
-                WHERE d.profissional_id = p.id
-                  AND (   (d.hora_inicio < d.hora_fim          -- janela no mesmo dia
-                           AND d.dia_semana = $dia
-                           AND $hora >= d.hora_inicio AND $hora < d.hora_fim)
-                       OR (d.hora_inicio > d.hora_fim          -- janela que vira a noite
-                           AND (   (d.dia_semana = $dia AND $hora >= d.hora_inicio)
-                                OR (d.dia_semana = ($dia + 6) % 7 AND $hora < d.hora_fim)))))
-   AND NOT EXISTS (SELECT 1 FROM bloqueio b                    -- RF26, nos dois sentidos
-                     JOIN membro_estabelecimento m
-                       ON m.usuario_id IN (b.autor_id, b.bloqueado_id)
-                    WHERE m.estabelecimento_id = $estab
-                      AND p.usuario_id IN (b.autor_id, b.bloqueado_id))
-   AND NOT EXISTS (SELECT 1 FROM posicao x                     -- RN21
+   AND EXISTS (SELECT 1 FROM janelas_da_grade(p.id, $inicio) j     -- 3. a grade cobre
+                WHERE j @> tstzrange($inicio, $fim))               --    o turno inteiro
+   AND NOT privado.bloqueado_com_estabelecimento(p.usuario_id, $estab)   -- 4. RF26
+   AND NOT EXISTS (SELECT 1 FROM posicao x                         -- 5. RN21
                     WHERE x.profissional_id = p.id
-                      AND x.estado = 'confirmada'
+                      AND x.estado IN ('confirmada','cumprida')
                       AND tstzrange(x.inicio_em, x.fim_em) && tstzrange($inicio, $fim))
-   AND NOT EXISTS (SELECT 1 FROM despacho x
-                    WHERE x.vaga_id = $vaga AND x.profissional_id = p.id);
+   AND NOT EXISTS (SELECT 1 FROM posicao x                         -- 6. RN12: quem faltou nesta
+                    WHERE x.vaga_id = $vaga AND x.profissional_id = p.id       -- vaga, ou já
+                      AND (x.falta OR x.estado IN ('confirmada','cumprida')))  -- trabalha nela
+   AND NOT EXISTS (SELECT 1 FROM despacho x                        -- 7. um despacho por rodada
+                    WHERE x.vaga_id = $vaga AND x.profissional_id = p.id
+                      AND x.rodada = $rodada);
 ```
 
-A janela que vira a noite entra pelos dois lados. Com a janela de sexta das 18:00 às 02:00, a vaga que começa às 23h de sexta cai nela, e a que começa à 1h de sábado também, pela janela que começou na sexta. Um `BETWEEN` simples perderia exatamente esse caso, que é o mais comum do setor.
+A grade precisa cobrir o turno inteiro, e não só o início (decisão de 28/09): quem marcou sexta das 18:00 às 02:00 recebe a vaga das 19h à 1h, mas não a das 23h às 4h, que passa do horário em que ele disse que pode trabalhar. A janela que vira a noite entra pelos dois lados: a vaga da 0h30 à 1h30 de sábado também cabe na janela que começou na sexta. Um `BETWEEN` simples sobre a hora perderia esse caso, que é o mais comum do setor.
 
 Três observações decidem se isso responde em 30 segundos:
 
@@ -473,7 +479,7 @@ CREATE TABLE dispositivo (
 CREATE TABLE notificacao (
   id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   usuario_id      uuid NOT NULL REFERENCES usuario(id) ON DELETE CASCADE,  -- o destinatário
-  tipo            tipo_notificacao NOT NULL,   -- os 16 avisos do produto
+  tipo            tipo_notificacao NOT NULL,   -- os 18 avisos do produto
   referencia_id   uuid NOT NULL,               -- a vaga, a posição ou o turno do aviso
   payload         jsonb NOT NULL DEFAULT '{}', -- o destino do toque: tipo e ids (RN15)
   profissional_id uuid REFERENCES profissional(id),  -- só nas de vaga, para o teto
@@ -491,8 +497,9 @@ CREATE TABLE despacho (
   vaga_id         uuid NOT NULL REFERENCES vaga(id) ON DELETE CASCADE,
   profissional_id uuid NOT NULL REFERENCES profissional(id),
   notificacao_id  uuid REFERENCES notificacao(id),  -- nulo enquanto espera o teto
+  rodada          integer NOT NULL DEFAULT 1 CHECK (rodada >= 1),  -- sobe na reabertura por atraso
   criado_em       timestamptz NOT NULL DEFAULT now(),
-  UNIQUE (vaga_id, profissional_id)     -- RN05: ninguém recebe a mesma vaga duas vezes
+  UNIQUE (vaga_id, profissional_id, rodada)  -- RN05: ninguém recebe a mesma vaga duas vezes na mesma rodada
 );
 
 CREATE TABLE candidatura (
@@ -512,7 +519,7 @@ CREATE TABLE turno (
   checkin_distancia_m     integer CHECK (checkin_distancia_m >= 0),        -- medida no toque
   checkin_confirmado_em   timestamptz,                                     -- contratante, só no manual
   checkout_em             timestamptz,
-  checkout_distancia_m    integer CHECK (checkout_distancia_m BETWEEN 0 AND 200),  -- nulo sem localização
+  checkout_distancia_m    integer CHECK (checkout_distancia_m >= 0),  -- sem limite (28/09); nulo sem localização
   verificacao             verificacao_turno NOT NULL DEFAULT 'pendente',
   valor_acordado_centavos bigint NOT NULL CHECK (valor_acordado_centavos > 0),
 
@@ -537,7 +544,7 @@ CREATE TABLE avaliacao (
   alvo_id    uuid NOT NULL,
   resposta   boolean NOT NULL,          -- RN07: binária. Nunca 1 a 5.
   criada_em  timestamptz NOT NULL DEFAULT now(),
-  UNIQUE (turno_id, autor_id)
+  CONSTRAINT um_voto_por_lado UNIQUE (turno_id, alvo_tipo)   -- contrato 0.2.12
 );
 
 CREATE TABLE bloqueio (
@@ -567,17 +574,17 @@ CREATE TABLE ocorrencia (
 
 `dispositivo` guarda o token de push de cada aparelho, que o app registra ao abrir e sempre que o token muda. Uma pessoa pode ter mais de um aparelho; o token é único. Quem negou a permissão de notificação não tem linha aqui e, para o despacho, não é alcançável. Na exclusão de conta, os dispositivos vão junto (RN15).
 
-`chave_cliente` torna seguras as duas escritas que não têm chave natural: publicar uma vaga e denunciar. O app gera a chave uma vez por ação; se a rede cair e ele reenviar, o `UNIQUE` devolve a vaga ou a denúncia já gravada em vez de criar outra. As demais escritas já são idempotentes pela chave natural — candidatura por vaga e profissional, check-in por turno, avaliação por turno e autor, bloqueio por par. O contrato está em `Frila/Documentos/API/openapi.yaml`.
+`chave_cliente` torna seguras as duas escritas que não têm chave natural: publicar uma vaga e denunciar. O app gera a chave uma vez por ação; se a rede cair e ele reenviar, o `UNIQUE` devolve a vaga ou a denúncia já gravada em vez de criar outra. As demais escritas já são idempotentes pela chave natural — candidatura por vaga e profissional, check-in por turno, avaliação por turno e lado, bloqueio por par. O contrato está em `api/openapi.yaml`, no repositório frila-docs (versão 0.2.26, de 30/09/2026).
 
-`despacho` e `notificacao` são duas coisas, e separar as duas é o que torna o teto possível. `despacho` diz *quem foi considerado para qual vaga*; `notificacao` diz *qual push saiu, quando, e se chegou*. Um push agrupado ("4 vagas novas perto de você") é uma `notificacao` com quatro `despacho` apontando para ela. O `UNIQUE (vaga_id, profissional_id)` garante RN05 contra o modo de falha mais banal: a mesma vaga reenviada para quem já recebeu. E o estado de entrega mora em `notificacao`, que é a unidade que RNF02 mede.
+`despacho` e `notificacao` são duas coisas, e separar as duas é o que torna o teto possível. `despacho` diz *quem foi considerado para qual vaga*; `notificacao` diz *qual push saiu, quando, e se chegou*. Um push agrupado ("4 vagas novas perto de você") é uma `notificacao` com quatro `despacho` apontando para ela. O `UNIQUE (vaga_id, profissional_id, rodada)` garante RN05 contra o modo de falha mais banal: a mesma vaga reenviada, na mesma rodada, para quem já recebeu. A reabertura por atraso abre uma rodada nova (decisão de 28/09): a vaga volta a chegar a quem já a tinha recebido, menos a quem faltou nela. E o estado de entrega mora em `notificacao`, que é a unidade que RNF02 mede.
 
 O `turno` guarda a **distância** medida no toque, não a coordenada do profissional (RN22). O app lê a localização só no momento do check-in ou do check-out, nunca em segundo plano, calcula a distância até o endereço da vaga e envia só ela. É o que basta para saber se o check-in vale — até 200 m — e é o mínimo de dado pessoal que resolve o problema.
 
-`verificacao` começa `pendente` e só vira `verificado` com prova: o `CHECK verificacao_coerente` recusa `verificado` sem check-in geolocalizado a até 200 m ou manual confirmado pelo contratante, e recusa deixar de marcar quando a prova existe. Se o turno termina com o check-in manual sem confirmação — ou sem check-in nenhum, sem que o contratante tenha reaberto a vaga —, o agendador marca `nao_verificado`. É essa coluna que libera a avaliação e que entra na taxa de comparecimento, e nenhuma tela consegue marcá-la sem a prova.
+`verificacao` começa `pendente` e só vira `verificado` com prova: o `CHECK verificacao_coerente` recusa `verificado` sem check-in geolocalizado a até 200 m ou manual confirmado pelo contratante, e recusa deixar de marcar quando a prova existe. Se o turno termina com o check-in manual sem confirmação, o agendador marca `nao_verificado`. Se termina sem check-in nenhum, a posição é cancelada com `falta` e o turno também fica `nao_verificado` (decisão de 28/09). É essa coluna que libera a avaliação e que entra na taxa de comparecimento, e nenhuma tela consegue marcá-la sem a prova.
 
 Não existe coluna de divergência. O registro geolocalizado é o que vale (RN11): o Frila não arbitra, e o contratante que discordar do horário registra isso na avaliação (A08).
 
-A avaliação só é aceita depois do fim previsto de um turno com `verificacao = 'verificado'` (RN07). Isso atravessa tabelas — o fim previsto está em `posicao` e a presença em `turno` —, então não cabe num `CHECK`: vive num *trigger* de `BEFORE INSERT` em `avaliacao` e na função RPC que o app chama para avaliar. Quem faltou não é avaliado: a falta já pesa na taxa, e não deve pesar duas vezes.
+A avaliação só é aceita depois do fim previsto de um turno com `verificacao = 'verificado'` (RN07), e vale um voto por lado do turno, não por pessoa: pelo estabelecimento, conta a primeira resposta de qualquer membro (contrato 0.2.12). Isso atravessa tabelas — o fim previsto está em `posicao` e a presença em `turno` —, então não cabe num `CHECK`: vive num *trigger* de `BEFORE INSERT` em `avaliacao` e na função RPC que o app chama para avaliar. Quem faltou não é avaliado: a falta já pesa na taxa, e não deve pesar duas vezes.
 
 `resposta boolean` é a aposta central do produto codificada no tipo. Não existe caminho no esquema que aceite uma nota de 1 a 5 — RN07 proíbe, e um `smallint` "para o caso de mudarmos de ideia" é exatamente como a regra se perde.
 
@@ -610,7 +617,7 @@ LEFT JOIN turno t ON t.posicao_id = p.id
 WHERE p.profissional_id = $1;
 ```
 
-`falta` é gravada em `posicao` pela função que cancela: quando o próprio profissional cancela com menos de 24 horas do início, ou quando o contratante reabre a vaga depois do alerta de atraso, aos 15 minutos sem check-in. Cancelamento com mais de 24 horas não marca nada e sai da conta.
+`falta` é gravada em `posicao` pela função que cancela: quando o próprio profissional cancela com menos de 24 horas do início, quando o contratante reabre a vaga depois do alerta de atraso, aos 15 minutos sem check-in, ou quando o turno termina sem check-in nenhum (decisão de 28/09). Cancelamento com mais de 24 horas não marca nada e sai da conta.
 
 A definição precisa estar escrita porque RN16 a torna consequente: recusar vaga não pode gerar penalidade, então recusa e candidatura não escolhida **não entram no denominador**. Só conta o que a pessoa aceitou e foi confirmado. Confundir os dois transformaria o produto naquilo que RN16 existe para evitar — um sistema que pune quem escolhe. E a taxa só aparece no perfil: não muda quem recebe notificação (RN06), e cancelamento nenhum suspende ninguém (RN13).
 
@@ -642,13 +649,13 @@ UPDATE usuario
 
 O esquema vai mudar antes da primeira linha de produção, e vai mudar mais depois. Três decisões evitam que isso vire trabalho manual:
 
-**Migração é arquivo versionado, nunca alteração pelo console.** No Supabase, a pasta é `supabase/migrations/`, com arquivos datados e imutáveis gerados pela CLI (`…_esquema_inicial.sql`, `…_sem_turno_sobreposto.sql`), aplicados em ordem. O que já foi aplicado nunca é editado: corrige-se com uma migração nova. Mudança feita pelo painel do Supabase e não trazida para um arquivo é mudança que o próximo ambiente não tem.
+**Migração é arquivo versionado, nunca alteração pelo console.** No Supabase, a pasta é `supabase/migrations/`, com arquivos datados e imutáveis gerados pela CLI (`20260922150400_vaga_e_posicao.sql`, `20260929110000_rodada_de_despacho.sql`), aplicados em ordem. O que já foi aplicado nunca é editado: corrige-se com uma migração nova. Mudança feita pelo painel do Supabase e não trazida para um arquivo é mudança que o próximo ambiente não tem.
 
 **Migração compatível para frente.** RNF12 proíbe manutenção no horário de pico — quinta a domingo, das 16h às 2h. Isso obriga o padrão de duas fases para toda mudança destrutiva: primeiro adiciona a coluna nova e passa a escrever nas duas, depois (noutro *deploy*) para de ler a antiga e só então a remove. Renomear coluna num único passo derruba o cliente antigo que ainda está no aparelho de alguém — e com Android e web no ar, sempre há cliente antigo.
 
 **O cliente nunca é atualizado junto com o servidor.** Um app na App Store demora dias para chegar a todo mundo; a web atualiza no *refresh*. O backend precisa aceitar a versão anterior do contrato durante essa janela, o que empurra a compatibilidade para o [[07 - Arquitetura/Diagrama de Arquitetura#O contrato entre cliente e servidor|contrato entre cliente e servidor]].
 
-Semente inicial (`seed`): o catálogo de funções acima e nada mais. Dado de teste não entra em migração — vive em *fixtures* de teste, para que um `seed` acidental em produção não crie estabelecimento fantasma.
+Semente inicial (`seed`): o catálogo de funções acima, a lista de termos bloqueados e as duas contas de revisão da App Store, isoladas das reais por `usuario.demonstracao`. Dado de teste não entra em migração — vive em *fixtures* de teste, para que um `seed` acidental em produção não crie estabelecimento fantasma.
 
 ---
 
@@ -685,8 +692,45 @@ Também não existe `aval_externo`. O atestado de quem trabalhou com o profissio
 | `bloqueio` | Sim | RF26 — a App Store exige denunciar e bloquear (diretriz 1.2) |
 | `equipe_confianca` | Sim | RF18: recebe a notificação mesmo além de 15 km |
 | `evento` | Depois | RF19 é "evite por ora" na matriz de impacto × esforço |
+| `entrada_demonstracao`, `pedido_de_exclusao` | Sim | Operação: a conta de demonstração da revisão da App Store e o pedido de exclusão de conta (RF25) |
 
 O corte não é por gosto: é o conjunto mínimo que fecha o ciclo **publicar → notificar → candidatar → confirmar → executar → avaliar**, mais o `bloqueio`, sem o qual o app não passa pela revisão da App Store.
+
+---
+
+## Do desenho às migrações (30/09)
+
+O DDL acima é o desenho. As migrações de `frila-backend` (branch `develop`, 75 até 30/09) seguem esse desenho e acrescentam o que a implementação pediu. Onde os dois divergirem, vale a migração.
+
+### Três regras que mudaram em 28/09
+
+Decididas no cartão de decisões de produto do Sprint 0 e aplicadas no banco:
+
+| Regra | Antes | Agora | Migração |
+|---|---|---|---|
+| Turno sem check-in | O agendador marcava o turno como "não verificado", fora da taxa | A posição é cancelada com `falta`, que conta contra a taxa; o turno fica `nao_verificado` | `20260928160000_fechar_turnos_noshow.sql` |
+| Elegibilidade pela grade | Bastava o início da vaga cair numa janela | A janela precisa cobrir o turno inteiro | `20260929160100_elegiveis_ordem_de_filtro.sql` |
+| Despacho único | `UNIQUE (vaga_id, profissional_id)` | `UNIQUE (vaga_id, profissional_id, rodada)`: a reabertura por atraso abre rodada nova, e a posição reaberta aceita candidatura até 1 hora antes do fim (contrato 0.2.19) | `20260929110000_rodada_de_despacho.sql` |
+
+As outras decisões do mesmo cartão também valem aqui: o check-out é aceito a qualquer distância (`checkout_distancia_m >= 0`), a suspensão cancela em cascata os turnos futuros da conta, com ocorrência, aviso à contraparte e reabertura das posições, e a maioridade é conferida só pela data de nascimento.
+
+### Colunas que o banco tem e o desenho não mostra
+
+| Tabela | Colunas a mais | Para quê |
+|---|---|---|
+| `usuario` | `termos_versao`, `termos_aceite_em`, `demonstracao` | Aceite versionado dos termos no cadastro; separar as contas de demonstração das reais |
+| `estabelecimento` | `regiao_administrativa` | Região administrativa do DF, obrigatória (contrato 0.2.20) |
+| `vaga` | `publicado_por`, `regiao_administrativa`, `rodada_despacho` | Quem publicou; a região do local, que o lembrete mostra no lugar do endereço; a rodada atual do despacho |
+| `posicao` | `reaberta_por_atraso_de` | A posição que faltou, na reabertura por atraso (0.2.19) |
+| `turno` | `checkin_recebido_em`, `checkout_recebido_em`, `a_caminho_em` | A hora em que o servidor recebeu cada registro feito sem rede; o aviso "estou a caminho" (0.2.25, na v1.1) |
+| `notificacao` | `rodada`, `esperou_teto`, `proxima_tentativa_em` | Marca de envio por rodada; o reenvio com recuo exponencial |
+| `ocorrencia` | `relato`, `estabelecimento_id`, `email_*` | O texto da denúncia e o controle do e-mail enviado à Equipe Frila e ao autor |
+
+Também há restrições a mais: `posicoes BETWEEN 1 AND 200` em `vaga`, o formato do `documento` em `estabelecimento`, e *triggers* que tornam `despacho` e `ocorrencia` imutáveis. A vaga pode ser ocultada pela Equipe Frila, sem cancelar nada, quando o conteúdo é impróprio (contrato 0.2.23).
+
+### Tabelas que o desenho não mostra
+
+Em `public`, `entrada_demonstracao` e `pedido_de_exclusao`, as duas com RLS ligada e nenhuma política. Num schema que a API não expõe, `privado`, dez tabelas de operação: `ambiente`, `termo_bloqueado`, `auditoria_ciclo`, `divergencia_reputacao`, `configuracao_app`, `parametro_notificacao`, `tipo_no_teto`, `escrita_por_conta`, `vaga_ocultada` e `conta_equipe`. Há ainda as filas `pgmq` `despacho` e `email`, as visões de funil do schema `metrica` e os enums `motivo_denuncia` e `tipo_notificacao`, este com 18 avisos.
 
 ---
 
@@ -758,7 +802,8 @@ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = '' AS $$
                    JOIN public.membro_estabelecimento m
                      ON m.usuario_id IN (b.autor_id, b.bloqueado_id)
                   WHERE m.estabelecimento_id = estab
-                    AND conta IN (b.autor_id, b.bloqueado_id))
+                    AND conta IN (b.autor_id, b.bloqueado_id)
+                    AND m.usuario_id <> conta)   -- o membro não se bloqueia consigo mesmo
 $$;
 
 CREATE FUNCTION privado.estabelecimento_da_vaga(v uuid) RETURNS uuid
@@ -806,7 +851,7 @@ $$;
 
 -- Primeira linha de toda função RPC que é de um perfil só (RN25).
 CREATE FUNCTION privado.exigir_perfil(esperado perfil_conta) RETURNS void
-LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = '' AS $$
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
 BEGIN
   IF privado.perfil_da_conta() IS DISTINCT FROM esperado THEN
     PERFORM public.erro(422, 'perfil_incompativel');
@@ -815,11 +860,20 @@ END $$;
 
 REVOKE ALL ON SCHEMA privado FROM PUBLIC;
 GRANT USAGE ON SCHEMA privado TO authenticated;
-REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA privado FROM PUBLIC;
-GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA privado TO authenticated;
+REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA privado FROM PUBLIC, anon, authenticated;
+-- Só as doze auxiliares que as políticas de RLS chamam, porque a política roda com a
+-- identidade de quem lê (20260930141532_privado_sem_execucao_de_quem_nao_precisa.sql).
+-- As RPCs de public são security definer e dispensam a concessão.
+GRANT EXECUTE ON FUNCTION privado.perfil_da_conta(), privado.meu_profissional_id(),
+  privado.eh_membro(uuid), privado.bloqueado_com_estabelecimento(uuid, uuid),
+  privado.candidatou_na_vaga(uuid), privado.ocupa_posicao_na_vaga(uuid),
+  privado.estabelecimento_da_vaga(uuid), privado.estabelecimento_da_posicao(uuid),
+  privado.lado_da_posicao(uuid), privado.usuario_do_profissional(uuid),
+  privado.mesma_populacao(uuid), privado.vaga_oculta(uuid)
+  TO authenticated;
 ```
 
-Nas políticas, `auth.uid()` e as auxiliares sem argumento vão dentro de `(SELECT …)`: assim o Postgres calcula o valor uma vez por consulta, e não uma vez por linha. `eh_administrador` não aparece nas políticas de leitura; serve às funções que só o administrador chama, como convidar membro e remover o estabelecimento. `exigir_perfil` usa o auxiliar `erro()` do contrato (`Frila/Documentos/API/openapi.yaml`).
+Nas políticas, `auth.uid()` e as auxiliares sem argumento vão dentro de `(SELECT …)`: assim o Postgres calcula o valor uma vez por consulta, e não uma vez por linha. `eh_administrador` não aparece nas políticas de leitura; serve às funções que só o administrador chama, como convidar membro e remover o estabelecimento. `exigir_perfil` usa o auxiliar `erro()` do contrato (`api/openapi.yaml`, no repositório frila-docs).
 
 ### Ligar o RLS e fechar a escrita
 
@@ -860,7 +914,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE EXECUTE ON FUNCTIONS FROM PUBLI
 
 ### As políticas de leitura
 
-Uma política por tabela, todas de `select` e todas para `authenticated`. São dezenove tabelas e dezenove políticas:
+Uma política por tabela, todas de `select` e todas para `authenticated`. São dezenove tabelas do produto e dezenove políticas; as duas tabelas de operação de `public`, `entrada_demonstracao` e `pedido_de_exclusao`, têm RLS ligada e nenhuma política, de propósito:
 
 ```sql
 -- Identidade: cada um lê a própria linha, e só ela.
@@ -899,14 +953,19 @@ CREATE POLICY disponibilidade_leitura ON disponibilidade FOR SELECT TO authentic
 CREATE POLICY evento_leitura ON evento FOR SELECT TO authenticated
   USING (privado.eh_membro(estabelecimento_id));
 
+-- mesma_populacao separa as contas de demonstração das reais; a vaga ocultada
+-- pela Equipe Frila (contrato 0.2.23) sai da lista, mas não de quem se candidatou.
 CREATE POLICY vaga_leitura ON vaga FOR SELECT TO authenticated
   USING (
-        privado.eh_membro(estabelecimento_id)
-     OR ((SELECT privado.perfil_da_conta()) = 'profissional'
-         AND (   privado.ocupa_posicao_na_vaga(id)
-              OR (NOT privado.bloqueado_com_estabelecimento(
-                        (SELECT auth.uid()), estabelecimento_id)
-                  AND (estado = 'publicada' OR privado.candidatou_na_vaga(id))))));
+    privado.mesma_populacao(publicado_por)
+    AND (
+          privado.eh_membro(estabelecimento_id)
+       OR ((SELECT privado.perfil_da_conta()) = 'profissional'
+           AND (   privado.ocupa_posicao_na_vaga(id)
+                OR (NOT privado.bloqueado_com_estabelecimento(
+                          (SELECT auth.uid()), estabelecimento_id)
+                    AND ((estado = 'publicada' AND NOT privado.vaga_oculta(id))
+                         OR privado.candidatou_na_vaga(id)))))));
 
 CREATE POLICY posicao_leitura ON posicao FOR SELECT TO authenticated
   USING (profissional_id = (SELECT privado.meu_profissional_id())
@@ -971,7 +1030,7 @@ As leituras que só tocam no que é do próprio usuário podem rodar com a ident
 | `contato_do_turno` | Nome, telefone e link do WhatsApp da outra parte | RN10: só com a posição confirmada ou cumprida, até 7 dias depois do fim, e sem bloqueio |
 | `painel_estabelecimento` | Vagas, posições, candidatos e turnos do estabelecimento | Só para membro |
 
-Toda função de escrita segue o mesmo molde: `security definer`, `set search_path = ''` com nomes qualificados, `auth.uid()` conferido antes de tudo e, quando a função é de um perfil só, `privado.exigir_perfil(…)` na primeira linha. `criar_perfil_profissional` exige `'profissional'`; `cadastrar_estabelecimento` e o aceite de convite de membro exigem `'contratante'` (RN25).
+Toda função de escrita segue o mesmo molde: `security definer`, `set search_path = ''` com nomes qualificados, `auth.uid()` conferido antes de tudo e, quando a função é de um perfil só, `privado.exigir_perfil(…)` na primeira linha. `criar_perfil_profissional` exige `'profissional'`; `cadastrar_estabelecimento` exige `'contratante'`, e o aceite de convite de membro vai exigir, quando entrar, na v1.2 (RN25, RF21).
 
 Cada política ganha teste antes de ir para produção: entrar como profissional, como contratante de outro estabelecimento e como conta bloqueada, e conferir o que cada um lê (`supabase test db`, com pgTAP).
 
@@ -982,7 +1041,7 @@ Cada política ganha teste antes de ir para produção: entrar como profissional
 | `usuario` | A própria conta | `criar_conta`; `excluir-conta` anonimiza |
 | `profissional` | O próprio profissional | `criar_perfil_profissional`, `atualizar_perfil_profissional` |
 | `estabelecimento` | Os membros | `cadastrar_estabelecimento` |
-| `membro_estabelecimento` | Os membros do mesmo estabelecimento | `cadastrar_estabelecimento` (primeiro administrador) e o convite de membro (RF21) |
+| `membro_estabelecimento` | Os membros do mesmo estabelecimento | `cadastrar_estabelecimento` (primeiro administrador); o convite de membro (RF21) entra na v1.2 |
 | `equipe_confianca` | Os membros e o profissional incluído | `incluir_na_equipe`, `remover_da_equipe` |
 | `funcao` | Qualquer conta logada | Só migração: é catálogo |
 | `profissional_funcao` | O próprio profissional | `criar_perfil_profissional`, `atualizar_perfil_profissional` |
@@ -1012,6 +1071,8 @@ Cada política ganha teste antes de ir para produção: entrar como profissional
 | D3 | Prazo até a candidatura expirar | Vale até a vaga fechar (D05). Modo seleção só para vaga com mais de 24 horas; sem escolha até 24 horas antes, a vaga fecha e os candidatos são liberados (RN24) |
 | D4 | Janela crítica fixa ou por tipo de vaga | Um padrão igual para todas — 3 horas antes do início —, que o contratante ajusta ao publicar; o alerta chega por notificação (B18) |
 | D5 | PostgreSQL com PostGIS, ou backend gerenciado | Supabase, que é Postgres com PostGIS; é a mesma decisão da D9 (B02, B06) |
+
+As decisões de produto de 28/09 que mexeram no esquema estão em [[#Três regras que mudaram em 28/09]].
 
 ---
 ← [[🏠 Início|Início]]

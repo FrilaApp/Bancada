@@ -10,8 +10,9 @@ tags: [arquitetura, frila, sistema]
 Preenche a Seção 6.4 do [[01 - CBL/Desafios/C18/Documentos de Produto/Frila_Documento_de_Requisitos|Documento de Requisitos]], que descreve quatro camadas e uma lista de pacotes, mas não desenha o sistema nem define o contrato entre cliente e servidor — sem o qual três clientes não conseguem ser construídos em paralelo. As classes destas camadas estão em [[07 - Arquitetura/Diagrama de Classe|Diagrama de Classe]]; o esquema que elas persistem, em [[07 - Arquitetura/Modelagem de Banco de Dados|Modelagem de Banco de Dados]].
 
 > [!info] O que está decidido
-> **Decidido em 21/09/2026**, nas respostas do quadro 03 de pendências: **três clientes nativos** — app iOS em Swift e SwiftUI, app Android em Kotlin e versão web — de um app só, com dois perfis, o do profissional e o do contratante; cada conta tem um perfil só (RN25, decidido em 22/09). Para a entrega na loja em 13/11, o iOS é o mínimo; Android e web são a meta, e o Android continua sendo prioridade de alcance, por ser a plataforma de cerca de 75% do uso de celular no Brasil (75,45%, StatCounter, ago/2026). O backend é o **Supabase** (Postgres com PostGIS), e as regras que precisam valer igual nos três clientes moram nele, escritas uma vez.
-> **Ainda em aberto:** a stack da versão web, escolhida depois do iOS, e o identificador do app (bundle ID), decidido ao criar o projeto iOS (as duas, 22/09). Premissas de volume e de comportamento levam `[H]`.
+> **Decidido em 21/09/2026**, nas respostas do quadro 03 de pendências: **três clientes nativos** — app iOS em Swift e SwiftUI, app Android em Kotlin e versão web — de um app só, com dois perfis, o do profissional e o do contratante; cada conta tem um perfil só (RN25, decidido em 22/09). A v1.0, na App Store em 13/11/2026, é **só iOS**; Android e web entram na v1.2, no 1º trimestre de 2027 (Escopo do MVP). O Android continua sendo prioridade de alcance, por ser a plataforma de cerca de 75% do uso de celular no Brasil (75,45%, StatCounter, ago/2026). O backend é o **Supabase** (Postgres com PostGIS), e as regras que precisam valer igual nos três clientes moram nele, escritas uma vez.
+> **Estado em 30/09/2026:** o backend está na branch `develop` de `frila-backend` (75 migrações, com testes pgTAP), e o app iOS, em `frila-frontend/iOS`, com o bundle ID `com.frila.org.app` e builds internos no TestFlight. Android e web ainda não começaram.
+> **Ainda em aberto:** a stack da versão web, escolhida depois do iOS. Premissas de volume e de comportamento levam `[H]`.
 
 ---
 
@@ -21,7 +22,7 @@ Preenche a Seção 6.4 do [[01 - CBL/Desafios/C18/Documentos de Produto/Frila_Do
 
 A seta tracejada é decisão de produto, não detalhe de integração: RN10 proíbe liberar contato antes da confirmação, porque *"antes da confirmação não há compromisso, e liberar contato transforma a plataforma em lista de telefones"*. O sistema conhece o contato o tempo todo, entrega-o num único momento e deixa de mostrá-lo 7 dias depois do fim do turno.
 
-Não há caixa de gateway de pagamento, e isso é RN09: o valor é registrado, nunca custodiado. O efeito arquitetural vale ser nomeado — sem fluxo financeiro, o sistema sai inteiro do escopo de PCI-DSS e de boa parte do risco regulatório, o que é um ganho de simplicidade grande para cinco pessoas em TRL 2.
+Não há caixa de gateway de pagamento, e isso é RN09: o valor é registrado, nunca custodiado. O efeito arquitetural vale ser nomeado — sem fluxo financeiro, o sistema sai inteiro do escopo de PCI-DSS e de boa parte do risco regulatório, o que é um ganho de simplicidade grande para um time de cinco pessoas.
 
 Também não há operador do Frila acompanhando turno. O sistema é automático (D01): quem acompanha as vagas e os turnos é o gestor do estabelecimento, e a Equipe Frila só responde e-mail — suporte, denúncia, contestação e pedido de revisão do despacho, em até 5 dias úteis.
 
@@ -31,17 +32,17 @@ Também não há operador do Frila acompanhando turno. O sistema é automático 
 
 ![[07 - Arquitetura/Anexos/arquitetura/conteineres.png|Três clientes, o Supabase e o despacho puxado por fila]]
 
-O app, com os perfis de profissional e de contratante, existe em iOS, Android e web e fala com um backend só, no Supabase: Postgres com PostGIS, autenticação, Edge Functions, `pg_cron` e a fila `pgmq`. O Painel não é sistema à parte nem ferramenta interna: é uma tela da versão web, no perfil de contratante, em que o gestor acompanha vagas, candidatos, contratados, check-ins e turnos (B09). O alerta de vaga vazia e a confirmação de check-in manual também existem no celular, na conta de contratante.
+O app, com os perfis de profissional e de contratante, é desenhado para iOS, Android e web — na v1.0, só o iOS — e fala com um backend só, no Supabase: Postgres com PostGIS, autenticação, Edge Functions, `pg_cron`, `pg_net` e a fila `pgmq`. O Painel não é sistema à parte nem ferramenta interna: é uma tela da versão web, no perfil de contratante, em que o gestor acompanha vagas, candidatos, contratados, check-ins e turnos (B09); entra com a web, na v1.2. O alerta de vaga vazia e a confirmação de check-in manual também existem no celular, na conta de contratante.
 
 ### Por que o despacho roda fora da requisição
 
-Poderia ser uma função chamada dentro da publicação. Não é (B15): publicar a vaga só grava no banco e responde, e um job separado — Edge Function puxada pela fila `pgmq` e pelo `pg_cron` — faz o resto, por três motivos que vêm dos requisitos:
+Poderia ser uma função chamada dentro da publicação. Não é (B15): publicar a vaga grava no banco, enfileira o despacho na fila `pgmq` e responde. Depois do *commit*, um gatilho chama pelo `pg_net` a Edge Function `despachar`, que roda `privado.despachar_vaga` no Postgres; o `pg_cron` refaz a fila a cada minuto e roda os jobs de lembrete, atraso, vaga vazia, teto, fechamento do modo seleção e fechamento dos turnos; e o push sai por outra Edge Function, `enviar-push`, pelo FCM. São três motivos, que vêm dos requisitos:
 
 **É trabalho agendado.** Quase tudo o que o despacho faz acontece minutos ou horas depois da requisição que o originou: agrupar vagas próximas no tempo e respeitar o teto de uma notificação a cada 30 minutos por profissional (RN23); lembrar o turno 24 horas e 3 horas antes; alertar o contratante aos 15 minutos sem check-in e quando a vaga segue vazia na janela crítica; fechar o modo seleção 24 horas antes do início (RN24); avisar os dois lados quando o horário de fim passa. Amarrar isso ao ciclo de vida de uma requisição HTTP é perdê-lo quando ela termina.
 
 **Tem orçamento de tempo próprio.** RNF03 exige a notificação enviada ao provedor em até 30 segundos após a publicação; e a publicação precisa devolver a tela na hora, sem esperar o despacho. São dois relógios: a publicação devolve a tela rápido, a notificação acontece logo, mas não *dentro* dela.
 
-**É o que mais vai mudar.** O produto está em TRL 2: os 15 km, os 30 minutos do teto e as 3 horas do alerta são valores iniciais, para ajustar com o dado do piloto `[H]`. Isolar o motor permite trocar esses números sem mexer no que serve tela.
+**É o que mais vai mudar.** Ainda não houve validação de campo: os 15 km, os 30 minutos do teto e as 3 horas do alerta são valores iniciais, para ajustar com o dado do piloto `[H]`. Isolar o motor permite trocar esses números sem mexer no que serve tela.
 
 ---
 
@@ -70,7 +71,7 @@ A resposta a esse risco (B20, ajustada em 22/09) é tirar a regra dos clientes. 
 
 Nenhuma seta sai do domínio. É isso que permite testar em milissegundos, sem simulador, o que o app decide sozinho — a validação da publicação, os estados da tela, a reputação exibida —, enquanto a regra que vale para todos está no backend.
 
-A camada de apresentação usa `@Observable`, alinhada ao que a equipe já pratica na Bancada, onde `EstadoDaBancada` é um store único e não há `ObservableObject` em lugar nenhum. Reaproveitar o padrão que o time domina vale mais que o MVVM canônico de livro.
+A camada de apresentação usa view models `@Observable` no `MainActor`, um por fluxo, sem `ObservableObject`. Reaproveitar o padrão que o time já domina vale mais que o MVVM canônico de livro.
 
 ---
 
@@ -92,29 +93,29 @@ Três clientes construídos em paralelo por cinco pessoas só funcionam se o con
 
 ### Autenticação
 
-A entrada é por **código de uso único enviado ao e-mail**, sem senha e sem SMS (22/09). O app chama `signInWithOtp` com o e-mail e troca o código por sessão com `verifyOtp` (`type: email`). O modelo de e-mail do Supabase precisa levar o código (`{{ .Token }}`), e não o link. O envio de e-mail embutido do Supabase serve só para teste; antes do piloto entra um provedor de e-mail próprio (SMTP), e o custo, se houver, entra no C09.
+A entrada é por **código de uso único enviado ao e-mail**, sem senha e sem SMS (22/09). O app chama `signInWithOtp` com o e-mail e troca o código por sessão com `verifyOtp` (`type: email`). O modelo de e-mail do Supabase precisa levar o código (`{{ .Token }}`), e não o link, e o código vale 15 minutos. O envio de e-mail embutido do Supabase serve só para teste: desde 29/09 o ambiente de desenvolvimento envia por SMTP próprio, e o de produção passa a enviar antes do piloto; o custo, se houver, entra no C09.
 
 O Supabase Auth emite um token de acesso curto e um token de renovação longo, guardados no Keychain no iOS, no Keystore no Android e em cookie `HttpOnly` na web. RNF07 exige credencial protegida; `UserDefaults` e `localStorage` não atendem.
 
-O cadastro do profissional é **progressivo** por RN14: nome, telefone, e-mail e data de nascimento bastam para receber a primeira notificação. Verificação de identidade é passo posterior, e a ausência dela nunca bloqueia o cadastro — a barreira antes do primeiro trabalho é documentada como falha dos concorrentes.
+O cadastro do profissional é **progressivo** por RN14: nome, telefone, e-mail, data de nascimento e o aceite da versão vigente dos termos bastam para receber a primeira notificação. Verificação de identidade é passo posterior, e a ausência dela nunca bloqueia o cadastro — a barreira antes do primeiro trabalho é documentada como falha dos concorrentes.
 
 O telefone é obrigatório, porque é o contato do turno (RN10) e o app não tem chat, mas só tem o formato conferido: não há verificação por SMS, e o mesmo número pode estar em outra conta. A conta nasce com um perfil só, profissional ou contratante, gravado por `criar_conta` e fixo (RN25). Por isso não há troca de perfil na sessão: quem quiser o outro lado entra com outra conta, de outro e-mail.
 
 ### Os recursos do MVP
 
-A especificação está em `Frila/Documentos/API/openapi.yaml` (OpenAPI 3.1, versão 0.2.0, de 22/09), validada com o Redocly. Ela substitui a lista de rotas `/v1` da época em que o backend seria próprio. São três portas do Supabase:
+A especificação está em `api/openapi.yaml`, no repositório `frila-docs` (OpenAPI 3.1; a primeira versão é de 22/09, e a atual, 0.2.26, de 30/09). Toda mudança passa primeiro por ela, depois pelo backend (que guarda um espelho em `frila-backend/contrato/`) e só então chega ao app. Ela substitui a lista de rotas `/v1` da época em que o backend seria próprio. São três portas do Supabase:
 
 | Porta | O que passa por ela |
 |---|---|
 | `auth/v1` | Código no e-mail, sessão e renovação — pelo SDK de cada plataforma |
-| `rest/v1/rpc/…` | Toda operação com regra de negócio, como função no Postgres: `criar_conta`, `criar_perfil_profissional`, `criterios_de_notificacao`, `cadastrar_estabelecimento`, `publicar_vaga`, `vagas_abertas`, `candidatar`, `retirar_candidatura`, `escolher_candidato`, `contato_do_turno`, `fazer_checkin`, `confirmar_checkin_manual`, `fazer_checkout`, `cancelar_posicao`, `reabrir_por_atraso`, `avaliar`, `perfil_publico`, `painel_estabelecimento`, `denunciar`, `bloquear`, `contestar_suspensao`, `registrar_dispositivo` e as demais |
-| `functions/v1` | Só onde o Postgres não basta: `exportar-turnos` (CSV ou PDF), `exportar-meus-dados` e `excluir-conta`, que apaga a credencial no Supabase Auth |
+| `rest/v1/rpc/…` | Toda operação com regra de negócio, como função no Postgres: `criar_conta`, `criar_perfil_profissional`, `criterios_de_notificacao`, `cadastrar_estabelecimento`, `meus_estabelecimentos`, `publicar_vaga`, `republicar_vaga`, `cancelar_vaga`, `vagas_abertas`, `candidatar`, `retirar_candidatura`, `escolher_candidato`, `contato_do_turno`, `avisar_a_caminho`, `fazer_checkin`, `confirmar_checkin_manual`, `fazer_checkout`, `cancelar_posicao`, `reabrir_por_atraso`, `avaliar`, `perfil_publico`, `painel_estabelecimento`, `denunciar`, `bloquear`, `contestar_suspensao`, `registrar_dispositivo`, `registrar_evento` e as demais. `configuracao_do_app` é a única que responde sem login, para o app descobrir a versão mínima |
+| `functions/v1` | Só onde o Postgres não basta: `exportar-turnos` (CSV ou PDF, na v1.1), `exportar-meus-dados`, `excluir-conta`, que apaga a credencial no Supabase Auth, e `entrar-demonstracao`, a conta da revisão da App Store. As Edge Functions internas `despachar` e `enviar-push` não fazem parte do contrato |
 
 Os apps não escrevem direto nas tabelas; a única leitura direta é o catálogo de funções. O despacho não aparece no contrato: notificar, agrupar, respeitar o teto, lembrar, alertar e fechar o modo seleção é trabalho do agendador, e os apps só registram o dispositivo e recebem o push.
 
 ### A resposta que define o produto
 
-Confirmar a posição é o ponto onde RN19 vive. As três respostas possíveis são todas normais:
+Confirmar a posição é o ponto onde RN19 vive: a corrida acontece em `candidatar`, no modo urgência, e em `escolher_candidato`, no modo seleção. As três respostas possíveis são todas normais:
 
 ```jsonc
 // 200 — ganhou a corrida
@@ -142,7 +143,7 @@ Um envelope só, com código estável em `snake_case` que o cliente pode compara
 | `403` | Autenticado, mas sem papel para a ação (RF21), ou contato pedido depois dos 7 dias (RN10) |
 | `404` | Não existe, ou não é visível para quem pede — inclui o que o bloqueio esconde (RF26) |
 | `409` | Conflito legítimo de estado: posição já preenchida, vaga encerrada, candidatura indisponível, avaliação já registrada com outra resposta. Reenviar a mesma escrita não é conflito: devolve o mesmo resultado |
-| `422` | Regra de negócio recusou: campo faltando (RN02), menor de idade (RN20), modo seleção com menos de 24 horas (RN24), check-in a mais de 200 m (RN22), turno sobreposto (RN21), ação do outro perfil (RN25) |
+| `422` | Regra de negócio recusou: campo faltando (RN02), menor de idade (RN20), modo seleção com menos de 24 horas (RN24), check-in fora da janela, que vai de 60 minutos antes do início ao fim previsto (RN22), turno sobreposto (RN21), ação do outro perfil (RN25). Check-in a mais de 200 m não é recusado: vira manual, à espera da confirmação do contratante |
 | `429` | Limite de requisições |
 
 ---
@@ -212,7 +213,7 @@ SwiftData (B19). Para o uso previsto — cache de turnos confirmados por 24 hora
 
 ### Push: FCM
 
-FCM nos dois sistemas (B17); no iOS, o FCM entrega pela APNs. Um provedor só, disparado pela mesma Edge Function do despacho.
+FCM nos dois sistemas (B17); no iOS, o FCM entrega pela APNs. Um provedor só, chamado pela Edge Function `enviar-push`, com reenvio por recuo exponencial. No app iOS, o SDK do FCM entra na Sprint 2, junto com o registro do aparelho.
 
 ### Testes
 
@@ -220,17 +221,17 @@ Swift Testing para a lógica e XCTest só para os testes de interface, com XCUIT
 
 ### Onde fica o código
 
-No repositório do Frila (BlendOps/Frila), ao lado de `Documentos/` (22/09): `supabase/`, com as migrações, as funções e a configuração, e `ios/` primeiro; `android/` e `web/` depois. Assim o contrato, o banco e os apps mudam no mesmo histórico. A estrutura só é criada quando o time começar o código.
+Na organização `FrilaApp` do GitHub, em repositórios separados: `frila-docs` (documentação e contrato, em `api/openapi.yaml`), `frila-backend` (Supabase: migrações, funções, Edge Functions e testes; branch principal `develop`) e `frila-frontend` (`iOS/` hoje; `Android/` e `Web/` na v1.2). O contrato muda primeiro no `frila-docs`, é espelhado no backend e só então chega ao app, um pull request por repositório.
 
 ### Web
 
-A tecnologia da versão web é escolhida depois do iOS (22/09), que é o mínimo para a loja em 13/11.
+A tecnologia da versão web é escolhida depois do iOS (22/09). A web entra na v1.2, no 1º trimestre de 2027, junto com o Painel do gestor.
 
 ---
 
 ## O que precisa existir para a v1
 
-Em ordem de dependência, não de esforço:
+Em ordem de dependência, não de esforço. Em 30/09, os itens 1 a 4 estão na `develop` do backend; o 5 existe no servidor (`enviar-push`) e falta o registro do aparelho no app; o 6 está em construção, com o fluxo do profissional pronto; o 7 vem depois do 6.
 
 1. **Projeto Supabase com as tabelas do MVP**, as restrições de RN19, RN02, RN18, RN20, RN21, RN22, RN24 e RN25 e as políticas de acesso descritas em [[07 - Arquitetura/Modelagem de Banco de Dados|Modelagem de Banco de Dados]].
 2. **Especificação das tabelas e funções RPC das rotas centrais**, antes do primeiro cliente — é o que permite iOS, Android e web avançarem em paralelo.
@@ -240,7 +241,7 @@ Em ordem de dependência, não de esforço:
 6. **App iOS com os quatro fluxos** — publicar, receber e candidatar, registrar turno, avaliar —, mais excluir a conta (RF25) e denunciar e bloquear (RF26), que a App Store exige.
 7. **Alerta de vaga vazia e confirmação de check-in manual no perfil de contratante**, e o Painel na web quando a web entrar. É o que impede o turno de falhar em silêncio.
 
-Fica para depois sem prejuízo do ciclo: escala em lote (RF19), exportação (RF22) e o atalho de suporte por e-mail (RF23). Para 13/11, o iOS é o mínimo; Android e web entram assim que couberem (B03).
+Fica para depois sem prejuízo do ciclo: escala em lote (RF19), exportação (RF22) e o atalho de suporte por e-mail (RF23). A v1.0 de 13/11 é só iOS; Android e web entram na v1.2 (B03 e Escopo do MVP).
 
 ---
 
@@ -252,10 +253,10 @@ Fica para depois sem prejuízo do ciclo: escala em lote (RF19), exportação (RF
 | D7 | Cache local: SwiftData ou Core Data | SwiftData, com iOS 17 como mínimo (B19) |
 | D9 | Backend próprio ou gerenciado | Supabase (Postgres com PostGIS); a migração é reavaliada a partir de certa rentabilidade. É a mesma decisão da D5 (B02, B06) |
 | D10 | Nativo nas três plataformas ou núcleo compartilhado | Nativo: Swift e SwiftUI no iOS, Kotlin no Android. As regras críticas moram no backend, escritas uma vez (B01, B20) |
-| D11 | A especificação é escrita antes ou junto do backend | Antes, pelo menos das rotas centrais; com o Supabase, funções RPC documentadas (B16). Escrita em 22/09: `Frila/Documentos/API/openapi.yaml` |
+| D11 | A especificação é escrita antes ou junto do backend | Antes, pelo menos das rotas centrais; com o Supabase, funções RPC documentadas (B16). Escrita em 22/09; hoje em `frila-docs/api/openapi.yaml`, versão 0.2.26 |
 | D13 | Provedor de push no Android | FCM, que também entrega no iOS pela APNs (B17) |
 
-Com as seis respondidas, nada de arquitetura trava a primeira versão que alguém use de verdade. A especificação (D11) foi escrita em 22/09. A stack da web fica para depois do iOS, e o bundle ID, para a criação do projeto.
+Com as seis respondidas, nada de arquitetura trava a primeira versão que alguém use de verdade. A especificação (D11) foi escrita em 22/09 e está na versão 0.2.26. A stack da web fica para depois do iOS; o bundle ID é `com.frila.org.app`.
 
 ---
 ← [[🏠 Início|Início]]
