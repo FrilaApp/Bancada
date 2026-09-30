@@ -1,8 +1,8 @@
 ---
 tipo: documento-derivado
 origem: "doc-harness/01 - CBL/Desafios/C18/Documentos de Produto/Frila_Documento_de_Visao.docx"
-hash_origem: b4b2c386a241e5d9c65f489c334d55935d0d32517fac13e111ed7cb2a1c7beb8
-exportado_em: 2026-09-22T03:52
+hash_origem: 4546ae65d6c1b255e469f62e068339f2b2bad0bfdb681455a3ab90dd42e8df41
+exportado_em: 2026-09-30T16:48
 exportado_por: Cauê Carneiro <cauecarneiroc@gmail.com>
 conversao: ok
 tags: [documento]
@@ -32,11 +32,11 @@ Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva
 
 Versão
 
-v1.2.0
+v1.3.0
 
 Data
 
-22/09/2026
+30/09/2026
 
 Histórico de Versões
 
@@ -71,6 +71,14 @@ v1.2.0
 Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva
 
 Aplica as respostas das pendências para codar (22/09): um app só, com um perfil por conta e uma ficha em cada loja; entrada por código no e-mail, sem senha e sem SMS; botão “disponível agora” retirado; referências ao Documento de Requisitos v1.3.0 e ao Backlog v1.2.0.
+
+v1.3.0
+
+30/09/2026
+
+Cauê Carneiro, Fabrício Tosta, João Paulo, Júlia Clovandi, Matheus Silva
+
+Revisão de consistência para a entrega parcial de 02/10: v1.0 só iOS, com Android e web na v1.2 (Escopo do MVP); estado do projeto com o código em construção; taxa de comparecimento só do profissional; múltiplos usuários com contas próprias (RN25); só estabelecimentos do DF no lançamento; check-out sem limite de distância; a Equipe Frila pode ocultar vaga imprópria; referências com os caminhos do repositório frila-docs, o Documento de Requisitos v1.4.0, o Backlog v1.2.1 e o contrato da API 0.2.26.
 
 Glossário
 
@@ -112,7 +120,7 @@ Seções 4 e 5
 
 Taxa de comparecimento
 
-Turnos com presença divididos pelos turnos confirmados. Presença é check-in geolocalizado ou manual confirmado pelo contratante; falta é não aparecer ou cancelar com menos de 24 horas do início. Não entram na conta: candidatura não escolhida, cancelamento com mais de 24 horas e turno não verificado. É o sinal mais objetivo do sistema, aparece no perfil e não altera quem recebe a notificação.
+Turnos com presença divididos pelos turnos confirmados. Presença é check-in geolocalizado ou manual confirmado pelo contratante; falta é não aparecer ou cancelar com menos de 24 horas do início. Não entram na conta: candidatura não escolhida, cancelamento com mais de 24 horas e turno não verificado. É o sinal mais objetivo do sistema, aparece no perfil do profissional e não altera quem recebe a notificação.
 
 Seções 4, 5 e 6
 
@@ -142,7 +150,7 @@ Seções 3 e 5
 
 Equipe Frila
 
-Pessoas do time Frila que respondem, por e-mail, suporte, denúncias, contestações e pedidos de revisão do despacho, em até 5 dias úteis. Não acompanham turnos nem intervêm neles.
+Pessoas do time Frila que respondem, por e-mail, suporte, denúncias, contestações e pedidos de revisão do despacho, em até 5 dias úteis, e podem ocultar vaga com conteúdo impróprio até revisá-la. Não acompanham turnos nem intervêm neles.
 
 Seções 3 e 7
 
@@ -160,7 +168,7 @@ Seções 2 e 4
 
 TRL
 
-Technology Readiness Level. O projeto está em TRL 2: conceito formulado, nada implementado.
+Technology Readiness Level. Em 22/09 o projeto estava em TRL 2, com o conceito formulado; desde então o backend e o app iOS estão em construção e são testados em ambiente de desenvolvimento, ainda sem validação de campo.
 
 Seções 1 e 4
 
@@ -178,7 +186,7 @@ Este documento descreve a visão geral do produto Frila: o problema que ele ende
 
 O detalhamento de requisitos funcionais, não funcionais, regras de negócio, casos de uso e diagramas está no Documento de Especificação de Requisitos, e não aqui.
 
-Uma ressalva de leitura vale para o documento inteiro. O Frila está em TRL 2: conceito formulado, nenhuma linha de código escrita e nenhuma validação de campo realizada. Os números de contexto de mercado têm fonte pública identificada; as afirmações sobre o comportamento concreto do contratante e do profissional no Distrito Federal são hipóteses, marcadas com [H] ao longo do texto. A expectativa explícita do grupo é que parte delas esteja errada e seja corrigida com dado real.
+Uma ressalva de leitura vale para o documento inteiro. O Frila não passou por validação de campo. Desde 22/09 há código, o backend no Supabase e o app iOS, com builds internos no TestFlight, mas nenhum turno real foi fechado pelo produto. Os números de contexto de mercado têm fonte pública identificada; as afirmações sobre o comportamento concreto do contratante e do profissional no Distrito Federal são hipóteses, marcadas com [H] ao longo do texto. A expectativa explícita do grupo é que parte delas esteja errada e seja corrigida com dado real.
 
 1.2 Escopo
 
@@ -202,7 +210,7 @@ Está dentro do escopo do produto:
 
 • Denúncia e bloqueio entre usuários, com resposta da Equipe Frila por e-mail.
 
-• Um aplicativo só, com os perfis de profissional e de contratante, em iOS nativo (Swift e SwiftUI), Android nativo (Kotlin) e versão web, com proposta de valor distinta por perfil.
+• Um aplicativo só, com os perfis de profissional e de contratante, em iOS nativo (Swift e SwiftUI), Android nativo (Kotlin) e versão web, com proposta de valor distinta por perfil. A v1.0, na App Store em 13/11/2026, é só iOS; Android e web entram na v1.2, no 1º trimestre de 2027.
 
 Está explicitamente fora do escopo:
 
@@ -234,61 +242,73 @@ Frila: Leia primeiro
 
 1.0
 
-Documentos/MD/00-LEIA-PRIMEIRO.md
+produto/00-LEIA-PRIMEIRO.md
 
 Frila: O Problema
 
 1.0
 
-Documentos/MD/01-O-PROBLEMA.md
+produto/01-O-PROBLEMA.md
 
 Frila: O Negócio
 
 1.0
 
-Documentos/MD/02-O-NEGOCIO.md
+produto/02-O-NEGOCIO.md
 
 Frila: Especificação do Produto
 
 1.0
 
-Documentos/MD/03-ESPECIFICACAO-DO-PRODUTO.md
+produto/03-ESPECIFICACAO-DO-PRODUTO.md
 
 Frila: Mercado e Concorrência
 
 1.0
 
-Documentos/MD/04-MERCADO-E-CONCORRENCIA.md
+produto/04-MERCADO-E-CONCORRENCIA.md
 
 Frila: Evidências
 
 1.0
 
-Documentos/MD/EVIDENCIAS.md
+produto/EVIDENCIAS.md
 
 Documento de Especificação de Requisitos
 
-v1.3.0
+v1.4.0
 
-Documentos/Diagramas:Documentos/Frila_Documento_de_Requisitos.docx
+requisitos/Frila_Documento_de_Requisitos.docx
 
 Histórias de Usuário e Backlog
 
-v1.2.0
+v1.2.1
 
-Documentos/Diagramas:Documentos/Frila_Historias_de_Usuario_e_Backlog.docx
+requisitos/Frila_Historias_de_Usuario_e_Backlog.docx
+
+Diagramas de Casos de Uso, de Classe e de Arquitetura e Modelagem de Banco de Dados
+
+30/09/2026
+
+requisitos/casos-de-uso/, arquitetura/ e banco-de-dados/
+
+Contrato da API (OpenAPI 3.1)
+
+0.2.26
+
+api/openapi.yaml
 
 CBL do Challenge 18
 
 1.0
 
-CBL/CBL_C18.pages
+cbl/CBL_C18.pages
 
 Roteiro de validação de campo
 
 1.0
 
-Documentos/MD/Frila_Roteiro_de_Validacao_de_Campo.md
+pesquisa/Frila_Roteiro_de_Validacao_de_Campo.md
 
 Matriz CSD e quadro do Challenge 18 (FigJam)
 
@@ -296,11 +316,11 @@ n/a
 
 https://www.figma.com/board/CN1bghQyOzUgR2qvmANbe6/Challenge-18
 
-Repositório do projeto
+Repositórios do projeto (frila-docs, frila-backend e frila-frontend)
 
 n/a
 
-https://github.com/BlendOps/Frila
+https://github.com/FrilaApp
 
 Abrasel: dificuldade de contratação no setor
 
@@ -394,11 +414,11 @@ Frila
 
 É um(a)
 
-Plataforma de contratação por turno avulso, disponível como aplicativo iOS nativo, aplicativo Android e versão web, com proposta de valor distinta por perfil de usuário.
+Plataforma de contratação por turno avulso, como aplicativo iOS nativo e, a partir da v1.2, aplicativo Android e versão web, com proposta de valor distinta por perfil de usuário.
 
 Que
 
-Leva a vaga até quem é elegível por função, proximidade e disponibilidade, em vez de esperar que alguém a encontre, e mostra a cada lado um histórico verificável do outro: taxa de comparecimento e uma resposta binária de quem já trabalhou com a pessoa.
+Leva a vaga até quem é elegível por função, proximidade e disponibilidade, em vez de esperar que alguém a encontre, e mostra a cada lado um histórico verificável do outro: a resposta binária de quem já trabalhou com a pessoa ou no local e, do profissional, a taxa de comparecimento.
 
 Diferente de
 
@@ -556,7 +576,7 @@ Manter perfil, função, ponto base e disponibilidade atualizados; aceitar, comp
 
 Equipe Frila
 
-Pessoas do time que respondem, por e-mail, suporte, denúncias, contestações e pedidos de revisão do despacho.
+Pessoas do time que respondem, por e-mail, suporte, denúncias, contestações e pedidos de revisão do despacho, e que podem ocultar vaga com conteúdo impróprio até revisá-la.
 
 Responder em até 5 dias úteis. Não acompanha turnos, não intervém e não arbitra divergências: o produto é automático.
 
@@ -620,7 +640,7 @@ O contratante tem dois ambientes opostos. No celular, sob estresse: são 16h de 
 
 A concentração temporal de uso é conhecida: picos de quinta a domingo, na virada da tarde para a noite, além de datas sazonais como Black Friday, Natal, Dia das Mães e temporada de formaturas. O horário de pico do sistema é quinta a domingo, entre 16h e 02h.
 
-Quanto a plataformas, o aplicativo iOS nativo, em Swift e SwiftUI, é requisito já fechado do projeto, e o Android também será nativo, em Kotlin. O Android continua sendo prioridade de alcance, por ser a plataforma de cerca de 75% do uso de celular no Brasil (75,45%, StatCounter, ago/2026), já que lançar só em iOS excluiria a maior parte do lado da oferta. Para a entrega na loja em 13/11, o iOS é o mínimo, e Android e web são a meta. A versão web atende os dois perfis.
+Quanto a plataformas, o aplicativo iOS nativo, em Swift e SwiftUI, é requisito já fechado do projeto, e o Android também será nativo, em Kotlin. O Android continua sendo prioridade de alcance, por ser a plataforma de cerca de 75% do uso de celular no Brasil (75,45%, StatCounter, ago/2026), já que ficar só no iOS excluiria a maior parte do lado da oferta. Com três desenvolvedores e sete semanas até a loja, a v1.0, em 13/11, é só iOS; Android e web entram na v1.2, no 1º trimestre de 2027 (Escopo do MVP). A versão web atende os dois perfis.
 
 Estimativa de uso simultâneo no lançamento: dezenas de usuários ativos ao mesmo tempo na janela de pico, com picos de despacho concentrados nos minutos seguintes a cada publicação de vaga. O número é derivado do tamanho da praça-piloto, não de medição. [H]
 
@@ -646,7 +666,7 @@ Conduzir a validação de campo; decidir escopo e prioridade; projetar, implemen
 
 Critérios de sucesso
 
-Turnos efetivamente preenchidos no DF, com taxa de comparecimento medida; hipóteses do projeto convertidas em dado ou descartadas; produto publicado na App Store em 13/11, com Google Play e web como meta.
+Turnos efetivamente preenchidos no DF, com taxa de comparecimento medida; hipóteses do projeto convertidas em dado ou descartadas; produto publicado na App Store em 13/11, com Google Play e web na v1.2.
 
 Envolvimento
 
@@ -654,7 +674,7 @@ Integral e diário: definição de requisitos, construção, testes, publicaçã
 
 Principais preocupações
 
-Validar a frequência do problema antes de construir; não repetir o erro do setor de acumular cadastro sem liquidez; não ultrapassar a capacidade de uma equipe de cinco pessoas sem código escrito.
+Validar a frequência do problema antes de construir; não repetir o erro do setor de acumular cadastro sem liquidez; não ultrapassar a capacidade de uma equipe de cinco pessoas.
 
 Stakeholder 2: Mentoria e Apple Developer Academy
 
@@ -980,9 +1000,9 @@ O Frila é um sistema novo e independente. Não é módulo, extensão nem substi
 
 O produto é um aplicativo só, com dois perfis. Cada conta tem um perfil, escolhido no cadastro e fixo: quem quiser usar o outro lado cria outra conta, com outro e-mail. As necessidades dos dois perfis são diferentes o bastante para que cada um veja só as próprias telas:
 
-• Perfil de profissional, em iOS, Android e web. Leve, tolerante a sinal ruim, com leitura offline dos turnos confirmados e notificação confiável.
+• Perfil de profissional, em iOS (v1.0), Android e web (v1.2). Leve, tolerante a sinal ruim, com leitura offline dos turnos confirmados e notificação confiável.
 
-• Perfil de contratante, em iOS, Android e web, cobrindo os dois contextos: publicação sob estresse no celular e planejamento de escala no computador. Na versão web fica o Painel do gestor, para acompanhar vagas, contratados e turnos; o alerta de vaga vazia e a confirmação de check-in manual também existem no celular.
+• Perfil de contratante, em iOS (v1.0), Android e web (v1.2), cobrindo os dois contextos: publicação sob estresse no celular e planejamento de escala no computador. Na versão web fica o Painel do gestor, para acompanhar vagas, contratados e turnos; o alerta de vaga vazia e a confirmação de check-in manual também existem no celular.
 
 Em relação ao ecossistema existente, o Frila não tenta eliminar o WhatsApp do fluxo: depois da confirmação, o contato entre as partes pode acontecer por WhatsApp ou e-mail, porque é onde as pessoas já estão. O que o produto substitui é a etapa anterior, a de encontrar alguém e decidir confiar nele, que hoje acontece sem nenhum registro e sem nenhum sinal verificável.
 
@@ -994,7 +1014,7 @@ Benefício para o Cliente / Usuário
 
 Recurso que o Suporta
 
-O turno cobrado em cima da hora chega a quem pode aceitá-lo, em vez de esperar ser encontrado
+O turno que precisa ser coberto em cima da hora chega a quem pode aceitá-lo, em vez de esperar ser encontrado
 
 Despacho ativo por proximidade, com elegibilidade por função, disponibilidade e distância de até 15 km (REC02)
 
@@ -1334,7 +1354,7 @@ REC07
 
 Taxa de comparecimento
 
-Turnos com presença divididos pelos turnos confirmados, calculada pelo sistema e exibida no perfil. Falta é não aparecer ou cancelar com menos de 24 horas; turno não verificado não conta. Não altera quem recebe a notificação.
+Turnos com presença divididos pelos turnos confirmados, calculada pelo sistema e exibida no perfil do profissional. Falta é não aparecer ou cancelar com menos de 24 horas; turno não verificado não conta. Não altera quem recebe a notificação.
 
 Alta
 
@@ -1366,7 +1386,7 @@ REC11
 
 Alerta de vaga vazia e Painel do gestor
 
-O contratante recebe um alerta quando a vaga segue vazia a 3 horas do início, com antecedência ajustável na publicação. Na versão web, no perfil de contratante, o gestor acompanha vagas, contratados e turnos, e confirma check-ins manuais.
+O contratante recebe um alerta quando a vaga segue vazia a 3 horas do início, com antecedência ajustável na publicação, e confirma check-ins manuais no app. Na versão web (v1.2), no perfil de contratante, o gestor acompanha vagas, contratados e turnos.
 
 Alta
 
@@ -1374,7 +1394,7 @@ REC12
 
 Registro do turno
 
-Check-in e check-out geolocalizados, a até 200 m do local, com check-in manual confirmado pelo contratante quando a localização falhar. Início, fim e valor acordado ficam disponíveis aos dois lados, substituindo a conversa de WhatsApp e a memória.
+Check-in geolocalizado a até 200 m do local, com check-in manual confirmado pelo contratante quando a localização falhar, e check-out com a distância registrada. Início, fim e valor acordado ficam disponíveis aos dois lados, substituindo a conversa de WhatsApp e a memória.
 
 Alta
 
@@ -1382,7 +1402,7 @@ REC13
 
 Múltiplos usuários por estabelecimento
 
-Mais de uma pessoa opera a mesma conta com papéis distintos, sem compartilhar login. O histórico pertence ao estabelecimento, não a uma pessoa.
+Mais de uma pessoa opera o mesmo estabelecimento, cada uma com a própria conta de contratante e com papel de administrador ou de operador, sem compartilhar login. O histórico pertence ao estabelecimento, não a uma pessoa.
 
 Média
 
@@ -1398,7 +1418,7 @@ REC15
 
 Lista de vagas do DF
 
-O profissional também vê todas as vagas abertas do DF, das mais próximas para as mais distantes, com filtros por função, data e distância; vaga de outro estado aparece no fim. Complementa o despacho; em urgência, quem só procura chega tarde.
+O profissional também vê todas as vagas abertas do DF, das mais próximas para as mais distantes, com filtros por função, data e distância; no lançamento, só há estabelecimentos do DF. Complementa o despacho; em urgência, quem só procura chega tarde.
 
 Média
 

@@ -11,8 +11,11 @@ Preenche a Seção 6.3 do [[01 - CBL/Desafios/C18/Documentos de Produto/Frila_Do
 
 O modelo de dados que sustenta estas classes está em [[07 - Arquitetura/Modelagem de Banco de Dados|Modelagem de Banco de Dados]]; o sistema em volta, em [[07 - Arquitetura/Diagrama de Arquitetura|Diagrama de Arquitetura]].
 
+> [!info] Desenho e código (30/09/2026)
+> Este é o modelo de design, fechado em 22/09. O app iOS, em `frila-frontend/iOS`, segue as mesmas camadas e a mesma regra de dependência, e já tem o fluxo do profissional; o do contratante vem em seguida. Onde o código usa outro nome, a tabela [[#Do desenho ao código (30/09)]] faz a correspondência. Despacho, elegibilidade, teto e agrupamento não têm classe no app: são funções do backend, e as classes que os descrevem aqui são a especificação delas.
+
 > [!info] Swift no iOS, Kotlin no Android
-> As assinaturas estão em Swift porque o app iOS é nativo em Swift e SwiftUI. O Android é nativo em Kotlin (B01, 21/09/2026) e repete este desenho no idioma dele — nenhuma classe de domínio usa algo específico da Apple. As regras que precisam valer igual nos três clientes não dependem dessa tradução: moram no backend, em funções do Supabase, escritas uma vez (ver [[07 - Arquitetura/Diagrama de Arquitetura#As três plataformas|As três plataformas]]). O domínio de cada app existe para a tela e para os testes.
+> As assinaturas estão em Swift porque o app iOS é nativo em Swift e SwiftUI. O Android, previsto para a v1.2, será nativo em Kotlin (B01, 21/09/2026) e vai repetir este desenho no idioma dele — nenhuma classe de domínio usa algo específico da Apple. As regras que precisam valer igual nos três clientes não dependem dessa tradução: moram no backend, em funções do Supabase, escritas uma vez (ver [[07 - Arquitetura/Diagrama de Arquitetura#As três plataformas|As três plataformas]]). O domínio de cada app existe para a tela e para os testes.
 
 ---
 
@@ -22,7 +25,7 @@ O modelo de dados que sustenta estas classes está em [[07 - Arquitetura/Modelag
 
 **O domínio não sabe que existem rede, banco e tela.** É a única exigência arquitetural que o Documento de Requisitos justifica explicitamente: despacho, elegibilidade e reputação *"são as regras que sustentam a tese inteira, e precisam ser testáveis sem interface, sem rede e sem simulador, inclusive porque vão mudar conforme a validação de campo corrigir as hipóteses"*.
 
-A consequência prática é imediata. Um produto em TRL 2, sem validação, vai reescrever sua regra de elegibilidade várias vezes — os 15 km, os 30 minutos do teto e as 3 horas do alerta são valores iniciais. Se essa regra estiver dentro de uma view, cada reescrita custa um simulador aberto e um teste manual. Se estiver num tipo puro, custa um teste de milissegundos. E, com três clientes nativos, é por isso que a versão que vale fica no backend: escrita uma vez, não três. No app, `DespachoService` e `ElegibilidadeSpec` são a **especificação** desse comportamento, com os testes que o descrevem.
+A consequência prática é imediata. Um produto sem validação de campo vai reescrever suas regras várias vezes — os 15 km, os 30 minutos do teto e as 3 horas do alerta são valores iniciais. Se essa regra estiver dentro de uma view, cada reescrita custa um simulador aberto e um teste manual. Se estiver num tipo puro, custa um teste de milissegundos. E, com três clientes nativos, é por isso que a versão que vale fica no backend: escrita uma vez, não três. `DespachoService` e `ElegibilidadeSpec` são a **especificação** desse comportamento: não entram no app, e a regra que vale está nas funções `privado.elegiveis`, `privado.despachar_vaga` e `privado.liberar_teto`, testadas em pgTAP no backend.
 
 ---
 
@@ -90,15 +93,15 @@ enum TipoOcorrencia: String, Codable, Sendable {
     case cancelamento, suspensao, contestacao, suporte, denuncia, revisaoDespacho = "revisao_despacho"
 }
 enum MotivoDenuncia: String, Codable, Sendable {
-    case assedio, discriminacao, riscoASeguranca = "risco_a_seguranca", outro
+    case assedio, discriminacao, riscoSeguranca = "risco_seguranca", outro
 }
 ```
 
-Enum fechado, e não `String` solta, é a mesma escolha que a Bancada já faz em `TipoNota` e `StatusTarefa`: um estado que o compilador não conhece é um `switch` que esquece um caso em produção. `TipoOcorrencia` perdeu `intervencao` e `divergencia` em 21/09: o Frila não opera turnos (D01) e não arbitra divergência — vale o registro geolocalizado (A08).
+Enum fechado, e não `String` solta: um estado que o compilador não conhece é um `switch` que esquece um caso em produção. `TipoOcorrencia` perdeu `intervencao` e `divergencia` em 21/09: o Frila não opera turnos (D01) e não arbitra divergência — vale o registro geolocalizado (A08).
 
 ### A confirmação, modelada como corrida
 
-O Documento de Requisitos assina `confirmar(_: Profissional) throws`. Trocar `throws` por um tipo de resultado é mudança pequena com efeito grande:
+A primeira versão do Documento de Requisitos assinava `confirmar(_: Profissional) throws`; desde a v1.4.0 ele usa o tipo de resultado abaixo. Trocar `throws` por um tipo de resultado é mudança pequena com efeito grande:
 
 ```swift
 enum ResultadoConfirmacao: Equatable {
@@ -108,7 +111,7 @@ enum ResultadoConfirmacao: Equatable {
 }
 ```
 
-RN19 não é condição de erro — é o funcionamento normal do modo urgência, onde *"o primeiro candidato aprovado leva"*. Todos os outros perdem, toda vez, por desenho. Com `throws`, perder a corrida entra no mesmo canal de um timeout de rede, e a tela precisa inspecionar o erro para decidir se mostra "que pena, foi rápido" ou "algo deu errado, tente de novo". Com o enum, o compilador exige que a tela trate os três casos, e a mensagem certa sai de graça. É o espelho exato do `409` do contrato de API.
+RN19 não é condição de erro — é o funcionamento normal do modo urgência, onde *"o primeiro candidato aprovado leva"*. Todos os outros perdem, toda vez, por desenho. Com `throws`, perder a corrida entra no mesmo canal de um timeout de rede, e a tela precisa inspecionar o erro para decidir se mostra "que pena, foi rápido" ou "algo deu errado, tente de novo". Com o enum, o compilador exige que a tela trate os três casos, e a mensagem certa sai de graça. É o espelho exato do `409` do contrato de API. No código, a porta `ApiCliente` lança um erro tipado com o código do contrato, e o `CandidaturaViewModel` o converte em `ResultadoDaCandidatura` — confirmada, vaga preenchida, vaga encerrada, inelegível, conta suspensa —, que a tela trata caso a caso: a mesma ideia, um andar acima.
 
 ### Presença, modelada no turno
 
@@ -139,7 +142,7 @@ struct Turno: Identifiable, Sendable {
 }
 ```
 
-Não existe `temDivergencia()`. O registro geolocalizado é o que vale, e o contratante que discorda registra isso na avaliação (A08). `verificacao` só chega a `.verificado` com prova — check-in geolocalizado a até 200 m ou manual confirmado —, espelhando o `CHECK verificacao_coerente` do banco; o turno que termina sem essa prova fica `.naoVerificado`. `temPresencaVerificada()` é o que libera a avaliação (RN07) e o que entra na taxa de comparecimento.
+Não existe `temDivergencia()`. O registro geolocalizado é o que vale, e o contratante que discorda registra isso na avaliação (A08). No app, o `Turno` é modelo de leitura: check-in, check-out e confirmação são as RPCs `fazer_checkin`, `fazer_checkout` e `confirmar_checkin_manual`, e quem decide a verificação é o servidor. Os métodos acima descrevem a regra que essas funções aplicam. O check-in a mais de 200 m não é recusado: vira manual, à espera da confirmação do contratante. `verificacao` só chega a `.verificado` com prova — check-in geolocalizado a até 200 m ou manual confirmado —, espelhando o `CHECK verificacao_coerente` do banco; o turno que termina sem essa prova fica `.naoVerificado`. `temPresencaVerificada()` é o que libera a avaliação (RN07) e o que entra na taxa de comparecimento.
 
 ### Reputação como valor calculado
 
@@ -150,7 +153,7 @@ struct Reputacao: Equatable, Sendable {
     let taxaComparecimento: Double?    // nulo = sem histórico, nunca 0.0
     let turnosConsiderados: Int
 
-    func temHistorico() -> Bool { total > 0 || turnosConsiderados > 0 }
+    func temHistorico() -> Bool { total > 0 }
 
     /// RN08: sempre com denominador. "7 de 7 chamariam de novo".
     func descricao() -> String {
@@ -197,16 +200,16 @@ protocol CacheLocal: Sendable {                 // SwiftData por trás (D7)
 /// Ações feitas sem rede, que precisam sair na ordem e uma vez só.
 actor FilaDeAcoes {
     enum Acao: Codable {
-        case candidatar(posicao: UUID, chave: UUID)   // chave de idempotência
         case registrarCheckin(turno: UUID, distanciaMetros: Double?, em: Date)
         case registrarCheckout(turno: UUID, distanciaMetros: Double?, em: Date)
+        case avaliar(turno: UUID, resposta: Bool)
     }
     func enfileirar(_ acao: Acao)
     func drenar(com repositorio: VagaRepositorio) async
 }
 ```
 
-`FilaDeAcoes` é `actor` porque é onde a conexão voltando e o usuário tocando na tela competem pela mesma fila — a corrida que produz candidatura duplicada. O isolamento do ator resolve no compilador o que um `DispatchQueue` resolveria por disciplina; a `chave` de idempotência resolve o resto no servidor.
+`FilaDeAcoes` é `actor` porque é onde a conexão voltando e o usuário tocando na tela competem pela mesma fila — a corrida que produz registro duplicado. O isolamento do ator resolve no compilador o que um `DispatchQueue` resolveria por disciplina; a idempotência pela chave natural (check-in por turno, avaliação por turno e lado) resolve o resto no servidor. **Candidatura nunca entra na fila:** no modo urgência, candidatar horas depois engana o profissional, que acharia que ainda disputa uma vaga já preenchida; sem rede, a tela diz que não há conexão.
 
 Uma nota sobre o check-in carregar a data e a distância: o que vale é o **momento do toque**, não o momento em que a fila drenou. A localização é lida só naquele instante, nunca em segundo plano, a distância até o endereço da vaga é medida ali mesmo — o endereço já está no cache do turno confirmado — e só a distância vai para o servidor; a coordenada não sai do aparelho (RN22). Um profissional que faz check-in às 18h02 num subsolo sem internet, onde o GPS ainda funciona, e sincroniza às 21h precisa ter 18h02 no registro: o registro geolocalizado é o que vale (RN11), e registro que mente sobre o horário não vale nada. Quando a localização falha, `distanciaMetros` vai nulo e o check-in é manual, à espera da confirmação do contratante.
 
@@ -234,18 +237,19 @@ A camada de domínio isolada só se paga se existir teste que a exercite. Decidi
 
 | Nível | O que cobre | Ferramenta | Roda em |
 |---|---|---|---|
-| **Domínio** | Elegibilidade, teto de notificação, presença, máquina de estados, reputação, `Dinheiro`, `Periodo` | Swift Testing | Milissegundos, sem rede nem simulador |
-| **Dados** | Repositórios contra servidor falso; fila offline drenando na ordem | Swift Testing, implementações `EmMemoria` | Segundos |
-| **Contrato** | Respostas reais do Supabase — tabelas e funções RPC — contra a especificação | Teste de integração | No CI, contra ambiente de teste |
-| **Interface** | Os quatro fluxos ponta a ponta | XCUITest (XCTest) | Antes de cada release |
+| **Regras críticas** | Elegibilidade, teto e agrupamento, corrida da RN19, turno sobreposto, presença, prazos, máquina de estados | pgTAP, scripts de corrida e o ciclo completo por HTTP | Na CI do `frila-backend` |
+| **Domínio do app** | `Dinheiro`, `Periodo`, validação da vaga, distância, reputação exibida | Swift Testing | Milissegundos, sem rede nem simulador |
+| **Dados e apresentação** | Repositórios contra o dublê em memória; fila offline drenando na ordem; view models | Swift Testing, implementações `EmMemoria` | Segundos |
+| **Contrato** | Respostas reais de cada RPC contra a especificação; no app, fixtures e DTOs contra o mesmo `openapi.yaml` | `contrato-responde.sh` no backend; validação das fixtures e `ContratoTests` no iOS | Na CI dos dois repositórios |
+| **Interface** | Os fluxos já prontos, ponta a ponta | XCUITest (XCTest), com o dublê em memória | Na CI do iOS |
 
-Os casos que precisam existir desde o começo, porque cobrem regra cuja violação é irreversível:
+Os casos que precisam existir desde o começo, porque cobrem regra cuja violação é irreversível — a maior parte deles no backend, onde a regra mora:
 
 - Duas confirmações simultâneas na mesma posição: **exatamente uma** vence, a outra recebe `.jaPreenchida` (RN19).
 - Profissional a mais de 15 km (fora da equipe de confiança), sem a função, indisponível, suspenso, bloqueado ou com turno sobreposto **não** aparece em `elegiveis()` (RN05, RN21).
 - A equipe de confiança recebe mesmo além de 15 km, e nada mais muda quem recebe — nem taxa de comparecimento, nem pagamento (RN05, RN06).
 - A segunda vaga para o mesmo profissional em menos de 30 minutos entra no agrupamento; a vaga urgente que começa em menos de 2 horas sai na hora e conta no teto (RN23).
-- Check-in geolocalizado a 201 m é recusado; o manual só vira presença com a confirmação do contratante (RN22).
+- Check-in a 201 m vira manual, e o manual só vira presença com a confirmação do contratante (RN22).
 - Avaliação pedida antes do fim previsto, ou para turno sem presença verificada, é recusada (RN07) — com `RelogioFixo`, não com `sleep`.
 - Vaga em modo seleção que começa em menos de 24 horas é recusada; a que chega a 24 horas do início sem escolha é fechada e libera os candidatos (RN24).
 - Depois de um bloqueio, as vagas do estabelecimento somem das notificações e da lista do profissional, e vice-versa (RF26).
@@ -260,7 +264,7 @@ Os casos que precisam existir desde o começo, porque cobrem regra cuja violaç�
 |---|---|
 | RF03 funções, ponto base e disponibilidade | `Profissional`, `Disponibilidade` (grade semanal) |
 | RF04 publicar vaga com poucos campos | `PublicarVagaViewModel`, `Estabelecimento.publicar`, `Inclusos` |
-| RF06 notificação com teto e agrupamento | `DespachoService`, `NotificacaoService.agrupar(_:para:)`, `ElegibilidadeSpec` — especificação do que roda no backend |
+| RF06 notificação com teto e agrupamento | Backend: `privado.elegiveis`, `privado.despachar_vaga`, `privado.liberar_teto` e a Edge Function `enviar-push`; `DespachoService`, `NotificacaoService` e `ElegibilidadeSpec` são a especificação |
 | RF07 lista de vagas do DF | `FeedVagasViewModel`, `VagaRepositorio.abertas(ordenadasPorDistanciaDe:filtro:)` |
 | RF08 candidatura sem formulário | `FeedVagasViewModel.candidatar` |
 | RF09 urgência e seleção | `ModoPreenchimento`, `Vaga.aceitaModoSelecao`, `Posicao.confirmar` |
@@ -268,10 +272,10 @@ Os casos que precisam existir desde o começo, porque cobrem regra cuja violaç�
 | RF13 check-in e check-out | `Turno.registrarCheckin`, `Turno.registrarCheckout`, `Turno.confirmarCheckinManual`, `RegistroDePresenca` |
 | RF14 cancelar e reabrir | `Posicao.reabrir`, `Ocorrencia` |
 | RF15/RF16 avaliação e exibição | `Avaliacao`, `Reputacao` |
-| RF18 equipe de confiança | `Estabelecimento.incluirNaEquipe`, `ElegibilidadeSpec` |
+| RF18 equipe de confiança | `Estabelecimento.incluirNaEquipe`; no backend, a RPC `incluir_na_equipe` e `privado.elegiveis` |
 | RF20 alerta de vaga vazia | `AcompanhamentoViewModel`, `Vaga.estaNaJanelaCritica` — o Painel do gestor é web |
-| RF26 denunciar e bloquear | `Ocorrencia`, e o bloqueio entre as partes em `ElegibilidadeSpec` |
-| RF27 por que recebo vagas | `ElegibilidadeSpec` — os critérios exibidos são os mesmos que ela aplica |
+| RF26 denunciar e bloquear | `Ocorrencia`; no backend, as RPCs `denunciar` e `bloquear` e o filtro de bloqueio em `privado.elegiveis` |
+| RF27 por que recebo vagas | A RPC `criterios_de_notificacao` — os critérios exibidos são os mesmos que `privado.elegiveis` aplica |
 | RNF06 leitura offline | `CacheLocal`, `FilaDeAcoes` |
 
 Toda regra estruturante tem dono único. Quando duas classes poderiam responder, a de domínio responde e a outra chama — e, quando a regra precisa valer igual nos três clientes, quem responde de verdade é a função no backend.
@@ -280,11 +284,35 @@ Toda regra estruturante tem dono único. Quando duas classes poderiam responder,
 
 ## v1 e v2
 
-**No MVP:** `Vaga`, `Posicao`, `Profissional`, `Estabelecimento`, `Turno`, `RegistroDePresenca`, `Avaliacao`, `Reputacao`, `DespachoService`, `NotificacaoService`, `ElegibilidadeSpec`, os cinco objetos de valor, `Relogio`, os repositórios de vaga e profissional, `NotificacaoPort`, `CacheLocal`, `FilaDeAcoes` e as quatro classes de apresentação — `PublicarVagaViewModel`, `FeedVagasViewModel`, `AcompanhamentoViewModel` e `SessaoUsuario`.
+**No MVP, no app:** `Vaga`, `Posicao`, `Profissional`, `Estabelecimento`, `Turno`, `RegistroDePresenca`, `Avaliacao`, `Reputacao`, os cinco objetos de valor, `Relogio`, os repositórios de vaga e profissional, `NotificacaoPort`, `CacheLocal`, `FilaDeAcoes` e as quatro classes de apresentação — `PublicarVagaViewModel`, `FeedVagasViewModel`, `AcompanhamentoViewModel` e `SessaoUsuario`. **No MVP, no backend:** o que `DespachoService`, `NotificacaoService` e `ElegibilidadeSpec` especificam.
 
 **Fora do MVP:** `Evento` e `EscalaEmLote` (RF19 é "evite por ora" na matriz de impacto × esforço). O suporte é por e-mail (RF23) e não precisa de classe própria. `AvalExterno` saiu do produto em 21/09 (A12): só avalia quem trabalhou junto pelo Frila.
 
 **Que nunca devem existir:** `Pagamento`, `Carteira`, `Mensagem`, `Nota` e `Comissao` — por RN09, RN10, RN07 e RN01, e pela mesma razão estrutural: a regra mais fácil de honrar é aquela que não tem onde ser violada. RN01 proíbe descontar comissão ou taxa do valor do turno; serviços opcionais pagos ao profissional podem existir no futuro, fora do valor do turno, e não entram na v1.
+
+---
+
+## Do desenho ao código (30/09)
+
+O app iOS em `frila-frontend/iOS` (branch `main` de 30/09) tem quatro módulos — `FrilaDominio`, `FrilaDados`, `FrilaInfraestrutura` e a apresentação — e o alvo do app, que os compõe. O domínio não importa SwiftUI, Supabase, SwiftData nem CoreLocation, e a CI falha se algum arquivo fora de `Dados` importar o Supabase. Onde o nome mudou:
+
+| No desenho | No código |
+|---|---|
+| `Profissional` / `Usuario` | `PerfilProfissional` / `Conta` |
+| `Disponibilidade` | `JanelaDeDisponibilidade`, com `HoraDoDia` e `DataCivil` |
+| `Local` | `local: String` e `ponto: Coordenada` na própria vaga |
+| `Dinheiro.descricao` | `FormatadorFrila.dinheiro(_:)` |
+| `Coordenada.distancia(ate:)` | `distancia(emMetrosDe:)` |
+| `RegistroDePresenca` | `Presenca`, com a distância em metros inteiros, como no contrato |
+| `VagaRepositorioHTTP` / `VagaRepositorioEmMemoria` | `SupabaseApiCliente` / `ApiClienteEmMemoria`, atrás da porta `ApiCliente` |
+| `VagaRepositorio.abertas(ordenadasPorDistanciaDe:filtro:)` | `abertas(_: FiltroVagas)`, com a ordem vinda do servidor |
+| `actor FilaDeAcoes` | protocolo `FilaDeAcoes`, implementado pelo actor `ArmazenamentoSwiftData`, com `SincronizadorAcoes` |
+| `Vaga.aceitaModoSelecao()` | `Vaga.validar(agora:)`, que devolve `.selecaoSemAntecedencia` |
+| `FeedVagasViewModel.candidatar` | `CandidaturaViewModel`, com `DetalheVagaViewModel` |
+| `EstadoTela` | `EstadoDaLista`, `EstadoDoDetalhe` e `EstadoDaCandidatura`, um por tela |
+| `SessaoUsuario {usuario, perfil, idCredencial}` | `SessaoUsuario {usuarioID, perfil}`; a sessão fica no Keychain, pelo supabase-swift |
+
+Ainda não existem no código, porque são do fluxo do contratante ou da Sprint 2: `PublicarVagaViewModel`, `AcompanhamentoViewModel`, `Estabelecimento.publicar` e `incluirNaEquipe`, `Posicao.reabrir`, `Ocorrencia`, o push (FCM) e a localização no toque (CoreLocation). Os tipos que o código tem e o desenho não mostra são de infraestrutura e de tela: `ObservadorDeSessao`, `MonitorDeConexao`, `TurnoRepositorio`, `ContaRepositorio`, `ErroDaApi`, `PerfilPublico` e `AtualizacaoObrigatoriaViewModel`, entre outros.
 
 ---
 
@@ -294,7 +322,7 @@ Toda regra estruturante tem dono único. Quando duas classes poderiam responder,
 |---|---|---|
 | D6 | `DespachoService` roda no cliente ou no servidor? | No servidor, fora da requisição: Edge Function com `pg_cron` e `pgmq` (B15). Esta classe é a **especificação** do comportamento do backend, não código de cliente |
 | D8 | O domínio vira pacote compartilhável? | Não há pacote de código comum entre Swift e Kotlin. As regras críticas moram no backend, escritas uma vez, e o domínio de cada app é módulo interno dele (B20, ajustada em 22/09) |
-| D12 | Swift Testing ou XCTest | Swift Testing para a lógica e XCTest só para a interface, com XCUITest (B21). Os 195 testes XCTest da Bancada ficam como estão |
+| D12 | Swift Testing ou XCTest | Swift Testing para a lógica e XCTest só para a interface, com XCUITest (B21) |
 
 ---
 ← [[🏠 Início|Início]]
