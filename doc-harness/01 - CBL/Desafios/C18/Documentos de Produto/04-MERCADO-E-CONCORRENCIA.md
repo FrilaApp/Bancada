@@ -160,7 +160,7 @@ O único concorrente com página local pública no Distrito Federal: `getninjas.
 
 Não é especializado em food service ou eventos — é um marketplace geral de serviços (reforma, aulas, beleza, tecnologia, e também eventos). Contratante não paga nada; profissional paga por um sistema de moedas pré-pagas para desbloquear o contato de cada pedido. A plataforma não cobra comissão sobre o valor do serviço fechado e não processa o pagamento do trabalho. O registro de 14/09 trazia 1 moeda = R$ 0,15 e pacotes de R$ 149 a R$ 599; a ficha de 01/10 não encontrou tabela pública vigente: o preço é dinâmico, e as moedas valem três meses.
 
-**Como o modelo mudou:** nasceu em 2011 vendendo assinatura que dava um volume de pedidos; em 2016 trocou por moedas por contato escolhido. Breakeven declarado em 2019.
+**Como o modelo mudou:** nasceu em 2011 vendendo assinatura que dava um volume de pedidos; em 2016 trocou por moedas por contato escolhido. A empresa declarou breakeven em 2019, mas a demonstração financeira enviada à CVM mostra prejuízo de R$ 3,0 milhões naquele ano; o único lucro líquido da série, em 2023, veio dos juros do caixa do IPO ([pesquisa de monetização](https://github.com/FrilaApp/frila-docs/blob/main/pesquisa/modelo-de-negocio/monetizacao-e-precos-de-referencia.md), seção 1.5).
 
 **Tração declarada:** +2 milhões de profissionais cadastrados, +3 mil cidades — não auditado (registro de 14/09). O prospecto do IPO falava em 112 mil profissionais ativos e 4,2 milhões de pedidos em 2020, dado histórico.
 
