@@ -206,7 +206,9 @@ function renderizar(markdown, resolverWikilink) {
 
     // Tabela: cabeçalho, separador, corpo
     if (limpa.startsWith('|') && i + 1 < linhas.length && /^\|[\s:|-]+\|$/.test(linhas[i + 1].trim())) {
-      const celulas = (l) => l.trim().replace(/^\||\|$/g, '').split('|').map((c) => c.trim());
+      // `\|` é a barra escapada do Obsidian: deixa um wikilink com apelido
+      // (`[[nota\|rótulo]]`) dentro da célula sem abrir uma coluna nova.
+      const celulas = (l) => l.trim().replace(/^\||(?<!\\)\|$/g, '').split(/(?<!\\)\|/).map((c) => c.trim().replace(/\\\|/g, '|'));
       const cabecalho = celulas(linhas[i]);
       i += 2;
 

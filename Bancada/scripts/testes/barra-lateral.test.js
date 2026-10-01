@@ -65,6 +65,9 @@ const indice = {
     nota(`${PRODUTO}/Frila_Documento_de_Visao.md`, 'documento-derivado', 'Frila_Documento_de_Visao'),
     nota(`${PRODUTO}/Frila_Historias_de_Usuario_e_Backlog.md`, 'documento-produto', 'Histórias de Usuário e Backlog do Produto — Frila'),
     nota(`${PRODUTO}/Frila_Roteiro_de_Validacao_de_Campo.md`, 'documento-produto', 'Roteiro e Protocolo de Validação de Campo no DF — Frila'),
+    nota(`${PRODUTO}/Frila_Pesquisa_de_Concorrentes_2026-10-01.md`, 'documento-produto', 'Pesquisa de concorrentes e de modelo de negócio'),
+    nota(`${PRODUTO}/Pesquisa de Concorrentes/closeer.md`, 'documento-produto', 'Closeer'),
+    nota(`${PRODUTO}/Pesquisa de Concorrentes/estudo-modelo-de-negocio-e-features.md`, 'documento-produto', 'Estudo transversal: modelo de negócio e features'),
     nota(README, 'documento-produto', 'Frila'),
     nota('07 - Arquitetura/Diagrama de Arquitetura.md', 'arquitetura', 'Diagrama de Arquitetura — Frila'),
     nota('07 - Arquitetura/Diagrama de Casos de Uso.md', 'arquitetura', 'Diagrama de Casos de Uso — Frila'),
@@ -131,18 +134,18 @@ function grupos(html) {
 /** Um `href` da página, resolvido para o caminho relativo à raiz do site. */
 const resolver = (pagina, href) => path.posix.normalize(path.posix.join(path.posix.dirname(pagina), href));
 
-test('toda página lista só Produto e Arquitetura na barra, com 10 e 5 itens', () => {
+test('toda página lista só Produto e Arquitetura na barra, com 11 e 5 itens', () => {
   const foraDaBarra = SECOES.filter((s) => !s.naBarra).map((s) => s.id);
   assert.deepStrictEqual(foraDaBarra, ['planejamento', 'diario', 'design']);
   assert.ok(paginas.size > 0);
   for (const [pagina, html] of paginas) {
     const gs = grupos(html);
     assert.deepStrictEqual(gs.map((g) => g.secao), ['produto', 'arquitetura'], pagina);
-    assert.deepStrictEqual(gs.map((g) => g.links.length), [10, 5], pagina);
-    // As 15 páginas, mais o item Novidades que abre a barra.
+    assert.deepStrictEqual(gs.map((g) => g.links.length), [11, 5], pagina);
+    // As 16 páginas, mais o item Novidades que abre a barra.
     const novidades = barra(html).match(/<a [^>]*class="sidebar-novidades/g) || [];
     assert.strictEqual(novidades.length, 1, pagina);
-    assert.strictEqual((barra(html).match(/<a /g) || []).length - novidades.length, 15, pagina);
+    assert.strictEqual((barra(html).match(/<a /g) || []).length - novidades.length, 16, pagina);
   }
 });
 
@@ -157,6 +160,7 @@ test('o Produto segue a ordem de leitura combinada', () => {
     'O Problema',
     'O Negócio',
     'Mercado e Concorrência',
+    'Pesquisa de Concorrentes',
     'Validação de Campo no DF',
     'Evidências',
   ]);
@@ -259,5 +263,17 @@ test('as notas fora da barra seguem publicadas, sem link na barra nem no topo', 
     const html = paginas.get(arquivo(caminho));
     assert.ok(html.includes(`<span class="cbl-eyebrow-item">${secao}</span>`), `${caminho}: sem eyebrow ${secao}`);
     assert.ok(html.includes(`<span class="cbl-eyebrow-item">${sub}</span>`), `${caminho}: sem eyebrow ${sub}`);
+  }
+});
+
+test('a pasta da pesquisa de concorrentes sai da barra, mas as notas dela viram página', () => {
+  const pasta = `${PRODUTO}/Pesquisa de Concorrentes/`;
+  for (const [pagina, html] of paginas) {
+    for (const g of grupos(html)) {
+      for (const l of g.links) assert.ok(!/closeer|estudo-modelo/.test(l.href), `${pagina}: ${l.href}`);
+    }
+  }
+  for (const caminho of [`${pasta}closeer.md`, `${pasta}estudo-modelo-de-negocio-e-features.md`]) {
+    assert.ok(paginas.has(arquivo(caminho)), caminho);
   }
 });

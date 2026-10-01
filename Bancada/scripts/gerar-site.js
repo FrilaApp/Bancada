@@ -204,6 +204,9 @@ const SECOES = [
     foraDaBarra: [
       '01 - CBL/Desafios/C18/Documentos de Produto/00-LEIA-PRIMEIRO.md',
       '01 - CBL/Desafios/C18/Documentos de Produto/README.md',
+      // Pasta inteira (termina em `/`): as 36 notas de detalhe da pesquisa de
+      // concorrentes. O relatório na raiz da pasta do Frila leva a cada uma.
+      '01 - CBL/Desafios/C18/Documentos de Produto/Pesquisa de Concorrentes/',
     ],
   },
   { id: 'arquitetura',  titulo: 'Arquitetura',  tipos: ['arquitetura'],        naBarra: true },
@@ -727,6 +730,7 @@ class Site {
         'problema',
         'negocio',
         'mercado',
+        'pesquisa_de_concorrentes',
         'validacao',
         'evidencias',
         'leia-primeiro',
@@ -756,8 +760,9 @@ class Site {
    */
   notasDaBarra(secao) {
     if (!secao.naBarra) return [];
-    const fora = new Set(secao.foraDaBarra || []);
-    return this.notasDaSecao(secao).filter((n) => !fora.has(n.caminho));
+    const fora = secao.foraDaBarra || [];
+    const estaFora = (n) => fora.some((f) => (f.endsWith('/') ? n.caminho.startsWith(f) : n.caminho === f));
+    return this.notasDaSecao(secao).filter((n) => !estaFora(n));
   }
 
   /**
@@ -954,6 +959,7 @@ class Site {
     if (s === 'Frila') return 'Visão geral';
     if (s.startsWith('Roteiro e Protocolo de Validação de Campo')) return 'Validação de Campo no DF';
     if (s.startsWith('Histórias de Usuário e Backlog')) return 'Histórias de Usuário e Backlog';
+    if (s.startsWith('Pesquisa de concorrentes') || s.startsWith('Pesquisa de Concorrentes')) return 'Pesquisa de Concorrentes';
     if (s.startsWith('Pendências Técnicas')) return 'Pendências Técnicas';
     if (s === 'Roadmap - Sumário de Iterações' || s === 'Sumário de Iterações') return 'Sumário de Iterações';
 
@@ -974,6 +980,7 @@ class Site {
       'Frila_Documento_de_Visao': 'Documento de Visão do Produto',
       'Frila_Historias_de_Usuario_e_Backlog': 'Histórias de Usuário e Backlog do Produto',
       'Frila_Roteiro_de_Validacao_de_Campo': 'Roteiro de Validação de Campo no DF',
+      'Frila_Pesquisa_de_Concorrentes_2026-10-01': 'Pesquisa de Concorrentes e Modelo de Negócio',
       '00-LEIA-PRIMEIRO': 'Leia Primeiro — Guia de Leitura',
       '01-O-PROBLEMA': 'O Problema',
       '02-O-NEGOCIO': 'O Negócio e Monetização',
@@ -1086,6 +1093,7 @@ class Site {
         'Mercado e Análise de Concorrência': 'Benchmarking e mapeamento de concorrentes diretos e indiretos de contratação avulsa.',
         'Evidências e Pesquisa de Campo': 'Compilação de evidências públicas, dados setoriais e validações com o mercado do DF.',
         'Roteiro de Validação de Campo no DF': 'Protocolo de entrevistas presenciais e validação empírica com estabelecimentos do DF.',
+        'Pesquisa de Concorrentes e Modelo de Negócio': 'Os 22 concorrentes, dez referências de fora e o modelo de negócio, com o que fazer em cada fase no DF.',
         'Leia Primeiro — Guia de Leitura': 'Roteiro de leitura crítica e ordem recomendada para navegação nos documentos do produto.',
         'Diagrama de Arquitetura do Sistema': 'Arquitetura técnica, serviços em nuvem e fluxos de dados do aplicativo Frila.',
         'Diagrama de Casos de Uso': 'Mapeamento de atores, interações e fluxos operacionais de contratantes e profissionais.',
