@@ -57,7 +57,7 @@ As fontes históricas mencionam limites de concorrentes por contato; não fixamo
 | Até 2016 | **Assinaturas**, que davam ao profissional determinado volume mensal de solicitações | Modelo anterior descrito no prospecto de 2021. Preço inicial e taxa de conversão daquele período sem evidência pública (buscado em: fontes indicadas) [10]. |
 | 2014 | Experiência do profissional migra para mobile | Possibilitar uso de recursos de celular segundo retrospectiva da empresa [3]. |
 | 2016 | “Novo GetNinjas”: troca de monetização para compra seletiva de contatos | Usuário escolhe os pedidos em que investe; elimina a assinatura como requisito do modelo principal. A empresa associa mudança ao aprendizado com usuários, sem experimento causal publicado [3][10][11]. |
-| 2019 | Empresa declara breakeven | Marco posterior ao novo modelo; não atribuir causalidade exclusiva às moedas [3]. |
+| 2019 | Empresa declara breakeven no blog | **O ano fechou com prejuízo.** A demonstração financeira de 2020, enviada à CVM, mostra prejuízo líquido de R$ 3,0 milhões em 2019, de R$ 6,9 milhões em 2018 e de R$ 0,9 milhão em 2020 [16]. O breakeven declarado pode ser de um mês ou de outra métrica. Não atribuir causalidade exclusiva às moedas [3]. |
 | 2020 | Ampliação para serviços remotos na pandemia | Adaptação à mudança da demanda, além dos serviços locais [3]. |
 | 2021 | IPO financia continuidade da expansão | Capital para tecnologia e crescimento; não comprova liquidez em cada categoria/cidade [3][10]. |
 | Situação em 2026 | Moedas continuam centrais; preços dinâmicos, prazo de uso e negociação direta | Modelo captura receita antes do sucesso da contratação. Termos e ajuda mostram continuidade, sem evidência de migração geral para comissão [2][7][9]. |
@@ -165,6 +165,7 @@ Todas acessadas em **01/10/2026**; períodos históricos explicitados acima.
 13. https://www.getninjas.com.br/ — links sociais do HTML público.
 14. https://itunes.apple.com/br/rss/customerreviews/id=969564418/sortBy=mostRecent/json
 15. https://www.reclameaqui.com.br/empresa/getninjas/lista-reclamacoes/?pagina=3 — recorte indexado; acesso direto bloqueado.
+16. https://www.aranduinvestimentos.com.br/Download.aspx?Arquivo=eqzrYWZHKPFTJCYw0ivIZw%3D%3D — demonstrações financeiras de 2020 da GetNinjas S.A., com comparativos de 2019 e 2018 ("Prejuízo do exercício: (890) (3.001) (6.881)", em R$ mil). Correção de 01/10/2026; ver também a [pesquisa de monetização](https://github.com/FrilaApp/frila-docs/blob/main/pesquisa/modelo-de-negocio/monetizacao-e-precos-de-referencia.md), seção 1.5.
 
 ---
 ← [[01 - CBL/Desafios/C18/Documentos de Produto/Pesquisa de Concorrentes/00 - Índice Pesquisa de Concorrentes|Índice da pesquisa de concorrentes]]
