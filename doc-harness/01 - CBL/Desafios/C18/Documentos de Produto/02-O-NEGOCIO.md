@@ -4,15 +4,18 @@ desafio: C18
 data_criacao: 2026-09-15
 origem: "Frila/Documentos/MD/02-O-NEGOCIO.md"
 tags: [produto, frila]
+data_atualizacao: 2026-10-01
 ---
 
 # Frila — O Negócio
 
-**Versão 1.0 · setembro/2026**
+**Versão 1.1 · 1º de outubro de 2026**
 
 Este documento responde: o que é o Frila, para quem, como funciona, e o que ele deliberadamente não é. É o documento de referência para apresentar o projeto a cliente, investidor, mentores, parceiro ou candidato a integrar a equipe.
 
 A evidência que sustenta o problema descrito aqui está em `01-O-PROBLEMA.md`. O detalhamento do produto está em `03-ESPECIFICACAO-DO-PRODUTO.md`, e quem já compete neste mercado, em `04-MERCADO-E-CONCORRENCIA.md`. Para a versão curta de tudo isso junto, `README.md`.
+
+> **Revisão de 01/10/2026 (versão 1.1).** Este documento incorpora a [[01 - CBL/Desafios/C18/Documentos de Produto/Frila_Pesquisa_de_Concorrentes_2026-10-01|pesquisa de concorrentes e de modelo de negócio de 01/10/2026]] e três decisões do Cauê do mesmo dia: (1) o pagamento do turno **continua por fora do app** — a RN09 está mantida; (2) o valor por posição e o valor da assinatura ficam **em aberto**, com o modelo recomendado registrado como direção; (3) vínculo e parceria com agência de trabalho temporário ficam **em aberto**. Mudaram as seções 1, 5.6, 6 e 7; a seção 10 é nova, e a antiga seção 10 virou a 11.
 
 ---
 
@@ -20,7 +23,7 @@ A evidência que sustenta o problema descrito aqui está em `01-O-PROBLEMA.md`. 
 
 **Frila é uma plataforma onde o contratante publica a vaga — o turno avulso, o "frila", o bico, o job — e o profissional se candidata, com despacho ativo por geolocalização levando a vaga até quem pode aceitá-la, em vez de esperar que alguém a encontre.**
 
-A estratégia é nascer e dominar o Distrito Federal antes de qualquer outra coisa: restaurantes, bares, buffets, casas de evento, festas, eventos sociais, serviços domésticos, etc. A plataforma é horizontal: aceita vaga de turno avulso de qualquer setor, e food service e eventos são só o foco da divulgação inicial. Depois de consolidado aqui, o passo seguinte é o resto do Brasil, e só então outros países.
+A estratégia é nascer e dominar o Distrito Federal antes de qualquer outra coisa: restaurantes, bares, buffets, casas de evento, festas, eventos sociais, serviços domésticos, etc. A plataforma é horizontal: aceita vaga de turno avulso de qualquer setor, e food service e eventos são só o foco da divulgação inicial. Depois de consolidado aqui, o passo seguinte é o resto do Brasil, e só então outros países. A pesquisa de 01/10 afinou o primeiro passo: nascer em **um núcleo do DF que caiba no raio de despacho de 15 km**, com rede pequena e curada, e só então abrir as outras regiões administrativas, uma a uma (seção 10).
 
 ---
 
@@ -125,7 +128,7 @@ Dog Walker para hotéis/creches: Reforço para passeios em creches de animais em
 
 > **O que a pesquisa corrigiu aqui.** Este trecho afirmava que o profissional é o lado escasso do mercado. A evidência em `01-O-PROBLEMA.md` desfaz isso, e a distinção importa para o produto inteiro. Quem é escasso é o candidato a **vaga fixa**: 61% dos empresários de bar e restaurante reclamam de ausência de interessados nas vagas, e há análise publicada apontando que o trabalhador prefere o avulso ao fixo, porque a diária paga mais que o dia de CLT. Para o **turno avulso**, sobra gente: nas plataformas concorrentes, a queixa dominante de quem trabalha é nunca ser chamado. O que é escasso não é pessoa, é confiança verificável — que é exatamente o que o Frila se propõe a construir.
 
-> **O que continua em aberto.** Se, numa sexta à noite, num bairro específico, com duas horas de antecedência, ainda sobra gente disponível. Abundância no agregado das plataformas não é o mesmo que abundância no instante da urgência, e nenhuma fonte pública mede isso. Está registrado como hipótese na seção 10.
+> **O que continua em aberto.** Se, numa sexta à noite, num bairro específico, com duas horas de antecedência, ainda sobra gente disponível. Abundância no agregado das plataformas não é o mesmo que abundância no instante da urgência, e nenhuma fonte pública mede isso. Está registrado como hipótese na seção 11.
 
 ### 4.2. O estabelecimento
 
@@ -204,6 +207,10 @@ O sistema envia lembrete pré-turno 24 horas e 3 horas antes do início. No loca
 
 O pagamento do valor acordado é realizado diretamente entre contratante e profissional (em dinheiro ou Pix imediato ao final do turno). O Frila não processa, não retém e não custodia pagamentos (RN09), preservando a autonomia das partes e eliminando tarifas sobre o trabalhador.
 
+> **Decisão de 01/10/2026: a RN09 está mantida.** A pesquisa de concorrentes apontou esta regra como a maior tensão do modelo: todo app de turno com escala comprovada faz o dinheiro passar por ele, e nenhum com pagamento por fora mostrou receita relevante — leitura do [[01 - CBL/Desafios/C18/Documentos de Produto/Pesquisa de Concorrentes/estudo-modelo-de-negocio-e-features|estudo]] a partir das fichas, não dado de mercado. Do outro lado, o dinheiro no app não criou liquidez para quem o adotou sem rede local (Freela Serviços, Freelas Now), gera a sua própria queixa — pagamento preso quando o contratante não fecha o turno, na Closeer e na eFreela — e aproxima a plataforma do papel de quem paga. O Cauê decidiu manter o pagamento por fora.
+
+> **O custo conhecido dessa escolha.** O Frila não vê se o contratante pagou. Sem custódia, a única forma de saber é os dois lados confirmarem. A pesquisa sugere, como item de backlog e não como decisão, uma confirmação de "paguei" e "recebi" visível na reputação do estabelecimento. Se o piloto mostrar calote ou atraso relevante, a queixa cai no app do mesmo jeito; é o dado a medir desde o primeiro turno (seção 11).
+
 
 ### 5.7. Reputação
 
@@ -221,9 +228,11 @@ Três coisas, em ordem de força:
 
 **A densidade no DF.** Difícil de construir, fácil de perder, e é a razão de a estratégia ser dominar um mercado por vez em vez de abrir vários rasos. Quem chega depois com o mesmo produto ainda precisa competir contra um banco de profissionais e estabelecimentos já formado aqui.
 
-A pesquisa em `04-MERCADO-E-CONCORRENCIA.md` reforça essa aposta: dos 11 concorrentes brasileiros mapeados, o único com presença comprovada no DF é o GetNinjas, que é marketplace geral e não especializado neste nicho. A janela existe, mas é janela, não vantagem permanente.
+A pesquisa de 01/10 em `04-MERCADO-E-CONCORRENCIA.md` ajusta essa aposta: **o DF não está vazio de concorrência especializada**. Dos 22 apps pesquisados, a estaff declara 5.197 profissionais, 31 clientes e 6.544 jobs realizados no DF — dado da própria empresa, sem vaga aberta, cliente nomeado ou notícia local que o confirme. O GetNinjas tem página local em Brasília, mas é marketplace geral e cobra do profissional. Quem atende o DF formalmente são agências de evento e de facilities, nenhuma com preço público. A janela existe, mas é janela, não vantagem permanente — e há precedente local para a aposta: o YOLO Club, nascido em Brasília, ficou cerca de seis anos só aqui antes de abrir a segunda cidade.
 
 **A certeza, não a velocidade.** O grupo de WhatsApp responde em cinco minutos e é grátis. Não dá para ganhar dele em velocidade nem em preço. Dá para ganhar em **saber quem vem** — histórico verificável, reabertura automática da vaga se a pessoa furar, horas registradas.
+
+Também não dá para ganhar no mecanismo. O despacho com "primeiro que aceita leva" **já está publicado**: o Freelas Now faz isso em São Paulo, avisando todos os disponíveis da região e fechando com o primeiro que aceita em 2 minutos — e, com cerca de 4,3 mil instalações, mostra que mecanismo sem rede local não preenche turno. O que nenhum dos 22 apps pesquisados mostra é a **taxa de comparecimento medida por check-in, com denominador explícito**, junto com a reputação binária. É aí, e na densidade, que está a diferença.
 
 **A reputação portátil, no médio prazo.** Quando o negócio expandir para fora do DF, o profissional que construiu histórico aqui carrega esse histórico para o próximo mercado. Um app de staffing puramente local nunca acumula isso.
 ---
@@ -238,6 +247,7 @@ Esta lista existe para impedir que o escopo volte a inchar.
 | **Uma plataforma de emprego CLT** | Contratação efetiva é outro negócio, com outro ciclo e outro comprador |
 | **Uma plataforma de trabalho remoto, no MVP** | O MVP é só presencial: sem presença não há check-in nem notificação por distância. O remoto entra depois |
 | **Uma rede social profissional** | Não há feed, não há seguidores, não há conteúdo |
+| **Uma carteira ou um processador de pagamento** | O valor do turno é pago direto entre contratante e profissional. A RN09 foi mantida em 01/10/2026 (seção 5.6) |
 ---
 
 ## 8. Plataformas
@@ -254,7 +264,52 @@ Os apps são nativos: Swift/SwiftUI no iOS e Kotlin no Android, com as regras cr
 
 ---
 
-## 10. O que ainda não sabemos
+## 10. Como o Frila pretende cobrar e crescer
+
+O que está aqui vem da [[01 - CBL/Desafios/C18/Documentos de Produto/Frila_Pesquisa_de_Concorrentes_2026-10-01|pesquisa de 01/10/2026]] e das decisões do Cauê do mesmo dia. O detalhe, com a evidência de cada linha, está em `04-MERCADO-E-CONCORRENCIA.md`, seções 8 e 9, e no [[01 - CBL/Desafios/C18/Documentos de Produto/Pesquisa de Concorrentes/estudo-modelo-de-negocio-e-features|estudo de modelo de negócio e features]], seção 5.
+
+### 10.1. Decisões de 01/10/2026
+
+1. **O pagamento do turno continua por fora do app.** A RN09 está mantida (seção 5.6).
+2. **O valor por posição e o valor da assinatura ficam em aberto.** Nenhum número foi fixado; o preço se define no piloto.
+3. **Vínculo e parceria com agência de trabalho temporário ficam em aberto.** É questão registrada, sem decisão.
+
+### 10.2. A direção de cobrança
+
+Quem paga é o **contratante**, nunca o profissional — é o que fazem 13 dos 22 apps pesquisados e as dez referências globais no nascimento, e é requisito do mercado, não diferencial.
+
+O modelo recomendado pela pesquisa, registrado como **direção e não como tabela**:
+
+- **Valor fixo por posição preenchida com presença verificada.** Com o dinheiro do turno fora do app, o Frila não sabe nem controla quanto foi pago; sabe se houve check-in. Nos concorrentes, percentual sempre veio junto com o controle do dinheiro, e quem cobrou sem processar o pagamento cobrou valor fixo. A falta não é cobrada.
+- **Assinatura pela gestão da equipe de confiança.** É o que o contratante recorrente continua precisando depois que já conhece as pessoas: avisar primeiro os favoritos, escala, relatório. Assim, contratar a mesma pessoa de novo passa a reter o cliente em vez de perdê-lo.
+- **Preço mostrado desde o lançamento, numa tabela só.** Só 7 dos 22 apps publicam o que o contratante paga, e 3 deles com valores que não batem entre canais.
+
+**Quanto:** em aberto. A disposição a pagar do contratante do DF só o campo responde.
+
+### 10.3. Por fase
+
+Os limiares marcados com `[H]` são hipóteses de partida, a calibrar no piloto de 13/11.
+
+| | Fase 1 — Nascer no DF | Fase 2 — Dominar o DF | Fase 3 — Expandir |
+|---|---|---|---|
+| **Onde** | Um núcleo dentro do raio de 15 km do despacho | As regiões administrativas, uma a uma | Uma cidade parecida com o DF, com cliente-âncora, líder local e pré-lista |
+| **Preço** | Grátis, com o preço futuro já mostrado e um prazo ou limite anunciado | Valor fixo por posição com presença verificada, mais assinatura da equipe de confiança. **Valores em aberto** | O mesmo, mais planos de rede |
+| **Dinheiro do turno** | Por fora (RN09) | Por fora (RN09) | Por fora (RN09) |
+| **Vínculo** | Autônomo | **Em aberto** | **Em aberto** |
+| **Como cresce** | Âncoras de evento e buffet, rede curada porta a porta, operação manual | Indicação dos dois lados | Oferta pronta antes da demanda |
+| **Sinal para avançar** `[H]` | 8 semanas com 80% dos turnos preenchidos, aceite em até 15 minutos, 90% de comparecimento e 50% de contratantes que voltam | Dois trimestres estáveis, margem positiva sem subsídio e roteiro de abertura escrito | — |
+
+A entrada por evento (seção 4.3) e a densidade no DF (seção 6) seguem sendo o caminho; o que a pesquisa acrescenta é o tamanho do primeiro passo e a ordem dos seguintes. O precedente mais próximo é o do YOLO Club, em Brasília: rede pequena e curada, anos numa cidade só, e preço que sobe com a densidade ([[01 - CBL/Desafios/C18/Documentos de Produto/Pesquisa de Concorrentes/casos-yolo-e-duogourmet|casos YOLO e Duo Gourmet]]). É um clube de restaurantes, não um marketplace de trabalho — aproveita-se o caminho territorial, não a mecânica.
+
+### 10.4. Vínculo: a questão em aberto
+
+O profissional do Frila é autônomo: o estabelecimento define o valor, o profissional escolhe se aceita, e o Frila não paga. Lá fora, o vínculo é o maior passivo do modelo — nos Estados Unidos, as plataformas que usam autônomo pagaram acordos de US$ 400 mil a US$ 4,17 milhões. No Brasil, o STF ainda não decidiu o Tema 1291.
+
+Contratantes maiores, como eventos corporativos, podem exigir vínculo formal. A pesquisa sugere estudar **parceria com uma agência de trabalho temporário**, em vez de o Frila virar empregador. **Não há decisão:** fica registrado como questão aberta, a avaliar com o jurídico.
+
+---
+
+## 11. O que ainda não sabemos
 
 Honestidade sobre o que este documento afirma sem prova. As perguntas que testam cada um destes pontos estão formuladas e ordenadas em `01-O-PROBLEMA.md`, seção 6.
 
@@ -264,6 +319,11 @@ Honestidade sobre o que este documento afirma sem prova. As perguntas que testam
 - Que o profissional aceita chamado em menos de 30 minutos com frequência útil `[H]`
 - Que o maître, e não o dono, é quem decide `[H]`
 - Que a desintermediação (contratar direto na segunda vez) é administrável `[H]`
+- Quanto o contratante do DF aceita pagar por posição preenchida e pela assinatura da equipe de confiança, e se prefere fixo, percentual ou assinatura — em aberto desde 01/10/2026 `[H]`
+- Que o pagamento por fora do app se sustenta sem calote ou atraso relevante `[H]`
+- Se, e como, atender o contratante que exigir vínculo formal — parceria com agência de trabalho temporário em aberto
+- Que a estaff opera no DF na escala que declara (31 clientes, 6.544 jobs), e quem são esses clientes
+- Os limiares para mudar de fase (seção 10.3) `[H]`
 
 ---
 ← [[01 - CBL/00 - Índice CBL|Índice CBL]]
