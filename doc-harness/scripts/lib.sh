@@ -5,7 +5,7 @@
 # Raiz do repositório. BASH_SOURCE só existe em bash — quando o arquivo é
 # carregado de outro shell (zsh), caímos no git, que é confiável dentro do repo.
 _raiz=""
-[ -n "${BASH_SOURCE[0]:-}" ] && _raiz="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." 2>/dev/null && pwd)"
+[ -n "${BASH_SOURCE[0]:-}" ] && _raiz="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." 2>/dev/null && pwd -P)"
 if [ -z "$_raiz" ] || [ ! -d "$_raiz/scripts" ]; then
   _raiz="$(git rev-parse --show-toplevel 2>/dev/null)"
 fi
@@ -31,7 +31,11 @@ unset _raiz
 # O `|| true` importa: os hooks e o `registrar-fato.sh` rodam sob `set -e`, e uma
 # atribuição de substituição que falha aborta o script inteiro. Fora de repositório
 # git, o vault ainda é uma pasta legítima de ler.
-GIT_ROOT="$(git -C "$REPO_ROOT" rev-parse --show-toplevel 2>/dev/null || true)"
+# Hooks de worktree herdam GIT_DIR. Com ele, `git -C` passa a tratar o vault
+# como raiz do working tree. Descubra a raiz pelo .git do diretório, sem esse
+# ambiente; os demais comandos preservam o ambiente do hook e usam GIT_ROOT.
+GIT_ROOT="$(unset GIT_DIR GIT_WORK_TREE GIT_COMMON_DIR
+  git -C "$REPO_ROOT" rev-parse --show-toplevel 2>/dev/null || true)"
 [ -n "$GIT_ROOT" ] || GIT_ROOT="$REPO_ROOT"
 
 if [ "$GIT_ROOT" = "$REPO_ROOT" ]; then
