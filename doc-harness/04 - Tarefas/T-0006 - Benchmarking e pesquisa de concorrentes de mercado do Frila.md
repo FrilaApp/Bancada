@@ -183,4 +183,20 @@ Uma segunda varredura, feita direto na App Store do iPhone na madrugada de 23/09
 - Alinhada com a pergunta essencial de confiança em food service do C18.
 
 ---
+
+## Pesquisa ampliada de 01/10/2026
+
+O mapeamento desta tarefa foi refeito e ampliado. São agora 22 concorrentes, cada um com ficha no mesmo modelo, mais o seguinte:
+- dez referências globais de staffing por turno;
+- os casos YOLO Club e Duo Gourmet;
+- um estudo de modelo de negócio e features;
+- o mapa da concorrência real no DF;
+- três auditorias das fontes.
+
+As capturas novas (99Freelas, Freelancer, Bravo Eventos, Lan Up e StaffPRO) entraram em `04 - Tarefas/Anexos/`.
+
+- [[01 - CBL/Desafios/C18/Documentos de Produto/Frila_Pesquisa_de_Concorrentes_2026-10-01|Relatório consolidado da pesquisa]]
+- [[01 - CBL/Desafios/C18/Documentos de Produto/Pesquisa de Concorrentes/00 - Índice Pesquisa de Concorrentes|Índice das 36 notas da pesquisa]]
+
+---
 ← [[04 - Tarefas/00 - Índice Tarefas|Índice de Tarefas]]

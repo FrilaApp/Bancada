@@ -258,3 +258,10 @@ test('blocosDeHtml decodifica as entidades uma vez só, como o navegador', () =>
     ["um turno — função", `d'água "ok" — © 2026…`, 'escrito &nbsp; e <br> no vault', 'Design & Experiência, R&D', '10—20'],
   );
 });
+
+test('wikilink com apelido dentro de tabela usa a barra escapada do Obsidian', () => {
+  const md = '| App | Ficha |\n|---|---|\n| Closeer | [[pasta/closeer\\|Ficha da Closeer]] |\n';
+  const html = renderizar(md, (alvo) => `notas/${alvo.split('/').pop()}.html`);
+  assert.match(html, /<td>Closeer<\/td><td><a href="notas\/closeer\.html">Ficha da Closeer<\/a><\/td>/);
+  assert.strictEqual((html.match(/<td>/g) || []).length, 2);
+});
