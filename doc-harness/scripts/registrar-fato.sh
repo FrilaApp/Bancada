@@ -27,18 +27,18 @@ ASSUNTO_DO_LOG="Registra no log os fatos publicados"
 
 registrar_commit() {
   local ref="$1" sha assunto n data hora quem
-  sha=$(git -C "$REPO_ROOT" rev-parse --short "$ref")
+  sha=$(git -C "$GIT_ROOT" rev-parse --short "$ref")
 
   if fato_ja_registrado "$sha"; then
     return 0
   fi
 
-  assunto=$(git -C "$REPO_ROOT" log -1 --pretty=%s "$ref")
+  assunto=$(git -C "$GIT_ROOT" log -1 --pretty=%s "$ref")
   [ "$assunto" = "$ASSUNTO_DO_LOG" ] && return 0
-  n=$(git -C "$REPO_ROOT" show --pretty="" --name-only "$ref" | grep -c . || true)
-  data=$(git -C "$REPO_ROOT" log -1 --date=format:%Y-%m-%d --pretty=%ad "$ref")
-  hora=$(git -C "$REPO_ROOT" log -1 --date=format:%H:%M --pretty=%ad "$ref")
-  quem=$(git -C "$REPO_ROOT" log -1 --pretty=%an "$ref")
+  n=$(git -C "$GIT_ROOT" show --pretty="" --name-only "$ref" | grep -c . || true)
+  data=$(git -C "$GIT_ROOT" log -1 --date=format:%Y-%m-%d --pretty=%ad "$ref")
+  hora=$(git -C "$GIT_ROOT" log -1 --date=format:%H:%M --pretty=%ad "$ref")
+  quem=$(git -C "$GIT_ROOT" log -1 --pretty=%an "$ref")
 
   local arquivos
   if [ "$n" -eq 1 ]; then arquivos="1 arquivo"; else arquivos="$n arquivos"; fi
@@ -59,11 +59,12 @@ case "${1:-}" in
     # deixa de poder mudar. Registrar no `post-commit` gravava um hash que um
     # rebase posterior podia reescrever — e reescrevia, deixando o log apontando
     # para um commit que não existe em ramo nenhum.
-    intervalo="${2:?uso: registrar-fato.sh publicados <intervalo>}"
+    : "${2:?uso: registrar-fato.sh publicados <intervalo>}"
+    shift
     while IFS= read -r sha; do
       [ -n "$sha" ] || continue
       registrar_commit "$sha"
-    done < <(git -C "$REPO_ROOT" rev-list --reverse "$intervalo")
+    done < <(git -C "$GIT_ROOT" rev-list --reverse "$@")
     ;;
 
   externo)
