@@ -2091,10 +2091,6 @@ ${this.avisoDeAtualizacao()}
             <span>Abrir Documento Completo</span>
             <span class="cbl-seta" aria-hidden="true">→</span>
           </a>
-          <a href="../midia/01 - CBL/Desafios/C18/Documentos/CBL_C18.pdf" class="cbl-chamada-link-secundario" download="CBL_C18.pdf" title="Baixar PDF original (9.1 MB)">
-            <span>PDF Original (9.1 MB)</span>
-            <span class="cbl-seta" aria-hidden="true">↗</span>
-          </a>
         </div>
       </section>`;
     }
