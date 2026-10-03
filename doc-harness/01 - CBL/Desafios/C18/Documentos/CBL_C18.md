@@ -555,6 +555,64 @@ Síntese
 
 *<Principais insights encontrados durante a pesquisa>*
 
+Ciclo exploratório - Marca Apple nos materiais de lançamento
+
+Guiding questioning
+
+Guiding Questions
+
+Resource
+
+Como usar o selo "Baixar na App Store" nos materiais do Frila?
+
+Só o selo oficial, baixado do App Store Marketing Tools, que tem a versão em português do Brasil ("Baixar na"); a marca "App Store" fica sempre em inglês. O preferido é o preto, com a borda cinza intacta; o branco só quando há um único selo e o preto pesa no layout. Altura mínima de 40 px na tela e 10 mm impresso, com respiro de um quarto da altura em volta (um décimo em banner muito apertado). Um selo por peça, em posição subordinada à mensagem; ao lado do Google Play, o da App Store vem primeiro. Não se altera cor, proporção ou ângulo, não se anima e não se recorta.
+
+[Fonte](https://developer.apple.com/app-store/marketing/guidelines/#app-store-badges)
+
+Como escrever "App Store" e "iPhone" nos textos?
+
+Sempre "App Store" e "iPhone", nessa grafia, sem traduzir e sem outros qualificadores: nada de "Apple App Store", "iTunes App Store" ou "iPhone App Store". Diz-se "Frila para iPhone" e "disponível na App Store" ou "baixe na App Store"; não se diz "iPhone app", "at the App Store" nem "downloadable". Fora dos Estados Unidos, o Brasil incluso, não se usa ™ nem ®; a linha de crédito internacional é "App Store e iPhone são marcas da Apple Inc., registradas nos EUA e em outros países".
+
+[Fonte](https://developer.apple.com/app-store/marketing/guidelines/#messaging--style)
+
+Como mostrar o app em imagens de iPhone?
+
+Só com as molduras oficiais da Apple Design Resources, dos modelos atuais (em 03/10/2026: iPhone Duo, iPhone 18, iPhone 17 e iPhone 16), com o app de verdade na tela, barra de status cheia e dados fictícios. Sem capinha, reflexo, sombra inventada ou render 3D, sem iPhone ao lado de aparelho de outra marca, sem tela preta, sem várias notificações e sem a tela de início.
+
+[Fonte](https://developer.apple.com/app-store/marketing/guidelines/#product-images)
+
+Guiding Activities
+
+Atividade
+
+Data
+
+Recursos
+
+FeedBack
+
+Levantamento das regras da Apple para o selo e as imagens de iPhone (cartão do Trello "Licenças de terceiros, direitos de conteúdo e selo da App Store")
+
+- Leitura das App Store Marketing Guidelines, da página de Product Bezels da Apple Design Resources e das diretrizes de marcas da Apple
+
+- Registro de 16 regras, cada uma com o trecho copiado da página da Apple e a data de acesso
+
+- Conferência por amostra: nove trechos e a lista de molduras checados de novo contra as páginas
+
+03/10/2026
+
+App Store Marketing Guidelines, Apple Design Resources, Guidelines for Using Apple Trademarks and Copyrights
+
+As regras são poucas e objetivas, mas fáceis de errar sem querer: traduzir "App Store", pôr ® num material brasileiro ou mostrar o app numa moldura antiga. Vale passar a lista de "faça e não faça" a quem montar o site, os slides e os posts antes de começar.
+
+Síntese
+
+*• O selo é arte fechada da Apple: só se escolhe o tamanho, a posição e entre o preto e o branco.*
+
+*• No Brasil não se usa símbolo de marca registrada nos textos; usa-se a linha de crédito internacional.*
+
+*• Imagem de iPhone só com moldura oficial e do modelo atual, com o app real e dados fictícios na tela.*
+
 Milestone - Plano de Marketing
 
 *<Link do documento>*
