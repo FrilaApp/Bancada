@@ -25,6 +25,8 @@ tags: [produto, validacao, customer-discovery, entrevistas, df, frila]
 
 O projeto **Frila** encontra-se em estágio **TRL 2 (Conceito Tecnológico Formulado)**. Toda a modelagem financeira, a precificação B2B SaaS ([[04 - Tarefas/T-0010 - Estruturar o modelo de negócio e monetização do Frila|T-0010]]) e a arquitetura técnica ([[04 - Tarefas/T-0024 - Diagramas de classe, banco de dados e arquitetura|T-0024]]) apoiam-se em hipóteses formuladas a partir de dados públicos, métricas de concorrentes e relatórios setoriais (Abrasel, RAIS/CAGED, Reclame Aqui).
 
+> **Superado em 01/10/2026:** a v1.0 e o piloto não cobram nada de contratante nem de profissional, e não existe prioridade de despacho paga. O que este trecho descreve é hipótese para depois do piloto.
+
 Para a **1ª Apple Review (28/09/2026)** e para a segurança do produto, é imperativo confrontar essas premissas com a realidade operacional de quem vive o dia a dia gastronômico no Distrito Federal.
 
 ### 1.1 Metas de Campo

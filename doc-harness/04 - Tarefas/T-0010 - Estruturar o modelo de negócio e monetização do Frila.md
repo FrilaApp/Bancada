@@ -21,6 +21,7 @@ Esta tarefa consolida a definição formal do modelo de negócio para a **1ª Ap
 
 ## Feito quando
 - [x] Modelo de monetização definido sem intermediação de pagamentos das diárias (taxa de conexão de software por turno confirmado paga pelo estabelecimento vs. assinatura mensal SaaS de escala).
+  > **Superado em 01/10/2026:** a v1.0 e o piloto não cobram nada de contratante nem de profissional, e não existe prioridade de despacho paga. O que este item descreve é hipótese para depois do piloto.
 - [x] Fluxo de confirmação e registro de cumprimento especificado (como o turno é auditado sem a plataforma transacionar a diária do freelancer).
 - [x] Business Model Canvas (BMC) do Frila alinhado à estratégia de SaaS B2B e zero taxa sobre o trabalhador.
 - [x] Simulação básica de unit economics de software (receita por conexão, custos de tecnologia e ponto de equilíbrio no mercado do DF).
@@ -34,6 +35,9 @@ Esta tarefa consolida a definição formal do modelo de negócio para a **1ª Ap
 * **Profissional Freelancer:** Acesso 100% gratuito. Ele recebe o valor integral da diária diretamente do estabelecimento no salão (via Pix direto ou dinheiro ao fim do expediente). Nenhuma taxa de serviço ou intermediação é cobrada do trabalhador.
 
 ### 1.2 Modelo Adotado: SaaS B2B e Taxa de Conexão de Software (Contratante)
+
+> **Superado em 01/10/2026:** a v1.0 e o piloto não cobram nada de contratante nem de profissional, e não existe prioridade de despacho paga. O que esta seção descreve (taxa por turno confirmado, créditos e assinatura com despacho prioritário) é hipótese formulada em 16/09/2026 para depois do piloto.
+
 A plataforma monetiza cobrando **exclusivamente do estabelecimento contratante** pelo uso da tecnologia de despacho ativo e cobertura de urgência:
 
 1. **Fase 1 — MVP / Validação no DF (1ª Apple Review): Taxa de Conexão por Turno Confirmado (Pay-per-Match)**
@@ -80,6 +84,8 @@ sequenceDiagram
 
 ## 3. Business Model Canvas (BMC) — Frila (SaaS B2B)
 
+> **Superado em 01/10/2026:** a v1.0 e o piloto não cobram nada de contratante nem de profissional, e não existe prioridade de despacho paga. As fontes de receita e parcerias deste Canvas (taxa por conexão, assinaturas B2B) são hipóteses para depois do piloto.
+
 | Bloco do Canvas | Definição Estratégica do Frila |
 |---|---|
 | **Proposta de Valor** | • **Para Contratantes:** Cobertura de furos em minutos sem parar o salão; despacho ativo por geolocalização; garantia de histórico verificável; eliminação da perda de faturamento por desfalque.<br>• **Para Freelancers:** 100% gratuito; fim das vagas fakes de WhatsApp; previsibilidade de valor; histórico profissional portátil e valorizado. |
@@ -95,6 +101,8 @@ sequenceDiagram
 ---
 
 ## 4. Simulação de Unit Economics de Software (Mercado do DF)
+
+> **Superado em 01/10/2026:** a v1.0 e o piloto não cobram nada de contratante nem de profissional, e não existe prioridade de despacho paga. A simulação abaixo (receita por conexão e taxas sobre créditos) é hipótese para depois do piloto.
 
 Com a eliminação da custódia financeira, os custos variáveis da plataforma caem drasticamente, gerando margens de software puro:
 
@@ -118,6 +126,7 @@ Com a eliminação da custódia financeira, os custos variáveis da plataforma c
 ## 5. Vantagens Estratégicas para a Apple Review
 
 1. **Isenção de In-App Purchase da Apple:** A cobrança de ferramentas B2B corporativas e intermediação de serviços no mundo real físico não se sujeita à taxa de 30% da Apple para bens digitais.
+   > **Superado em 01/10/2026:** a v1.0 e o piloto não cobram nada de contratante nem de profissional, e não existe prioridade de despacho paga. Na v1.0 e no piloto não há cobrança no app.
 2. **Zero Risco Regulatório:** A plataforma não faz captação de recursos nem custódia financeira, operando em total conformidade com as normas do Banco Central.
 3. **Zero Risco Trabalhista Solidário:** Ao não pagar a diária, o Frila afasta a caracterização de relação de emprego entre a plataforma e o profissional.
 4. **Foco e Velocidade Técnica:** O time de engenharia foca na perfeição da experiência iOS nativa e no despacho por geolocalização, sem o atrito de gateways bancários.
@@ -127,6 +136,7 @@ Com a eliminação da custódia financeira, os custos variáveis da plataforma c
 ## Notas
 - 2026-09-15 — Tarefa criada para estruturar a entrega obrigatória de Modelo de Negócio da primeira Apple Review.
 - 2026-09-16 — Modelo de negócio estruturado por Júlia Clovandi (PO/PM) com modelo SaaS B2B / Taxa de Conexão de Software (R$ 15/turno pago pelo estabelecimento), taxa zero ao freelancer, alinhamento estrito à decisão de não processar o pagamento das diárias, BMC completo e simulação de unit economics no DF (margem de 90%, break-even em ~5 turnos/dia). Tarefa concluída.
+  > **Superado em 01/10/2026:** a v1.0 e o piloto não cobram nada de contratante nem de profissional, e não existe prioridade de despacho paga. O registro histórico acima reflete a formulação de 16/09/2026.
 
 ---
 ← [[04 - Tarefas/00 - Índice Tarefas|Índice de Tarefas]]
