@@ -32,6 +32,8 @@ A estratégia de mercado é territorial e sequencial: nascer no Distrito Federal
 
 **Em aberto, deliberadamente:** o modelo de precificação final e a validação da disposição a pagar aguardam a pesquisa de campo. A estrutura de monetização está desenhada como B2B SaaS / taxa de conexão no contratante, sem comissão descontada do valor do turno do trabalhador ([[04 - Tarefas/T-0010 - Estruturar o modelo de negócio e monetização do Frila|T-0010]]), e a arquitetura técnica está decidida: apps nativos (Swift/SwiftUI no iOS, Kotlin no Android), backend no Supabase e, no iOS, MVVM com domínio isolado ([[04 - Tarefas/T-0024 - Diagramas de classe, banco de dados e arquitetura|T-0024]]).
 
+> **Superado em 01/10/2026:** a v1.0 e o piloto não cobram nada de contratante nem de profissional, e não existe prioridade de despacho paga. O que este trecho descreve é hipótese para depois do piloto.
+
 ---
 
 ## O conjunto de documentos
