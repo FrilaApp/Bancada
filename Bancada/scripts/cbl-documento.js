@@ -412,13 +412,13 @@ function renderizarDocumentoCBL(base = '../') {
           ${renderizarDeclaracaoMarco({
             rotulo: 'Milestone CBL',
             titulo: 'Modelo de Negócios (Frila)',
-            destaque: 'SaaS B2B &amp; Taxa de Conexão (Pay-per-Match) cobrado exclusivamente do contratante, sem intermediação nem custódia financeira da diária.',
+            destaque: 'Piloto e v1.0 gratuitos. Hipótese para depois do piloto: SaaS B2B &amp; Taxa de Conexão (Pay-per-Match) cobrado exclusivamente do contratante, sem intermediação nem custódia financeira da diária.',
             texto: `
               <ul class="cbl-modelo-pilares">
                 <li><strong>Custo Zero para o Profissional:</strong> Sem taxa de cadastro, de uso ou de saque. A diária é combinada no anúncio e paga diretamente no local (Pix direto ou dinheiro), eliminando regulação bancária e passivos trabalhistas.</li>
-                <li><strong>Cobrança por Conexão (Fase 1 - MVP):</strong> Taxa de R$ 15,00 a R$ 20,00 por turno preenchido com sucesso. Vagas não atendidas não geram cobrança.</li>
-                <li><strong>Assinatura Recorrente (Fase 2):</strong> Planos de R$ 149 a R$ 249/mês para bares e buffets com alto volume de turnos semanais.</li>
-                <li><strong>Unit Economics no DF:</strong> Custos variáveis de ~R$ 1,50 (cloud e mensageria) gerando margem de contribuição de ~90% (R$ 13,50 a R$ 18,50 líquidos por turno). Ponto de equilíbrio atingido com menos de 5 turnos diários no DF inteiro.</li>
+                <li><strong>Cobrança por Conexão (hipótese, depois do piloto):</strong> Taxa de R$ 15,00 a R$ 20,00 por turno preenchido com sucesso. Vagas não atendidas não geram cobrança.</li>
+                <li><strong>Assinatura Recorrente (hipótese, depois do piloto):</strong> Planos de R$ 149 a R$ 249/mês para bares e buffets com alto volume de turnos semanais.</li>
+                <li><strong>Unit Economics no DF (hipótese, depois do piloto):</strong> Custos variáveis de ~R$ 1,50 (cloud e mensageria) gerando margem de contribuição de ~90% (R$ 13,50 a R$ 18,50 líquidos por turno). Ponto de equilíbrio estimado com menos de 5 turnos diários no DF inteiro.</li>
               </ul>
             `,
             id: 'marco-modelo-negocios'

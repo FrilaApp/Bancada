@@ -388,7 +388,7 @@ Síntese
 
 Milestone - Modelo de negócios
 
-* Estruturado como SaaS B2B e taxa de conexão de software, cobrado exclusivamente do estabelecimento contratante, sem qualquer intermediação do pagamento da diária.*
+* Piloto e v1.0 gratuitos; a cobrança exclusiva do estabelecimento contratante, via SaaS B2B ou taxa de conexão de software, é hipótese para depois do piloto, sem qualquer intermediação do pagamento da diária.*
 
 *O modelo apoia-se em três definições estratégicas:*
 
