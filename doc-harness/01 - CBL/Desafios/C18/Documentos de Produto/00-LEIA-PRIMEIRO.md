@@ -78,7 +78,7 @@ As duas camadas dizem a mesma coisa. Quando divergirem, a camada detalhada é a 
 ## Prioridades atuais
 
 1. **Validação de campo.** 50 conversas. Sem isso, todo número deste conjunto de documentos é hipótese. As perguntas já estão formuladas e em ordem de importância em `01-O-PROBLEMA.md`, seção 6, e repetidas em `EVIDENCIAS.md`.
-2. **Refinar a precificação com a pesquisa de campo**, apoiando-se na modelagem B2B SaaS estruturada em [[04 - Tarefas/T-0010 - Estruturar o modelo de negócio e monetização do Frila|T-0010]]. As pendências técnicas D1 a D13 foram respondidas em 21/09/2026 e estão em [[07 - Arquitetura/Pendências Técnicas Para Codar|Pendências Técnicas]].
+2. **Validar a disposição a pagar com a pesquisa de campo**, apoiando-se na modelagem B2B SaaS estruturada em [[04 - Tarefas/T-0010 - Estruturar o modelo de negócio e monetização do Frila|T-0010]]. As pendências técnicas D1 a D13 foram respondidas em 21/09/2026 e estão em [[07 - Arquitetura/Pendências Técnicas Para Codar|Pendências Técnicas]].
 
 **Já decidido:** Brasília é o primeiro mercado, não um laboratório. O objetivo aqui não é só validar — é dominar o DF antes de sair dele. Validado e consolidado no DF, o próximo passo é o resto do Brasil, depois outros países. Também estão decididos a plataforma horizontal, sem campanha política, e a stack: iOS em Swift/SwiftUI, Android em Kotlin e backend no Supabase. Para a entrega na loja em 13/11, o iOS é o mínimo.
 
