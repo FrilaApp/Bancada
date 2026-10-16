@@ -418,7 +418,7 @@ function renderizarDocumentoCBL(base = '../') {
                 <li><strong>Custo Zero para o Profissional:</strong> Sem taxa de cadastro, de uso ou de saque. A diária é combinada no anúncio e paga diretamente no local (Pix direto ou dinheiro), eliminando regulação bancária e passivos trabalhistas.</li>
                 <li><strong>Cobrança por Conexão (hipótese, depois do piloto):</strong> Taxa de R$ 15,00 a R$ 20,00 por turno preenchido com sucesso. Vagas não atendidas não geram cobrança.</li>
                 <li><strong>Assinatura Recorrente (hipótese, depois do piloto):</strong> Planos de R$ 149 a R$ 249/mês para bares e buffets com alto volume de turnos semanais.</li>
-                <li><strong>Unit Economics no DF (hipótese, depois do piloto):</strong> Custos variáveis de ~R$ 1,50 (cloud e mensageria) gerando margem de contribuição de ~90% (R$ 13,50 a R$ 18,50 líquidos por turno). Ponto de equilíbrio estimado com menos de 5 turnos diários no DF inteiro.</li>
+                <li><strong>Unit Economics no DF (hipótese, depois do piloto):</strong> Custo variável de ~R$ 1,00 por turno (cloud e push, sem SMS), gerando margem de contribuição de ~93% a 95% (R$ 14,00 a R$ 19,00 líquidos por turno). Ponto de equilíbrio estimado em cerca de 143 turnos por mês, menos de 5 por dia no DF inteiro (T-0010).</li>
               </ul>
             `,
             id: 'marco-modelo-negocios'
