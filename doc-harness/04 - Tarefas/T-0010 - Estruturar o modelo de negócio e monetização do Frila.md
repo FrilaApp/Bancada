@@ -36,7 +36,7 @@ Esta tarefa consolida a definição formal do modelo de negócio para a **1ª Ap
 
 ### 1.2 Modelo Adotado: SaaS B2B e Taxa de Conexão de Software (Contratante)
 
-> **Superado em 01/10/2026:** a v1.0 e o piloto não cobram nada de contratante nem de profissional, e não existe prioridade de despacho paga. O que esta seção descreve (taxa por turno confirmado, créditos e assinatura com despacho prioritário) é hipótese formulada em 16/09/2026 para depois do piloto.
+> **Superado em 01/10/2026:** a v1.0 e o piloto não cobram nada de contratante nem de profissional, e não existe prioridade de despacho paga. O que esta seção descreve (taxa por turno confirmado e créditos) é hipótese formulada em 16/09/2026 para depois do piloto; despacho prioritário pago está fora do escopo: RN06.
 
 A plataforma monetiza cobrando **exclusivamente do estabelecimento contratante** pelo uso da tecnologia de despacho ativo e cobertura de urgência:
 
@@ -48,7 +48,7 @@ A plataforma monetiza cobrando **exclusivamente do estabelecimento contratante**
 2. **Fase 2 — Escala e Recorrência: Assinatura Mensal de Escala ("Frila Pro")**
    - Para estabelecimentos com demanda recorrente (bares que contratam freelas todas as semanas e buffets de eventos):
    - **Planos de assinatura SaaS:** R$ 149,00 a R$ 249,00/mês, concedendo:
-     - Publicações de vagas com despacho ativo prioritário ilimitado.
+     - Publicações de vagas com despacho ativo (fora do escopo: RN06).
      - Gestão completa de escalas na versão Web.
      - Módulo de "Equipe de Confiança" (despacho primeiro para os profissionais favoritos do estabelecimento).
 
@@ -107,19 +107,21 @@ sequenceDiagram
 Com a eliminação da custódia financeira, os custos variáveis da plataforma caem drasticamente, gerando margens de software puro:
 
 ### 4.1 Premissas por Turno Conectado com Sucesso
-- **Receita de Software por Turno Confirmado:** R$ 15,00
+- **Receita de Software por Turno Confirmado:** R$ 15,00 (hipótese pós-piloto; v1.0 e piloto são gratuitos)
 - **Custos Variáveis de Tecnologia por Turno:**
-  - *Notificações Push / SMS para candidatos da leva:* R$ 0,50
+  - *Notificações Push (APNs / FCM):* R$ 0,00 (SMS removido do produto; push não possui tarifa unitária de envio)
   - *Consumo de Infraestrutura/Servidor/Mapas por Vaga:* R$ 0,35
   - *Taxa de cobrança do cartão do restaurante (pacote de créditos):* R$ 0,65
-  - **Total de Custos Variáveis por Turno:** **R$ 1,50**
-- **Margem de Contribuição Líquida Unitária:** **R$ 13,50 por turno (~90,0% de margem)**
+  - **Total de Custos Variáveis por Turno:** **R$ 1,00** (redução de R$ 0,50 / −33,3% frente aos R$ 1,50 anteriores com SMS)
+- **Margem de Contribuição Líquida Unitária:**
+  $$\text{Margem} = \text{Receita} - \text{Custos Variáveis} = \text{R\$} 15,00 - \text{R\$} 1,00 = \text{R\$} 14,00 \text{ por turno (~93,3\% de margem)}$$
+  *(aumento de +R$ 0,50 / +3,3 p.p. frente aos R$ 13,50 / ~90,0% anteriores)*
 
 ### 4.2 Projeção de Ponto de Equilíbrio (Break-Even Operacional Inicial)
 - **Custos Fixos Mensais Estimados (Servidores em nuvem, domínio e ferramentas):** ~R$ 2.000,00/mês
 - **Volume de Turnos para Break-Even:**
-  $$\text{Turnos/mês} = \frac{\text{R\$} 2.000,00}{\text{R\$} 13,50} \approx 148 \text{ turnos preenchidos/mês}$$
-- **148 turnos por mês equivalem a menos de 5 turnos por dia em todo o Distrito Federal.** Isso comprova alta rentabilidade e baixíssimo risco de execução para o MVP.
+  $$\text{Turnos/mês} = \frac{\text{R\$} 2.000,00}{\text{R\$} 14,00} \approx 143 \text{ turnos preenchidos/mês}$$
+- **143 turnos por mês equivalem a menos de 5 turnos por dia (~4,8 turnos/dia) em todo o Distrito Federal** (diferença de −5 turnos/mês frente aos 148 turnos/mês anteriores). Isso comprova alta rentabilidade e baixíssimo risco de execução para o MVP.
 
 ---
 
@@ -137,6 +139,7 @@ Com a eliminação da custódia financeira, os custos variáveis da plataforma c
 - 2026-09-15 — Tarefa criada para estruturar a entrega obrigatória de Modelo de Negócio da primeira Apple Review.
 - 2026-09-16 — Modelo de negócio estruturado por Júlia Clovandi (PO/PM) com modelo SaaS B2B / Taxa de Conexão de Software (R$ 15/turno pago pelo estabelecimento), taxa zero ao freelancer, alinhamento estrito à decisão de não processar o pagamento das diárias, BMC completo e simulação de unit economics no DF (margem de 90%, break-even em ~5 turnos/dia). Tarefa concluída.
   > **Superado em 01/10/2026:** a v1.0 e o piloto não cobram nada de contratante nem de profissional, e não existe prioridade de despacho paga. O registro histórico acima reflete a formulação de 16/09/2026.
+- 2026-10-16 — Auditoria e recálculo de unit economics (cartão 6r6575yV): remoção da rubrica SMS (custo variável cai de R$ 1,50 para R$ 1,00/turno; margem sobe para R$ 14,00 / 93,3%; break-even cai de 148 para 143 turnos/mês); menção a despacho ativo prioritário substituída por "fora do escopo: RN06". Reafirmado que v1.0 e piloto são gratuitos sem cobrança.
 
 ---
 ← [[04 - Tarefas/00 - Índice Tarefas|Índice de Tarefas]]
