@@ -35,6 +35,13 @@ const DIA_MS = 24 * 60 * 60 * 1000;
 const CBL_DOCUMENTO = 'Bancada/scripts/cbl-documento.js';
 const CBL_DADOS = 'Bancada/scripts/cbl-dados.json';
 
+// Páginas cuja versão de 7 dias atrás não pode ir ao ar: a correção tirou delas
+// um dado pessoal, e a base publicaria o texto antigo de volta (inclusive no
+// marca-texto do que saiu). Elas seguem na linha do tempo, só sem a base.
+const SEM_BASE = new Set([
+  'notas/02-atualizacoes-diarias-2026-09-2026-09-10',
+]);
+
 /** O hash do texto de um documento, como o navegador o mede. */
 function hashDoConteudo(conteudo) {
   return hashDeBlocos(blocosDeHtml(conteudo));
@@ -206,6 +213,7 @@ function mapeadorDoSite(site, documentos, vaultNoRepo) {
  * @param {string} opcoes.binario o `bancada-indice` que indexa o vault antigo.
  * @param {object} opcoes.tokens o `tokens.json`, que o `Site` da base também recebe.
  * @param {Date} [opcoes.agora] o momento do build.
+ * @param {Set<string>} [opcoes.semBase] chaves que nunca ganham base (ver `SEM_BASE`).
  * @returns {{paginas: object, base: {sha: string, em: string}|null, basesHtml: object, linhaDoTempo: {dias: object[]}|null, avisos: string[]}}
  */
 function construirNovidades({
@@ -213,6 +221,7 @@ function construirNovidades({
   binario,
   tokens,
   agora = new Date(),
+  semBase = SEM_BASE,
   desdeDias = 14,
   janelaBaseDias = 7,
 }) {
@@ -249,6 +258,7 @@ function construirNovidades({
         p.nova = chave !== 'documento-cbl' || renderizada.temCbl;
         continue;
       }
+      if (semBase.has(chave)) continue;
       p.hb = hashDoConteudo(conteudo);
       p.temBase = p.hb != null && p.hb !== p.h;
       if (p.temBase) {
@@ -297,4 +307,4 @@ function construirNovidades({
   return { paginas, base, basesHtml, linhaDoTempo, avisos };
 }
 
-module.exports = { construirNovidades, localizarVault };
+module.exports = { construirNovidades, localizarVault, SEM_BASE };
