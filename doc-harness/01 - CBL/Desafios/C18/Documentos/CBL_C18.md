@@ -444,31 +444,31 @@ Síntese
 
 Milestone - Documento de Visão
 
-*<Link do documento>*
+[Documento de Visão](../Documentos%20de%20Produto/Frila_Documento_de_Visao.md)
 
 Milestone - Documento de especificação de requisito
 
-*<Link do documento>*
+[Documento de Requisitos](../Documentos%20de%20Produto/Frila_Documento_de_Requisitos.md)
 
 Milestone - Diagramas de caso de uso
 
-*<Link do documento>*
+[Diagrama de Casos de Uso](../../../../07%20-%20Arquitetura/Diagrama%20de%20Casos%20de%20Uso.md)
 
 Milestone - Diagramas de classe
 
-*<Link do documento>*
+[Diagrama de Classe](../../../../07%20-%20Arquitetura/Diagrama%20de%20Classe.md)
 
 Milestone - Modelagem de banco de dados
 
-*<Link do documento>*
+[Modelagem de Banco de Dados](../../../../07%20-%20Arquitetura/Modelagem%20de%20Banco%20de%20Dados.md)
 
 Milestone - Diagrama de arquitetura
 
-*<Link do documento>*
+[Diagrama de Arquitetura](../../../../07%20-%20Arquitetura/Diagrama%20de%20Arquitetura.md)
 
 Milestone - Histórias de Usuário/Backlog do produto
 
-*<Link do documento>*
+[Histórias de Usuário e Backlog](../Documentos%20de%20Produto/Frila_Historias_de_Usuario_e_Backlog.md)
 
 Ciclo exploratório - Lo-fi e Hi-fi prototype
 
