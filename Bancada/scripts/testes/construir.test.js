@@ -252,6 +252,22 @@ test('base de 7 dias: h, hb, temBase e nova por página, com o CBL antigo render
   ]]);
 });
 
+test('página em SEM_BASE não ganha base: o texto de 7 dias atrás não vai ao ar', () => {
+  const raiz = criarRepo();
+  const binario = binarioDeMentira();
+  const VISAO = 'doc-harness/Produto/Visão.md';
+  commitar(raiz, '2026-09-10T10:00:00-03:00', { [VISAO]: notaMd('Visão', 'Texto que saiu por conter dado pessoal.') });
+  commitar(raiz, '2026-09-20T10:00:00-03:00', { [VISAO]: notaMd('Visão', 'Texto corrigido.') }, 'Tira o dado pessoal');
+
+  const semBase = new Set(['notas/produto-visao']);
+  const r = construirNovidades({ site: siteAtual(raiz, binario), binario, tokens: {}, agora: AGORA, semBase });
+
+  assert.ok(!('notas/produto-visao' in r.basesHtml));
+  const visao = r.paginas['notas/produto-visao'];
+  assert.deepStrictEqual([visao.hb, visao.temBase, visao.nova], [null, false, false]);
+  assert.ok(!JSON.stringify(r.basesHtml).includes('dado pessoal'));
+});
+
 test('sem o cbl-documento.js 7 dias atrás, o CBL fica sem base e não conta como novo', () => {
   const raiz = criarRepo();
   const binario = binarioDeMentira();
