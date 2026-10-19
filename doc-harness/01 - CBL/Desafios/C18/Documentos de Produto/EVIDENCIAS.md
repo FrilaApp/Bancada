@@ -524,7 +524,7 @@ Cada dúvida (D) ou suposição (S) da CSD recebe um método, um cartão e uma d
 
 - **Média:** cerca de 14 anúncios por dia nos 7 dias, ou 16 nos 6 dias com mensagem. Só 2 de 98 anúncios (2%) trazem valor em reais.
 - **Reabertas:** 7 de 122 títulos aparecem em mais de um dia (cerca de 6%). Repetição no mesmo dia não foi contada, então o número é um piso.
-- **Tipo de vaga:** quase tudo é vaga com carteira assinada, postada por poucas recrutadoras (obra, limpeza, cozinha, delivery, vendas, estágio). Só 5 mensagens do período falam de diária, extra, evento, garçom ou buffet, e essa busca é por palavra, não por leitura.
+- **Tipo de vaga:** quase tudo é vaga com carteira assinada, postada por poucas recrutadoras (obra, limpeza, cozinha, delivery, vendas, estágio). Só 7 mensagens do período falam de diária, extra, evento, garçom ou buffet, e essa busca é por palavra, não por leitura.
 - **Antecedência:** não se mede aqui; os anúncios não trazem a data do serviço.
 - **Limites:** um grupo só; 7 dias, não 14; classificação por palavra-chave; o histórico antigo do aparelho pode estar incompleto. **Não prova a frequência da falta**, que é o que o item 16 queria, e não substitui as entrevistas. Mostra que este grupo é um mural de emprego formal, não de freela de última hora.
 - **Dado pessoal:** nenhum guardado. Nomes, telefones e texto das mensagens não foram copiados; só as contagens acima.
