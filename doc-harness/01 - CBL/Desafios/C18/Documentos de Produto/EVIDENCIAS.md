@@ -488,5 +488,28 @@ Perguntas em ordem de importância, as mesmas da seção 6 de [[01 - CBL/Desafio
 - Com o pagamento por fora do app, quantas vezes o contratante atrasa ou não paga.
 - Os limiares para mudar de fase, hoje hipóteses: 80% dos turnos preenchidos, aceite em até 15 minutos, 90% de comparecimento e 50% de contratantes que voltam `[H]`.
 
+### Plano de validação da matriz CSD (19/10/2026)
+
+**Decisão do líder (19/10/2026):** o time não fez e não vai fazer as 10 entrevistas (cartão `KqMkTkHP`, arquivado). O produto foi validado de outra forma: **a quantidade de concorrentes e de plataformas ativas no mercado** (seções 1 a 4 deste documento: 22 apps analisados, volume de vagas e de usuários declarados, referências internacionais) mostra que o problema existe e que há quem pague por ele. Isso valida a **existência da dor e do mercado**; **não** valida frequência, preço nem comparecimento no DF, que seguem como hipótese `[H]` até o piloto.
+
+Cada dúvida (D) ou suposição (S) da CSD recebe um método, um cartão e uma data dentro do desafio (término em 13/11/2026), ou "fora do C18" com o motivo.
+
+| Pergunta (item da seção 6) | Tipo | Método | Cartão / lugar | Data |
+|---|---|---|---|---|
+| 1 a 3, 5, 6 — frequência, urgência, custo, quem decide | S | **Telemetria do piloto**: vagas publicadas por contratante por semana, tempo até confirmar, vagas reabertas | Piloto e TestFlight (métricas do `Frila_Roteiro_de_Validacao_de_Campo.md`) | Leitura em 06/11 e fechamento em 13/11 |
+| 4 — taxa de furo | S | Telemetria: turnos confirmados contra turnos com presença registrada e avaliação | Piloto | 13/11 |
+| 7 — por que não usa os apps existentes | D | **Documental**: análise de avaliações e comparação dos 22 concorrentes (seções 3 e 4) | Já feito (seções 2 e 3 e `Frila_Pesquisa_de_Concorrentes_2026-10-01.md`) | Registrado em 01/10 |
+| 8, 9, 16 — como acha vaga e volume de vagas | D | **Contagem em grupos de WhatsApp** do DF (14 dias) | Cartão `NjLRl5FB` (em aberto) | Começa quando o líder liberar; resultado entra aqui |
+| 10, 12 — calote e renda | D | **Fora do C18** | Sem entrevista, sem dado confiável por outro método; fica para depois do piloto, com contratantes e profissionais reais | Pós-desafio |
+| 11 — confiança em desconhecido | S | Telemetria: taxa de aceite de vaga de contratante sem histórico | Piloto | 13/11 |
+| 13 — dor do evento contra dono de bar | D | **Documental** (segmentos nas seções 3 e 4) e, no piloto, segmento do contratante | Piloto | 13/11 |
+| 14 — campanha política | D | **Fora do C18**: fora do radar do produto desde 21/09/2026 | — | — |
+| 15 — plataforma no DF e seus clientes | D | **Documental**: página da estaff e comparação (seção 3) | Já feito | Registrado em 01/10 |
+| Quanto paga o contratante | D | **Fora do C18**: o piloto não cobra; a pergunta de preço volta antes de cobrança | Parecer jurídico, seção 8 (advogado antes de cobrar) | Antes de cobrar |
+| Atraso ou calote com pagamento por fora | D | Telemetria: relato no encerramento do turno | Piloto | 13/11 |
+| Limiares de fase (80%, 15 min, 90%, 50%) | S | Medidos no piloto e conferidos contra os limiares | Piloto | 13/11 |
+
+**Revisões da CSD no FigJam, dentro do desafio:** 19/10/2026 (esta atualização, com o plano acima) e **06/11/2026** (após a leitura inicial do piloto). A data de 01/12 do critério original cai depois do fim do desafio (13/11) e passa a ser a **revisão pós-desafio**, fora do C18. O FigJam não pode ser editado por agente neste momento (conector bloqueado por política da organização); a atualização visual é a ação 9 do painel, com o conteúdo pronto.
+
 ---
 ← [[01 - CBL/00 - Índice CBL|Índice CBL]]

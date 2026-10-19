@@ -1170,6 +1170,12 @@ Marco legal em evolução: Tema 1.291 do STF, PLP 12/2024 e LGPD.
 
 Mudança na caracterização de vínculo em plataformas pode exigir revisão do modelo de intermediação e do desenho de regras.
 
+Dependência
+
+Parecer jurídico preliminar de 19/10/2026 (`Frila_Parecer_Juridico_Preliminar_2026-10-19.md`), feito por agente de IA por delegação do líder, e não por advogado.
+
+Riscos de vínculo, plataforma, LGPD, menores, operadores no exterior e incidente ficam com as mitigações da seção 10 do parecer (desenho sem subordinação, vocabulário neutro, bases legais por atividade, bloqueio de menores, lista de operadores, procedimento de incidente). Advogado antes de cobrança ou lançamento público.
+
 4.4 Custo e Precificação
 
 O modelo de monetização não está definido, e essa é uma decisão consciente. Toda conta de receita depende de um preço que ainda não existe, e a pesquisa de concorrência mostrou que errar aqui é caro: cobrar do profissional gera desgaste público documentado, e comissão pura perde para receita recorrente mesmo em quem domina a transação. No Fiverr, a receita de marketplace caiu 15,5% ano a ano enquanto a receita que inclui assinatura cresceu 2%.
