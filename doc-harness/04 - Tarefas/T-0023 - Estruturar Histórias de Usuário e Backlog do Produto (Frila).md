@@ -1,7 +1,7 @@
 ---
 tipo: tarefa
 id: T-0023
-status: revisao
+status: concluida
 responsavel: [Fabrício Tosta, Júlia Clovandi]
 desafio: C18
 data_criacao: 2026-09-15
@@ -25,6 +25,8 @@ Como Product Owner (PO), sou a responsável direta por transformar as regras de 
 ## Notas
 - 2026-09-15 — Tarefa criada após confirmação da exigência formal de Histórias de Usuário e Backlog pela mentoria. Entrega alinhada para a 1ª Apple Review (28/09).
 - 2026-09-17 — Júlia Clovandi concluiu a estruturação dos 7 Épicos, 25 Histórias de Usuário em BDD e Matriz MoSCoW. Movida para `revisao` para alinhamento com Fabrício Tosta no dia 18/09 e fechamento dos wireframes de baixa fidelidade ([[04 - Tarefas/T-0011 - Alinhar escopo e fluxos do protótipo de baixa fidelidade|T-0011]]).
+- 2026-10-19 — Fechada pelo Cauê Carneiro, por delegação ao Nick Fury. O texto "16 US · ~63 pts" no critério 4 é **histórico**: hoje vale o Backlog v1.2.0, com 19 histórias e 90 pontos no MVP, descrito no [[01 - CBL/Desafios/C18/Documentos de Produto/05-ESCOPO-DO-MVP|Escopo do MVP]].
+- 2026-10-19 — **Regra combinada (decisão do Cauê):** mudança de história vira nova versão do Backlog e atualização do cartão da história no quadro do Trello. Vale para qualquer mudança de escopo a partir de hoje.
 
 ---
 ← [[04 - Tarefas/00 - Índice Tarefas|Índice de Tarefas]]

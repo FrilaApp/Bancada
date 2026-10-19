@@ -1,7 +1,7 @@
 ---
 tipo: tarefa
 id: T-0012
-status: revisao
+status: concluida
 responsavel: Júlia Clovandi
 desafio: C18
 data_criacao: 2026-09-15
@@ -20,12 +20,13 @@ O projeto exige a entrega dos documentos e diagramas de engenharia formalizados:
 - [x] Diagrama de Classes (MVVM / Domínio / Portas e Implementações) gerados e embutidos na Seção 6.3 do documento de requisitos.
 - [x] Diagrama de Arquitetura em camadas e integrações externas (C4 model níveis 1 a 3) gerados e embutidos na Seção 6.4 do documento de requisitos.
 - [x] Diagramas validados e aprovados pelos desenvolvedores (Cauê, João Paulo e Matheus).
-- [ ] Curadoria final de fechamento dos pendentes técnicos com a equipe (D9 a D13).
+- [x] Curadoria final de fechamento dos pendentes técnicos com a equipe (D9 a D13). _(fechado em 2026-10-19: curadoria feita, D9 a D13 em Pendências Técnicas)_
 
 ## Notas
 - 2026-09-15 — Tarefa criada para consolidar a formatação e renderização dos 4 diagramas técnicos no vault.
 - 2026-09-16 — Cauê Carneiro implementou T-0024 gerando os 13 diagramas em SVG/PNG na pasta `07 - Arquitetura/Anexos/` e embutindo no `.docx`. O Mermaid foi descartado por sobreposição visual.
 - 2026-09-18 — PO/PM atualizou o escopo e moveu para revisão final conjunta.
+- 2026-10-19 — Fechada pelo Cauê Carneiro (líder do projeto), que dispensou a validação dos três devs e pediu que só a validação dele valesse. O estudo foi feito pelo Nick Fury (agente de IA) por delegação: as decisões D1 a D13 estão registradas, cada uma com a escolha e o motivo, em [[07 - Arquitetura/Pendências Técnicas Para Codar|Pendências Técnicas Para Codar]].
 
 ---
 ← [[04 - Tarefas/00 - Índice Tarefas|Índice de Tarefas]]
