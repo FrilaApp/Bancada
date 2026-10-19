@@ -499,7 +499,7 @@ Cada dúvida (D) ou suposição (S) da CSD recebe um método, um cartão e uma d
 | 1 a 3, 5, 6 — frequência, urgência, custo, quem decide | S | **Telemetria do piloto**: vagas publicadas por contratante por semana, tempo até confirmar, vagas reabertas | Piloto e TestFlight (métricas do `Frila_Roteiro_de_Validacao_de_Campo.md`) | Leitura em 06/11 e fechamento em 13/11 |
 | 4 — taxa de furo | S | Telemetria: turnos confirmados contra turnos com presença registrada e avaliação | Piloto | 13/11 |
 | 7 — por que não usa os apps existentes | D | **Documental**: análise de avaliações e comparação dos 22 concorrentes (seções 3 e 4) | Já feito (seções 2 e 3 e `Frila_Pesquisa_de_Concorrentes_2026-10-01.md`) | Registrado em 01/10 |
-| 8, 9, 16 — como acha vaga e volume de vagas | D | **Contagem em grupos de WhatsApp** do DF (14 dias) | Cartão `NjLRl5FB` (em aberto) | Começa quando o líder liberar; resultado entra aqui |
+| 8, 9, 16 — como acha vaga e volume de vagas | D | **Contagem em grupos de WhatsApp** do DF | Cartão `NjLRl5FB` (aberto) | **Amostra de 1 grupo, 13 a 19/10/2026**, na seção abaixo; os demais grupos seguem em aberto |
 | 10, 12 — calote e renda | D | **Fora do C18** | Sem entrevista, sem dado confiável por outro método; fica para depois do piloto, com contratantes e profissionais reais | Pós-desafio |
 | 11 — confiança em desconhecido | S | Telemetria: taxa de aceite de vaga de contratante sem histórico | Piloto | 13/11 |
 | 13 — dor do evento contra dono de bar | D | **Documental** (segmentos nas seções 3 e 4) e, no piloto, segmento do contratante | Piloto | 13/11 |
@@ -508,6 +508,26 @@ Cada dúvida (D) ou suposição (S) da CSD recebe um método, um cartão e uma d
 | Quanto paga o contratante | D | **Fora do C18**: o piloto não cobra; a pergunta de preço volta antes de cobrança | Parecer jurídico, seção 8 (advogado antes de cobrar) | Antes de cobrar |
 | Atraso ou calote com pagamento por fora | D | Telemetria: relato no encerramento do turno | Piloto | 13/11 |
 | Limiares de fase (80%, 15 min, 90%, 50%) | S | Medidos no piloto e conferidos contra os limiares | Piloto | 13/11 |
+
+**Contagem de vagas no WhatsApp, amostra de 19/10/2026 (item 16).** Um grupo, "Garçons BSB e Entorno", lido na tela do WhatsApp Web, com a conta do responsável e a pedido dele. **Janela pedida: 22/09 a 05/10. Janela obtida: 13 a 19/10.** De 22/09 a 05/10 o grupo não tem nenhum anúncio (só uma mensagem apagada, em 25/09); os anúncios começam em 13/10. A exportação do grupo está travada pela privacidade avançada, então a contagem veio da rolagem da tela.
+
+| Dia | Mensagens | Anúncios de vaga | Com valor em reais | Apagadas |
+|---|---|---|---|---|
+| 13/10 | 26 | 25 | 0 | 0 |
+| 14/10 | 18 | 15 | 1 | 0 |
+| 15/10 | 14 | 11 | 0 | 0 |
+| 16/10 | 19 | 19 | 1 | 0 |
+| 17/10 | 3 | 0 | 0 | 3 |
+| 18/10 | 0 | 0 | 0 | 0 |
+| 19/10 | 28 | 28 | 0 | 0 |
+| **Total** | **108** | **98** | **2** | **3** |
+
+- **Média:** cerca de 14 anúncios por dia nos 7 dias, ou 16 nos 6 dias com mensagem. Só 2 de 98 anúncios (2%) trazem valor em reais.
+- **Reabertas:** 7 de 122 títulos aparecem em mais de um dia (cerca de 6%). Repetição no mesmo dia não foi contada, então o número é um piso.
+- **Tipo de vaga:** quase tudo é vaga com carteira assinada, postada por poucas recrutadoras (obra, limpeza, cozinha, delivery, vendas, estágio). Só 5 mensagens do período falam de diária, extra, evento, garçom ou buffet, e essa busca é por palavra, não por leitura.
+- **Antecedência:** não se mede aqui; os anúncios não trazem a data do serviço.
+- **Limites:** um grupo só; 7 dias, não 14; classificação por palavra-chave; o histórico antigo do aparelho pode estar incompleto. **Não prova a frequência da falta**, que é o que o item 16 queria, e não substitui as entrevistas. Mostra que este grupo é um mural de emprego formal, não de freela de última hora.
+- **Dado pessoal:** nenhum guardado. Nomes, telefones e texto das mensagens não foram copiados; só as contagens acima.
 
 **Revisões da CSD no FigJam, dentro do desafio:** 19/10/2026 (esta atualização, com o plano acima) e **06/11/2026** (após a leitura inicial do piloto). A data de 01/12 do critério original cai depois do fim do desafio (13/11) e passa a ser a **revisão pós-desafio**, fora do C18. O FigJam não pode ser editado por agente neste momento (conector bloqueado por política da organização); a atualização visual é a ação 9 do painel, com o conteúdo pronto.
 
