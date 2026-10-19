@@ -1,7 +1,7 @@
 ---
 tipo: tarefa
 id: T-0013
-status: revisao
+status: concluida
 responsavel: Júlia Clovandi
 desafio: C18
 data_criacao: 2026-09-15
@@ -20,12 +20,13 @@ Como PO, cabe a mim conduzir o refinamento final desse documento, assegurando qu
 - [x] Critérios de aceitação validados para cada fluxo crítico do MVP no documento formal de Histórias de Usuário ([[01 - CBL/Desafios/C18/Documentos de Produto/Frila_Historias_de_Usuario_e_Backlog|T-0023]]).
 - [x] Requisitos Não-Funcionais (RNF01 a RNF14 — latência de despacho, confiabilidade de push, conformidade LGPD) alinhados com a viabilidade técnica.
 - [x] Matriz de rastreabilidade (Regra de Negócio ↔ Requisito Funcional ↔ Caso de Uso) completa e consistente na Seção 7.1.
-- [ ] Validação final do fechamento formal dos requisitos com a equipe de desenvolvimento.
+- [x] Validação final do fechamento formal dos requisitos com a equipe de desenvolvimento. _(fechado em 2026-10-19: validação do Cauê, por delegação; devs dispensados por ele)_
 
 ## Notas
 - 2026-09-15 — Tarefa aberta para garantir a integridade da especificação de requisitos do produto.
 - 2026-09-17 — Atualizada a regra RN17 e o público-alvo horizontal; concluída a derivação dos 25 RFs em 25 User Stories com critérios BDD em T-0023.
 - 2026-09-18 — Contagem corrigida para abranger o escopo total de 25 RFs e 20 RNs; tarefa movida para `revisao`.
+- 2026-10-19 — Fechada pelo Cauê Carneiro, que dispensou a validação dos três devs e pediu que só a validação dele valesse. O fechamento dos requisitos segue o [[01 - CBL/Desafios/C18/Documentos de Produto/05-ESCOPO-DO-MVP|Escopo do MVP]] (19 histórias, 90 pontos no Backlog v1.2.0). Estudo feito pelo Nick Fury por delegação.
 
 ---
 ← [[04 - Tarefas/00 - Índice Tarefas|Índice de Tarefas]]

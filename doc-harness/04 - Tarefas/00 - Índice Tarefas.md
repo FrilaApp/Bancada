@@ -35,8 +35,8 @@ Para criar uma tarefa, use `/tarefa` no Claude Code — ele cuida do id sequenci
 - [[04 - Tarefas/T-0009 - Desenvolvimento do documento de visão|T-0009 — Desenvolvimento do documento de visão]] · `concluida`
 - [[04 - Tarefas/T-0010 - Estruturar o modelo de negócio e monetização do Frila|T-0010 — Estruturar o modelo de negócio e monetização do Frila]] · `concluida`
 - [[04 - Tarefas/T-0011 - Alinhar escopo e fluxos do protótipo de baixa fidelidade|T-0011 — Alinhar escopo e fluxos do protótipo de baixa fidelidade]] · `a-fazer`
-- [[04 - Tarefas/T-0012 - Coletar decisões técnicas e gerar diagramas de engenharia|T-0012 — Coletar decisões técnicas e gerar diagramas de engenharia]] · `revisao`
-- [[04 - Tarefas/T-0013 - Fechamento formal da especificação de requisitos do Frila|T-0013 — Fechamento formal da especificação de requisitos do Frila]] · `revisao`
+- [[04 - Tarefas/T-0012 - Coletar decisões técnicas e gerar diagramas de engenharia|T-0012 — Coletar decisões técnicas e gerar diagramas de engenharia]] · `concluida`
+- [[04 - Tarefas/T-0013 - Fechamento formal da especificação de requisitos do Frila|T-0013 — Fechamento formal da especificação de requisitos do Frila]] · `concluida`
 - [[04 - Tarefas/T-0014 - Elaborar pitch e deck da primeira Apple Review (28-09)|T-0014 — Elaborar pitch e deck da primeira Apple Review (28-09)]] · `a-fazer`
 - [[04 - Tarefas/T-0015 - Roteiro e entrevistas de validação de campo no DF|T-0015 — Roteiro e entrevistas de validação de campo no DF]] · `em-andamento`
 - [[04 - Tarefas/T-0016 - Elaborar plano de marketing e estratégia de Go-To-Market|T-0016 — Elaborar plano de marketing e estratégia de Go-To-Market]] · `a-fazer`
@@ -46,8 +46,8 @@ Para criar uma tarefa, use `/tarefa` no Claude Code — ele cuida do id sequenci
 - [[04 - Tarefas/T-0020 - Relatório de análise de métricas pós-lançamento da App Store|T-0020 — Relatório de análise de métricas pós-lançamento da App Store]] · `a-fazer`
 - [[04 - Tarefas/T-0021 - Preparar apresentação da segunda Apple Review (10-11)|T-0021 — Preparar apresentação da segunda Apple Review (10-11)]] · `a-fazer`
 - [[04 - Tarefas/T-0022 - Consolidação final e apresentação de encerramento do CBL (04-12)|T-0022 — Consolidação final e apresentação de encerramento do CBL (04-12)]] · `a-fazer`
-- [[04 - Tarefas/T-0023 - Estruturar Histórias de Usuário e Backlog do Produto (Frila)|T-0023 — Estruturar Histórias de Usuário e Backlog do Produto (Frila)]] · `revisao`
-- [[04 - Tarefas/T-0024 - Diagramas de classe, banco de dados e arquitetura|T-0024 — Diagramas de classe, banco de dados e arquitetura]] · `revisao`
+- [[04 - Tarefas/T-0023 - Estruturar Histórias de Usuário e Backlog do Produto (Frila)|T-0023 — Estruturar Histórias de Usuário e Backlog do Produto (Frila)]] · `concluida`
+- [[04 - Tarefas/T-0024 - Diagramas de classe, banco de dados e arquitetura|T-0024 — Diagramas de classe, banco de dados e arquitetura]] · `concluida`
 - [[04 - Tarefas/T-0025 - Backend do Frila: fundação, ciclo e despacho|T-0025 — Backend do Frila: fundação, ciclo e despacho]] · `em-andamento`
 
 ---

@@ -160,6 +160,101 @@ Quatro sprints de 22/09 a 13/11. O Sprint 0 é de fundação e termina no marco 
 
 Depois da loja, a coluna Backlog v1.1 tem 10 cartões e a v1.2 tem 7. Se o Sprint 2 atrasar, o corte segue esta ordem, sem tocar no ciclo nem no que a App Store exige: republicar vaga (US05), aviso de hora excedida, lembrete de 24 h (fica só o de 3 h) e exportar dados (excluir conta fica). Nunca saem: candidatura e confirmação, check-in, avaliação, denúncia e bloqueio, exclusão de conta.
 
+## Carga e cortes dos Sprints 1 e 2 (revisão de 19/10/2026)
+
+**O que é:** estimativa em dias por cartão, carga de cada dev e cortes decididos, feitos em 19/10/2026 pelo Nick Fury por delegação do Cauê (líder do projeto). **São estimativas**, não medição: cada dono corrige o seu número na quarta-feira, 21/10, e a tabela é atualizada.
+
+**Premissas**
+
+- Sprint 1: 06/10 a 19/10, com **9 dias úteis** (12/10 é feriado). Sprint 2: 20/10 a 02/11, com **9 dias úteis** (02/11 é feriado). Sprint 3 começa em 03/11.
+- Três devs: Cauê, João Paulo e Matheus. Capacidade de cada um: 9 dias por sprint (100%), já contando **1 dia** de rituais e revisão de PR.
+- "Dia" é o tempo de atenção do dev (decisão, revisão, teste e correção), com o apoio dos Vingadores. O "restante" vem do estágio do cartão (Revisão, mais ou menos 0,5 dia; Em andamento, 1 a 3 dias) e dos critérios ainda abertos.
+- Critério sem marcar não prova que o trabalho não foi feito; por isso o restante dos cartões de design e pesquisa fica "a confirmar pelo dono".
+
+### Estimativa por cartão: Sprint 1 (cartões que eram do Sprint 1)
+
+| Cartão | Dono | Estimativa total (dias) | Restante em 19/10 (dias) |
+|---|---|---|---|
+| XtZTlTIA SMTP próprio no Supabase | Cauê | 1,5 | 1 |
+| 0jEemYAM Build 0.4 para o TestFlight | Cauê e João | 3 (1,5 cada) | 2 (1 cada) |
+| Jg8qMYKj Requisitos de envio da Apple | João e Cauê | 2 (João 1,5; Cauê 0,5) | 1 (João 0,5; passa para João 0,5 do Cauê) |
+| dke9K3yV Entrega contínua do backend | Cauê, **passa para Matheus** | 1,5 | 1,5 |
+| 7gpPBgTH Contas de demonstração para a Apple | Cauê e Matheus | 2,5 (Cauê 1,5; Matheus 1) | 0,5 (Matheus) |
+| prRWMvWj prazo_resposta no backend (sem dono; **passa para Matheus**) | Matheus | 0,5 | 0,5 |
+| MXqhHjWK Ícone e abertura (parte do Xcode) | João (arte: Fabrício) | 0,5 | 0,5 |
+| 02mglkWw Protótipo hi-fi e marco do CBL | Fabrício | 5 | a confirmar |
+| cWDSgQOv Alta fidelidade da chegada ao turno | Fabrício | 3 | a confirmar |
+| OQGf44hD Alta fidelidade de cancelamento, avaliação e perfis | Fabrício | 3 | a confirmar |
+| C9bUQVRw Alta fidelidade de denúncia, bloqueio, exportar e excluir | Fabrício | 3 | a confirmar |
+| YR2d806e Crazy 8's coletivo | Fabrício | 0,5 | a confirmar |
+| 52DosBOL Critique Carousel | Fabrício | 0,5 | a confirmar |
+| 9QSIHZYN Teste de usabilidade do protótipo | Júlia e Fabrício | 3 (Júlia 2; Fabrício 1) | a confirmar |
+| kaIbV9nB Estratégia de liquidez (T-0016) | Júlia | 2 | a confirmar |
+| XLFtHeQs Recrutar estabelecimentos e profissionais | Júlia | 3 | a confirmar |
+| TUnTDG2w Entrevistas de validação (T-0015) | Júlia, com o time | 3 | a confirmar |
+| GVUtVWCX Plano dos testes com usuários (T-0018) | Júlia e Fabrício | 2 (1 cada) | a confirmar |
+| VyY2SGsX Permissões e notificações: telas e textos | Fabrício e Júlia | 2 (1 cada) | a confirmar |
+| PavRCjd7 Objetivo e rituais do Sprint 1 (cartão guarda-chuva) | todos | 0 (já no dia de rituais) | 0 |
+
+### Estimativa por cartão: Sprint 2
+
+| Cartão | Dono | Estimativa total (dias) | Restante em 19/10 (dias) |
+|---|---|---|---|
+| El0rlp6K develop para main e produção | Cauê 1,5; Matheus 0,5 | 2 | 2 (**vai para o Sprint 3**) |
+| 5boVdM0t Publicar vaga recusada no frila-dev | Matheus | 2 | 2 |
+| KOGPE3dZ TestFlight externo liberado | Cauê e Júlia | 2 (1 cada) | 2 (1 cada) |
+| 9kKQ5KCx Ambiente frila-prod | Cauê 2; João 0,5; Matheus 0,5 | 3 | 3 |
+| Kd0RVh9q TestFlight 0.5 | João 2 | 2 | 2 |
+| aAQflYu8 Push no iOS | João | 2 | 1 |
+| wpNabtCO Ciclo de vida do token de push | João | 2 | 1 |
+| ABN4rvmT Excluir conta no app | Matheus | 1 | 0,5 |
+| AZI1goKB Testes de ponta a ponta | Matheus | 3 | 2 |
+| wosMgVsF Medição no aparelho com iOS 17 (RNF04) | João | 1,5 | 1 |
+| 36fU0CEO Envio de push pelo FCM | Matheus | 3 | 0,5 |
+| 7XS6MQGg Motor de despacho | Cauê | 5 | 1 |
+| OrS9gEfU Edge Function excluir-conta | Cauê | 3 | 0,5 |
+| JWJOPAOL RPCs denunciar e bloquear | Cauê | 3 | 0,5 |
+| 5xR1JQkW LGPD: registro, canal e incidentes | Júlia 2; Cauê 1 | 3 | 3 |
+| SIPQtYWH Revisão de design, acessibilidade e textos do Sprint 2 | Fabrício 2; Júlia 1 | 3 | a confirmar |
+| NoKH0SN8 Revisão de design, acessibilidade e textos do Sprint 1 | Fabrício 1; Júlia 1 | 2 | a confirmar |
+| MNm4dGWq Ajuda no app: suporte, termos e primeiros passos | Júlia 1; Fabrício 1 | 2 | a confirmar |
+| PFWvegZa Ficha da App Store (T-0019) | Júlia | 2 | a confirmar |
+| Q4ZZwnMR Testes de usabilidade no TestFlight (T-0018) | Júlia 2,5; Fabrício 1,5 | 4 | a confirmar |
+| h1WOL50F Five Minutes Test (27/10) | Júlia e Fabrício | 2 (1 cada) | a confirmar |
+| sJM6DT8A Objetivo e rituais do Sprint 2 (cartão guarda-chuva) | todos | 0 | 0 |
+
+### Carga de cada dev
+
+**Sprint 1 (retrospectivo, capacidade 9 dias)**
+
+| Dev | Planejado nos cartões do Sprint 1 (+1 de rituais) | % | Feito dos cartões do S1 | Adiantado do Sprint 2 | Real aproximado (+1) | % |
+|---|---|---|---|---|---|---|
+| Cauê | 7 (+1) = 8 | 89% | 2,5 | 9 (motor de despacho, excluir-conta, denunciar e bloquear) | 12,5 | 139% |
+| João Paulo | 3,5 (+1) = 4,5 | 50% | 1,5 | 2 (push no iOS, ciclo do token) | 4,5 | 50% |
+| Matheus | 1 (+1) = 2 | 22% | 0,5 | 4,5 (push FCM, excluir conta no app, testes de ponta a ponta, RNF04) | 6 | 67% |
+
+Leitura: o Sprint 1 fechou com o Cauê acima de 100% e com os cartões de infra dele (SMTP, entrega contínua, build 0.4) sem terminar, porque o tempo foi para o backend do Sprint 2. Os outros dois tiveram folga.
+
+**Sprint 2 (planejado, capacidade 9 dias, já com 1 dia de rituais e revisão)**
+
+| Dev | Cartões e dias | Total | % |
+|---|---|---|---|
+| Cauê | SMTP 1; build 0.4 1; frila-prod 2; TestFlight externo 1; LGPD 1; motor de despacho 1; excluir-conta 0,5; denunciar e bloquear 0,5; rituais e revisão 1 | 9 | 100% |
+| João Paulo | build 0.4 1; requisitos Apple 1; push no iOS 1; TestFlight 0.5 2; ciclo do token 1; ícone 0,5; frila-prod 0,5; RNF04 1; rituais e revisão 1 | 9 | 100% |
+| Matheus | entrega contínua do backend 1,5; prazo_resposta 0,5; contas de demonstração 0,5; vaga recusada 2; excluir conta no app 0,5; testes de ponta a ponta 2; push FCM 0,5; frila-prod 0,5; rituais e revisão 1 | 9 | 100% |
+
+Soma do time: 27 de 27 dias. **Não há folga.** Por isso há gatilho de corte abaixo.
+
+### Cortes decididos
+
+1. **Mudança de rota, sem perda de escopo:** `El0rlp6K` (develop para main e produção, 2 dias) sai do Sprint 2 e vai para o início do **Sprint 3 (03/11 a 05/11)**, mantendo o prazo do próprio cartão (05/11, antes da submissão de 06/11). Risco: sobram 3 dias úteis para 2 dias de trabalho; se algum cartão do backend atrasar, a produção atrasa junto. Cartão movido para a coluna do Sprint 3.
+2. **Troca de dono, sem perda de escopo:** `dke9K3yV` (entrega contínua) e `prRWMvWj` (prazo_resposta) passam para o Matheus; 0,5 dia do Jg8qMYKj passa do Cauê para o João; 1 dia do TestFlight 0.5 passa do Cauê para o João; `wosMgVsF` (RNF04, medição no aparelho com iOS 17) passa para o João, que é quem tem o aparelho e o Xcode. O motivo é tirar o Cauê de 139% para 100%.
+3. **Nada do que nunca sai foi cortado:** candidatura e confirmação, check-in, avaliação, denúncia e bloqueio, e exclusão de conta seguem inteiros.
+4. **Gatilho para cortes de escopo (não acionado hoje):** em 27/10, se o restante dos cartões do Sprint 2 passar de 100% da capacidade restante, cortar **nesta ordem**: republicar vaga (US05), aviso de hora excedida, lembrete de 24 h, exportar dados. É a mesma ordem da seção "Ordem de corte" deste documento; nenhum item corta sozinho sem registro aqui.
+5. **Fora desta rodada:** a carga de Júlia e Fabrício. Os cartões deles têm estimativa registrada, mas o restante depende do que cada um já fez, e os cartões não mostram (critérios sem marcar). Os dois confirmam na quarta-feira, 21/10, e o balanço deles entra na próxima revisão.
+
+**Registro:** 19/10/2026 · Nick Fury, por delegação do Cauê Carneiro Kilanovic (cartão `UwqBldBW`). Próxima revisão: 21/10 (confirmação dos donos) e 27/10 (gatilho de corte).
+
 ## Riscos e dependências
 
 | Risco | Efeito se acontecer | Mitigação | Quem / até quando |
