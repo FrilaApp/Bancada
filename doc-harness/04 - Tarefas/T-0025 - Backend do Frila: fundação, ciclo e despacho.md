@@ -1,10 +1,11 @@
 ---
 tipo: tarefa
 id: T-0025
-status: em-andamento
+status: concluida
 responsavel: [Matheus Silva, Cauê Carneiro, João Paulo]
 desafio: C18
 data_criacao: 2026-09-22
+data_atualizacao: 2026-10-21
 tags: [tarefa, cbl, c18, backend, frila, supabase]
 ---
 
@@ -71,18 +72,18 @@ contrato. O `openapi.yaml` é espelhado em `contrato/`, e a CI recusa o espelho 
       sem política de leitura, filtro por palavra inteira sobre o texto sem acento, e a
       recusa `422 campo_invalido` com o campo em `details`. Falta só a revisão da Júlia
       na lista de termos.
-- [ ] **Bloco B · Ciclo principal** — as RPCs de `publicar_vaga` a `avaliar`, com a
+- [x] **Bloco B · Ciclo principal** — as RPCs de `publicar_vaga` a `avaliar`, com a
       confirmação sem duplicidade de RN19 provada sob concorrência.
     - [x] `publicar_vaga` — grava a vaga, cria uma posição por unidade pedida e enfileira
           o despacho em `pgmq`. O despacho não roda dentro da transação (B15): publicar é
           um toque na tela de quem está com o salão cheio, e a varredura de elegibilidade
           cresce com a base. A suíte vai de 232 para **391 asserções**.
-    - [ ] `vagas_abertas` e `detalhe_vaga`, `candidatar`, `meus_turnos`,
+    - [x] `vagas_abertas` e `detalhe_vaga`, `candidatar`, `meus_turnos`,
           `contato_do_turno`, check-in, check-out, `avaliar` e os cancelamentos.
-- [ ] **Bloco C · Despacho e turno** — motor de elegibilidade, teto e agrupamento de
+- [x] **Bloco C · Despacho e turno** — motor de elegibilidade, teto e agrupamento de
       notificações, push pelo FCM, lembretes, alertas e os direitos do usuário.
-- [ ] **Bloco D · Produção** — endurecimento, retenção de dados, auditoria e as consultas
-      quentes com o volume do DF simulado.
+- [x] **Bloco D · Produção** — endurecimento, retenção de dados, auditoria e as consultas
+      quentes com o volume do DF simulado. Concluído com a release v1.0.0 (19/10/2026).
 
 ### O que está aberto, e depende de gente
 
@@ -178,6 +179,17 @@ contrato. O `openapi.yaml` é espelhado em `contrato/`, e a CI recusa o espelho 
   reclamar. E uma terceira vez, mais sutil: os testes da primeira RPC conferiam só o
   `sqlstate` da exceção, nunca o código — trocar `menor_de_idade` por qualquer outra
   coisa deixava tudo verde. Nos três casos quem achou foi medição, não leitura.
+- 2026-10-19 — Release v1.0.0 unificando `origin/develop` em `origin/main` (PR #308): 72
+  migrações acumuladas (119 migrações ao todo), 6 grandes funções da v1.0 (modo seleção,
+  equipe de confiança, contestação/suspensão, suporte no turno, estou a caminho, exportação
+  e LGPD), 178 testes Deno passando, paridade estrita com OpenAPI 0.2.45 e 17/17 casos de
+  entrega aprovados. Reivindicação de push com SKIP LOCKED provada sob concorrência (PR #295).
+- 2026-10-20 — Alerta demonstracao_sob_ataque em verificar_saude (PR #309), exigência de
+  DEMONSTRACAO_ATIVA_ATE no deploy remoto (PR #310), purga periódica de dados efêmeros de
+  demonstração e falhas em higienizar_tabelas (PR #185) e logs FCM sanitizados (PR #313).
+- 2026-10-21 — Isolamento de execução do pg_cron e prova de convergência estrita no teto de
+  despacho (PR #314); rotina de backup lógico cifrado validada e agendada (PR #312). Tarefa
+  concluída.
 
 ---
 ← [[04 - Tarefas/00 - Índice Tarefas|Índice de Tarefas]]

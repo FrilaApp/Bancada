@@ -69,7 +69,7 @@ Extraído dos documentos de arquitetura (T-0024): [[07 - Arquitetura/Diagrama de
 - [x] Revisão pelos desenvolvedores (Cauê, João Paulo, Matheus) dos quatro documentos técnicos — Classe, Banco de Dados, Arquitetura e Casos de Uso (B05), feita em 22/09.
 - [ ] Curadoria e padronização visual pela Júlia Clovandi, conforme [[04 - Tarefas/T-0012 - Coletar decisões técnicas e gerar diagramas de engenharia|T-0012]].
 - [x] Escrever a especificação das rotas centrais como funções RPC do Supabase (D11): `Frila/Documentos/API/openapi.yaml`, 22/09/2026. A 0.2.0 saiu no mesmo dia, com a entrada por e-mail e o perfil por conta; a 0.2.1 acrescentou o aceite dos termos e a chave `headers` no envelope de erro; a **0.2.2**, de 23/09, fechou as divergências com os cartões do Sprint 1 e 2 e trocou `alvo_usuario_id` por `alvo_tipo` + `alvo_id` em `bloquear` e `denunciar`.
-- [ ] Escolher o provedor de e-mail (SMTP) do código de entrada, antes do piloto. O custo, se houver, entra no C09.
+- [x] Escolher o provedor de e-mail (SMTP) do código de entrada, antes do piloto: integrado via Edge Function enviar-email no backend e domínio oficial frilabr.com no frontend (20/10/2026).
 - [ ] Decidir quem paga a infraestrutura (C09), em debate no time.
 - [x] Atualizar a seção "Arquitetura Técnica · Frila" do FigJam (board Challenge 18): as decisões D1 a D13 passam para a coluna "Decisões Fechadas", com as respostas acima. Feito em 19/10/2026 (importado pelo Cauê).
 
